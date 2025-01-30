@@ -1,9 +1,23 @@
-# Template DataForGood
-
-This file will become your README and also the index of your
-documentation.
+# Eclaireur Public
 
 # Contributing
+
+## Structure du Projet
+
+- `back/` : Consolidation et préparation des données
+- `front/` : Développement du site web interactif
+
+## Nomencloture des PR
+
+
+Front
+```
+[FRONT]:<type>[optional scope]: <description>
+```
+Back
+```
+[BACK]:<type>[optional scope]: <description>
+```
 
 ## Installer Poetry
 
