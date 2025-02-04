@@ -1,6 +1,6 @@
-import logging    # OK
-from pathlib import Path   # OK
-import pandas as pd   # OK
+import logging
+from pathlib import Path
+import pandas as pd
 
 from scripts.communities.communities_selector import CommunitiesSelector
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
@@ -24,7 +24,7 @@ class WorkflowManager:
         df_to_save_to_db = {}
 
         # Build communities scope, and add selected communities to df_to_save
-        communities_selector = self.initialize_communities_scope(df_to_save_to_db)              # ???
+        communities_selector = self.initialize_communities_scope(df_to_save_to_db)
 
         # Loop through the topics defined in the config
         for topic, topic_config in self.config['search'].items():
