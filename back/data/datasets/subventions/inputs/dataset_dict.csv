@@ -1,0 +1,75 @@
+﻿original_name;official_name
+Conditions de versement;conditionsVersement
+conditionVersement;conditionsVersement
+Date de la convention;dateConvention
+datedeconvention;dateConvention
+Date de signature de la convention;dateConvention
+Date de la convention de subvention;dateConvention
+DATE CONVENTION;dateConvention
+Date(s) ou période(s) de versement;datesPeriodeVersement
+dateSoldeVersement;datesPeriodeVersement
+datePeriodeVersement;datesPeriodeVersement
+dateperiodedversement;datesPeriodeVersement
+dateVersementSolde;datesPeriodeVersement
+Dates de periode de versement;datesPeriodeVersement
+Identification de l'attributaire;idAttribuant
+identification_de_l_attribuant;idAttribuant
+Identification SIRET de l'attribuant;idAttribuant
+Identification de l’attributaire (SIRET);idAttribuant
+N° Siret;idAttribuant
+SIRET;idAttribuant
+identifiant_attribuant;idAttribuant
+N° SIRET;idBeneficiaire
+numero_siret;idBeneficiaire
+idBénéficiaire;idBeneficiaire
+ID_BENEFICIAIRE;idBeneficiaire
+identification_du_beneficiaire;idBeneficiaire
+Identification SIRET du beneficiaire;idBeneficiaire
+Identification du bénéficiaire;idBeneficiaire
+code_siren_siret;idBeneficiaire
+idBeneficiare;idBeneficiaire
+beneficiaire_code;idBeneficiaire
+code_tiers_beneficiaire;idBeneficiaire
+N° unique de référencement au RAE;idRAE
+Identification IRAE de l'aide attribuee;idRAE
+Numéro unique de référencement au RAE;idRAE
+Montant total de la subvention;montant
+montant_vote;montant
+ montant ;montant
+montant_total_de_la_subvention;montant
+Montant  total de la subvention;montant
+Montant de la subvention;montant
+montant_attribue;montant
+montantpret;montant
+montant_budgetaire_liquide;montant
+montant_subvention_vote;montant
+montant_euros;montant
+Nature de la subvention;nature
+nature_de_la_subvention;nature
+Nom de l'attribuant;nomAttribuant
+nom_de_l_attribuant;nomAttribuant
+Nom de l’attributaire;nomAttribuant
+Nom de l'association;nomAttribuant
+NOM COLLECTIVITÉ;nomAttribuant
+nom_attribuant;nomAttribuant
+NOM Bénéficiaire;nomBeneficiaire
+nom_beneficiaire;nomBeneficiaire
+nomBénéficiaire;nomBeneficiaire
+NOM_BENEFICIAIRE;nomBeneficiaire
+Nom du beneficiaire;nomBeneficiaire
+Nom du bénéficiaire;nomBeneficiaire
+beneficiaire_nom;nomBeneficiaire
+beneficiaire;nomBeneficiaire
+designation_du_beneficiaire;nomBeneficiaire
+Aide d'Etat (ou pas) notifiée à l'UE;notificationUE
+Notification a l'Union Europeenne;notificationUE
+Aide d’Etat notifié à la Commission européenne;notificationUE
+Objet de la subvention;objet
+objet_du_dossier;objet
+Objet ;objet
+objet_de_la_subvention;objet
+% du mt de la subvention attribuée au bénéficiaire;pourcentageSubvention
+Pourcentage Subvention;pourcentageSubvention
+Pourcentage du montant de la subvention attribuée au bénéficiaire;pourcentageSubvention
+Référence de la décision;referenceDecision
+Raison sociale (SIRENE);rnaBeneficiaire

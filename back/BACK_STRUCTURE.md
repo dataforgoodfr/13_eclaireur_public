@@ -1,0 +1,19 @@
+# Structure du projet - Partie Backend
+- `back/`
+    - `data/`: dossier pour stocker les données du projet, organisées en sous-dossiers
+        - `communities/`: informations sur les collectivités
+        - `datasets/`: données récupérées et filtrées
+        - `processed_data/`: données traitées et prêtes pour l'analyse
+    - `scripts/`: dossier pour les scripts Python du projet, organisés en sous-dossiers
+        - `workflow/` : script gérant le workflow général
+        - `communities/`: scripts pour la gestion des collectivités
+        - `datasets/`: scripts pour le scrapping et le filtrage des données
+        - `data_processing/`: scripts pour le traitement des données
+        - `analysis/`: scripts pour l'analyse des données (vide à date)
+        - `loaders/`: scripts de téléchargement de fichiers 
+        - `utils/`: scripts utilitaires et helpers
+    - `main.py`: script principal pour exécuter les scripts du projet
+    - `config.yaml`: fichier de configuration pour faire tourner `main.py`.
+    - `requirements.txt`: fichier contenant les dépendances Python
+    - `.gitignore`: fichier contenant les références ignorées par git
+    - `BACK_STRUCTURE.md`: ce fichier

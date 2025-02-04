@@ -1,0 +1,122 @@
+workflow:
+  save_to_db: False
+
+communities:
+  ofgl:
+    url:
+      regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+      departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+      communes: https://data.ofgl.fr/explore/dataset/ofgl-base-communes-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_name=true&disjunctive.epci_name=true&disjunctive.tranche_population=true&disjunctive.tranche_revenu_imposable_par_habitant=true&disjunctive.com_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+      interco: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+    dtype:
+      Code Insee 2021 Région: str
+      Code Insee 2021 Département: str
+      Code Insee 2021 Commune: str
+    processed_data:
+      path: data/communities/processed_data
+      filename: ofgl_data.csv
+
+    epci:
+      file: data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
+      dtype:
+        siren: str
+        siren_membre: str
+    processed_data_folder: data/communities/processed_data/
+
+  odf:
+    url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
+    dtype:
+      siren: str
+    processed_data:
+      path: data/communities/processed_data
+      filename: odf_data.csv
+
+  sirene:
+    path: data/communities/
+    filename: scrapped_data/sirene/download_20230413.csv
+    columns:
+      - "siren"
+      - "trancheEffectifsUniteLegale"
+
+  geolocator:
+    epci_coord_url : https://www.data.gouv.fr/fr/datasets/r/c4cdd239-c82d-41ac-b0fb-530cccbab108
+    communes_id_url : https://www.data.gouv.fr/fr/datasets/r/863a5d6f-cc5c-40e0-a349-8a15719cb25e
+
+datagouv:
+  datasets:
+    url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
+    columns:
+      - "id"
+      - "title"
+      - "url"
+      - "description"
+      - "organization"
+      - "organization_id"
+      - "frequency"
+  datafiles:
+    url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
+
+search:
+  subventions:
+    source: "multiple"
+    title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
+    description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
+    api:
+      url: "https://www.data.gouv.fr/api/1/datasets/"
+      title:
+        - "association"
+        - "subvention"
+        - "intervention"
+        - "aide"
+        - "versement"
+      description:
+        - "association"
+        - "subvention"
+        - "intervention"
+        - "aide"
+        - "versement"
+      columns:
+        - "montant"
+    schema:
+      url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
+    single_urls_file: single_urls.csv
+    schema_dict_file: dataset_dict.csv
+  marches_publics:
+    source: "single"
+    unified_dataset:
+      url: "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
+      root: "marches"
+    schema:
+      url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
+      name: "marche"
+
+datafile_loader:
+  file_info_columns:
+    - "siren"
+    - "organization"
+    - "title"
+    - "created_at"
+    - "url"
+    - "nom"
+    - "type"
+    - "source"
+
+logging:
+  version: 1
+  formatters:
+    simple:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: simple
+      stream: ext://sys.stdout
+    file:
+      class: logging.FileHandler
+      level: DEBUG
+      formatter: simple
+      filename: data/logs/log.txt
+  root:
+    level: DEBUG
+    handlers: [console, file]
