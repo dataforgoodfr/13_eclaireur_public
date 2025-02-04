@@ -50,13 +50,13 @@ class OfglLoader():
     def process_data(self, df, key, epci_communes_mapping=None):
         # Process the data: keep only the relevant columns and rename them
         if key == 'regions':
-            df = df[['Code Insee 2022 Région', 'Nom 2022 Région', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
+            df = df[['Code Insee 2023 Région', 'Nom 2023 Région', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
             df.columns = ['COG', 'nom', 'type', 'SIREN', 'population']
             df = df.astype({'SIREN': str, 'COG': str})
             df = df.sort_values('COG')
             
         elif key == 'departements':
-            df = df[['Code Insee 2022 Région', 'Code Insee 2022 Département', 'Nom 2022 Département', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
+            df = df[['Code Insee 2023 Région', 'Code Insee 2023 Département', 'Nom 2023 Département', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
             df.columns = ['code_region', 'COG', 'nom', 'type', 'SIREN', 'population']
             df.loc[:, 'type'] = 'DEP'
             df = df.astype({'SIREN': str, 'COG': str, 'code_region': str})
@@ -65,7 +65,7 @@ class OfglLoader():
             df = df.sort_values('COG')
             
         elif key == 'communes':
-            df = df[['Code Insee 2022 Région', 'Code Insee 2022 Département', 'Code Insee 2022 Commune', 'Nom 2022 Commune', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
+            df = df[['Code Insee 2023 Région', 'Code Insee 2023 Département', 'Code Insee 2023 Commune', 'Nom 2023 Commune', 'Catégorie', 'Code Siren Collectivité', 'Population totale']]
             df.columns = ['code_region', 'code_departement', 'COG', 'nom', 'type', 'SIREN', 'population']
             df.loc[:, 'type'] = 'COM'
             df = df.astype({'SIREN': str, 'COG': str, 'code_departement': str})
@@ -77,7 +77,7 @@ class OfglLoader():
             df.rename(columns={'siren': 'EPCI'}, inplace=True)
             
         elif key == 'interco':
-            df = df[['Code Insee 2022 Région', 'Code Insee 2022 Département', 'Nature juridique 2022 abrégée', 'Code Siren 2022 EPCI', 'Nom 2022 EPCI', 'Population totale']]
+            df = df[['Code Insee 2023 Région', 'Code Insee 2023 Département', 'Nature juridique 2023 abrégée', 'Code Siren 2023 EPCI', 'Nom 2023 EPCI', 'Population totale']]
             df.columns = ['code_region', 'code_departement', 'type', 'SIREN', 'nom', 'population']
             df.loc[:, 'type'] = df['type'].replace({'MET69': 'MET', 'MET75': 'MET', 'M': 'MET'})
             df = df.astype({'SIREN': str, 'code_departement': str})
