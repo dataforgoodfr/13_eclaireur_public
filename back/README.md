@@ -65,10 +65,6 @@ git clone https://github.com/dataforgoodfr/13_eclaireur_public.git
 ### Environnement de développement
 
 
-<span style="color: darkred;"> **ATTENTION:** En raison d'une incompatiblité entre la version actuelle d'une librairie (pre-commit-hooks-safety) et poetry 2.0.0, il est nécéssaire de forcer la version de poetry à 1.8.5.</span>
-
-
-
 Plusieurs [méthodes d'installation](https://python-poetry.org/docs/#installation) sont décrites dans la documentation de poetry dont:
 
 - avec pipx
@@ -97,7 +93,7 @@ Pour macos:
 
 [Installer Poetry avec pipx](https://python-poetry.org/docs/#installing-with-pipx):
 
-    pipx install poetry==1.8.5
+    pipx install poetry
 
 
 
