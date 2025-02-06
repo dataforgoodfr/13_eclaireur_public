@@ -59,9 +59,6 @@ L'intégralité du contenu du dossier ./back/ concerne la partie backend du proj
 ``` bash
 # Copier le repo en local
 git clone https://github.com/dataforgoodfr/13_eclaireur_public.git
-
-# Naviguer sur la partie back du projet
-cd ./13_eclaireur_public/back
 ```
 
 
