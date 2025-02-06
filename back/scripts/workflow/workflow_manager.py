@@ -11,7 +11,14 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.utils.psql_connector import PSQLConnector
 from scripts.utils.config import get_project_base_path
 from scripts.utils.files_operation import save_csv
-from scripts.utils.constants import FILES_IN_SCOPE_FILENAME, NORMALIZED_DATA_FILENAME, DATAFILES_OUT_FILENAME, DATACOLUMNS_OUT_FILENAME, MODIFICATIONS_DATA_FILENAME
+from scripts.utils.constants import (
+    FILES_IN_SCOPE_FILENAME,
+    NORMALIZED_DATA_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    DATACOLUMNS_OUT_FILENAME,
+    MODIFICATIONS_DATA_FILENAME,
+)
+
 
 class WorkflowManager:
     def __init__(self, args, config):
@@ -27,34 +34,33 @@ class WorkflowManager:
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
-
         # Build communities scope, and add selected communities to df_to_save
         communities_selector = self.initialize_communities_scope(df_to_save_to_db)
 
         # Loop through the topics defined in the config
-        for topic, topic_config in self.config['search'].items():
+        for topic, topic_config in self.config["search"].items():
             # Process each topic to get files in scope and datafiles
-            topic_files_in_scope, topic_datafiles = self.process_topic(communities_selector, topic, topic_config)
+            topic_files_in_scope, topic_datafiles = self.process_topic(
+                communities_selector, topic, topic_config
+            )
 
             # Save the topics outputs to csv
             self.save_output_to_csv(
                 topic,
                 topic_datafiles.normalized_data,
                 topic_files_in_scope,
-                getattr(topic_datafiles, 'datacolumns_out', None),
-                getattr(topic_datafiles, 'datafiles_out', None),
-                getattr(topic_datafiles, 'modifications_data', None)
+                getattr(topic_datafiles, "datacolumns_out", None),
+                getattr(topic_datafiles, "datafiles_out", None),
+                getattr(topic_datafiles, "modifications_data", None),
             )
             # Add normalized data of the topic to df_to_save
-            df_to_save_to_db[topic+"_normalized"] = topic_datafiles.normalized_data
+            df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
 
         # Save data to the database if the config allows it
         if self.config["workflow"]["save_to_db"]:
             self.save_data_to_db(df_to_save_to_db)
 
         self.logger.info("Workflow completed.")
-
-
 
     def check_file_age(self, config):
         """
@@ -67,12 +73,14 @@ class WorkflowManager:
                 filepath = Path(filepath)
                 last_modified = datetime.fromtimestamp(filepath.stat().st_mtime)
                 age_in_days = (datetime.now() - last_modified).days
-                self.logger.info(f"Found: {filename} at {filepath}, last update: {last_modified}, age: {age_in_days} days")
+                self.logger.info(
+                    f"Found: {filename} at {filepath}, last update: {last_modified}, age: {age_in_days} days"
+                )
 
                 if age_in_days > max_age_in_days:
-                    self.logger.warning(f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data.")
-
-
+                    self.logger.warning(
+                        f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
+                    )
 
     def initialize_communities_scope(self, df_to_save_to_db):
         self.logger.info("Initializing communities scope.")
@@ -87,7 +95,7 @@ class WorkflowManager:
         self.logger.info(f"Processing topic {topic}.")
         topic_files_in_scope = None
 
-        if topic_config['source'] == 'multiple':
+        if topic_config["source"] == "multiple":
             # Find multiple datafiles from datagouv
             datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
             datagouv_topic_files_in_scope = datagouv_searcher.get_datafiles(topic_config)
@@ -97,21 +105,36 @@ class WorkflowManager:
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
 
             # Concatenate both datafiles lists into one
-            topic_files_in_scope = pd.concat([datagouv_topic_files_in_scope, single_urls_topic_files_in_scope], ignore_index=True)
+            topic_files_in_scope = pd.concat(
+                [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
+                ignore_index=True,
+            )
 
             # Process the datafiles list: download & normalize
-            topic_datafiles = DatafilesLoader(topic_files_in_scope, topic, topic_config, self.config["datafile_loader"])
+            topic_datafiles = DatafilesLoader(
+                topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
+            )
 
-        elif topic_config['source'] == 'single':
+        elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
         self.logger.info(f"Topic {topic} processed.")
         return topic_files_in_scope, topic_datafiles
 
-    def save_output_to_csv(self, topic, normalized_data, topic_files_in_scope=None, datacolumns_out=None, datafiles_out=None, modifications_data=None):
+    def save_output_to_csv(
+        self,
+        topic,
+        normalized_data,
+        topic_files_in_scope=None,
+        datacolumns_out=None,
+        datafiles_out=None,
+        modifications_data=None,
+    ):
         # Define the output folder path
-        output_folder = Path(get_project_base_path()) / "back" / "data" / "datasets" / topic / "outputs"
+        output_folder = (
+            Path(get_project_base_path()) / "back" / "data" / "datasets" / topic / "outputs"
+        )
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:

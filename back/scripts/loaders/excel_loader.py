@@ -4,10 +4,11 @@ from io import BytesIO
 from .base_loader import BaseLoader
 from scripts.utils.dataframe_operation import detect_skiprows, detect_skipcolumns
 
+
 class ExcelLoader(BaseLoader):
-    '''
+    """
     Loader for Excel files.
-    '''
+    """
 
     def __init__(self, file_url, dtype=None, columns_to_keep=None, **kwargs):
         super().__init__(file_url, **kwargs)

@@ -12,7 +12,8 @@ from scripts.utils.files_operation import save_csv
 from scripts.utils.config import get_project_base_path
 from scripts.utils.geolocator import GeoLocator
 
-class CommunitiesSelector():
+
+class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
@@ -28,6 +29,7 @@ class CommunitiesSelector():
     5. Add geocoordinates to selected data
     6. Save all and selected data to CSV
     """
+
     _instance = None
     _init_done = False
 
@@ -38,7 +40,7 @@ class CommunitiesSelector():
         return cls._instance
 
     # Constructor TODO: Refactor, too many responsibilities
-    def __init__(self,config):
+    def __init__(self, config):
         # Singleton pattern
         if self._init_done:
             return
@@ -59,49 +61,82 @@ class CommunitiesSelector():
         ofgl_data["siren"] = ofgl_data["siren"].fillna(0).astype(int)
         odf_data["siren"] = pd.to_numeric(odf_data["siren"], errors="coerce")
         odf_data["siren"] = odf_data["siren"].fillna(0).astype(int)
-        all_data = ofgl_data.merge(odf_data[['siren', 'url_ptf', 'url_datagouv', 'id_datagouv', 'merge', 'ptf']], on='siren', how='left')
-        all_data = all_data[['nom', 'siren', 'type', 'cog', 'cog_3digits', 'code_departement', 'code_departement_3digits', 'code_region', 'population', 'epci', 'url_ptf', 'url_datagouv', 'id_datagouv', 'merge', 'ptf']]
+        all_data = ofgl_data.merge(
+            odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
+            on="siren",
+            how="left",
+        )
+        all_data = all_data[
+            [
+                "nom",
+                "siren",
+                "type",
+                "cog",
+                "cog_3digits",
+                "code_departement",
+                "code_departement_3digits",
+                "code_region",
+                "population",
+                "epci",
+                "url_ptf",
+                "url_datagouv",
+                "id_datagouv",
+                "merge",
+                "ptf",
+            ]
+        ]
 
         # Merge Sirene data on 'siren' column
-        all_data['siren'] = pd.to_numeric(all_data['siren'], errors='coerce')
+        all_data["siren"] = pd.to_numeric(all_data["siren"], errors="coerce")
         all_data["siren"] = all_data["siren"].fillna(0).astype(int)
-        all_data = all_data.merge(sirene.get(), on='siren', how='left')
+        all_data = all_data.merge(sirene.get(), on="siren", how="left")
 
         # Conversion of the 'trancheEffectifsUniteLegale' and 'population' columns to numeric type
-        all_data['trancheEffectifsUniteLegale'] = pd.to_numeric(all_data['trancheEffectifsUniteLegale'].astype(str), errors='coerce')
-        all_data['population'] = pd.to_numeric(all_data['population'].astype(str), errors='coerce')
+        all_data["trancheEffectifsUniteLegale"] = pd.to_numeric(
+            all_data["trancheEffectifsUniteLegale"].astype(str), errors="coerce"
+        )
+        all_data["population"] = pd.to_numeric(
+            all_data["population"].astype(str), errors="coerce"
+        )
 
         # Add the variable EffectifsSup50, default legal filter for open data application (50 FTE employees)
-        all_data['EffectifsSup50'] = np.where(all_data['trancheEffectifsUniteLegale'] > 15, True, False)
+        all_data["EffectifsSup50"] = np.where(
+            all_data["trancheEffectifsUniteLegale"] > 15, True, False
+        )
 
-        #Save all communities data to instance
+        # Save all communities data to instance
         self.all_data = all_data
 
-        #Copy all data to selected data before filtering (useful?)
-        #Filter based on law
+        # Copy all data to selected data before filtering (useful?)
+        # Filter based on law
         selected_data = all_data.copy()
         selected_data = selected_data.loc[
-                        (self.all_data['type'] != 'COM') |
-                        ((self.all_data['type'] == 'COM') &
-                        (self.all_data['population'] >= 3500) &
-                        self.all_data['EffectifsSup50'])
-                        ]
+            (self.all_data["type"] != "COM")
+            | (
+                (self.all_data["type"] == "COM")
+                & (self.all_data["population"] >= 3500)
+                & self.all_data["EffectifsSup50"]
+            )
+        ]
 
         # Add geocoordinates to selected data
         geolocator = GeoLocator(config["geolocator"])
         selected_data = geolocator.add_geocoordinates(selected_data)
-        selected_data.columns = [re.sub(r"[.-]", "_", col.lower()) for col in selected_data.columns] # to adjust column for SQL format and ensure consistency
+        selected_data.columns = [
+            re.sub(r"[.-]", "_", col.lower()) for col in selected_data.columns
+        ]  # to adjust column for SQL format and ensure consistency
         self.selected_data = selected_data
 
         # Save all data & selected data to CSV
-        data_folder = Path(get_project_base_path()) / "back" / "data" / "communities" / "processed_data"
+        data_folder = (
+            Path(get_project_base_path()) / "back" / "data" / "communities" / "processed_data"
+        )
         all_data_filename = "all_communities_data.csv"
         selected_data_filename = "selected_communities_data.csv"
         save_csv(all_data, data_folder, all_data_filename, sep=";")
         save_csv(selected_data, data_folder, selected_data_filename, sep=";")
 
         self._init_done = True
-
 
     def get_datagouv_ids(self):
         """
@@ -111,12 +146,18 @@ class CommunitiesSelector():
             DataFrame: Filtered data containing 'siren' and 'id_datagouv' for valid entries.
         """
         new_instance = self.selected_data.copy()
-        datagouv_ids = new_instance[new_instance["id_datagouv"].notnull()][["siren", "id_datagouv"]]
-        return datagouv_ids # return a dataframe with siren and id_datagouv columns
+        datagouv_ids = new_instance[new_instance["id_datagouv"].notnull()][
+            ["siren", "id_datagouv"]
+        ]
+        return datagouv_ids  # return a dataframe with siren and id_datagouv columns
 
     # Function to retrieve rows with non-null 'siren', returning a DataFrame with 'siren', 'nom', and 'type' columns.
     def get_selected_ids(self):
         new_instance = self.selected_data.copy()
-        selected_data_ids = new_instance[new_instance["siren"].notnull()][["siren", "nom", "type"]]
-        selected_data_ids.drop_duplicates(subset=['siren'], keep='first', inplace=True)   # keep only the first duplicated value TODO to be improved
-        return selected_data_ids # return a dataframe with siren and & basic info
+        selected_data_ids = new_instance[new_instance["siren"].notnull()][
+            ["siren", "nom", "type"]
+        ]
+        selected_data_ids.drop_duplicates(
+            subset=["siren"], keep="first", inplace=True
+        )  # keep only the first duplicated value TODO to be improved
+        return selected_data_ids  # return a dataframe with siren and & basic info
