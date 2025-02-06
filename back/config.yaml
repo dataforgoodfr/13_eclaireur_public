@@ -124,7 +124,7 @@ logging:
       class: logging.FileHandler
       level: DEBUG
       formatter: simple
-      filename: data/logs/log.txt
+      filename: back/data/logs/log.txt
   root:
     level: DEBUG
     handlers: [console, file]
