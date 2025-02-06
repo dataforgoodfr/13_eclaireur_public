@@ -10,7 +10,7 @@ class ArgumentParser:
         parser.add_argument("--filename",
                             type = str,
                             required = False,
-                            default = "./config.yaml",
+                            default = "./back/config.yaml",
                             help = "Chemin vers le fichier de configuration, format yaml")   
         
         args = parser.parse_args()
