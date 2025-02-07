@@ -22,6 +22,7 @@ jobs:
           # Debug Step: Print the environment variables
           - name: Debug environment variables
             run: |
+              cd $APP_FOLDER
               echo "CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}"
               echo "CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}"
               echo "ORGA_ID: ${{ secrets.ORGA_ID }}"
@@ -34,6 +35,7 @@ jobs:
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
                 ORGA_ID: ${{ secrets.ORGA_ID }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                APP_FOLDER: "front"
             with:
                 type: node
                 set-env: true
