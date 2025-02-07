@@ -2,6 +2,8 @@ on:
     pull_request_target:
       types: [opened, closed, synchronize, reopened]
       branches: [ main ]
+      paths:
+      - 'front/**'
 
 jobs: 
     deploy:
@@ -13,7 +15,7 @@ jobs:
             contents: read
         steps:
           - name: Create review app
-            uses: CleverCloud/clever-cloud-review-app
+            uses: CleverCloud/clever-cloud-review-app@main
             env:
                 CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
