@@ -35,6 +35,7 @@ jobs:
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
                 ORGA_ID: ${{ secrets.ORGA_ID }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GH_CC_RUN_SUCCEEDED_HOOK: ${{ secrets.CC_RUN_SUCCEEDED_HOOK}}
                 APP_FOLDER: "front"
             with:
                 type: node
