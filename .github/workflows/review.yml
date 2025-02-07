@@ -14,14 +14,11 @@ jobs:
             pull-requests: write
             contents: read
         steps:
-          - uses: actions/checkout@v4
-            if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' }}
+          - name: Checkout repository
+            uses: actions/checkout@v4
             with:
-              repository: ${{ github.event.pull_request.head.repo.full_name }}
-              ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
-              fetch-depth: 0
-
+          
           # Debug Step: Print the environment variables
           - name: Debug environment variables
             run: |
@@ -38,8 +35,14 @@ jobs:
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
                 ORGA_ID: ${{ secrets.ORGA_ID }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                GH_CC_RUN_SUCCEEDED_HOOK: ${{ secrets.CC_RUN_SUCCEEDED_HOOK}}
-                APP_FOLDER: "front"
+                GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
+                GH_CC_CACHE_DEPENDENCIES: ${{secrets.CC_CACHE_DEPENDENCIES}}
+                GH_CC_CGI_IMPLEMENTATION: ${{secrets.CC_CGI_IMPLEMENTATION}}
+                GH_CC_NODE_DEV_DEPENDENCIES: ${{secrets.CC_NODE_DEV_DEPENDENCIES}}
+                GH_CC_WEBROOT: ${{secrets.CC_WEBROOT}}
+                GH_HOST: ${{secrets.HOST}}
+                GH_NODE_ENV : ${{secrets.NODE_ENV}}
+                GH_PORT: ${{secrets.PORT}}
             with:
                 type: node
                 set-env: true
