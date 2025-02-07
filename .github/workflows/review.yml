@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'front/**'  # Deploy only when Front/ changes
+      - 'Front/**'  # Deploy only when Front/ changes
   pull_request_target:
     types: [closed]  # Cleanup when PR is merged or closed
 
@@ -17,10 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - name: Install Clever Cloud CLI
+      - name: Install Clever Cloud CLI (Using Yarn)
         run: yarn global add clever-tools
 
       - name: Deploy to Clever Cloud
@@ -38,10 +35,7 @@ jobs:
     if: github.event.action == 'closed'  # Run only when PR is closed/merged
     runs-on: ubuntu-latest
     steps:
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - name: Install Clever Cloud CLI
+      - name: Install Clever Cloud CLI (Using Yarn)
         run: yarn global add clever-tools
 
       - name: Delete Deployment on PR Close
