@@ -14,8 +14,21 @@ jobs:
             pull-requests: write
             contents: read
         steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+              token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Debug Step: Print the environment variables
+          - name: Debug environment variables
+            run: |
+              echo "CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}"
+              echo "CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}"
+              echo "ORGA_ID: ${{ secrets.ORGA_ID }}"
+              echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+    
           - name: Create review app
-            uses: CleverCloud/clever-cloud-review-app@main
+            uses: CleverCloud/clever-cloud-review-app@v1.1.1
             env:
                 CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
