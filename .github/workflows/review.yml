@@ -1,0 +1,32 @@
+name: Deploy Frontend on PR
+
+on:
+  pull_request:
+    paths:
+      - 'front/**'  # Deploy only when Front/ changes
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Yarn
+        run: npm install -g yarn  # Ensure Yarn is installed
+
+      - name: Install Clever Cloud CLI (Using Yarn)
+        run: yarn global add clever-tools
+
+      - name: Deploy to Clever Cloud
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+        run: |
+          export PATH=$(yarn global bin):$PATH
+          cd Front
+          clever link 13_eclaireur_public
+          clever deploy --branch "${{ github.head_ref }}"
