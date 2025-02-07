@@ -13,7 +13,7 @@ jobs:
             contents: read
         steps:
           - name: Create review app
-            uses: CleverCloud/clever-cloud-review-app@latest
+            uses: CleverCloud/clever-cloud-review-app
             env:
                 CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
@@ -22,4 +22,3 @@ jobs:
             with:
                 type: node
                 set-env: true
-                path: 'front' 
