@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'Front/**'  # Deploy only when Front/ changes
+      - 'front/**'  # Deploy only when Front/ changes
   pull_request_target:
     types: [closed]  # Cleanup when PR is merged or closed
 
