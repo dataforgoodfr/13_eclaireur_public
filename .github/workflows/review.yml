@@ -29,7 +29,7 @@ jobs:
           export PATH=$(yarn global bin):$PATH
           cd front
           clever link "$ORGA_ID"
-          clever deploy --branch "${{ github.head_ref }}"
+          clever deploy --branch "${{ github.head_ref || github.ref_name }}"
 
   cleanup:
     name: Remove PR Deployment
@@ -48,4 +48,4 @@ jobs:
           export PATH=$(yarn global bin):$PATH
           clever link "$ORGA_ID"
           clever scale --force 0  # Scale down the deployment
-          clever cancel-deployment "${{ github.head_ref }}" || echo "Deployment not found"
+          clever cancel-deployment "${{ github.head_ref || github.ref_name }}" || echo "Deployment not found"
