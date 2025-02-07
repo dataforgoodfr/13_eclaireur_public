@@ -1,51 +1,25 @@
-name: Deploy Frontend on PR
-
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'front/**'  # Deploy only when Front/ changes
-  pull_request_target:
-    types: [closed]  # Cleanup when PR is merged or closed
+    pull_request_target:
+      types: [opened, closed, synchronize, reopened]
+      branches: [ main ]
 
-jobs:
-  deploy:
-    name: Deploy Frontend PR
-    if: github.event.action != 'closed'  # Run only when PR is open or updated
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Clever Cloud CLI (Using Yarn)
-        run: yarn global add clever-tools
-
-      - name: Deploy to Clever Cloud
-        env:
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          ORGA_ID: ${{secrets.ORGA_ID}}
-        run: |
-          export PATH=$(yarn global bin):$PATH
-          cd front
-          clever link "$ORGA_ID"
-          clever deploy --branch "${{ github.head_ref }}"
-
-  cleanup:
-    name: Remove PR Deployment
-    if: github.event.action == 'closed'  # Run only when PR is closed/merged
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Clever Cloud CLI (Using Yarn)
-        run: yarn global add clever-tools
-
-      - name: Delete Deployment on PR Close
-        env:
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          ORGA_ID: ${{secrets.ORGA_ID}}
-        run: |
-          export PATH=$(yarn global bin):$PATH
-          clever link "$ORGA_ID"
-          clever scale --force 0  # Scale down the deployment
-          clever cancel-deployment "${{ github.head_ref }}" || echo "Deployment not found"
+jobs: 
+    deploy:
+        name: Deploy/redeploy review app
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
+            contents: read
+        steps:
+          - name: Create review app
+            uses: CleverCloud/clever-cloud-review-app@latest
+            env:
+                CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+                CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+                ORGA_ID: ${{ secrets.ORGA_ID }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            with:
+                type: node
+                set-env: true
+                path: 'front' 
