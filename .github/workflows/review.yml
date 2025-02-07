@@ -24,10 +24,11 @@ jobs:
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          ORGA_ID: ${{secrets.ORGA_ID}}
         run: |
           export PATH=$(yarn global bin):$PATH
           cd front
-          clever link 13_eclaireur_public
+          clever link "$ORGA_ID"
           clever deploy --branch "${{ github.head_ref }}"
 
   cleanup:
@@ -42,8 +43,9 @@ jobs:
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          ORGA_ID: ${{secrets.ORGA_ID}}
         run: |
           export PATH=$(yarn global bin):$PATH
-          clever link 13_eclaireur_public
+          clever link "$ORGA_ID"
           clever scale --force 0  # Scale down the deployment
           clever cancel-deployment "${{ github.head_ref }}" || echo "Deployment not found"
