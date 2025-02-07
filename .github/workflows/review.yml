@@ -21,4 +21,5 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             with:
                 type: node
-                set-env: true 
+                set-env: true
+                path: 'front' 
