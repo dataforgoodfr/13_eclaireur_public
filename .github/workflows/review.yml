@@ -26,7 +26,7 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
         run: |
           export PATH=$(yarn global bin):$PATH
-          cd Front
+          cd front
           clever link 13_eclaireur_public
           clever deploy --branch "${{ github.head_ref }}"
 
