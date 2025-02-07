@@ -14,11 +14,14 @@ jobs:
             pull-requests: write
             contents: read
         steps:
-          - name: Checkout repository
-            uses: actions/checkout@v4
+          - uses: actions/checkout@v4
+            if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' }}
             with:
+              repository: ${{ github.event.pull_request.head.repo.full_name }}
+              ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
-          
+              fetch-depth: 0
+
           # Debug Step: Print the environment variables
           - name: Debug environment variables
             run: |
