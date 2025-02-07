@@ -2,23 +2,25 @@ name: Deploy Frontend on PR
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - 'front/**'  # Deploy only when Front/ changes
-  push:
-    branches:
-      - main
+  pull_request_target:
+    types: [closed]  # Cleanup when PR is merged or closed
 
 jobs:
   deploy:
+    name: Deploy Frontend PR
+    if: github.event.action != 'closed'  # Run only when PR is open or updated
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Yarn
-        run: npm install -g yarn  # Ensure Yarn is installed
+        run: npm install -g yarn
 
-      - name: Install Clever Cloud CLI (Using Yarn)
+      - name: Install Clever Cloud CLI
         run: yarn global add clever-tools
 
       - name: Deploy to Clever Cloud
@@ -30,3 +32,24 @@ jobs:
           cd Front
           clever link 13_eclaireur_public
           clever deploy --branch "${{ github.head_ref }}"
+
+  cleanup:
+    name: Remove PR Deployment
+    if: github.event.action == 'closed'  # Run only when PR is closed/merged
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install Clever Cloud CLI
+        run: yarn global add clever-tools
+
+      - name: Delete Deployment on PR Close
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+        run: |
+          export PATH=$(yarn global bin):$PATH
+          clever link 13_eclaireur_public
+          clever scale --force 0  # Scale down the deployment
+          clever cancel-deployment "${{ github.head_ref }}" || echo "Deployment not found"
