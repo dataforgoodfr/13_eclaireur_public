@@ -11,9 +11,12 @@
     "format": "prettier --write \"(components|app)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
   },
   "dependencies": {
+    "@types/pg": "^8.11.11",
+    "d3": "^7.9.0",
     "next": "15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
