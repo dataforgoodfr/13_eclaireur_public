@@ -87,8 +87,11 @@ class WorkflowManager:
         self.logger.info("Initializing communities scope.")
         # Initialize CommunitiesSelector with the config and select communities
         communities_selector = CommunitiesSelector(self.config["communities"])
+
         # Add selected communities data to df_to_save
-        df_to_save_to_db["communities"] = communities_selector.selected_data
+        if self.config["workflow"]["save_to_db"]:
+            df_to_save_to_db["communities"] = communities_selector.selected_data
+
         self.logger.info("Communities scope initialized.")
         return communities_selector
 
