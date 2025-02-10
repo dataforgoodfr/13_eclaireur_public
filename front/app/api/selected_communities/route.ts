@@ -1,6 +1,9 @@
 // app/api/users/route.ts
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg'; // Assuming you're using PostgreSQL
+
+import { Pool } from 'pg';
+
+// Assuming you're using PostgreSQL
 
 // Set up the connection pool for PostgreSQL using environment variables
 const pool = new Pool({
@@ -16,16 +19,15 @@ type Community = {
   nom: string;
   type: string;
   population: string;
-  longitude: number
+  longitude: number;
   latitude: number;
-
 };
 
 // Named export for the GET method
 export async function GET() {
   try {
     const { rows } = await pool.query<Community>('SELECT * FROM selected_communities');
-    return NextResponse.json(rows); 
+    return NextResponse.json(rows);
   } catch (error) {
     console.error('Error fetching data from database:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
