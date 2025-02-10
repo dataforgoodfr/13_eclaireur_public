@@ -11,6 +11,10 @@
     "format": "prettier --write \"(components|app)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
   },
   "dependencies": {
+    "@deck.gl/core": "^9.1.0",
+    "@deck.gl/layers": "^9.1.0",
+    "@deck.gl/react": "^9.1.0",
+    "@deck.gl/widgets": "^9.1.0",
     "@types/pg": "^8.11.11",
     "d3": "^7.9.0",
     "next": "15.1.6",
