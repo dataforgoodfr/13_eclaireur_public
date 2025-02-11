@@ -46,11 +46,7 @@ class CommunitiesSelector:
         self.logger = logging.getLogger(__name__)
 
         data_folder = (
-            Path(get_project_base_path())
-            / "back"
-            / "data"
-            / "communities"
-            / "processed_data"
+            Path(get_project_base_path()) / "data" / "communities" / "processed_data"
         )
         fn = data_folder / "all_communities_data.parquet"
         if fn.exists():
