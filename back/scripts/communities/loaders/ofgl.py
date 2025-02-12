@@ -29,7 +29,7 @@ class OfglLoader:
         epci_communes_mapping = pd.read_excel(
             epci_communes_path, dtype=self._config["epci"]["dtype"]
         )
-        infos_coll = pd.DataFrame()
+        dataframes = []
 
         # Loop over the different collectivities type (regions, departements, communes, interco)
         for key, url in self._config["url"].items():
@@ -48,22 +48,21 @@ class OfglLoader:
             else:
                 raise ValueError("Unknown key", key)
 
-            # Concatenate the dataframes
-            infos_coll = pd.concat([infos_coll, df], axis=0, ignore_index=True)
+            dataframes.append(df)
 
+        # Concatenate the dataframes
+        data = pd.concat(dataframes, axis=0, ignore_index=True)
         # Fill NaN values with np.nan
-        infos_coll.fillna(np.nan, inplace=True)
+        data.fillna(np.nan, inplace=True)
         # Save the processed data to the instance & a CSV file
-        data = infos_coll
-        self._save(
+        save_csv(
+            data,
             Path(self._config["processed_data"]["path"]),
             self._config["processed_data"]["filename"],
-            data,
+            sep=";",
+            index=True,
         )
         return data
-
-    def _save(self, path, filename, data):
-        save_csv(data, path, filename, sep=";", index=True)
 
     def _process_regions(self, df):
         df = df[
