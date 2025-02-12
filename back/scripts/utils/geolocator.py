@@ -1,4 +1,6 @@
+import io
 import logging
+import requests
 from pathlib import Path
 import pandas as pd
 
@@ -18,7 +20,6 @@ class GeoLocator:
         self._config = geo_config
 
     def _get_reg_dep_coords(self):
-        # Load the data only once during the instance initialization
         data_folder = (
             Path(get_project_base_path())
             / "back"
@@ -60,15 +61,74 @@ class GeoLocator:
     def _get_reg_dep_com_coords(self):
         return pd.concat([self._get_reg_dep_coords(), self._get_communes_coords()])
 
+    def _request_geolocator_api(self, request):
+        # save to CSV to send to API
+        folder = get_project_base_path() / self._config["processed_data_folder"]
+        payload_filename = folder / "cities_to_geolocate.csv"
+        request.to_csv(payload_filename, sep=";", index=False)
+
+        with open(payload_filename, "rb") as payload:
+            data = {
+                "citycode": "cog",
+                "result_columns": ["cog", "latitude", "longitude", "result_status"],
+            }
+
+            # Prepare the file payload
+            files = {"data": ("missing_cities_cogs.csv", payload, "text/csv")}
+
+            # Send the POST request
+            response = requests.post(self._config["geolocator_api_url"], data=data, files=files)
+
+            if response.status_code != 200:
+                raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
+
+            # Convert the CSV string to a pandas DataFrame
+            df = pd.read_csv(io.StringIO(response.text), sep=";")
+            df = df.loc[df["result_status"] == "ok"]
+            df = df[["cog", "latitude", "longitude"]]
+            df.loc[:, "type"] = "COM"
+            df = df.astype({"cog": str, "latitude": str, "longitude": str})
+            df["cog"] = df["cog"].str.zfill(5)
+
+            return df
+
     # Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes
     def add_geocoordinates(self, data_frame):
         # handle everything but EPCI
-        non_epci = data_frame.loc[data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])]
-        non_epci = non_epci.merge(
+        reg_dep_ctu = data_frame.loc[data_frame["type"].isin(["REG", "DEP", "CTU"])]
+        reg_dep_ctu = reg_dep_ctu.merge(
             self._get_reg_dep_com_coords(),
             on=["type", "cog"],
             how="left",
         )
+
+        # handle cities
+        cities = data_frame.loc[data_frame["type"] == "COM"]
+        cities = cities.merge(
+            self._get_reg_dep_com_coords(),
+            on=["type", "cog"],
+            how="left",
+        )
+
+        # handle missing cities by requesting the addresse.data.gouv API
+        # missing cities include cities with arrondissements. the OFGL dataset only include the main city but not the
+        # arrondissments, while the data returned by _get_communes_coords contains only arrondissements.
+
+        # first, identify found cities
+        found_cities = cities.loc[~cities["latitude"].isnull()]
+
+        # then missing cities
+        missing_cities = cities.loc[cities["latitude"].isnull()].drop(
+            columns=["latitude", "longitude"]
+        )
+
+        # make request to geolocator API and merge results
+        geolocator_response = self._request_geolocator_api(missing_cities[["cog", "nom"]])
+        geolocated_missing_cities = missing_cities.merge(
+            geolocator_response, on=["type", "cog"], how="left"
+        )
+        debug = geolocated_missing_cities.loc[geolocated_missing_cities["latitude"].isnull()]
+        self.logger.info(f"{debug}")
 
         # handle EPCI
         epci = data_frame.loc[~data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])]
@@ -78,5 +138,6 @@ class GeoLocator:
             how="left",
         )
 
-        df = pd.concat([non_epci, epci])
+        df = pd.concat([reg_dep_ctu, found_cities, geolocated_missing_cities, epci])
+
         return df
