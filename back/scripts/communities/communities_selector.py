@@ -46,19 +46,21 @@ class CommunitiesSelector:
         self.logger = logging.getLogger(__name__)
 
         data_folder = Path(get_project_base_path()) / "data" / "communities" / "processed_data"
-        fn = data_folder / "all_communities_data.parquet"
-        if fn.exists():
-            self.all_data = pd.read_parquet(fn)
+        all_communities_filename = data_folder / "all_communities_data.parquet"
+        if all_communities_filename.exists():
+            self.all_data = pd.read_parquet(all_communities_filename)
         else:
             self.load_all_communities()
-            self.all_data.to_parquet(fn)
+            self.all_data.to_parquet(all_communities_filename)
+            self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
 
-        fn = data_folder / "selected_communities_data.parquet"
-        if fn.exists():
-            self.selected_data = pd.read_parquet(fn)
+        selected_communities_filename = data_folder / "selected_communities_data.parquet"
+        if selected_communities_filename.exists():
+            self.selected_data = pd.read_parquet(selected_communities_filename)
         else:
             self.load_selected_communities()
-            self.selected_data.to_parquet(fn)
+            self.selected_data.to_parquet(selected_communities_filename)
+            self.all_data.to_csv(selected_communities_filename.with_suffix(".csv"), sep=";")
 
         self._init_done = True
 
