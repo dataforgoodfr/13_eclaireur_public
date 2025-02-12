@@ -54,17 +54,18 @@ class GeoLocator:
     def _request_geolocator_api(self, payload):
         # save to CSV to send to API
         folder = get_project_base_path() / self._config["processed_data_folder"]
-        payload_filename = folder / "cities_to_geolocate.csv"
-        payload.to_csv(payload_filename, sep=";", index=False)
+        payload_filename = "cities_to_geolocate.csv"
+        payload_path = folder / payload_filename
+        payload.to_csv(payload_path, sep=";", index=False)
 
-        with open(payload_filename, "rb") as payload_file:
+        with open(payload_path, "rb") as payload_file:
             data = {
                 "citycode": "cog",
                 "result_columns": ["cog", "latitude", "longitude", "result_status"],
             }
 
             # Prepare the file payload
-            files = {"data": ("missing_cities_cogs.csv", payload_file, "text/csv")}
+            files = {"data": (payload_filename, payload_file, "text/csv")}
 
             # Send the POST request
             response = requests.post(self._config["geolocator_api_url"], data=data, files=files)
