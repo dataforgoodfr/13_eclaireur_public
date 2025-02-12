@@ -17,7 +17,7 @@ class OfglLoader:
         else:
             base_path = get_project_base_path()
             # Load the mapping between EPCI and communes, downloaded from the OFGL website
-            epci_communes_path = base_path / "back" / config["epci"]["file"]
+            epci_communes_path = base_path / config["epci"]["file"]
             epci_communes_mapping = pd.read_excel(
                 epci_communes_path, dtype=config["epci"]["dtype"]
             )

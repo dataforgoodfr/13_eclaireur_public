@@ -122,9 +122,9 @@ class CommunitiesSelector:
         )
 
         # Save all communities data to instance
-        self.all_data = all_data
+        self.all_data = all_data.astype({"code_region": str})
 
-    def load_selected_data(self):
+    def load_selected_communities(self):
         selected_data = self.all_data.copy()
         selected_data = selected_data.loc[
             (self.all_data["type"] != "COM")
