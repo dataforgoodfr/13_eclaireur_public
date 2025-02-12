@@ -62,7 +62,9 @@ class CommunitiesSelector:
         else:
             self.load_selected_communities()
             self.selected_data.to_parquet(selected_communities_filename)
-            self.all_data.to_csv(selected_communities_filename.with_suffix(".csv"), sep=";")
+            self.selected_data.to_csv(
+                selected_communities_filename.with_suffix(".csv"), sep=";"
+            )
 
         self._init_done = True
 
