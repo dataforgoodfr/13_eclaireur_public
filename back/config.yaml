@@ -39,8 +39,7 @@ communities:
       - "trancheEffectifsUniteLegale"
 
   geolocator:
-    epci_coord_url : https://www.data.gouv.fr/fr/datasets/r/c4cdd239-c82d-41ac-b0fb-530cccbab108
-    communes_id_url : https://www.data.gouv.fr/fr/datasets/r/863a5d6f-cc5c-40e0-a349-8a15719cb25e
+    communes_coords_url: https://www.data.gouv.fr/fr/datasets/r/dbe8a621-a9c4-4bc3-9cae-be1699c5ff25
 
 datagouv:
   datasets:
