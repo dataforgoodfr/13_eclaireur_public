@@ -38,6 +38,14 @@ class GeoLocator:
         reg_dep_geoloc_df = reg_dep_geoloc_df.drop(columns=["nom"])
         return reg_dep_geoloc_df
 
+    def _get_epci_coords(self):
+        df = pd.read_csv(Path(self._config["epci_coords_scrapped_data_file"]), sep=";")
+        if df.empty:
+            raise Exception("EPCI coordinates file not found.")
+
+        df = df.drop(columns=["nom"])
+        return df
+
     def _get_communes_coords(self):
         communes_coords_loader = CSVLoader(self._config["communes_coords_url"])
         df = communes_coords_loader.load()
@@ -48,13 +56,27 @@ class GeoLocator:
         df.loc[:, "type"] = "COM"
         return df
 
-    def _get_communities_coords(self):
+    # get regions, departements, communes coordinates, for which we join on cog
+    def _get_reg_dep_com_coords(self):
         return pd.concat([self._get_reg_dep_coords(), self._get_communes_coords()])
 
     # Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes
     def add_geocoordinates(self, data_frame):
-        return data_frame.merge(
-            self._get_reg_dep_coords(),
+        # handle everything but EPCI
+        non_epci = data_frame.loc[data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])]
+        non_epci = non_epci.merge(
+            self._get_reg_dep_com_coords(),
             on=["type", "cog"],
             how="left",
         )
+
+        # handle EPCI
+        epci = data_frame.loc[~data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])]
+        epci = epci.merge(
+            self._get_epci_coords(),
+            on=["type", "siren"],
+            how="left",
+        )
+
+        df = pd.concat([non_epci, epci])
+        return df

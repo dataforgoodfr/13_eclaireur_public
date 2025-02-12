@@ -40,6 +40,7 @@ communities:
 
   geolocator:
     communes_coords_url: https://www.data.gouv.fr/fr/datasets/r/dbe8a621-a9c4-4bc3-9cae-be1699c5ff25
+    epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
 
 datagouv:
   datasets:
