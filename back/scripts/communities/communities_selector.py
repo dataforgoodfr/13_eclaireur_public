@@ -45,9 +45,7 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = (
-            Path(get_project_base_path()) / "data" / "communities" / "processed_data"
-        )
+        data_folder = Path(get_project_base_path()) / "data" / "communities" / "processed_data"
         fn = data_folder / "all_communities_data.parquet"
         if fn.exists():
             self.all_data = pd.read_parquet(fn)
@@ -81,9 +79,7 @@ class CommunitiesSelector:
         odf_data["siren"] = pd.to_numeric(odf_data["siren"], errors="coerce")
         odf_data["siren"] = odf_data["siren"].fillna(0).astype(int)
         all_data = ofgl_data.merge(
-            odf_data[
-                ["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]
-            ],
+            odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
             on="siren",
             how="left",
         )

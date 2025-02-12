@@ -13,26 +13,26 @@ communities:
       Code Insee 2021 Département: str
       Code Insee 2021 Commune: str
     processed_data:
-      path: data/communities/processed_data
+      path: back/data/communities/processed_data
       filename: ofgl_data.csv
 
     epci:
-      file: data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
+      file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
       dtype:
         siren: str
         siren_membre: str
-    processed_data_folder: data/communities/processed_data/
+    processed_data_folder: back/data/communities/processed_data/
 
   odf:
     url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
     dtype:
       siren: str
     processed_data:
-      path: data/communities/processed_data
+      path: back/data/communities/processed_data
       filename: odf_data.csv
 
   sirene:
-    path: data/communities/
+    path: back/data/communities/
     filename: scrapped_data/sirene/download_20230413.csv
     columns:
       - "siren"
@@ -103,9 +103,9 @@ datafile_loader:
 
 file_age_to_check:
   files:
-    odf_data: data/communities/processed_data/odf_data.csv
-    ofgl_data: data/communities/processed_data/ofgl_data.csv
-    sirene_base: data/communities/scrapped_data/sirene/download_20230413.csv
+    odf_data: back/data/communities/processed_data/odf_data.csv
+    ofgl_data: back/data/communities/processed_data/ofgl_data.csv
+    sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
   age: 365
 
 
@@ -124,7 +124,7 @@ logging:
       class: logging.FileHandler
       level: DEBUG
       formatter: simple
-      filename: data/logs/log.txt
+      filename: back/data/logs/log.txt
   root:
     level: DEBUG
     handlers: [console, file]

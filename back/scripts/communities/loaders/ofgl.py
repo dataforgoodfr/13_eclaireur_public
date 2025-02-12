@@ -161,9 +161,7 @@ class OfglLoader:
                 "nom",
                 "population",
             ]
-            df.loc[:, "type"] = df["type"].replace(
-                {"MET69": "MET", "MET75": "MET", "M": "MET"}
-            )
+            df.loc[:, "type"] = df["type"].replace({"MET69": "MET", "MET75": "MET", "M": "MET"})
             df = df.astype({"SIREN": str, "code_departement": str})
             df["code_departement_3digits"] = df["code_departement"].str.zfill(3)
             df = df[

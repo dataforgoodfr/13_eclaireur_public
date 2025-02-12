@@ -3,10 +3,11 @@ import requests
 import logging
 import re
 
+
 class BaseLoader:
-    '''
+    """
     Base class for data loaders.
-    '''
+    """
 
     def __init__(self, file_url, num_retries=3, delay_between_retries=5):
         # file_url : URL of the file to load
@@ -48,15 +49,17 @@ class BaseLoader:
 
         # Get the content type of the file from the headers
         response = requests.head(file_url)
-        content_type = response.headers.get('content-type')
+        content_type = response.headers.get("content-type")
         # logger.info(f"Content type : {content_type}")
 
         # Determine the loader based on the content type
-        if 'json' in content_type:
+        if "json" in content_type:
             return JSONLoader(file_url)
-        elif 'csv' in content_type:
+        elif "csv" in content_type:
             return CSVLoader(file_url, dtype, columns_to_keep)
-        elif re.search(r'(excel|spreadsheet|xls|xlsx)', content_type, re.IGNORECASE) or file_url.endswith(('.xls', '.xlsx')):
+        elif re.search(
+            r"(excel|spreadsheet|xls|xlsx)", content_type, re.IGNORECASE
+        ) or file_url.endswith((".xls", ".xlsx")):
             return ExcelLoader(file_url, dtype, columns_to_keep)
         else:
             logger = logging.getLogger(__name__)

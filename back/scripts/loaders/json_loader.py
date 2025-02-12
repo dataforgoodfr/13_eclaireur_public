@@ -2,10 +2,11 @@ import pandas as pd
 
 from .base_loader import BaseLoader
 
+
 class JSONLoader(BaseLoader):
-    '''
+    """
     Loader for JSON files.
-    '''
+    """
 
     def __init__(self, file_url, key=None, normalize=False, **kwargs):
         super().__init__(file_url, **kwargs)
