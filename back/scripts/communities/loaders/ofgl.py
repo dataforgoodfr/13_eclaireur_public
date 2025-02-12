@@ -1,11 +1,11 @@
 import logging
 from pathlib import Path
-import pandas as pd
-import numpy as np
 
-from scripts.utils.files_operation import save_csv
+import numpy as np
+import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
+from scripts.utils.files_operation import save_csv
 
 
 class OfglLoader:
