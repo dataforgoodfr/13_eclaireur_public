@@ -141,7 +141,5 @@ def flatten_data(data, chunk_size=10000):
         processed_chunk = [_flatten_row(row) for row in tqdm(chunk) if row is not None]
         df_chunk = pd.DataFrame(processed_chunk)
         chunks.append(df_chunk)
-    print("in")
     flattened_data = pd.concat(chunks, ignore_index=True)
-    print("out")
-    return flattened_data, pd.DataFrame()
+    return flattened_data

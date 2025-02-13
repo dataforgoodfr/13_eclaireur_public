@@ -128,16 +128,26 @@ class DatafileLoader:
 
     # Internal function to select data based on communities IDs
     def _select_data(self):
-        cleaned_data = self.cleaned_data.copy()
-        communities_data = self.communities_ids.copy()
-        # Add 'siren' column to cleaned_data
-        cleaned_data["siren"] = cleaned_data["acheteur.id"].str[:9].astype(str)
-        communities_data["siren"] = communities_data["siren"].astype(str)
+        cleaned_data = self.cleaned_data
+        communities_data = self.communities_ids
+
+        # Add 'siren_norm' column to cleaned_data
+        cleaned_data["siren_norm"] = cleaned_data["acheteur.id"].str[:9].astype(str)
+        self.communities_ids["siren_norm"] = self.communities_id[
+            "siren"
+        ].astype(str)
         # Merge cleaned_data with communities_data on 'siren' column, filtering out rows with NaN values
         selected_data = pd.merge(
-            cleaned_data, communities_data, on="siren", how="left", validate="many_to_one"
-        )
+            cleaned_data,
+            communities_data.drop(columns=["siren"]),
+            on="siren_norm",
+            how="left",
+            validate="many_to_one",
+        ).rename(columns={"siren_norm": "siren"})
         selected_data = selected_data.dropna(subset=["type"])
+
+        # drop siren_norm from communities_data as it's a shared df
+        communities_data.drop(columns=["siren_norm"], inplace=True)
 
         return selected_data
 
