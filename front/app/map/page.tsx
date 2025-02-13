@@ -1,11 +1,9 @@
-
-import FranceMap from "@/components/FranceMap";
+import FranceMap from '@/components/FranceMap copy';
 
 export default async function MapPage() {
-
   return (
-    <div>
-      <FranceMap/>
+    <div style={{ width: '500px', height: '500px' }}>
+      <FranceMap />
     </div>
   );
 }
