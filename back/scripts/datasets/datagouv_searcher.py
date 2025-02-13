@@ -77,26 +77,28 @@ class DataGouvSearcher:
             mask = df[column].isin(value)
         return mask if return_mask else df[mask]
 
-    # Internal function to filter a dataframe by a column and one or multiple values
     def _select_datasets_by_title_and_desc(self, title_filter, description_filter):
-        # Get the datasets that match the title and description filters
-        mask_desc = self.datasets_catalog["description"].str.contains(
+        """
+        Identify datasets of interest from the catalog by looking for keywords in
+        title and description.
+        """
+        flagged_by_description = self.datasets_catalog["description"].str.contains(
             description_filter, case=False, na=False
         )
         self.logger.info(
-            f"Nombre de datasets correspondant au filtre de description : {mask_desc.sum()}"
+            f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
-        mask_titles = self.datasets_catalog["title"].str.contains(
+        flagged_by_title = self.datasets_catalog["title"].str.contains(
             title_filter, case=False, na=False
         )
         self.logger.info(
-            f"Nombre de datasets correspondant au filtre de titre : {mask_titles.sum()}"
+            f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )
 
         return (
             self.datasets_catalog.loc[
-                (mask_titles | mask_desc),
+                (flagged_by_title | flagged_by_description),
                 ["siren", "id", "title", "description", "organization", "frequency"],
             ]
             .merge(
