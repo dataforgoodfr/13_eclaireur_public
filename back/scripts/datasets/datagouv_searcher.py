@@ -9,6 +9,8 @@ import requests
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
+from back.scripts.utils.config import get_project_base_path
+
 
 class DataGouvSearcher:
     """
@@ -31,9 +33,10 @@ class DataGouvSearcher:
         self.datagouv_ids_to_siren = self.scope.get_datagouv_ids()
         datagouv_ids_list = list(self.datagouv_ids_to_siren["id_datagouv"].unique())
 
-        fn = Path("catalog.parquet")
-        if fn.exists():
-            self.datasets_catalog = pd.read_parquet(fn)
+        data_folder = Path(get_project_base_path()) / "data" / "datagouv_search"
+        catalog_filename = data_folder / "datagouv_catalog.parquet"
+        if catalog_filename.exists():
+            self.datasets_catalog = pd.read_parquet(catalog_filename)
         else:
             dataset_catalog_loader = CSVLoader(
                 self._config["datasets"]["url"],
@@ -50,11 +53,11 @@ class DataGouvSearcher:
                 )
                 .drop(columns=["id_datagouv"])
             )
-            self.datasets_catalog.to_parquet(fn)
+            self.datasets_catalog.to_parquet(catalog_filename)
 
-        fn = Path("catalog_file.parquet")
-        if fn.exists():
-            self.datasets_metadata = pd.read_parquet(fn)
+        catalog_metadata_filename = data_folder / "catalog_metadata.parquet"
+        if catalog_metadata_filename.exists():
+            self.datasets_metadata = pd.read_parquet(catalog_metadata_filename)
         else:
             datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
             self.datasets_metadata = (
@@ -69,7 +72,7 @@ class DataGouvSearcher:
                 )
                 .drop(columns=["id_datagouv"])
             )
-            self.datasets_metadata.to_parquet(fn)
+            self.datasets_metadata.to_parquet(catalog_metadata_filename)
 
     def _select_datasets_by_title_and_desc(self, title_filter, description_filter):
         """
