@@ -18,8 +18,8 @@ class GeoLocator:
         self.logger = logging.getLogger(__name__)
         self._config = geo_config
 
-    # return scrapped data for regions and departements
-    def _get_reg_dep_coords(self):
+    def _get_reg_dep_coords(self) -> pd.DataFrame:
+        """Return scrapped data for regions and departements."""
         data_folder = (
             Path(get_project_base_path())
             / "back"
@@ -33,16 +33,15 @@ class GeoLocator:
             data_folder / reg_dep_geoloc_filename, sep=";"
         )  # TODO: Use CSVLoader
         if reg_dep_geoloc_df.empty:
-            raise Exception("Regions and departements coordinates file not found.")
+            raise Exception("Regions and departements dataset should not be empty.")
 
         reg_dep_geoloc_df["cog"] = reg_dep_geoloc_df["cog"].astype(str)
-        reg_dep_geoloc_df = reg_dep_geoloc_df.drop(columns=["nom"])
-        return reg_dep_geoloc_df
+        return reg_dep_geoloc_df.drop(columns=["nom"])
 
-    # return scrapped data for ECPI.
-    # we are forced to do this following a break in the BANATIC dataset.
+    # we are forced to used scrapped this following a break in the BANATIC dataset.
     # see https://data-for-good.slack.com/archives/C08AW9JJ93P/p1739369130352499
-    def _get_epci_coords(self):
+    def _get_epci_coords(self) -> pd.DataFrame:
+        """Return scrapped data for ECPI."""
         df = pd.read_csv(Path(self._config["epci_coords_scrapped_data_file"]), sep=";")
         if df.empty:
             raise Exception("EPCI coordinates file not found.")
@@ -51,8 +50,8 @@ class GeoLocator:
         df = df.astype({"latitude": str, "longitude": str})
         return df
 
-    def _request_geolocator_api(self, payload):
-        # save to CSV to send to API
+    def _request_geolocator_api(self, payload) -> pd.DataFrame:
+        """Save payload to CSV to send to API, and return the response as dataframe"""
         folder = get_project_base_path() / self._config["processed_data_folder"]
         payload_filename = "cities_to_geolocate.csv"
         payload_path = folder / payload_filename
@@ -63,19 +62,14 @@ class GeoLocator:
                 "citycode": "cog",
                 "result_columns": ["cog", "latitude", "longitude", "result_status"],
             }
-
-            # Prepare the file payload
             files = {"data": (payload_filename, payload_file, "text/csv")}
 
-            # Send the POST request
             response = requests.post(self._config["geolocator_api_url"], data=data, files=files)
-
             if response.status_code != 200:
                 raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
 
-            # Convert the CSV string to a pandas DataFrame
             df = pd.read_csv(io.StringIO(response.text), sep=";")
-            df = df.loc[df["result_status"] == "ok"]
+            df = df[df["result_status"] == "ok"]
             df = df[["cog", "latitude", "longitude"]]
             df.loc[:, "type"] = "COM"
             df = df.astype({"cog": str, "latitude": str, "longitude": str})
@@ -83,36 +77,28 @@ class GeoLocator:
 
             return df
 
-    # Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes
-    # 1. handle regions, departements and CTU from scrapped dataset
-    # 2. handle ECPI from scrapped dataset
-    # 3. handle cities by requesting the geolocator API
-    # 4. merge results
-    def add_geocoordinates(self, data_frame):
-        # 1. handle REG, DEP, CTU
-        reg_dep_ctu = data_frame.loc[data_frame["type"].isin(["REG", "DEP", "CTU"])]
-        reg_dep_ctu = reg_dep_ctu.merge(
+    def add_geocoordinates(self, data_frame) -> pd.DataFrame:
+        """Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes.
+        1. handle regions, departements and CTU from scrapped dataset
+        2. handle ECPI from scrapped dataset
+        3. handle cities by requesting the geolocator API
+        4. merge results"""
+        reg_dep_ctu = data_frame[data_frame["type"].isin(["REG", "DEP", "CTU"])].merge(
             self._get_reg_dep_coords(),
             on=["type", "cog"],
             how="left",
         )
 
-        # 2. handle EPCI
-        epci = data_frame.loc[~data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])]
-        epci = epci.merge(
+        epci = data_frame[~data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])].merge(
             self._get_epci_coords(),
             on=["type", "siren"],
             how="left",
         )
 
-        # 3. handle cities
-        cities = data_frame.loc[data_frame["type"] == "COM"]
+        cities = data_frame[data_frame["type"] == "COM"]
         geolocator_response = self._request_geolocator_api(
             cities[["cog", "nom"]].drop_duplicates()
         )
         cities = cities.merge(geolocator_response, on=["type", "cog"], how="left")
 
-        # 4. merge all results
-        df = pd.concat([reg_dep_ctu, epci, cities])
-
-        return df
+        return pd.concat([reg_dep_ctu, epci, cities])
