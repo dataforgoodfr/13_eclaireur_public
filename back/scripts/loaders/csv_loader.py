@@ -15,11 +15,10 @@ class CSVLoader(BaseLoader):
         self.dtype = dtype
         self.columns_to_keep = columns_to_keep
 
-    def process_data(self, response):
+    def process_data(self, data):
         # Manage the encoding of the CSV file
         encodings_to_try = ["utf-8", "windows-1252", "latin1"]
         decoded_content = None
-        data = response.content
 
         for encoding in encodings_to_try:
             try:

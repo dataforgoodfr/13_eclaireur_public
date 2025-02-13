@@ -1,10 +1,10 @@
+import io
 import logging
 import requests
 from pathlib import Path
 import pandas as pd
 
 from scripts.utils.config import get_project_base_path
-from scripts.loaders.csv_loader import CSVLoader
 
 
 class GeoLocator:
@@ -16,7 +16,10 @@ class GeoLocator:
 
     def __init__(self, geo_config):
         self.logger = logging.getLogger(__name__)
-        # Load the data only once during the instance initialization
+        self._config = geo_config
+
+    def _get_reg_dep_coords(self) -> pd.DataFrame:
+        """Return scrapped data for regions and departements."""
         data_folder = (
             Path(get_project_base_path())
             / "back"
@@ -30,141 +33,72 @@ class GeoLocator:
             data_folder / reg_dep_geoloc_filename, sep=";"
         )  # TODO: Use CSVLoader
         if reg_dep_geoloc_df.empty:
-            self.reg_dep_geoloc_df = None
-        else:
-            reg_dep_geoloc_df["cog"] = reg_dep_geoloc_df["cog"].astype(str)
-            self.reg_dep_geoloc_df = reg_dep_geoloc_df
+            raise Exception("Regions and departements dataset should not be empty.")
 
-        epci_coord_loader = CSVLoader(geo_config["epci_coord_url"])
-        self.epci_coord_df = epci_coord_loader.load()
+        reg_dep_geoloc_df["cog"] = reg_dep_geoloc_df["cog"].astype(str)
+        return reg_dep_geoloc_df.drop(columns=["nom"])
 
-        communes_coord_loader = CSVLoader(geo_config["communes_id_url"])
-        self.communes_df = communes_coord_loader.load()
+    # we are forced to used scrapped this following a break in the BANATIC dataset.
+    # see https://data-for-good.slack.com/archives/C08AW9JJ93P/p1739369130352499
+    def _get_epci_coords(self) -> pd.DataFrame:
+        """Return scrapped data for ECPI."""
+        df = pd.read_csv(Path(self._config["epci_coords_scrapped_data_file"]), sep=";")
+        if df.empty:
+            raise Exception("EPCI coordinates file not found.")
 
-    # Internal function to get the coordinates of a commune based on its name and COG
-    # TODO: Refactor using loader
-    def _get_commune_coordinates(self, city_name, city_code):
-        # Retrieve the coordinates via the API from https://adresse.data.gouv.fr/api-doc/adresse, using the INSEE code (COG)
-        formatted_city_name = city_name.replace(" ", "+")
-        url = f"https://api-adresse.data.gouv.fr/search/?q={formatted_city_name}code={city_code}&type=municipality"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            if data["features"]:
-                coordinates = data["features"][0]["geometry"]["coordinates"]
-                self.logger.info(
-                    f"Les coordonnées de {city_name} sont {coordinates[0]}, {coordinates[1]}"
-                )
-                return coordinates[0], coordinates[1]  # longitude, latitude
-        self.logger.warning(f"Les coordonnées de {city_name} ne sont pas trouvées")
-        return None, None
+        df = df.drop(columns=["nom"])
+        df = df.astype({"latitude": str, "longitude": str})
+        return df
 
-    # Internal function to get the coordinates of a region or department based on its COG and type
-    def _get_region_department_coordinates(self, cog, type):
-        if self.reg_dep_geoloc_df is not None:
-            reg_dep_geoloc = self.reg_dep_geoloc_df.copy()
-            # Convert cog to string
-            cog = str(cog)
+    def _request_geolocator_api(self, payload) -> pd.DataFrame:
+        """Save payload to CSV to send to API, and return the response as dataframe"""
+        folder = get_project_base_path() / self._config["processed_data_folder"]
+        payload_filename = "cities_to_geolocate.csv"
+        payload_path = folder / payload_filename
+        payload.to_csv(payload_path, sep=";", index=False)
 
-            # Get latitude and longitude based on cog & type
-            reg_dep_geoloc = reg_dep_geoloc.loc[
-                (reg_dep_geoloc["cog"] == cog) & (reg_dep_geoloc["type"] == type)
-            ]
-            if not reg_dep_geoloc.empty:
-                self.logger.info(
-                    f"Les coordonnées de {reg_dep_geoloc['nom'].values[0]} sont {reg_dep_geoloc['latitude'].values[0]}, {reg_dep_geoloc['longitude'].values[0]}"
-                )
-                return reg_dep_geoloc["longitude"].values[0], reg_dep_geoloc["latitude"].values[
-                    0
-                ]
-            else:
-                self.logger.warning(
-                    f"Les coordonnées de {cog} de type {type} ne sont pas trouvées"
-                )
-                return None, None
-        else:
-            self.logger.warning(
-                "Le fichier CSV des coordonnées des régions et départements n'est pas trouvé"
-            )
-            return None, None
+        with open(payload_path, "rb") as payload_file:
+            data = {
+                "citycode": "cog",
+                "result_columns": ["cog", "latitude", "longitude", "result_status"],
+            }
+            files = {"data": (payload_filename, payload_file, "text/csv")}
 
-    # Internal function to get the coordinates of an EPCI based on its SIREN
-    def _get_epci_coordinates(self, siren):
-        # Coordinates are retrieved in 3 steps:
-        # 1. siren epci -> siren commune siège via https://www.data.gouv.fr/fr/datasets/base-nationale-sur-les-intercommunalites/ (coordonnees-epci-fp-janv2023-last.xlsx)
-        commune_siege_siren = (
-            self.epci_coord_df[self.epci_coord_df["N° SIREN"] == siren]["Commune siège"]
-            .str.extract("(\d+)")
-            .iloc[0, 0]
+            response = requests.post(self._config["geolocator_api_url"], data=data, files=files)
+            if response.status_code != 200:
+                raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
+
+            df = pd.read_csv(io.StringIO(response.text), sep=";")
+            df = df[df["result_status"] == "ok"]
+            df = df[["cog", "latitude", "longitude"]]
+            df.loc[:, "type"] = "COM"
+            df = df.astype({"cog": str, "latitude": str, "longitude": str})
+            df["cog"] = df["cog"].str.zfill(5)
+
+            return df
+
+    def add_geocoordinates(self, data_frame) -> pd.DataFrame:
+        """Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes.
+        1. handle regions, departements and CTU from scrapped dataset
+        2. handle ECPI from scrapped dataset
+        3. handle cities by requesting the geolocator API
+        4. merge results"""
+        reg_dep_ctu = data_frame[data_frame["type"].isin(["REG", "DEP", "CTU"])].merge(
+            self._get_reg_dep_coords(),
+            on=["type", "cog"],
+            how="left",
         )
 
-        # 2. siren commune-> nom, cog commune via https://www.data.gouv.fr/en/datasets/identifiants-des-collectivites-territoriales-et-leurs-etablissements/ (identifiants-communes-2022.csv)
-        communes_df = self.communes_df.copy()
+        epci = data_frame[~data_frame["type"].isin(["REG", "DEP", "CTU", "COM"])].merge(
+            self._get_epci_coords(),
+            on=["type", "siren"],
+            how="left",
+        )
 
-        # Cast commune_siege_siren and communes_df 'SIREN' to string
-        commune_siege_siren = str(commune_siege_siren)
-        communes_df["SIREN"] = communes_df["SIREN"].astype(str)
+        cities = data_frame[data_frame["type"] == "COM"]
+        geolocator_response = self._request_geolocator_api(
+            cities[["cog", "nom"]].drop_duplicates()
+        )
+        cities = cities.merge(geolocator_response, on=["type", "cog"], how="left")
 
-        # extract nom, cog commune safely
-        commune_info_df = communes_df[communes_df["SIREN"] == commune_siege_siren][
-            ["nom", "COG"]
-        ]
-        if commune_info_df.empty:
-            self.logger.warning(
-                f"Les coordonnées pour l'EPCI {siren} de la commune siège {commune_siege_siren} ne sont pas trouvées"
-            )
-            return None, None
-        commune_info = communes_df[communes_df["SIREN"] == commune_siege_siren][
-            ["nom", "COG"]
-        ].iloc[0]
-
-        # 3. nom, cog commune -> commune coordinates via https://adresse.data.gouv.fr/api-doc/adresse using internal function _get_commune_coordinates
-        if not commune_info.empty:
-            coordinates = self._get_commune_coordinates(
-                commune_info["nom"], commune_info["COG"]
-            )
-            if coordinates:
-                self.logger.info(
-                    f"Les coordonnées de l'EPCI {siren} sont celle de la commune siège {commune_siege_siren} : {coordinates[0]}, {coordinates[1]}"
-                )
-                return coordinates[0], coordinates[1]  # longitude, latitude
-            else:
-                self.logger.warning(
-                    f"Les coordonnées de l'EPCI {siren} de la commune siège {commune_siege_siren} ne sont pas trouvées"
-                )
-                return None, None
-
-    # Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes
-    def add_geocoordinates(self, data_frame):
-        # Loop through the DataFrame and enrich it with coordinates
-        # TODO: Refactor to process all regions and departments first, then all communes, then all EPCI (as they are copies of communes' coordinates)
-        for index, row in data_frame.iterrows():
-            if row["type"] in ["COM"]:
-                coordinates = self._get_commune_coordinates(row["nom"], row["cog"])
-            elif row["type"] in ["REG", "DEP", "CTU"]:
-                coordinates = self._get_region_department_coordinates(row["cog"], row["type"])
-            else:
-                if row["siren"]:
-                    coordinates = self._get_epci_coordinates(row["siren"])
-                else:
-                    coordinates = None, None
-                    self.logger.warning(f"Le SIREN de l'EPCI {row['nom']} n'est pas trouvé")
-
-            # Set the coordinates in the DataFrame
-            if coordinates:
-                data_frame.at[index, "longitude"] = (
-                    float(str(coordinates[0]).replace(",", ".").replace("None", ""))
-                    if coordinates[0] not in [None, "None"]
-                    else None
-                )
-                data_frame.at[index, "latitude"] = (
-                    float(str(coordinates[1]).replace(",", ".").replace("None", ""))
-                    if coordinates[1] not in [None, "None"]
-                    else None
-                )
-            else:
-                # If no coordinates are found, set the values to None
-                data_frame.at[index, "longitude"] = None
-                data_frame.at[index, "latitude"] = None
-
-        return data_frame
+        return pd.concat([reg_dep_ctu, epci, cities])
