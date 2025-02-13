@@ -168,6 +168,7 @@ back/data/communities/processed_data/
 back/data/datasets/subventions/outputs/
 back/data/datasets/marches_publics/outputs/
 back/data/logs/
+data/
 
 loc_env/
 

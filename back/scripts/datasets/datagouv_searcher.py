@@ -30,13 +30,13 @@ class DataGouvSearcher:
 
         fn = Path("catalog.parquet")
         if fn.exists():
-            self.dataset_catalog_df = pd.read_parquet(fn)
+            self.datasets_catalog = pd.read_parquet(fn)
         else:
             dataset_catalog_loader = CSVLoader(
                 self._config["datasets"]["url"],
                 columns_to_keep=self._config["datasets"]["columns"],
             )
-            self.dataset_catalog_df = (
+            self.datasets_catalog = (
                 dataset_catalog_loader.load()
                 .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
                 .merge(
@@ -47,14 +47,14 @@ class DataGouvSearcher:
                 )
                 .drop(columns=["id_datagouv"])
             )
-            self.dataset_catalog_df.to_parquet(fn)
+            self.datasets_catalog.to_parquet(fn)
 
         fn = Path("catalog_file.parquet")
         if fn.exists():
-            self.datafile_catalog_df = pd.read_parquet(fn)
+            self.datasets_metadata = pd.read_parquet(fn)
         else:
             datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
-            self.datafile_catalog_df = (
+            self.datasets_metadata = (
                 datafile_catalog_loader.load()
                 .rename(columns={"dataset.organization_id": "organization_id"})
                 .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
@@ -66,7 +66,7 @@ class DataGouvSearcher:
                 )
                 .drop(columns=["id_datagouv"])
             )
-            self.datafile_catalog_df.to_parquet(fn)
+            self.datasets_metadata.to_parquet(fn)
 
     # Internal function to filter a dataframe by a column and one or multiple values
     def _filter_by(self, df, column, value, return_mask=False):
@@ -78,36 +78,35 @@ class DataGouvSearcher:
         return mask if return_mask else df[mask]
 
     # Internal function to filter a dataframe by a column and one or multiple values
-    def _get_datafiles_by_title_and_desc(self, title_filter, description_filter):
+    def _select_datasets_by_title_and_desc(self, title_filter, description_filter):
         # Get the datasets that match the title and description filters
-        mask_desc = self._filter_by(
-            self.dataset_catalog_df, "description", description_filter, return_mask=True
+        mask_desc = self.datasets_catalog["description"].str.contains(
+            description_filter, case=False, na=False
         )
         self.logger.info(
             f"Nombre de datasets correspondant au filtre de description : {mask_desc.sum()}"
         )
 
-        mask_titles = self._filter_by(
-            self.dataset_catalog_df, "title", title_filter, return_mask=True
+        mask_titles = self.datasets_catalog["title"].str.contains(
+            title_filter, case=False, na=False
         )
         self.logger.info(
             f"Nombre de datasets correspondant au filtre de titre : {mask_titles.sum()}"
         )
 
-        # Merge the two masks and get the filtered datasets catalog
-        filtered_catalog_df = self.dataset_catalog_df[(mask_titles | mask_desc)]
-
-        # Merge with catalog files to get the filtered files list
-        filtered_files = filtered_catalog_df[
-            ["siren", "id", "title", "description", "organization", "frequency"]
-        ].merge(
-            self.datafile_catalog_df[["dataset.id", "format", "created_at", "url"]],
-            left_on="id",
-            right_on="dataset.id",
-            how="left",
+        return (
+            self.datasets_catalog.loc[
+                (mask_titles | mask_desc),
+                ["siren", "id", "title", "description", "organization", "frequency"],
+            ]
+            .merge(
+                self.datasets_metadata[["dataset.id", "format", "created_at", "url"]],
+                left_on="id",
+                right_on="dataset.id",
+                how="left",
+            )
+            .drop(columns=["dataset.id"])
         )
-        filtered_files.drop(columns=["dataset.id"], inplace=True)
-        return filtered_files
 
     # Internal function to get the preferred format of a list of records
     def _get_preferred_format(self, records):
@@ -245,7 +244,7 @@ class DataGouvSearcher:
         pdb.set_trace()
         # Only using topdown method: look for datafiles based on title and description filters
         if not method == "bu_only":
-            topdown_datafiles = self._get_datafiles_by_title_and_desc(
+            topdown_datafiles = self._select_datasets_by_title_and_desc(
                 search_config["title_filter"], search_config["description_filter"]
             )
             self.logger.info("Topdown datafiles basic info :")
