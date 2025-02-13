@@ -28,7 +28,7 @@ class DataGouvSearcher:
 
     def initialize_catalogs(self):
         """
-        Create a catalog
+        Load or create the data.gouv dataset catalog and metadata catalog.
         """
         self.datagouv_ids_to_siren = self.scope.get_datagouv_ids()
         datagouv_ids_list = list(self.datagouv_ids_to_siren["id_datagouv"].unique())
@@ -74,7 +74,9 @@ class DataGouvSearcher:
             )
             self.datasets_metadata.to_parquet(catalog_metadata_filename)
 
-    def _select_datasets_by_title_and_desc(self, title_filter, description_filter):
+    def _select_datasets_by_title_and_desc(
+        self, title_filter: str, description_filter: str
+    ) -> pd.DataFrame:
         """
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
@@ -155,7 +157,7 @@ class DataGouvSearcher:
 
         scoped_files = []
         while url:
-            orga_datasets, next_url = self._organization_datasets(url, organization_id)
+            orga_datasets, url = self._organization_datasets(url, organization_id)
 
             for metadata in orga_datasets:
                 keyword_in_title = any(
@@ -192,8 +194,6 @@ class DataGouvSearcher:
                 if prefered_resource:
                     scoped_files.append(prefered_resource)
 
-            if next_url:
-                url = next_url
         return scoped_files
 
     def _select_dataset_by_content(
