@@ -54,7 +54,8 @@ datagouv:
       - "organization_id"
       - "frequency"
   datafiles:
-    url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
+    url: "file:./back/data/test/datagouv-datafiles-10000.csv"
+    # url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
 
 search:
   subventions:
@@ -84,7 +85,8 @@ search:
   marches_publics:
     source: "single"
     unified_dataset:
-      url: "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
+      # url: "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
+      url: "file:./back/data/test/decp-2019-10000.json"
       root: "marches"
     schema:
       url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
