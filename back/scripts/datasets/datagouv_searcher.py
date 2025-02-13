@@ -1,3 +1,4 @@
+import itertools
 import json
 import logging
 from pathlib import Path
@@ -5,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 from scripts.loaders.csv_loader import CSVLoader
+from tqdm import tqdm
 
 
 class DataGouvSearcher:
@@ -110,9 +112,11 @@ class DataGouvSearcher:
             .drop(columns=["dataset.id"])
         )
 
-    # Internal function to get the preferred format of a list of records
     def _get_preferred_format(self, records):
-        preferred_formats = ["csv", "xls", "json", "zip"]  # Could be put outside
+        """
+        Select the prefered format from all posibilities of the same dataset.
+        """
+        preferred_formats = ["csv", "xls", "json", "zip"]
 
         for format in preferred_formats:
             for record in records:
@@ -125,108 +129,116 @@ class DataGouvSearcher:
 
         return records[0] if records else None
 
-    # Internal function to create a list of dictionaries, one for each file with the specified filters of one organization
-    def _get_files_by_org_from_api(
-        self, url, organization_id, title_filter, description_filter, column_filter
-    ):
+    def _organization_datasets(self, url, organization_id):
+        """
+        List all datasets under an organization through data.gouv API.
+        """
         params = {"organization": organization_id}
+        response = requests.get(url, params=params)
+        try:
+            response.raise_for_status()
+        except Exception as e:
+            self.logger.error(f"Error while downloading file from {url} : {e}")
+            return
+        try:
+            data = response.json()
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Error while decoding json from {url} : {e}")
+            return
+        return data["data"], data.get("next_page")
+
+    def _get_files_by_org_from_api(
+        self,
+        url: str,
+        organization_id: str,
+        title_filter: list[str],
+        description_filter: list[str],
+        column_filter: list[str],
+    ) -> list[dict]:
+        """Return a list of dictionaries, one for each file with the specified filters of one organization."""
+
         scoped_files = []
-        while True:
-            response = requests.get(url, params=params)
-            try:
-                response.raise_for_status()
-            except Exception as e:
-                self.logger.error(f"Error while downloading file from {url} : {e}")
-                break
-            try:
-                data = response.json()
-            except json.JSONDecodeError as e:
-                self.logger.error(f"Error while decoding json from {url} : {e}")
-                break
+        while url:
+            orga_datasets, next_url = self._organization_datasets(url, organization_id)
 
-            # Loop through the files list to filter them by title and description
-            for result in data["data"]:
-                files = []
-                # Check if the title contains the title_filter words
-                if any(word in result["title"].lower() for word in title_filter):
-                    keyword_in_title = True
-                else:
-                    keyword_in_title = False
+            for metadata in orga_datasets:
+                keyword_in_title = any(
+                    word in metadata["title"].lower() for word in title_filter
+                )
+                keyword_in_description = any(
+                    word in metadata["description"].lower() for word in description_filter
+                )
 
-                # Check if the description contains the description_filter words
-                if any(word in result["description"].lower() for word in description_filter):
-                    keyword_in_description = True
-                else:
-                    keyword_in_description = False
-                montant_col = None
-                # Loop through the resources list to filter them by column names
-                for resource in result["resources"]:
-                    if resource["description"] is None:
-                        montant_col = None
-                    elif any(word in resource["description"].lower() for word in column_filter):
-                        montant_col = True
-                    else:
-                        montant_col = False
+                montant_col = any(
+                    word in (resource["description"] or "").lower()
+                    for word in column_filter
+                    for resource in metadata["resources"]
+                )
+                flagged_resources = [
+                    {
+                        "organization_id": metadata["organization"]["id"],
+                        "organization": metadata["organization"]["name"],
+                        "title": metadata["title"],
+                        "description": metadata["description"],
+                        "id": metadata["id"],
+                        "frequency": metadata["frequency"],
+                        "format": resource["format"],
+                        "url": resource["url"],
+                        "created_at": resource["created_at"],
+                        "montant_col": montant_col,
+                        "keyword_in_description": keyword_in_description,
+                        "keyword_in_title": keyword_in_title,
+                    }
+                    for resource in metadata["resources"]
+                    if (keyword_in_description or keyword_in_title or montant_col)
+                ]
+                prefered_resource = self._get_preferred_format(flagged_resources)
+                if prefered_resource:
+                    scoped_files.append(prefered_resource)
 
-                    # Add the file info to the files list if it matches the filters
-                    files.append(
-                        {
-                            "organization_id": result["organization"]["id"],
-                            "organization": result["organization"]["name"],
-                            "title": result["title"],
-                            "description": result["description"],
-                            "id": result["id"],
-                            "frequency": result["frequency"],
-                            "format": resource["format"],
-                            "url": resource["url"],
-                            "created_at": resource["created_at"],
-                            "montant_col": montant_col,
-                            "keyword_in_description": keyword_in_description,
-                            "keyword_in_title": keyword_in_title,
-                        }
-                    )
-                # If either title, description or column name matches, add the file to the scoped_files list (check if format is in preferred formats)
-                if (keyword_in_description or keyword_in_title or montant_col) and len(
-                    files
-                ) > 0:
-                    scoped_files.append(self._get_preferred_format(files))
-
-            # If there is a next page, update the url and params to get the next page
-            if data["next_page"]:
-                url = data["next_page"]
-                params = {}
-            else:
-                break
+            if next_url:
+                url = next_url
         return scoped_files
 
-    # Internal function to get a list of dictionaries with the files that match the filters
-    def _get_datafiles_by_content(self, url, title_filter, description_filter, column_filter):
-        all_files = []
-
-        # Loop through the organizations to get a list of dictionaries with the files that match the filters
-        for orga in self.datagouv_ids_list:
-            cur_files = self._get_files_by_org_from_api(
-                url, orga, title_filter, description_filter, column_filter
+    def _select_dataset_by_content(
+        self,
+        url: str,
+        title_filter: list[str],
+        description_filter: list[str],
+        column_filter: list[str],
+    ) -> list[dict]:
+        """
+        Select datasets based on metadata fetched from data.gouv organisation page.
+        """
+        datagouv_ids_list = sorted(self.datagouv_ids_to_siren["id_datagouv"].unique())
+        bottom_up_files_df = (
+            pd.DataFrame(
+                itertools.chain(
+                    *[
+                        self._get_files_by_org_from_api(
+                            url, orga, title_filter, description_filter, column_filter
+                        )
+                        for orga in tqdm(datagouv_ids_list)
+                    ]
+                )
             )
-            all_files = all_files + cur_files
-
-        bottom_up_files_df = pd.DataFrame(all_files)
-        # Join with siren based on organization
-        bottom_up_files_df = bottom_up_files_df.merge(
-            self.datagouv_ids_to_siren,
-            left_on="organization_id",
-            right_on="id_datagouv",
-            how="left",
+            .merge(
+                self.datagouv_ids_to_siren,
+                left_on="organization_id",
+                right_on="id_datagouv",
+                how="left",
+            )
+            .drop(columns=["id_datagouv", "organization_id"])
         )
-        bottom_up_files_df.drop(columns=["id_datagouv"], inplace=True)
-        bottom_up_files_df.drop(columns=["organization_id"], inplace=True)
         return bottom_up_files_df[
             (bottom_up_files_df.keyword_in_title | bottom_up_files_df.keyword_in_description)
             & bottom_up_files_df.montant_col
         ]
 
-    # Internal function to log basic info about a search result dataframe
-    def _log_basic_info(self, df):
+    def _log_basic_info(self, df: pd.DataFrame):
+        """
+        Log basic info about a search result dataframe
+        """
         self.logger.info(
             f"Nombre de datasets correspondant au filtre de titre ou de description : {df.id.nunique()}"
         )
@@ -254,7 +266,7 @@ class DataGouvSearcher:
 
         # Only using bottomup method: look for datafiles based on column names filters
         if not method == "td_only":
-            bottomup_datafiles = self._get_datafiles_by_content(
+            bottomup_datafiles = self._select_dataset_by_content(
                 search_config["api"]["url"],
                 search_config["api"]["title"],
                 search_config["api"]["description"],
