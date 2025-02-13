@@ -2,6 +2,7 @@ import itertools
 import json
 import logging
 from pathlib import Path
+from typing import Tuple
 
 import pandas as pd
 import requests
@@ -70,15 +71,6 @@ class DataGouvSearcher:
             )
             self.datasets_metadata.to_parquet(fn)
 
-    # Internal function to filter a dataframe by a column and one or multiple values
-    def _filter_by(self, df, column, value, return_mask=False):
-        # value can be a list of values or a string
-        if isinstance(value, str):
-            mask = df[column].str.contains(value, case=False, na=False)
-        else:
-            mask = df[column].isin(value)
-        return mask if return_mask else df[mask]
-
     def _select_datasets_by_title_and_desc(self, title_filter, description_filter):
         """
         Identify datasets of interest from the catalog by looking for keywords in
@@ -112,7 +104,7 @@ class DataGouvSearcher:
             .drop(columns=["dataset.id"])
         )
 
-    def _get_preferred_format(self, records):
+    def _get_preferred_format(self, records: list[dict]) -> dict:
         """
         Select the prefered format from all posibilities of the same dataset.
         """
@@ -125,11 +117,12 @@ class DataGouvSearcher:
 
         for record in records:
             if record.get("format: ") is not None:
+                logging.info("Unclassified file format " + record.get("format: "))
                 return record
 
         return records[0] if records else None
 
-    def _organization_datasets(self, url, organization_id):
+    def _organization_datasets(self, url: str, organization_id: str) -> Tuple[dict, str]:
         """
         List all datasets under an organization through data.gouv API.
         """
@@ -251,52 +244,45 @@ class DataGouvSearcher:
             f"Nombre de fichiers par fréquence : {df.groupby('frequency').size().to_dict()}"
         )
 
-    # Function to get datafiles list selected by title and description filters and column names filters
-    def get_datafiles(self, search_config, method="all"):
-        import pdb
+    def select_datasets(self, search_config: dict, method: str = "all") -> pd.DataFrame:
+        """
+        Identify a set of datasets of interest with multiple methods.
+        `td_only` identifies datasets based on keywords on their title or description.
+        `bu_only` identifies datasets based on metadata from data.gouv api.
+        `all` combines both methods.
+        """
+        if method not in ["all", "td_only", "bu_only"]:
+            raise ValueError(
+                f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
+            )
 
-        pdb.set_trace()
-        # Only using topdown method: look for datafiles based on title and description filters
-        if not method == "bu_only":
+        datafiles = []
+        if method in ["all", "td_only"]:
             topdown_datafiles = self._select_datasets_by_title_and_desc(
                 search_config["title_filter"], search_config["description_filter"]
             )
+            datafiles.append(topdown_datafiles)
             self.logger.info("Topdown datafiles basic info :")
             self._log_basic_info(topdown_datafiles)
 
-        # Only using bottomup method: look for datafiles based on column names filters
-        if not method == "td_only":
+        if method in ["bu_only", "all"]:
             bottomup_datafiles = self._select_dataset_by_content(
                 search_config["api"]["url"],
                 search_config["api"]["title"],
                 search_config["api"]["description"],
                 search_config["api"]["columns"],
             )
+            datafiles.append(bottomup_datafiles)
             self.logger.info("Bottomup datafiles basic info :")
             self._log_basic_info(bottomup_datafiles)
 
-        if method == "td_only":
-            datafiles = topdown_datafiles
-        elif method == "bu_only":
-            datafiles = bottomup_datafiles
-        elif method == "all":
-            # Merge topdown and bottomup: bottomup has 3 additional columns that must be dropped
-            datafiles = pd.concat([topdown_datafiles, bottomup_datafiles], ignore_index=False)
-            datafiles.drop_duplicates(
-                subset=["url"], inplace=True
-            )  # Drop duplicates based on url
-            self.logger.info("Total datafiles basic info :")
-            self._log_basic_info(datafiles)
-        else:
-            raise ValueError(
-                f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
-            )
-
-        # Add 'nom' & 'type' columns to datafiles from self.scope.selected_data based on siren
-        datafiles = datafiles.merge(
-            self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left"
+        datafiles = (
+            pd.concat(datafiles, ignore_index=False)
+            .drop_duplicates(subset=["url"])
+            .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
+            .assign(source="datagouv")
         )
-        # Add new 'source' column, filled with 'datagouv' value
-        datafiles["source"] = "datagouv"
+        self.logger.info("Total datafiles basic info :")
+        self._log_basic_info(datafiles)
 
         return datafiles
