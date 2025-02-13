@@ -1,4 +1,4 @@
-import FranceMap from '@/components/FranceMap copy';
+import FranceMap from '@/components/FranceMap';
 
 export default async function MapPage() {
   return (
