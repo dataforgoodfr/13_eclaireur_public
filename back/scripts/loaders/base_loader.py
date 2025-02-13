@@ -22,6 +22,9 @@ class BaseLoader:
         attempt = 0
         while attempt < self.num_retries:
             try:
+                # TODO(memory): instead of loading response into memory, we should do a streaming download to a temp file
+                # using bellow _streaming_download_to_file add pass the path to process_data
+                # can we get the filename from the response? and add some random string or timestamp to it?
                 response = requests.get(self.file_url)
                 if response.status_code == 200:
                     return self.process_data(response)
@@ -35,7 +38,18 @@ class BaseLoader:
 
         return None
 
-    def process_data(self, response):
+    def _streaming_download_to_file(url, output_filepath):
+        with requests.get(url, stream=True) as response:
+            response.raise_for_status()
+            with open(output_filepath, 'wb') as output_file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        output_file.write(chunk)
+        print(f"Download complete. File saved as {output_filepath}")
+
+    # TODO(memory): take filename as arg and return chunks
+    # update implementation and client classes
+    def process_data(self, filename):
         raise NotImplementedError("This method should be implemented by subclasses.")
 
     @staticmethod

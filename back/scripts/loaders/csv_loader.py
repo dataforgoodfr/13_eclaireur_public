@@ -15,50 +15,55 @@ class CSVLoader(BaseLoader):
         self.dtype = dtype
         self.columns_to_keep = columns_to_keep
 
-    def process_data(self, response):
-        # Manage the encoding of the CSV file
+    @staticmethod
+    def _get_encoding_and_delimiter(self, filepath):
+        """Detect the encoding and delimiter used in the CSV file"""
         encodings_to_try = ["utf-8", "windows-1252", "latin1"]
-        decoded_content = None
-        data = response.content
 
         for encoding in encodings_to_try:
+            # try to read first line with encoding
             try:
-                decoded_content = data.decode(encoding)
-                break
+                with open(filepath, encoding=encoding, buffering=1) as file:
+                    return encoding, self.detect_delimiter(file.readline())
             except Exception:
                 pass
 
-        if decoded_content is None:
-            self.logger.error(
-                f"Impossible de décoder le contenu du fichier CSV à l'URL : {self.file_url}"
-            )
-            return None
+        self.logger.error(
+            f"Impossible de décoder le contenu du fichier CSV à l'URL : {self.file_url}"
+        )
+        return None, None
 
-        # Detect the delimiter used in the CSV file
-        delimiter = self.detect_delimiter(decoded_content)
+
         # Load only the columns specified in columns_to_keep, and skip bad lines
+        # TODO(memory): low_memory=True can lead to mixed type inference > might break things
+    def process_data(self, filepath):
+        encoding, delimiter = self._get_encoding_and_delimiter(self, filepath)
         if self.columns_to_keep is not None:
-            df = pd.read_csv(
-                StringIO(decoded_content),
+            chunks = pd.read_csv(
+                filepath,
                 delimiter=delimiter,
                 dtype=self.dtype,
                 usecols=lambda c: c in self.columns_to_keep,
                 on_bad_lines="skip",
                 quoting=csv.QUOTE_MINIMAL,
-                low_memory=False,
+                low_memory=True,
+                chunksize=1000,
+                encoding=encoding,
             )
         else:
-            df = pd.read_csv(
-                StringIO(decoded_content),
+            chunks = pd.read_csv(
+                filepath,
                 delimiter=delimiter,
                 dtype=self.dtype,
                 on_bad_lines="skip",
                 quoting=csv.QUOTE_MINIMAL,
-                low_memory=False,
+                low_memory=True,
+                chunksize=1000,
+                encoding=encoding,
             )
 
         self.logger.info(f"CSV Data from {self.file_url} loaded.")
-        return df
+        return chunks
 
     @staticmethod
     def detect_delimiter(text, num_lines=5):

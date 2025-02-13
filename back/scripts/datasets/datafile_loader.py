@@ -11,6 +11,7 @@ from scripts.loaders.json_loader import JSONLoader
 
 class DatafileLoader:
     """
+    Currently, only used to process marches public
     DatafileLoader is responsible for loading, cleaning, selecting, and normalizing data from a JSON file.
     It uses a JSON schema to flatten the data and cast it to the correct types.
     It also uses a CommunitiesSelector to filter the data based on the selected communities.
@@ -23,9 +24,8 @@ class DatafileLoader:
         # Load topic schema from URL
         self.schema = self._load_schema(topic_config["schema"])
         # Load data from URL
-        self.loaded_data, self.modifications_data = self._load_data(
-            topic_config
-        )  # TODO : modifications_data seems empty & useless
+        # TODO(refactor to use chunks here)
+        self.loaded_data = self._load_data(topic_config)
         # Clean data by keeping only columns present in the schema
         self.cleaned_data = self._clean_data()
         # Select data based on communities IDs
@@ -58,11 +58,11 @@ class DatafileLoader:
         data = data_loader.load()
         # Flatten JSON data to DataFrame, with main and modifications data (potentially empty)
         root = topic_config["unified_dataset"]["root"]
-        main_df, modifications_df = flatten_data(data[root])
+        main_df = flatten_data(data[root])
         self.logger.info(
             f"Le fichier au format JSON a été téléchargé avec succès à l'URL : {topic_config['unified_dataset']['url']}"
         )
-        return main_df, modifications_df
+        return main_df
 
     def _clean_data(self):
         # Build a mapping of original column names to cleaned column names

@@ -15,10 +15,9 @@ class ExcelLoader(BaseLoader):
         self.dtype = dtype
         self.columns_to_keep = columns_to_keep
 
-    def process_data(self, response):
-        data = response.content
-
-        df = pd.read_excel(BytesIO(data), header=None, dtype=self.dtype)
+    def process_data(self, filepath):
+        # read_excel does not support buffering
+        df = pd.read_excel(filepath, header=None, dtype=self.dtype)
 
         # Detect and skip rows and columns with missing values
         skiprows = detect_skiprows(df)
@@ -33,4 +32,4 @@ class ExcelLoader(BaseLoader):
             df = df.loc[:, self.columns_to_keep]
 
         self.logger.info(f"Excel Data from {self.file_url} loaded.")
-        return df
+        return [df]
