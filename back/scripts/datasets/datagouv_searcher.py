@@ -1,8 +1,9 @@
 import json
-import requests
-import pandas as pd
 import logging
+from pathlib import Path
 
+import pandas as pd
+import requests
 from scripts.loaders.csv_loader import CSVLoader
 
 
@@ -16,43 +17,56 @@ class DataGouvSearcher:
     def __init__(self, communities_selector, datagouv_config):
         self.logger = logging.getLogger(__name__)
 
+        self._config = datagouv_config
         self.scope = communities_selector
-        self.datagouv_ids = (
-            self.scope.get_datagouv_ids()
-        )  # dataframe with siren and id_datagouv columns
-        self.datagouv_ids_list = self.datagouv_ids["id_datagouv"].to_list()
+        self.initialize_catalogs()
 
-        # Load datagouv datasets and datafiles catalogs
-        dataset_catalog_loader = CSVLoader(
-            datagouv_config["datasets"]["url"],
-            columns_to_keep=datagouv_config["datasets"]["columns"],
-        )
-        self.dataset_catalog_df = dataset_catalog_loader.load()
-        self.dataset_catalog_df = self._filter_by(
-            self.dataset_catalog_df, "organization_id", self.datagouv_ids_list
-        )
-        # join siren to dataset_catalog_df based on organization_id
-        self.dataset_catalog_df = self.dataset_catalog_df.merge(
-            self.datagouv_ids, left_on="organization_id", right_on="id_datagouv", how="left"
-        )
-        self.dataset_catalog_df.drop(columns=["id_datagouv"], inplace=True)
+    def initialize_catalogs(self):
+        """
+        Create a catalog
+        """
+        self.datagouv_ids_to_siren = self.scope.get_datagouv_ids()
+        datagouv_ids_list = list(self.datagouv_ids_to_siren["id_datagouv"].unique())
 
-        datafile_catalog_loader = CSVLoader(datagouv_config["datafiles"]["url"])
-        self.datafile_catalog_df = datafile_catalog_loader.load()
-        self.datafile_catalog_df.columns = list(
-            map(
-                lambda x: x.replace("dataset.organization_id", "organization_id"),
-                self.datafile_catalog_df.columns.to_list(),
+        fn = Path("catalog.parquet")
+        if fn.exists():
+            self.dataset_catalog_df = pd.read_parquet(fn)
+        else:
+            dataset_catalog_loader = CSVLoader(
+                self._config["datasets"]["url"],
+                columns_to_keep=self._config["datasets"]["columns"],
             )
-        )
-        self.datafile_catalog_df = self._filter_by(
-            self.datafile_catalog_df, "organization_id", self.datagouv_ids_list
-        )
-        # join siren to datafile_catalog_df based on organization_id
-        self.datafile_catalog_df = self.datafile_catalog_df.merge(
-            self.datagouv_ids, left_on="organization_id", right_on="id_datagouv", how="left"
-        )
-        self.datafile_catalog_df.drop(columns=["id_datagouv"], inplace=True)
+            self.dataset_catalog_df = (
+                dataset_catalog_loader.load()
+                .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
+                .merge(
+                    self.datagouv_ids_to_siren,
+                    left_on="organization_id",
+                    right_on="id_datagouv",
+                    how="left",
+                )
+                .drop(columns=["id_datagouv"])
+            )
+            self.dataset_catalog_df.to_parquet(fn)
+
+        fn = Path("catalog_file.parquet")
+        if fn.exists():
+            self.datafile_catalog_df = pd.read_parquet(fn)
+        else:
+            datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
+            self.datafile_catalog_df = (
+                datafile_catalog_loader.load()
+                .rename(columns={"dataset.organization_id": "organization_id"})
+                .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
+                .merge(
+                    self.datagouv_ids_to_siren,
+                    left_on="organization_id",
+                    right_on="id_datagouv",
+                    how="left",
+                )
+                .drop(columns=["id_datagouv"])
+            )
+            self.datafile_catalog_df.to_parquet(fn)
 
     # Internal function to filter a dataframe by a column and one or multiple values
     def _filter_by(self, df, column, value, return_mask=False):
@@ -198,7 +212,10 @@ class DataGouvSearcher:
         bottom_up_files_df = pd.DataFrame(all_files)
         # Join with siren based on organization
         bottom_up_files_df = bottom_up_files_df.merge(
-            self.datagouv_ids, left_on="organization_id", right_on="id_datagouv", how="left"
+            self.datagouv_ids_to_siren,
+            left_on="organization_id",
+            right_on="id_datagouv",
+            how="left",
         )
         bottom_up_files_df.drop(columns=["id_datagouv"], inplace=True)
         bottom_up_files_df.drop(columns=["organization_id"], inplace=True)
@@ -223,6 +240,9 @@ class DataGouvSearcher:
 
     # Function to get datafiles list selected by title and description filters and column names filters
     def get_datafiles(self, search_config, method="all"):
+        import pdb
+
+        pdb.set_trace()
         # Only using topdown method: look for datafiles based on title and description filters
         if not method == "bu_only":
             topdown_datafiles = self._get_datafiles_by_title_and_desc(
