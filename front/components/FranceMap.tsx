@@ -1,11 +1,16 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { Color, MapViewState, PickingInfo, ViewStateChangeParameters } from '@deck.gl/core';
+import { MapViewState, PickingInfo, ViewStateChangeParameters } from '@deck.gl/core';
 import { GeoJsonLayer, GeoJsonLayerProps } from '@deck.gl/layers';
 import DeckGL, { DeckGLProps } from '@deck.gl/react';
-import type { Feature, Geometry } from 'geojson';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { feature } from 'topojson-client';
+import { Topology } from 'topojson-specification';
+
+const URL_TOPOJSON =
+  'https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20220219-094943/a-com2022-topo.json';
 
 type GeoJsonProperties = {
   code: `${number}`;
@@ -17,6 +22,8 @@ enum Level {
   Departement = 'departement',
   Communes = 'communes',
 }
+
+type Color = [number, number, number, number];
 
 const black: Color = [0, 0, 0, 255];
 
@@ -31,7 +38,7 @@ const INITIAL_VIEW_STATE: MapViewState = {
 };
 
 // TODO - Use D3 for scaling
-function colorScale(code: number, divider: number): [number, number, number, number] {
+function colorScale(code: number, divider: number): Color {
   return [48, 128, (+code / divider) * 255, 255];
 }
 
@@ -53,10 +60,9 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-function createRegionsLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>) {
+function createRegionsLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
   return new GeoJsonLayer<GeoJsonProperties>({
     id: 'regions',
-    data: '/data/regions.json',
     lineWidthMinPixels: 1.5,
     pickable: true,
     visible: true,
@@ -66,10 +72,9 @@ function createRegionsLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>) {
   });
 }
 
-function createDepartementsLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>) {
+function createDepartementsLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
   return new GeoJsonLayer<GeoJsonProperties>({
     id: 'departements',
-    data: '/data/departements.json',
     pickable: true,
     lineWidthMinPixels: 1,
     getFillColor: (d) => colorScale(+d.properties.code, 100),
@@ -78,11 +83,9 @@ function createDepartementsLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>)
   });
 }
 
-function createCommunesLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>) {
+function createCommunesLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
   return new GeoJsonLayer<GeoJsonProperties>({
     id: 'communes',
-    // filtered for population > 3500
-    data: '/data/communes.json',
     pickable: true,
     lineWidthMinPixels: 0.2,
     getLineWidth: 100,
@@ -92,15 +95,57 @@ function createCommunesLayer(props?: Omit<GeoJsonLayerProps, 'id' | 'data'>) {
   });
 }
 
+async function fetchJson(url: string) {
+  const response = await fetch(url);
+  const data = await response.json();
+
+  return data;
+}
+
+async function fetchTopoJson() {
+  return (await fetchJson(URL_TOPOJSON)) as Topology;
+}
+
+function useTopoJson() {
+  const [data, setData] = useState<Topology>();
+
+  useEffect(() => {
+    fetchTopoJson().then(setData).catch(console.error);
+  }, [setData]);
+
+  return data;
+}
+
 export default function FranceMap() {
+  const topoJson = useTopoJson();
+
+  return topoJson === undefined ? 'loading' : <Map topoJson={topoJson} />;
+}
+
+type MapProps = {
+  topoJson: Topology;
+};
+
+function Map({ topoJson }: MapProps) {
   const [level, setLevel] = useState<Level>(Level.Region);
 
+  const geojsonCom = feature(topoJson, topoJson.objects.a_com2022) as FeatureCollection<
+    Geometry,
+    GeoJsonProperties
+  >;
+  const geojsonDep = feature(topoJson, topoJson.objects.a_dep2022) as FeatureCollection<
+    Geometry,
+    GeoJsonProperties
+  >;
+  const geojsonReg = feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
+    Geometry,
+    GeoJsonProperties
+  >;
+
   const layers = [
-    createCommunesLayer({ visible: level === Level.Communes }),
-    createDepartementsLayer({
-      filled: level === Level.Departement,
-    }),
-    createRegionsLayer({ filled: level === Level.Region }),
+    createCommunesLayer({ data: geojsonCom.features, visible: level === Level.Communes }),
+    createDepartementsLayer({ data: geojsonDep.features, filled: level === Level.Departement }),
+    createRegionsLayer({ data: geojsonReg.features, filled: level === Level.Region }),
   ];
 
   const handleDynamicLayers = debounce((viewState: ViewStateChangeParameters['viewState']) => {
@@ -128,16 +173,14 @@ export default function FranceMap() {
   );
 
   return (
-    <>
-      <div style={{ height: '100%', width: '100%', position: 'relative', background: 'pink' }}>
-        <DeckGL
-          initialViewState={INITIAL_VIEW_STATE}
-          onViewStateChange={handleViewStateChange}
-          controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
-          layers={layers}
-          getTooltip={getTooltip}
-        />
-      </div>
-    </>
+    <div style={{ height: '100%', width: '100%', position: 'relative', background: 'pink' }}>
+      <DeckGL
+        initialViewState={INITIAL_VIEW_STATE}
+        onViewStateChange={handleViewStateChange}
+        controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
+        layers={layers}
+        getTooltip={getTooltip}
+      />
+    </div>
   );
 }
