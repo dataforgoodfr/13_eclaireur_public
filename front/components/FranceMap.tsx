@@ -1,10 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { MapViewState, PickingInfo, ViewStateChangeParameters } from '@deck.gl/core';
+import {
+  FlyToInterpolator,
+  MapViewState,
+  PickingInfo,
+  ViewStateChangeParameters,
+  WebMercatorViewport,
+} from '@deck.gl/core';
 import { GeoJsonLayer, GeoJsonLayerProps } from '@deck.gl/layers';
 import DeckGL, { DeckGLProps } from '@deck.gl/react';
+import { GeoPermissibleObjects, geoMercator, geoPath } from 'd3';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { feature } from 'topojson-client';
 import { Topology } from 'topojson-specification';
@@ -13,8 +20,14 @@ const URL_TOPOJSON =
   'https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20220219-094943/a-com2022-topo.json';
 
 type GeoJsonProperties = {
-  code: `${number}`;
-  nom: string;
+  /** nom */
+  libgeo: string;
+  /** commune code */
+  codgeo: `${number}`;
+  /** departement code */
+  dep: `${number}`;
+  /** region code */
+  reg: `${number}`;
 };
 
 enum Level {
@@ -38,6 +51,9 @@ const INITIAL_VIEW_STATE: MapViewState = {
 };
 
 // TODO - Use D3 for scaling
+/**
+ * Color scale for testing
+ */
 function colorScale(code: number, divider: number): Color {
   return [48, 128, (+code / divider) * 255, 255];
 }
@@ -66,7 +82,7 @@ function createRegionsLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
     lineWidthMinPixels: 1.5,
     pickable: true,
     visible: true,
-    getFillColor: (d) => colorScale(+d.properties.code, 1),
+    getFillColor: (d) => colorScale(+d.properties.reg, 100),
     getLineColor: black,
     ...props,
   });
@@ -77,7 +93,7 @@ function createDepartementsLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
     id: 'departements',
     pickable: true,
     lineWidthMinPixels: 1,
-    getFillColor: (d) => colorScale(+d.properties.code, 100),
+    getFillColor: (d) => colorScale(+d.properties.dep, 100),
     getLineColor: black,
     ...props,
   });
@@ -89,7 +105,7 @@ function createCommunesLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
     pickable: true,
     lineWidthMinPixels: 0.2,
     getLineWidth: 100,
-    getFillColor: (d) => colorScale(+d.properties.code, 100000),
+    getFillColor: (d) => colorScale(+d.properties.codgeo, 10000),
     getLineColor: black,
     ...props,
   });
@@ -116,36 +132,103 @@ function useTopoJson() {
   return data;
 }
 
-export default function FranceMap() {
+type FranceMapProps = Omit<MapProps, 'topoJson'>;
+
+export default function FranceMap(props: FranceMapProps) {
   const topoJson = useTopoJson();
 
-  return topoJson === undefined ? 'loading' : <Map topoJson={topoJson} />;
+  return topoJson === undefined ? 'loading' : <Map topoJson={topoJson} {...props} />;
 }
 
 type MapProps = {
   topoJson: Topology;
+  height: number;
+  width: number;
 };
 
-function Map({ topoJson }: MapProps) {
+function Map({ topoJson, height, width }: MapProps) {
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [level, setLevel] = useState<Level>(Level.Region);
 
-  const geojsonCom = feature(topoJson, topoJson.objects.a_com2022) as FeatureCollection<
-    Geometry,
-    GeoJsonProperties
-  >;
-  const geojsonDep = feature(topoJson, topoJson.objects.a_dep2022) as FeatureCollection<
-    Geometry,
-    GeoJsonProperties
-  >;
-  const geojsonReg = feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
-    Geometry,
-    GeoJsonProperties
-  >;
+  const geojsonCom = useMemo(
+    () =>
+      feature(topoJson, topoJson.objects.a_com2022) as FeatureCollection<
+        Geometry,
+        GeoJsonProperties
+      >,
+    [topoJson],
+  );
+  const geojsonDep = useMemo(
+    () =>
+      feature(topoJson, topoJson.objects.a_dep2022) as FeatureCollection<
+        Geometry,
+        GeoJsonProperties
+      >,
+    [topoJson],
+  );
+  const geojsonReg = useMemo(
+    () =>
+      feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
+        Geometry,
+        GeoJsonProperties
+      >,
+    [topoJson],
+  );
+
+  console.log(geojsonReg, geojsonDep, geojsonCom);
+
+  function getObjectBoundingBox(
+    object: GeoPermissibleObjects,
+  ): [[number, number], [number, number]] {
+    const projection = geoMercator();
+    const path = geoPath(projection);
+
+    const bbx = path.bounds(object);
+
+    if (projection?.invert === undefined) {
+      throw new Error('Projection invert fn should exist');
+    }
+
+    const topLeftCorner = projection.invert(bbx[0]);
+    const bottomRightCorner = projection.invert(bbx[1]);
+
+    if (!topLeftCorner || !bottomRightCorner) {
+      throw new Error('Invalid projection inversion');
+    }
+
+    return [topLeftCorner, bottomRightCorner];
+  }
+
+  function zoomToShape(pickingInfo: PickingInfo) {
+    const viewport = new WebMercatorViewport({ height, width });
+
+    const bbx = getObjectBoundingBox(pickingInfo.object);
+
+    const updatedViewState = viewport.fitBounds(bbx, { padding: 10 });
+
+    setViewState({
+      ...updatedViewState,
+      transitionInterpolator: new FlyToInterpolator({ speed: 2 }),
+      transitionDuration: 'auto',
+    });
+  }
 
   const layers = [
-    createCommunesLayer({ data: geojsonCom.features, visible: level === Level.Communes }),
-    createDepartementsLayer({ data: geojsonDep.features, filled: level === Level.Departement }),
-    createRegionsLayer({ data: geojsonReg.features, filled: level === Level.Region }),
+    createCommunesLayer({
+      data: geojsonCom.features,
+      visible: level === Level.Communes,
+      onClick: zoomToShape,
+    }),
+    createDepartementsLayer({
+      data: geojsonDep.features,
+      filled: level === Level.Departement,
+      onClick: zoomToShape,
+    }),
+    createRegionsLayer({
+      data: geojsonReg.features,
+      filled: level === Level.Region,
+      onClick: zoomToShape,
+    }),
   ];
 
   const handleDynamicLayers = debounce((viewState: ViewStateChangeParameters['viewState']) => {
@@ -163,11 +246,12 @@ function Map({ topoJson }: MapProps) {
 
   const handleViewStateChange: DeckGLProps['onViewStateChange'] = ({ viewState }) => {
     handleDynamicLayers(viewState);
+    setViewState(viewState);
   };
 
   const getTooltip = useCallback(
     ({ object }: PickingInfo<Feature<Geometry, GeoJsonProperties>>) => {
-      return object ? object.properties.nom : null;
+      return object ? object.properties.libgeo : null;
     },
     [],
   );
@@ -175,7 +259,9 @@ function Map({ topoJson }: MapProps) {
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative', background: 'pink' }}>
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        width={width}
+        height={height}
+        viewState={viewState}
         onViewStateChange={handleViewStateChange}
         controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
         layers={layers}
