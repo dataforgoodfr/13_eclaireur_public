@@ -1,4 +1,3 @@
-import itertools
 import json
 import logging
 from typing import Tuple
@@ -27,6 +26,7 @@ class DataGouvSearcher:
         self.scope = communities_selector
         self.data_folder = get_project_base_path() / "back" / "data" / "datagouv_search"
         self.data_folder.mkdir(parents=True, exist_ok=True)
+        (self.data_folder / "organization_datasets").mkdir(parents=True, exist_ok=True)
 
     def initialize_catalog(self):
         """
@@ -100,22 +100,17 @@ class DataGouvSearcher:
             ["siren", "dataset_id", "title", "description", "organization", "frequency"],
         ]
 
-    def _get_preferred_format(self, records: list[dict]) -> dict:
-        """
-        Select the prefered format from all posibilities of the same dataset.
-        """
-
-        for format in DATAGOUV_PREFERED_FORMAT:
-            for record in records:
-                if record.get("format: ") == format:
-                    return record
-
-        for record in records:
-            if record.get("format: ") is not None:
-                logging.info("Unclassified file format " + record.get("format: "))
-                return record
-
-        return records[0] if records else None
+    def _select_prefered_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        return (
+            df.assign(
+                priority=lambda df: df["format"]
+                .map({n: i for i, n in enumerate(DATAGOUV_PREFERED_FORMAT)})
+                .fillna(len(DATAGOUV_PREFERED_FORMAT))
+            )
+            .sort_values("priority")
+            .drop_duplicates(subset=["dataset_id"])
+            .drop(columns=["priority"])
+        )
 
     def _get_organization_datasets_page(
         self, url: str, organization_id: str
@@ -138,57 +133,49 @@ class DataGouvSearcher:
             return [], None
         return data["data"], data.get("next_page")
 
-    def _get_files_by_org_from_api(
-        self,
-        url: str,
-        organization_id: str,
-        title_filter: list[str],
-        description_filter: list[str],
-        column_filter: list[str],
-    ) -> list[dict]:
-        """Return a list of dictionaries, one for each file with the specified filters of one organization."""
+    def _fetch_organisation_datasets(self, url: str, organization_id: str) -> pd.DataFrame:
+        organisation_datasets_filename = (
+            self.data_folder / "organization_datasets" / f"{organization_id}.parquet"
+        )
+        if organisation_datasets_filename.exists():
+            return pd.read_parquet(organisation_datasets_filename)
 
-        scoped_files = []
+        datasets = []
         while url:
             orga_datasets, url = self._get_organization_datasets_page(url, organization_id)
-
-            for metadata in orga_datasets:
-                keyword_in_title = any(
-                    word in metadata["title"].lower() for word in title_filter
-                )
-                keyword_in_description = any(
-                    word in metadata["description"].lower() for word in description_filter
-                )
-
-                keyword_in_resources = any(
-                    word in (resource["description"] or "").lower()
-                    for word in column_filter
-                    for resource in metadata["resources"]
-                )
-                flagged_resources = []
-                if keyword_in_description or keyword_in_title or keyword_in_resources:
-                    flagged_resources = [
-                        {
-                            "organization_id": metadata["organization"]["id"],
-                            "organization": metadata["organization"]["name"],
-                            "title": metadata["title"],
-                            "description": metadata["description"],
-                            "dataset_id": metadata["id"],
-                            "frequency": metadata["frequency"],
-                            "format": resource["format"],
-                            "url": resource["url"],
-                            "created_at": resource["created_at"],
-                            "keyword_in_resource": keyword_in_resources,
-                            "keyword_in_description": keyword_in_description,
-                            "keyword_in_title": keyword_in_title,
-                        }
-                        for resource in metadata["resources"]
-                    ]
-                prefered_resource = self._get_preferred_format(flagged_resources)
-                if prefered_resource:
-                    scoped_files.append(prefered_resource)
-
-        return scoped_files
+            datasets += [
+                {
+                    "organization_id": metadata["organization"]["id"],
+                    "organization": metadata["organization"]["name"],
+                    "title": metadata["title"],
+                    "description": metadata["description"],
+                    "dataset_id": metadata["id"],
+                    "frequency": metadata["frequency"],
+                    "format": resource["format"],
+                    "url": resource["url"],
+                    "created_at": resource["created_at"],
+                    "resource_description": resource["description"],
+                }
+                for metadata in orga_datasets
+                for resource in metadata["resources"]
+            ]
+        datasets = pd.DataFrame(
+            datasets,
+            columns=[
+                "organization_id",
+                "organization",
+                "title",
+                "description",
+                "dataset_id",
+                "frequency",
+                "format",
+                "url",
+                "created_at",
+                "resource_description",
+            ],
+        )
+        datasets.to_parquet(organisation_datasets_filename)
+        return datasets
 
     def _select_dataset_by_metadata(
         self,
@@ -202,45 +189,45 @@ class DataGouvSearcher:
         """
         datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
         datagouv_ids_list = sorted(datagouv_ids_to_siren["id_datagouv"].unique())
-        return (
-            pd.DataFrame(
-                itertools.chain(
-                    *[
-                        self._get_files_by_org_from_api(
-                            url, orga, title_filter, description_filter, column_filter
-                        )
-                        for orga in tqdm(datagouv_ids_list)
-                    ]
-                ),
-                columns=[
-                    "organization_id",
-                    "organization",
-                    "title",
-                    "description",
-                    "dataset_id",
-                    "frequency",
-                    "format",
-                    "url",
-                    "created_at",
-                    "keyword_in_resource",
-                    "keyword_in_description",
-                    "keyword_in_title",
-                ],
+
+        pattern_title = "|".join([x.lower() for x in title_filter])
+        pattern_description = "|".join([x.lower() for x in description_filter])
+        pattern_resources = "|".join([x.lower() for x in column_filter])
+
+        datasets = pd.concat(
+            [self._fetch_organisation_datasets(url, orga) for orga in tqdm(datagouv_ids_list)],
+            ignore_index=True,
+        ).assign(
+            keyword_in_title=lambda df: df["title"]
+            .str.lower()
+            .str.contains(pattern_title, regex=True),
+            keyword_in_description=lambda df: df["description"]
+            .str.lower()
+            .str.contains(pattern_description, regex=True),
+            keyword_in_resource=lambda df: df["resource_description"]
+            .str.lower()
+            .str.contains(pattern_resources, regex=True),
+        )
+
+        propagated_columns = datasets.groupby("dataset_id").agg({"keyword_in_resource": "max"})
+        datasets = (
+            pd.merge(datasets, propagated_columns, on="dataset_id", suffixes=("_raw", ""))
+            .pipe(
+                lambda df: df[
+                    df["keyword_in_resource"]
+                    & (df["keyword_in_title"] | df["keyword_in_description"])
+                ]
             )
+            .pipe(self._select_prefered_format)
+            .drop(columns=["keyword_in_resource_raw"])
             .merge(
                 datagouv_ids_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
-                how="left",
             )
             .drop(columns=["id_datagouv", "organization_id"])
-            .pipe(
-                lambda df: df[
-                    (df["keyword_in_title"] | df["keyword_in_description"])
-                    & df["keyword_in_resource"]
-                ]
-            )
         )
+        return datasets
 
     def _log_basic_info(self, df: pd.DataFrame):
         """
@@ -303,6 +290,7 @@ class DataGouvSearcher:
             .drop_duplicates(subset=["url"])
             .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
+            .pipe(self._select_prefered_format)
         )
         self.logger.info("Total datafiles basic info :")
         self._log_basic_info(datafiles)
