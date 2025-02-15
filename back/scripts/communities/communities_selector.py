@@ -1,6 +1,5 @@
 import logging
 import re
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -45,7 +44,7 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = Path(get_project_base_path()) / "data" / "communities" / "processed_data"
+        data_folder = get_project_base_path() / "data" / "communities" / "processed_data"
         all_communities_filename = data_folder / "all_communities_data.parquet"
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
