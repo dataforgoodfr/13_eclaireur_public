@@ -174,3 +174,4 @@ loc_env/
 # Ignore all .pyc & .ipynb files
 *.pyc
 *.ipynb
+.DS_Store
