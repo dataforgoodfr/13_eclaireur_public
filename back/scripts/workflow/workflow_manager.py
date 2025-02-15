@@ -160,3 +160,4 @@ class WorkflowManager:
         # Save each dataframe to the database
         for df_name, df in df_to_save_to_db.items():
             connector.save_df_to_sql(df, df_name)
+        connector.close_connection()
