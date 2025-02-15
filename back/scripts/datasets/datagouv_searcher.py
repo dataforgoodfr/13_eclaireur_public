@@ -1,7 +1,6 @@
 import itertools
 import json
 import logging
-from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
@@ -30,10 +29,9 @@ class DataGouvSearcher:
         """
         Load or create the data.gouv dataset catalog and metadata catalog.
         """
-        self.datagouv_ids_to_siren = self.scope.get_datagouv_ids()
-        datagouv_ids_list = list(self.datagouv_ids_to_siren["id_datagouv"].unique())
+        self.datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
 
-        data_folder = Path(get_project_base_path()) / "data" / "datagouv_search"
+        data_folder = get_project_base_path() / "data" / "datagouv_search"
         catalog_filename = data_folder / "datagouv_catalog.parquet"
         if catalog_filename.exists():
             self.datasets_catalog = pd.read_parquet(catalog_filename)
@@ -44,12 +42,10 @@ class DataGouvSearcher:
             )
             self.datasets_catalog = (
                 dataset_catalog_loader.load()
-                .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
                 .merge(
                     self.datagouv_ids_to_siren,
                     left_on="organization_id",
                     right_on="id_datagouv",
-                    how="left",
                 )
                 .drop(columns=["id_datagouv"])
             )
@@ -63,12 +59,10 @@ class DataGouvSearcher:
             self.datasets_metadata = (
                 datafile_catalog_loader.load()
                 .rename(columns={"dataset.organization_id": "organization_id"})
-                .pipe(lambda df: df[df["organization_id"].isin(datagouv_ids_list)])
                 .merge(
                     self.datagouv_ids_to_siren,
                     left_on="organization_id",
                     right_on="id_datagouv",
-                    how="left",
                 )
                 .drop(columns=["id_datagouv"])
             )
@@ -127,7 +121,9 @@ class DataGouvSearcher:
 
         return records[0] if records else None
 
-    def _organization_datasets(self, url: str, organization_id: str) -> Tuple[dict, str]:
+    def _get_organization_datasets_page(
+        self, url: str, organization_id: str
+    ) -> Tuple[dict, str]:
         """
         List all datasets under an organization through data.gouv API.
         """
@@ -157,7 +153,7 @@ class DataGouvSearcher:
 
         scoped_files = []
         while url:
-            orga_datasets, url = self._organization_datasets(url, organization_id)
+            orga_datasets, url = self._get_organization_datasets_page(url, organization_id)
 
             for metadata in orga_datasets:
                 keyword_in_title = any(
@@ -167,36 +163,37 @@ class DataGouvSearcher:
                     word in metadata["description"].lower() for word in description_filter
                 )
 
-                montant_col = any(
+                keyword_in_resources = any(
                     word in (resource["description"] or "").lower()
                     for word in column_filter
                     for resource in metadata["resources"]
                 )
-                flagged_resources = [
-                    {
-                        "organization_id": metadata["organization"]["id"],
-                        "organization": metadata["organization"]["name"],
-                        "title": metadata["title"],
-                        "description": metadata["description"],
-                        "id": metadata["id"],
-                        "frequency": metadata["frequency"],
-                        "format": resource["format"],
-                        "url": resource["url"],
-                        "created_at": resource["created_at"],
-                        "montant_col": montant_col,
-                        "keyword_in_description": keyword_in_description,
-                        "keyword_in_title": keyword_in_title,
-                    }
-                    for resource in metadata["resources"]
-                    if (keyword_in_description or keyword_in_title or montant_col)
-                ]
+                flagged_resources = []
+                if keyword_in_description or keyword_in_title or keyword_in_resources:
+                    flagged_resources = [
+                        {
+                            "organization_id": metadata["organization"]["id"],
+                            "organization": metadata["organization"]["name"],
+                            "title": metadata["title"],
+                            "description": metadata["description"],
+                            "id": metadata["id"],
+                            "frequency": metadata["frequency"],
+                            "format": resource["format"],
+                            "url": resource["url"],
+                            "created_at": resource["created_at"],
+                            "montant_col": keyword_in_resources,
+                            "keyword_in_description": keyword_in_description,
+                            "keyword_in_title": keyword_in_title,
+                        }
+                        for resource in metadata["resources"]
+                    ]
                 prefered_resource = self._get_preferred_format(flagged_resources)
                 if prefered_resource:
                     scoped_files.append(prefered_resource)
 
         return scoped_files
 
-    def _select_dataset_by_content(
+    def _select_dataset_by_metadata(
         self,
         url: str,
         title_filter: list[str],
@@ -269,7 +266,7 @@ class DataGouvSearcher:
             self._log_basic_info(topdown_datafiles)
 
         if method in ["bu_only", "all"]:
-            bottomup_datafiles = self._select_dataset_by_content(
+            bottomup_datafiles = self._select_dataset_by_metadata(
                 search_config["api"]["url"],
                 search_config["api"]["title"],
                 search_config["api"]["description"],
