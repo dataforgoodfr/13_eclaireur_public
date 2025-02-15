@@ -102,7 +102,7 @@ class WorkflowManager:
         if topic_config["source"] == "multiple":
             # Find multiple datafiles from datagouv
             datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
-            datagouv_topic_files_in_scope = datagouv_searcher.get_datafiles(topic_config)
+            datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder(communities_selector)

@@ -4,11 +4,13 @@ import logging
 from typing import Tuple
 
 import pandas as pd
-import requests
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
+from back.scripts.loaders.base_loader import retry_session
 from back.scripts.utils.config import get_project_base_path
+
+DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
 
 
 class DataGouvSearcher:
@@ -23,93 +25,87 @@ class DataGouvSearcher:
 
         self._config = datagouv_config
         self.scope = communities_selector
-        self.initialize_catalogs()
+        self.data_folder = get_project_base_path() / "data" / "datagouv_search"
+        self.data_folder.mkdir(parents=True, exist_ok=True)
 
-    def initialize_catalogs(self):
+    def initialize_catalog(self):
         """
         Load or create the data.gouv dataset catalog and metadata catalog.
         """
-        self.datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
 
-        data_folder = get_project_base_path() / "data" / "datagouv_search"
-        catalog_filename = data_folder / "datagouv_catalog.parquet"
+        catalog_filename = self.data_folder / "datagouv_catalog.parquet"
         if catalog_filename.exists():
-            self.datasets_catalog = pd.read_parquet(catalog_filename)
-        else:
-            dataset_catalog_loader = CSVLoader(
-                self._config["datasets"]["url"],
-                columns_to_keep=self._config["datasets"]["columns"],
-            )
-            self.datasets_catalog = (
-                dataset_catalog_loader.load()
-                .merge(
-                    self.datagouv_ids_to_siren,
-                    left_on="organization_id",
-                    right_on="id_datagouv",
-                )
-                .drop(columns=["id_datagouv"])
-            )
-            self.datasets_catalog.to_parquet(catalog_filename)
+            return pd.read_parquet(catalog_filename)
 
-        catalog_metadata_filename = data_folder / "catalog_metadata.parquet"
-        if catalog_metadata_filename.exists():
-            self.datasets_metadata = pd.read_parquet(catalog_metadata_filename)
-        else:
-            datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
-            self.datasets_metadata = (
-                datafile_catalog_loader.load()
-                .rename(columns={"dataset.organization_id": "organization_id"})
-                .merge(
-                    self.datagouv_ids_to_siren,
-                    left_on="organization_id",
-                    right_on="id_datagouv",
-                )
-                .drop(columns=["id_datagouv"])
+        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        dataset_catalog_loader = CSVLoader(
+            self._config["datasets"]["url"],
+            columns_to_keep=self._config["datasets"]["columns"],
+        )
+        datasets_catalog = (
+            dataset_catalog_loader.load()
+            .rename(columns={"id": "dataset_id"})
+            .merge(
+                datagouv_ids_to_siren,
+                left_on="organization_id",
+                right_on="id_datagouv",
             )
-            self.datasets_metadata.to_parquet(catalog_metadata_filename)
+            .drop(columns=["id_datagouv"])
+        )
+        datasets_catalog.to_parquet(catalog_filename)
+        return datasets_catalog
+
+    def initialize_catalog_metadata(self):
+        catalog_metadata_filename = self.data_folder / "catalog_metadata.parquet"
+        if catalog_metadata_filename.exists():
+            return pd.read_parquet(catalog_metadata_filename)
+
+        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
+        datasets_metadata = (
+            datafile_catalog_loader.load()
+            .rename(columns={"dataset.organization_id": "organization_id", "id": "metadata_id"})
+            .merge(
+                datagouv_ids_to_siren,
+                left_on="organization_id",
+                right_on="id_datagouv",
+            )
+            .drop(columns=["id_datagouv"])
+            .rename(columns={"dataset.id": "dataset_id"})
+        )
+        datasets_metadata.to_parquet(catalog_metadata_filename)
+        return datasets_metadata
 
     def _select_datasets_by_title_and_desc(
-        self, title_filter: str, description_filter: str
+        self, catalog: pd.DataFrame, title_filter: str, description_filter: str
     ) -> pd.DataFrame:
         """
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
         """
-        flagged_by_description = self.datasets_catalog["description"].str.contains(
+        flagged_by_description = catalog["description"].str.contains(
             description_filter, case=False, na=False
         )
         self.logger.info(
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
-        flagged_by_title = self.datasets_catalog["title"].str.contains(
-            title_filter, case=False, na=False
-        )
+        flagged_by_title = catalog["title"].str.contains(title_filter, case=False, na=False)
         self.logger.info(
             f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )
 
-        return (
-            self.datasets_catalog.loc[
-                (flagged_by_title | flagged_by_description),
-                ["siren", "id", "title", "description", "organization", "frequency"],
-            ]
-            .merge(
-                self.datasets_metadata[["dataset.id", "format", "created_at", "url"]],
-                left_on="id",
-                right_on="dataset.id",
-                how="left",
-            )
-            .drop(columns=["dataset.id"])
-        )
+        return catalog.loc[
+            (flagged_by_title | flagged_by_description),
+            ["siren", "dataset_id", "title", "description", "organization", "frequency"],
+        ]
 
     def _get_preferred_format(self, records: list[dict]) -> dict:
         """
         Select the prefered format from all posibilities of the same dataset.
         """
-        preferred_formats = ["csv", "xls", "json", "zip"]
 
-        for format in preferred_formats:
+        for format in DATAGOUV_PREFERED_FORMAT:
             for record in records:
                 if record.get("format: ") == format:
                     return record
@@ -127,8 +123,9 @@ class DataGouvSearcher:
         """
         List all datasets under an organization through data.gouv API.
         """
+        session = retry_session(retries=5)
         params = {"organization": organization_id}
-        response = requests.get(url, params=params)
+        response = session.get(url, params=params)
         try:
             response.raise_for_status()
         except Exception as e:
@@ -203,7 +200,8 @@ class DataGouvSearcher:
         """
         Select datasets based on metadata fetched from data.gouv organisation page.
         """
-        datagouv_ids_list = sorted(self.datagouv_ids_to_siren["id_datagouv"].unique())
+        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        datagouv_ids_list = sorted(datagouv_ids_to_siren["id_datagouv"].unique())
         bottom_up_files_df = (
             pd.DataFrame(
                 itertools.chain(
@@ -216,7 +214,7 @@ class DataGouvSearcher:
                 )
             )
             .merge(
-                self.datagouv_ids_to_siren,
+                datagouv_ids_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
                 how="left",
@@ -233,10 +231,10 @@ class DataGouvSearcher:
         Log basic info about a search result dataframe
         """
         self.logger.info(
-            f"Nombre de datasets correspondant au filtre de titre ou de description : {df.id.nunique()}"
+            f"Nombre de datasets correspondant au filtre de titre ou de description : {df['dataset_id'].nunique()}"
         )
         self.logger.info(f"Nombre de fichiers : {df.shape[0]}")
-        self.logger.info(f"Nombre de fichiers uniques : {df.url.nunique()}")
+        self.logger.info(f"Nombre de fichiers uniques : {df['url'].nunique()}")
         self.logger.info(
             f"Nombre de fichiers par format : {df.groupby('format').size().to_dict()}"
         )
@@ -256,11 +254,17 @@ class DataGouvSearcher:
                 f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
             )
 
+        final_datasets_filenname = self.data_folder / "datagouv_datasets.parquet"
+        if final_datasets_filenname.exists():
+            return pd.read_parquet(final_datasets_filenname)
+
+        catalog = self.initialize_catalog()
+        metadata_catalog = self.initialize_catalog_metadata()
         datafiles = []
         if method in ["all", "td_only"]:
             topdown_datafiles = self._select_datasets_by_title_and_desc(
-                search_config["title_filter"], search_config["description_filter"]
-            )
+                catalog, search_config["title_filter"], search_config["description_filter"]
+            ).merge(metadata_catalog, on="dataset_id")
             datafiles.append(topdown_datafiles)
             self.logger.info("Topdown datafiles basic info :")
             self._log_basic_info(topdown_datafiles)
@@ -284,5 +288,6 @@ class DataGouvSearcher:
         )
         self.logger.info("Total datafiles basic info :")
         self._log_basic_info(datafiles)
+        datafiles.to_parquet(final_datasets_filenname)
 
         return datafiles
