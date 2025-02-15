@@ -25,7 +25,7 @@ class DataGouvSearcher:
 
         self._config = datagouv_config
         self.scope = communities_selector
-        self.data_folder = get_project_base_path() / "data" / "datagouv_search"
+        self.data_folder = get_project_base_path() / "back" / "data" / "datagouv_search"
         self.data_folder.mkdir(parents=True, exist_ok=True)
 
     def initialize_catalog(self):
