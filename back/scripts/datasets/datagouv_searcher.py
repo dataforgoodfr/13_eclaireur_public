@@ -130,12 +130,12 @@ class DataGouvSearcher:
             response.raise_for_status()
         except Exception as e:
             self.logger.error(f"Error while downloading file from {url} : {e}")
-            return
+            return [], None
         try:
             data = response.json()
         except json.JSONDecodeError as e:
             self.logger.error(f"Error while decoding json from {url} : {e}")
-            return
+            return [], None
         return data["data"], data.get("next_page")
 
     def _get_files_by_org_from_api(
@@ -173,12 +173,12 @@ class DataGouvSearcher:
                             "organization": metadata["organization"]["name"],
                             "title": metadata["title"],
                             "description": metadata["description"],
-                            "id": metadata["id"],
+                            "dataset_id": metadata["id"],
                             "frequency": metadata["frequency"],
                             "format": resource["format"],
                             "url": resource["url"],
                             "created_at": resource["created_at"],
-                            "montant_col": keyword_in_resources,
+                            "keyword_in_resource": keyword_in_resources,
                             "keyword_in_description": keyword_in_description,
                             "keyword_in_title": keyword_in_title,
                         }
@@ -202,16 +202,30 @@ class DataGouvSearcher:
         """
         datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
         datagouv_ids_list = sorted(datagouv_ids_to_siren["id_datagouv"].unique())
-        bottom_up_files_df = (
+        return (
             pd.DataFrame(
                 itertools.chain(
                     *[
                         self._get_files_by_org_from_api(
                             url, orga, title_filter, description_filter, column_filter
                         )
-                        for orga in tqdm(datagouv_ids_list)
+                        for orga in tqdm(datagouv_ids_list[-5:])
                     ]
-                )
+                ),
+                columns=[
+                    "organization_id",
+                    "organization",
+                    "title",
+                    "description",
+                    "dataset_id",
+                    "frequency",
+                    "format",
+                    "url",
+                    "created_at",
+                    "keyword_in_resource",
+                    "keyword_in_description",
+                    "keyword_in_title",
+                ],
             )
             .merge(
                 datagouv_ids_to_siren,
@@ -220,11 +234,13 @@ class DataGouvSearcher:
                 how="left",
             )
             .drop(columns=["id_datagouv", "organization_id"])
+            .pipe(
+                lambda df: df[
+                    (df["keyword_in_title"] | df["keyword_in_description"])
+                    & df["keyword_in_resource"]
+                ]
+            )
         )
-        return bottom_up_files_df[
-            (bottom_up_files_df.keyword_in_title | bottom_up_files_df.keyword_in_description)
-            & bottom_up_files_df.montant_col
-        ]
 
     def _log_basic_info(self, df: pd.DataFrame):
         """
