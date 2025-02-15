@@ -219,13 +219,12 @@ class DataGouvSearcher:
                 ]
             )
             .pipe(self._select_prefered_format)
-            .drop(columns=["keyword_in_resource_raw"])
             .merge(
                 datagouv_ids_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
             )
-            .drop(columns=["id_datagouv", "organization_id"])
+            .drop(columns=["id_datagouv", "organization_id", "keyword_in_resource_raw"])
         )
         return datasets
 
