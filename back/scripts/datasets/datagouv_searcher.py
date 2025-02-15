@@ -275,7 +275,9 @@ class DataGouvSearcher:
             return pd.read_parquet(final_datasets_filenname)
 
         catalog = self.initialize_catalog()
-        metadata_catalog = self.initialize_catalog_metadata()
+        metadata_catalog = self.initialize_catalog_metadata()[
+            ["dataset_id", "format", "created_at", "url"]
+        ]
         datafiles = []
         if method in ["all", "td_only"]:
             topdown_datafiles = self._select_datasets_by_title_and_desc(
