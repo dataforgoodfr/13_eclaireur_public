@@ -209,7 +209,7 @@ class DataGouvSearcher:
                         self._get_files_by_org_from_api(
                             url, orga, title_filter, description_filter, column_filter
                         )
-                        for orga in tqdm(datagouv_ids_list[-5:])
+                        for orga in tqdm(datagouv_ids_list)
                     ]
                 ),
                 columns=[
