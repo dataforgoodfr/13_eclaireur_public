@@ -104,6 +104,7 @@ class WorkflowManager:
             datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
             datagouv_topic_files_in_scope = datagouv_searcher.get_datafiles(topic_config)
 
+
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder(communities_selector)
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
@@ -114,16 +115,31 @@ class WorkflowManager:
                 ignore_index=True,
             )
 
+            if self.config["workflow"]["save_to_db"]:
+                connector = PSQLConnector()
+                connector.connect()
+                connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
+                connector.close_connection()
+
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
 
+
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
+            if self.config["workflow"]["save_to_db"]:
+                connector = PSQLConnector()
+                connector.connect()
+                connector.save_df_to_sql(topic_datafiles.loaded_data, topic + "_raw")
+                connector.save_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean")
+                connector.close_connection()
+
         self.logger.info(f"Topic {topic} processed.")
+
         return topic_files_in_scope, topic_datafiles
 
     def save_output_to_csv(
