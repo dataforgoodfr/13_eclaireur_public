@@ -20,6 +20,11 @@ class PSQLConnector:
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         )
 
+    def close_connection(self):
+        if self.engine:
+            self.engine.dispose()  # Ferme toutes les connexions ouvertes
+            self.logger.info("Database connection closed.")
+
     def drop_table_if_exists(self, table_name):
         try:
             with self.engine.connect() as conn:
@@ -28,12 +33,13 @@ class PSQLConnector:
         except Exception as e:
             self.logger.error(f"An error occurred while dropping the table: {e}")
 
-    def save_df_to_sql(self, df, table_name, chunksize=1000, if_exists="append", index=False):
+    def save_df_to_sql(self, df, table_name, chunksize=1000, if_exists="replace", index=False):
         try:
-            self.drop_table_if_exists(table_name)
-            df.to_sql(
-                table_name, self.engine, if_exists=if_exists, index=index, chunksize=chunksize
-            )
-            self.logger.info("Dataframe saved successfully to the database " + table_name + ".")
+            # self.drop_table_if_exists(table_name)
+            with self.engine.connect() as conn:
+                df.to_sql(
+                    table_name, conn, if_exists=if_exists, index=index, chunksize=chunksize
+                )
+                self.logger.info("Dataframe saved successfully to the database " + table_name + ".")
         except Exception as e:
             self.logger.error(f"An error occurred: {e}")
