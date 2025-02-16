@@ -41,10 +41,9 @@ class DatafilesLoader:
 
     def fetch_datasets(self):
         readable_files, unreadables = self._keep_readable_datafiles()
+        logging.info("Unreadable datasets %s", len(unreadables))
         invalid_datasets = self._load_datafiles(readable_files)
-
-        print("invalid_datasets", invalid_datasets)
-        print("unreadables", unreadables)
+        logging.info("Invalid datasets %s", len(invalid_datasets))
 
     def _load_schema(self, schema_topic_config):
         """
@@ -82,6 +81,8 @@ class DatafilesLoader:
         loader = loader_class(file_info["url"])
         try:
             df = loader.load()
+            if df is None:
+                return False
             if not df.empty:
                 for col in self.loader_config_["file_info_columns"]:
                     if col in file_info:
@@ -91,8 +92,6 @@ class DatafilesLoader:
                 return True
         except Exception as e:
             self.logger.error(f"Failed to load data from {file_info['url']} - {e}")
-            # print(file_info.to_dict())
-            # 1 / 0
         return False
 
     def _load_datafiles(self, readable_files: pd.DataFrame):
@@ -105,16 +104,12 @@ class DatafilesLoader:
         self.logger.info(
             "Number of dataframes loaded: %s", len(readable_files) - len(invalid_datasets)
         )
-        # self.logger.info(
-        #     "Number of elements in data that are not dataframes: %s",
-        #     sum([not isinstance(df, pd.DataFrame) for df in data]),
-        # )
         self.logger.info("Number of files not loaded: %s", len(invalid_datasets))
         return invalid_datasets
 
     # Internal function to normalize the loaded data according to the defined schema
     # TODO: This function should be refactored to be more readable and maintainable (or using external libraries)
-    def _normalize_data(self, topic, topic_config, datafile_loader_config):
+    def normalize_data(self, topic, topic_config, datafile_loader_config):
         len_out = len(
             self.datafiles_out
         )  # used to count the number of files not normalized during the process
