@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import time
 from urllib.parse import urlparse
 
 import requests
@@ -52,21 +51,12 @@ class BaseLoader:
             with open(local_path, "rb") as file:
                 return self.process_data(file.read())
 
-        attempt = 0
-        while attempt < self.num_retries:
-            try:
-                response = requests.get(self.file_url)
-                if response.status_code == 200:
-                    return self.process_data(response.content)
-                else:
-                    self.logger.error(f"Failed to load data from {self.file_url}")
-                    attempt += 1
-            except requests.exceptions.RequestException as e:
-                self.logger.error(f"RequestException: {e}")
-                attempt += 1
-                time.sleep(self.delay_between_retries)
+        s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
+        response = s.get(self.file_url)
+        if response.status_code == 200:
+            return self.process_data(response.content)
 
-        return None
+        self.logger.error(f"Failed to load data from {self.file_url}")
 
     def process_data(self, data):
         raise NotImplementedError("This method should be implemented by subclasses.")
