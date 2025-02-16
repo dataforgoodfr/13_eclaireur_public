@@ -1,13 +1,15 @@
 import logging
-import pandas as pd
 from pathlib import Path
 
-from scripts.utils.config import get_project_base_path
-
+import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
 from scripts.loaders.json_loader import JSONLoader
-from scripts.utils.dataframe_operation import merge_duplicate_columns, safe_rename, cast_data
+from scripts.utils.config import get_project_base_path
+from scripts.utils.dataframe_operation import cast_data, merge_duplicate_columns, safe_rename
+from tqdm import tqdm
+
+from back.scripts.datasets.datagouv_searcher import DATAGOUV_PREFERED_FORMAT
 
 
 class DatafilesLoader:
@@ -20,7 +22,7 @@ class DatafilesLoader:
     def __init__(self, files_in_scope, topic, topic_config, datafile_loader_config):
         self.logger = logging.getLogger(__name__)
 
-        self.loader_classes = {
+        self.loader_classes_ = {
             "csv": CSVLoader,
             "xls": ExcelLoader,
             "xlsx": ExcelLoader,
@@ -28,87 +30,87 @@ class DatafilesLoader:
             "json": JSONLoader,
         }
 
-        # Load filtered datafiles list to explore
         self.files_in_scope = files_in_scope
-        # Load normalized data output schema
+        self.config_ = topic_config
+        self.loader_config_ = datafile_loader_config
+        self.topic = topic
         self.schema = self._load_schema(topic_config["schema"])
-        # Separate readable and unreadable files based on their format
-        self.datafiles_out = pd.DataFrame()
-        readable_files, self.datafiles_out = self._keep_readable_datafiles()
-        # Load the readable files into dataframes
-        self.corpus = self._load_datafiles(readable_files, datafile_loader_config)
-        # Normalize the loaded data according to the defined schema
-        self.normalized_data, self.datacolumns_out = self._normalize_data(
-            topic, topic_config, datafile_loader_config
-        )
+        self.data_folder = get_project_base_path() / "back" / "data" / topic
+        self.data_folder.mkdir(parents=True, exist_ok=True)
+        (self.data_folder / "raw").mkdir(exist_ok=True)
 
-    # Internal function to load the offical schema of the topic normalized data
+    def fetch_datasets(self):
+        readable_files, unreadables = self._keep_readable_datafiles()
+        invalid_datasets = self._load_datafiles(readable_files)
+
+        print("invalid_datasets", invalid_datasets)
+        print("unreadables", unreadables)
+
     def _load_schema(self, schema_topic_config):
+        """
+        Read the official schema of the topic from the URL provided in the config.
+        """
         json_schema_loader = JSONLoader(schema_topic_config["url"], key="fields")
         schema_df = json_schema_loader.load()
         self.logger.info("Schema loaded.")
         return schema_df
 
-    # Internal function to keep only the readable files
     def _keep_readable_datafiles(self):
-        preferred_formats = [
-            "csv",
-            "xls",
-            "xlsx",
-            "json",
-            "zip",
-        ]  # TODO: Preferred formats should be defined in the config
-
+        """
+        Identify files in the accepted formats.
+        """
         readable_files = self.files_in_scope[
-            self.files_in_scope["format"].isin(preferred_formats)
+            self.files_in_scope["format"].isin(DATAGOUV_PREFERED_FORMAT)
         ]
         datafiles_out = self.files_in_scope[
-            ~self.files_in_scope["format"].isin(preferred_formats)
+            ~self.files_in_scope["format"].isin(DATAGOUV_PREFERED_FORMAT)
         ]
         self.logger.info(f"{len(readable_files)} readable files selected.")
         return readable_files, datafiles_out
 
-    # Internal function to load the data from a single file, depending on its format
-    def _load_file_data(self, file_info, datafile_loader_config):
-        loader_class = self.loader_classes.get(file_info["format"].lower())
-        if loader_class:
-            loader = loader_class(file_info["url"])
-            try:
-                df = loader.load()
-                if not df.empty:
-                    for col in datafile_loader_config["file_info_columns"]:
-                        if col in file_info:
-                            df[col] = file_info[col]
-                    self.logger.info(f"Data from {file_info['url']} loaded.")
-                    return df
-            except Exception as e:
-                self.logger.error(f"Failed to load data from {file_info['url']} - {e}")
-        else:
+    def _download_dataset(self, file_info: dict) -> bool:
+        loader_class = self.loader_classes_.get(file_info["format"].lower())
+        if not loader_class:
             self.logger.warning(f"Loader not found for format {file_info['format']}")
+            return False
 
-        # Add the file to the list of files that could not be loaded
-        file_info_df = pd.DataFrame(file_info).transpose()
-        self.datafiles_out = pd.concat([self.datafiles_out, file_info_df], ignore_index=True)
-        return None
+        filename = self.data_folder / "raw" / f"{file_info['dataset_id']}.parquet"
+        if filename.exists():
+            self.logger.info(f"Data from {file_info['url']} already loaded.")
+            return True
 
-    # Internal function to load the datafiles into a dataframes list
-    def _load_datafiles(self, readable_files, datafile_loader_config):
-        len_out = len(self.datafiles_out)
-        data = []
+        loader = loader_class(file_info["url"])
+        try:
+            df = loader.load()
+            if not df.empty:
+                for col in self.loader_config_["file_info_columns"]:
+                    if col in file_info:
+                        df[col] = file_info[col]
+                self.logger.info(f"Data from {file_info['url']} loaded.")
+                df.to_parquet(filename)
+                return True
+        except Exception as e:
+            self.logger.error(f"Failed to load data from {file_info['url']} - {e}")
+            # print(file_info.to_dict())
+            # 1 / 0
+        return False
 
-        for _i, file_info in readable_files.iterrows():
-            df = self._load_file_data(file_info, datafile_loader_config)
-            if df is not None:
-                data.append(df)
+    def _load_datafiles(self, readable_files: pd.DataFrame):
+        invalid_datasets = [
+            file_info
+            for _, file_info in tqdm(readable_files.iterrows())
+            if not self._download_dataset(file_info)
+        ]
 
-        self.logger.info("Number of dataframes loaded: %s", len(data))
         self.logger.info(
-            "Number of elements in data that are not dataframes: %s",
-            sum([not isinstance(df, pd.DataFrame) for df in data]),
+            "Number of dataframes loaded: %s", len(readable_files) - len(invalid_datasets)
         )
-        self.logger.info("Number of files not loaded: %s", len(self.datafiles_out) - len_out)
-
-        return data
+        # self.logger.info(
+        #     "Number of elements in data that are not dataframes: %s",
+        #     sum([not isinstance(df, pd.DataFrame) for df in data]),
+        # )
+        self.logger.info("Number of files not loaded: %s", len(invalid_datasets))
+        return invalid_datasets
 
     # Internal function to normalize the loaded data according to the defined schema
     # TODO: This function should be refactored to be more readable and maintainable (or using external libraries)

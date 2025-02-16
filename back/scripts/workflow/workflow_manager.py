@@ -1,23 +1,23 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
-import pandas as pd
 
+import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
+from scripts.datasets.datafile_loader import DatafileLoader
+from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.datasets.datafiles_loader import DatafilesLoader
-from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.psql_connector import PSQLConnector
 from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (
-    FILES_IN_SCOPE_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-    DATAFILES_OUT_FILENAME,
     DATACOLUMNS_OUT_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    FILES_IN_SCOPE_FILENAME,
     MODIFICATIONS_DATA_FILENAME,
+    NORMALIZED_DATA_FILENAME,
 )
+from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
 
 
 class WorkflowManager:
@@ -118,6 +118,7 @@ class WorkflowManager:
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
+            topic_datafiles.fetch_datasets()
 
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize

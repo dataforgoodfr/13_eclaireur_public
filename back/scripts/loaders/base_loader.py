@@ -56,7 +56,9 @@ class BaseLoader:
         if response.status_code == 200:
             return self.process_data(response.content)
 
-        self.logger.error(f"Failed to load data from {self.file_url}")
+        self.logger.error(
+            f"Failed to load data from {self.file_url} with status code {response.status_code}"
+        )
 
     def process_data(self, data):
         raise NotImplementedError("This method should be implemented by subclasses.")

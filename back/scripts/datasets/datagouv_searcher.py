@@ -9,7 +9,7 @@ from tqdm import tqdm
 from back.scripts.loaders.base_loader import retry_session
 from back.scripts.utils.config import get_project_base_path
 
-DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
+DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "xlsx", "json", "zip"]
 
 
 class DataGouvSearcher:
