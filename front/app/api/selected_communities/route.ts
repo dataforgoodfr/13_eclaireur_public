@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 
 import { Pool } from 'pg';
 
+import { CommunityType } from './types';
+
 // Initialisation du pool PostgreSQL
 const pool = new Pool({
   user: process.env.POSTGRESQL_ADDON_USER,
@@ -11,10 +13,20 @@ const pool = new Pool({
   port: parseInt(process.env.POSTGRESQL_ADDON_PORT || '5432', 10),
 });
 
-export type CommunitiesParamsOptions = {
-  type: string | undefined;
+type CommunitiesParamsOptions = {
+  type: CommunityType | undefined;
   limit: number;
 };
+
+function mapCommunityType(type: string | null) {
+  if (type === null) return null;
+
+  if (Object.values(CommunityType).includes(type as CommunityType)) {
+    return type as CommunityType;
+  }
+
+  throw new Error(`Community type is wrong - ${type}`);
+}
 
 async function getDataFromPool(options: CommunitiesParamsOptions) {
   const { type, limit } = options;
@@ -40,8 +52,8 @@ async function getDataFromPool(options: CommunitiesParamsOptions) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type') ?? undefined;
-    const limit = Number(searchParams.get('limit')) ?? 100;
+    const type = mapCommunityType(searchParams.get('type')) ?? undefined;
+    const limit = Number(searchParams.get('limit')) ?? undefined;
 
     // Vérification des valeurs
     if (limit < 1 || limit > 1000) {

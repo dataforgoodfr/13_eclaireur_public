@@ -1,5 +1,6 @@
-export type CommunitiesParamsOptions = {
-  type?: string;
+import { CommunitiesParamsOptions } from 'app/api/selected_communities/types';
+
+export type Options = Omit<CommunitiesParamsOptions, 'limit'> & {
   limit?: number;
 };
 
@@ -7,7 +8,7 @@ const DEFAULT_OPTIONS = {
   limit: 100,
 };
 
-export async function fetchCommunities(options?: CommunitiesParamsOptions) {
+export async function fetchCommunities(options?: Options) {
   const limit = options?.limit ?? DEFAULT_OPTIONS.limit;
   const type = options?.type;
 
