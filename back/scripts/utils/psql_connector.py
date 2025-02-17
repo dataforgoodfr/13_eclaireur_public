@@ -33,9 +33,8 @@ class PSQLConnector:
         except Exception as e:
             self.logger.error(f"An error occurred while dropping the table: {e}")
 
-    def save_df_to_sql(self, df, table_name, chunksize=1000, if_exists="replace", index=False):
+    def save_df_to_sql(self, df, table_name, chunksize=1000, if_exists="append", index=False):
         try:
-            # self.drop_table_if_exists(table_name)
             with self.engine.connect() as conn:
                 df.to_sql(
                     table_name, conn, if_exists=if_exists, index=index, chunksize=chunksize
