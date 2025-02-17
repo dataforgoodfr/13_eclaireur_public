@@ -25,9 +25,17 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
+        
+        if self.config["workflow"]["save_to_db"]:
+            self.connector = PSQLConnector()
 
     def run_workflow(self):
+        
         self.logger.info("Workflow started.")
+
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.connect()
+
         # Create blank dict to store dataframes that will be saved to the DB
         df_to_save_to_db = {}
 
@@ -115,11 +123,8 @@ class WorkflowManager:
                 ignore_index=True,
             )
 
-            if self.config["workflow"]["save_to_db"]:
-                connector = PSQLConnector()
-                connector.connect()
-                connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
-                connector.close_connection()
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
 
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
@@ -132,11 +137,11 @@ class WorkflowManager:
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
             if self.config["workflow"]["save_to_db"]:
-                connector = PSQLConnector()
-                connector.connect()
-                connector.save_df_to_sql(topic_datafiles.loaded_data, topic + "_raw")
-                connector.save_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean")
-                connector.close_connection()
+                self.connector.save_df_to_sql(topic_datafiles.loaded_data, topic + "_raw")
+                self.connector.save_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean")
+
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.close_connection()
 
         self.logger.info(f"Topic {topic} processed.")
 
@@ -170,10 +175,7 @@ class WorkflowManager:
 
     def save_data_to_db(self, df_to_save_to_db):
         self.logger.info("Saving data to the database.")
-        # Initialize the database connector
-        connector = PSQLConnector()
-        connector.connect()
+
         # Save each dataframe to the database
         for df_name, df in df_to_save_to_db.items():
-            connector.save_df_to_sql(df, df_name)
-        connector.close_connection()
+            self.connector.save_df_to_sql(df, df_name)

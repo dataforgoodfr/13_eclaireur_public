@@ -7,8 +7,8 @@ import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
-from back.scripts.loaders.base_loader import retry_session
-from back.scripts.utils.config import get_project_base_path
+from scripts.loaders.base_loader import retry_session
+from scripts.utils.config import get_project_base_path
 
 DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
 
