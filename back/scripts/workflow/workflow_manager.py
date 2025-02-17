@@ -33,9 +33,6 @@ class WorkflowManager:
         
         self.logger.info("Workflow started.")
 
-        if self.config["workflow"]["save_to_db"]:
-            self.connector.connect()
-
         # Create blank dict to store dataframes that will be saved to the DB
         df_to_save_to_db = {}
 
@@ -123,14 +120,13 @@ class WorkflowManager:
                 ignore_index=True,
             )
 
-        if self.config["workflow"]["save_to_db"]:
-            self.connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
 
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
-
 
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
