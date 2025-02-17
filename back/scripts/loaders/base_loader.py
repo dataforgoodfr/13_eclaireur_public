@@ -1,9 +1,30 @@
-import os
-import time
-import requests
 import logging
+import os
 import re
+import time
 from urllib.parse import urlparse
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+
+def retry_session(retries, session=None, backoff_factor=0.3):
+    """
+    Configure resquests for multiple retries.
+    https://stackoverflow.com/questions/49121365/implementing-retry-for-requests-in-python
+    """
+    session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
 
 class BaseLoader:
@@ -53,9 +74,9 @@ class BaseLoader:
     @staticmethod
     def loader_factory(file_url, dtype=None, columns_to_keep=None):
         # Factory method to create the appropriate loader based on the file URL
-        from .json_loader import JSONLoader
         from .csv_loader import CSVLoader
         from .excel_loader import ExcelLoader
+        from .json_loader import JSONLoader
 
         logger = logging.getLogger(__name__)
 

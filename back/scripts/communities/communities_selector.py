@@ -1,6 +1,5 @@
 import logging
 import re
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -45,9 +44,7 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = (
-            Path(get_project_base_path()) / "back" / "data" / "communities" / "processed_data"
-        )
+        data_folder = get_project_base_path() / "data" / "communities" / "processed_data"
         all_communities_filename = data_folder / "all_communities_data.parquet"
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
@@ -149,7 +146,7 @@ class CommunitiesSelector:
         ]  # to adjust column for SQL format and ensure consistency
         self.selected_data = selected_data
 
-    def get_datagouv_ids(self):
+    def get_datagouv_ids_to_siren(self):
         """
         Retrieve rows with non-null 'id_datagouv', returning a DataFrame with 'siren' and 'id_datagouv' columns.
 
