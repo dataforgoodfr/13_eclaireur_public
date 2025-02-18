@@ -101,6 +101,11 @@ class DataGouvSearcher:
         ]
 
     def _select_prefered_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Datasets on data.gouv can be available in multiple formats.
+        If multiple rows are present with the same `dataset_id`,
+        we keep only the one with format with the most priority.
+        """
         return (
             df.assign(
                 priority=lambda df: df["format"]
@@ -108,7 +113,7 @@ class DataGouvSearcher:
                 .fillna(len(DATAGOUV_PREFERED_FORMAT))
             )
             .sort_values("priority")
-            .drop_duplicates(subset=["dataset_id"])
+            .drop_duplicates(subset=["dataset_id"], keep="first")
             .drop(columns=["priority"])
         )
 
