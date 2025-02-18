@@ -1,5 +1,6 @@
 import json
 import logging
+from itertools import chain
 from typing import Tuple
 
 import pandas as pd
@@ -101,6 +102,11 @@ class DataGouvSearcher:
         ]
 
     def _select_prefered_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Datasets on data.gouv can be available in multiple formats.
+        If multiple rows are present with the same `dataset_id`,
+        we keep only the one with format with the most priority.
+        """
         return (
             df.assign(
                 priority=lambda df: df["format"]
@@ -108,7 +114,7 @@ class DataGouvSearcher:
                 .fillna(len(DATAGOUV_PREFERED_FORMAT))
             )
             .sort_values("priority")
-            .drop_duplicates(subset=["dataset_id"])
+            .drop_duplicates(subset=["dataset_id"], keep="first")
             .drop(columns=["priority"])
         )
 
@@ -143,24 +149,26 @@ class DataGouvSearcher:
         datasets = []
         while url:
             orga_datasets, url = self._get_organization_datasets_page(url, organization_id)
-            datasets += [
-                {
-                    "organization_id": metadata["organization"]["id"],
-                    "organization": metadata["organization"]["name"],
-                    "title": metadata["title"],
-                    "description": metadata["description"],
-                    "dataset_id": metadata["id"],
-                    "frequency": metadata["frequency"],
-                    "format": resource["format"],
-                    "url": resource["url"],
-                    "created_at": resource["created_at"],
-                    "resource_description": resource["description"],
-                }
-                for metadata in orga_datasets
-                for resource in metadata["resources"]
-            ]
+            datasets.append(
+                [
+                    {
+                        "organization_id": metadata["organization"]["id"],
+                        "organization": metadata["organization"]["name"],
+                        "title": metadata["title"],
+                        "description": metadata["description"],
+                        "dataset_id": metadata["id"],
+                        "frequency": metadata["frequency"],
+                        "format": resource["format"],
+                        "url": resource["url"],
+                        "created_at": resource["created_at"],
+                        "resource_description": resource["description"],
+                    }
+                    for metadata in orga_datasets
+                    for resource in metadata["resources"]
+                ]
+            )
         datasets = pd.DataFrame(
-            datasets,
+            list(chain.from_iterable(datasets)),
             columns=[
                 "organization_id",
                 "organization",
@@ -194,29 +202,44 @@ class DataGouvSearcher:
         pattern_description = "|".join([x.lower() for x in description_filter])
         pattern_resources = "|".join([x.lower() for x in column_filter])
 
-        datasets = pd.concat(
-            [self._fetch_organisation_datasets(url, orga) for orga in tqdm(datagouv_ids_list)],
-            ignore_index=True,
-        ).assign(
-            keyword_in_title=lambda df: df["title"]
-            .str.lower()
-            .str.contains(pattern_title, regex=True),
-            keyword_in_description=lambda df: df["description"]
-            .str.lower()
-            .str.contains(pattern_description, regex=True),
-            keyword_in_resource=lambda df: df["resource_description"]
-            .str.lower()
-            .str.contains(pattern_resources, regex=True),
+        datasets = (
+            pd.concat(
+                [
+                    self._fetch_organisation_datasets(url, orga)
+                    for orga in tqdm(datagouv_ids_list)
+                ],
+                ignore_index=True,
+            )
+            .assign(
+                keyword_in_title=lambda df: df["title"]
+                .str.lower()
+                .str.contains(pattern_title, regex=True),
+                keyword_in_description=lambda df: df["description"]
+                .str.lower()
+                .str.contains(pattern_description, regex=True),
+                keyword_in_resource=lambda df: df["resource_description"]
+                .str.lower()
+                .str.contains(pattern_resources, regex=True)
+                .fillna(False),
+            )
+            .pipe(lambda df: df[df["keyword_in_title"] | df["keyword_in_description"]])
         )
 
-        propagated_columns = datasets.groupby("dataset_id").agg({"keyword_in_resource": "max"})
+        # A dataset may have multiple available formats (resources)
+        # Not all resources have the same info within metadata.
+        # If we find an interesting property for a given format, we assume it should be the same
+        # for all formats of this dataset.
+        propagated_columns = (
+            datasets.groupby("dataset_id")
+            .agg({"keyword_in_resource": "max"})
+            .pipe(lambda df: df[df["keyword_in_resource"]])
+        )
+
         datasets = (
-            pd.merge(datasets, propagated_columns, on="dataset_id", suffixes=("_raw", ""))
-            .pipe(
-                lambda df: df[
-                    df["keyword_in_resource"]
-                    & (df["keyword_in_title"] | df["keyword_in_description"])
-                ]
+            pd.merge(
+                datasets.drop(columns=["keyword_in_resource"]),
+                propagated_columns,
+                on="dataset_id",
             )
             .pipe(self._select_prefered_format)
             .merge(
@@ -224,7 +247,7 @@ class DataGouvSearcher:
                 left_on="organization_id",
                 right_on="id_datagouv",
             )
-            .drop(columns=["id_datagouv", "organization_id", "keyword_in_resource_raw"])
+            .drop(columns=["id_datagouv", "organization_id"])
         )
         return datasets
 
