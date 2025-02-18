@@ -1,5 +1,6 @@
 import json
 import logging
+from itertools import chain
 from typing import Tuple
 
 import pandas as pd
@@ -148,24 +149,26 @@ class DataGouvSearcher:
         datasets = []
         while url:
             orga_datasets, url = self._get_organization_datasets_page(url, organization_id)
-            datasets += [
-                {
-                    "organization_id": metadata["organization"]["id"],
-                    "organization": metadata["organization"]["name"],
-                    "title": metadata["title"],
-                    "description": metadata["description"],
-                    "dataset_id": metadata["id"],
-                    "frequency": metadata["frequency"],
-                    "format": resource["format"],
-                    "url": resource["url"],
-                    "created_at": resource["created_at"],
-                    "resource_description": resource["description"],
-                }
-                for metadata in orga_datasets
-                for resource in metadata["resources"]
-            ]
+            datasets.append(
+                [
+                    {
+                        "organization_id": metadata["organization"]["id"],
+                        "organization": metadata["organization"]["name"],
+                        "title": metadata["title"],
+                        "description": metadata["description"],
+                        "dataset_id": metadata["id"],
+                        "frequency": metadata["frequency"],
+                        "format": resource["format"],
+                        "url": resource["url"],
+                        "created_at": resource["created_at"],
+                        "resource_description": resource["description"],
+                    }
+                    for metadata in orga_datasets
+                    for resource in metadata["resources"]
+                ]
+            )
         datasets = pd.DataFrame(
-            datasets,
+            list(chain.from_iterable(datasets)),
             columns=[
                 "organization_id",
                 "organization",
