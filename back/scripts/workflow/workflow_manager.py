@@ -25,9 +25,14 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
+        
+        if self.config["workflow"]["save_to_db"]:
+            self.connector = PSQLConnector()
 
     def run_workflow(self):
+        
         self.logger.info("Workflow started.")
+
         # Create blank dict to store dataframes that will be saved to the DB
         df_to_save_to_db = {}
 
@@ -53,13 +58,6 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # If config requires it, add normalized data of the topic to df_to_save
-            if self.config["workflow"]["save_to_db"]:
-                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
 
         self.logger.info("Workflow completed.")
 
@@ -104,6 +102,7 @@ class WorkflowManager:
             datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
             datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
+
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder(communities_selector)
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
@@ -114,6 +113,10 @@ class WorkflowManager:
                 ignore_index=True,
             )
 
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.upsert_df_to_sql(topic_files_in_scope, topic + "_files_in_scope", ["url"])
+                self.connector.upsert_df_to_sql(topic_files_in_scope.normalized_data, topic + "_normalized_data", ["url"])
+
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
@@ -123,7 +126,17 @@ class WorkflowManager:
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.upsert_df_to_sql(topic_datafiles.loaded_data, topic + "_raw", ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean", ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, topic + "_normalized_data", ["acheteur.id", "codeCPV"])
+
+
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.close_connection()
+
         self.logger.info(f"Topic {topic} processed.")
+
         return topic_files_in_scope, topic_datafiles
 
     def save_output_to_csv(
@@ -151,12 +164,3 @@ class WorkflowManager:
             save_csv(datafiles_out, output_folder, DATAFILES_OUT_FILENAME, sep=";")
         if modifications_data is not None:
             save_csv(modifications_data, output_folder, MODIFICATIONS_DATA_FILENAME, sep=";")
-
-    def save_data_to_db(self, df_to_save_to_db):
-        self.logger.info("Saving data to the database.")
-        # Initialize the database connector
-        connector = PSQLConnector()
-        connector.connect()
-        # Save each dataframe to the database
-        for df_name, df in df_to_save_to_db.items():
-            connector.save_df_to_sql(df, df_name)
