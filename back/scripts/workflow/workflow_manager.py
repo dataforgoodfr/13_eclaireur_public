@@ -58,13 +58,6 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # If config requires it, add normalized data of the topic to df_to_save
-            if self.config["workflow"]["save_to_db"]:
-                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
 
         self.logger.info("Workflow completed.")
 
@@ -121,7 +114,8 @@ class WorkflowManager:
             )
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.save_df_to_sql(topic_files_in_scope, topic + "_files_in_scope")
+                self.connector.upsert_df_to_sql(topic_files_in_scope, topic + "_files_in_scope", ["url"])
+                self.connector.upsert_df_to_sql(topic_files_in_scope.normalized_data, topic + "_normalized_data", ["url"])
 
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
@@ -133,8 +127,10 @@ class WorkflowManager:
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.save_df_to_sql(topic_datafiles.loaded_data, topic + "_raw")
-                self.connector.save_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean")
+                self.connector.upsert_df_to_sql(topic_datafiles.loaded_data, topic + "_raw", ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean", ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, topic + "_normalized_data", ["acheteur.id", "codeCPV"])
+
 
         if self.config["workflow"]["save_to_db"]:
             self.connector.close_connection()
@@ -168,10 +164,3 @@ class WorkflowManager:
             save_csv(datafiles_out, output_folder, DATAFILES_OUT_FILENAME, sep=";")
         if modifications_data is not None:
             save_csv(modifications_data, output_folder, MODIFICATIONS_DATA_FILENAME, sep=";")
-
-    def save_data_to_db(self, df_to_save_to_db):
-        self.logger.info("Saving data to the database.")
-
-        # Save each dataframe to the database
-        for df_name, df in df_to_save_to_db.items():
-            self.connector.save_df_to_sql(df, df_name)
