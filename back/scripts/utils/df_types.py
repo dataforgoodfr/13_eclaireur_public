@@ -1,12 +1,24 @@
+from typing import Literal
+
 import pandera as pa
 from pandera.typing import DataFrame
 
 
-class CommunitiesNocoordsDfSchema(pa.DataFrameModel):
+class BaseCommunitiesNoCoordsDfSchema(pa.DataFrameModel):
+    cog: str
     nom: str
+
+
+class BaseCommunitiesWithCoordsDfSchema(pa.DataFrameModel):
+    cog: str
+    latitude: str
+    longitude: str
+    type: Literal["COM"]
+
+
+class CommunitiesNocoordsDfSchema(BaseCommunitiesNoCoordsDfSchema):
     siren: int
     type: str
-    cog: str
     cog_3digits: str
     code_departement: str
     code_departement_3digits: str
@@ -41,6 +53,8 @@ class RegionDepartmentCoordsDfSchema(pa.DataFrameModel):
     latitude: str
 
 
+BaseCommunitiesNoCoordsDf = DataFrame[BaseCommunitiesNoCoordsDfSchema]
+BaseCommunitiesWithCoordsDf = DataFrame[BaseCommunitiesWithCoordsDfSchema]
 CommunitiesNocoordsDf = DataFrame[CommunitiesNocoordsDfSchema]
 CommunitiesWithcoordsDf = DataFrame[CommunitiesWithcoordsDfSchema]
 EPCICoordsDf = DataFrame[EPCICoordsDfSchema]
