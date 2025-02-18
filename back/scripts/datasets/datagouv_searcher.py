@@ -219,7 +219,8 @@ class DataGouvSearcher:
                 .str.contains(pattern_description, regex=True),
                 keyword_in_resource=lambda df: df["resource_description"]
                 .str.lower()
-                .str.contains(pattern_resources, regex=True),
+                .str.contains(pattern_resources, regex=True)
+                .fillna(False),
             )
             .pipe(lambda df: df[df["keyword_in_title"] | df["keyword_in_description"]])
         )
