@@ -11,7 +11,7 @@ from back.scripts.loaders.base_loader import retry_session
 
 def datagouv_page_content(url: str, params: dict | None = None) -> Tuple[dict, str]:
     """
-    List all datasets under an organization through data.gouv API.
+    Fetch the content of a given page and eventually the link to the next page.
     """
     session = retry_session(retries=5)
     response = session.get(url, params=params)
@@ -29,6 +29,9 @@ def datagouv_page_content(url: str, params: dict | None = None) -> Tuple[dict, s
 
 
 def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
+    """
+    Fetch information about all resources of a given dataset.
+    """
     save_filename = (savedir or Path(".")) / f"dataset_{dataset_id}.parquet"
     if savedir and save_filename.exists():
         return pd.read_parquet(save_filename)
@@ -72,6 +75,9 @@ def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFr
 
 
 def organisation_datasets(organization_id: str, savedir: Path | None = None) -> pd.DataFrame:
+    """
+    Fetch information about all datasets and resources of a given organization.
+    """
     organisation_datasets_filename = (savedir or Path(".")) / f"orga_{organization_id}.parquet"
     if savedir and organisation_datasets_filename.exists():
         return pd.read_parquet(organisation_datasets_filename)
