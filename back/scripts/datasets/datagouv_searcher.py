@@ -117,7 +117,6 @@ class DataGouvSearcher:
 
     def _select_dataset_by_metadata(
         self,
-        url: str,
         title_filter: list[str],
         description_filter: list[str],
         column_filter: list[str],
@@ -135,7 +134,7 @@ class DataGouvSearcher:
         datasets = (
             pd.concat(
                 [
-                    organisation_datasets(url, orga, self.data_folder / "organization_datasets")
+                    organisation_datasets(orga, self.data_folder / "organization_datasets")
                     for orga in tqdm(datagouv_ids_list)
                 ],
                 ignore_index=True,
@@ -228,7 +227,6 @@ class DataGouvSearcher:
 
         if method in ["bu_only", "all"]:
             bottomup_datafiles = self._select_dataset_by_metadata(
-                search_config["api"]["url"],
                 search_config["api"]["title"],
                 search_config["api"]["description"],
                 search_config["api"]["columns"],
