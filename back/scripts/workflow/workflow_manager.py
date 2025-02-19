@@ -28,15 +28,20 @@ class WorkflowManager:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
+        self.source_folder = get_project_base_path() / "back" / "data"
+        self.source_folder.mkdir(exist_ok=True, parents=True)
+
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        self._run_elus()
         self._run_subvention_and_marche()
 
-        elus = ElusWorkflow()
+        self.logger.info("Workflow completed.")
+
+    def _run_elus(self):
+        elus = ElusWorkflow(self.source_folder)
         elus.fetch_raw_datasets()
         elus.combine_datasets()
-
-        self.logger.info("Workflow completed.")
 
     def _run_subvention_and_marche(self):
         # Create blank dict to store dataframes that will be saved to the DB
