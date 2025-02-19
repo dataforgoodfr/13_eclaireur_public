@@ -1,8 +1,9 @@
+from pathlib import Path
+
 import pandas as pd
 from tqdm import tqdm
 
 from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.datagouv_api import dataset_resources
 
 RENAME_COMMON_COLUMNS = {
@@ -39,8 +40,8 @@ RENAME_COMMON_COLUMNS = {
 
 
 class ElusWorkflow:
-    def __init__(self):
-        self.data_folder = get_project_base_path() / "back" / "data" / "elus"
+    def __init__(self, source_folder: Path):
+        self.data_folder = source_folder / "elus"
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
         self.raw_data_folder = self.data_folder / "raw"
@@ -67,7 +68,7 @@ class ElusWorkflow:
     def combine_datasets(self):
         filename = self.processed_data_folder / "elus.parquet"
         if filename.exists():
-            return pd.read_parquet(filename)
+            return
 
         resources = dataset_resources(self.dataset_id, savedir=self.data_folder)
         combined = []
@@ -83,14 +84,31 @@ class ElusWorkflow:
             )
             combined.append(df)
 
-        final = pd.concat(combined, ignore_index=True).assign(
-            date_naissance=lambda df: pd.to_datetime(
-                df["date_naissance"], dayfirst=True, errors="coerce"
-            ),
-            date_debut_mandat=lambda df: pd.to_datetime(
-                df["date_debut_mandat"], dayfirst=True, errors="coerce"
-            ),
-            code_socio_pro=lambda df: df["code_socio_pro"].astype("Int16"),
+        final = (
+            pd.concat(combined, ignore_index=True)
+            .assign(
+                date_naissance=lambda df: pd.to_datetime(
+                    df["date_naissance"], dayfirst=True, errors="coerce"
+                ),
+                date_debut_mandat=lambda df: pd.to_datetime(
+                    df["date_debut_mandat"], dayfirst=True, errors="coerce"
+                ),
+                code_socio_pro=lambda df: df["code_socio_pro"].astype("Int16"),
+            )
+            .astype(
+                {
+                    "code_dept": str,
+                    "code_commune": str,
+                    "code_canton": str,
+                    "code_collectivite": str,
+                }
+            )
         )
         final.to_parquet(filename)
-        return final
+
+    @property
+    def elus(self):
+        filename = self.processed_data_folder / "elus.parquet"
+        if not filename.exists():
+            self.combine_datasets()
+        return pd.read_parquet(filename)
