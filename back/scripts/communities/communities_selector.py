@@ -1,14 +1,11 @@
 import logging
-from pathlib import Path
-import pandas as pd
-import numpy as np
 import re
 
+import numpy as np
+import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
 from scripts.communities.loaders.sirene import SireneLoader
-
-from scripts.utils.files_operation import save_csv
 from scripts.utils.config import get_project_base_path
 from scripts.utils.geolocator import GeoLocator
 
@@ -44,12 +41,35 @@ class CommunitiesSelector:
         # Singleton pattern
         if self._init_done:
             return
-
+        self.config = config
         self.logger = logging.getLogger(__name__)
+
+        data_folder = get_project_base_path() / "data" / "communities" / "processed_data"
+        all_communities_filename = data_folder / "all_communities_data.parquet"
+        if all_communities_filename.exists():
+            self.all_data = pd.read_parquet(all_communities_filename)
+        else:
+            self.load_all_communities()
+            self.all_data.to_parquet(all_communities_filename)
+            self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
+
+        selected_communities_filename = data_folder / "selected_communities_data.parquet"
+        if selected_communities_filename.exists():
+            self.selected_data = pd.read_parquet(selected_communities_filename)
+        else:
+            self.load_selected_communities()
+            self.selected_data.to_parquet(selected_communities_filename)
+            self.selected_data.to_csv(
+                selected_communities_filename.with_suffix(".csv"), sep=";"
+            )
+
+        self._init_done = True
+
+    def load_all_communities(self):
         # Load data from OFGL, ODF, and Sirene datasets
-        ofgl = OfglLoader(config["ofgl"])
-        odf = OdfLoader(config["odf"])
-        sirene = SireneLoader(config["sirene"])
+        ofgl = OfglLoader(self.config["ofgl"])
+        odf = OdfLoader(self.config["odf"])
+        sirene = SireneLoader(self.config["sirene"])
         ofgl_data = ofgl.get()
         odf_data = odf.get()
 
@@ -105,11 +125,10 @@ class CommunitiesSelector:
         )
 
         # Save all communities data to instance
-        self.all_data = all_data
+        self.all_data = all_data.astype({"code_region": str})
 
-        # Copy all data to selected data before filtering (useful?)
-        # Filter based on law
-        selected_data = all_data.copy()
+    def load_selected_communities(self):
+        selected_data = self.all_data.copy()
         selected_data = selected_data.loc[
             (self.all_data["type"] != "COM")
             | (
@@ -120,25 +139,14 @@ class CommunitiesSelector:
         ]
 
         # Add geocoordinates to selected data
-        geolocator = GeoLocator(config["geolocator"])
+        geolocator = GeoLocator(self.config["geolocator"])
         selected_data = geolocator.add_geocoordinates(selected_data)
         selected_data.columns = [
             re.sub(r"[.-]", "_", col.lower()) for col in selected_data.columns
         ]  # to adjust column for SQL format and ensure consistency
         self.selected_data = selected_data
 
-        # Save all data & selected data to CSV
-        data_folder = (
-            Path(get_project_base_path()) / "back" / "data" / "communities" / "processed_data"
-        )
-        all_data_filename = "all_communities_data.csv"
-        selected_data_filename = "selected_communities_data.csv"
-        save_csv(all_data, data_folder, all_data_filename, sep=";")
-        save_csv(selected_data, data_folder, selected_data_filename, sep=";")
-
-        self._init_done = True
-
-    def get_datagouv_ids(self):
+    def get_datagouv_ids_to_siren(self):
         """
         Retrieve rows with non-null 'id_datagouv', returning a DataFrame with 'siren' and 'id_datagouv' columns.
 
