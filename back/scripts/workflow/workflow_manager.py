@@ -1,23 +1,25 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
-import pandas as pd
 
+import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
+from scripts.datasets.datafile_loader import DatafileLoader
+from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.datasets.datafiles_loader import DatafilesLoader
-from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.psql_connector import PSQLConnector
 from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (
-    FILES_IN_SCOPE_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-    DATAFILES_OUT_FILENAME,
     DATACOLUMNS_OUT_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    FILES_IN_SCOPE_FILENAME,
     MODIFICATIONS_DATA_FILENAME,
+    NORMALIZED_DATA_FILENAME,
 )
+from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
+
+from back.scripts.utils.politiques_elus import ElusWorkflow
 
 
 class WorkflowManager:
@@ -28,6 +30,15 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        self._run_subvention_and_marche()
+
+        elus = ElusWorkflow()
+        elus.fetch_raw_datasets()
+        elus.combine_datasets()
+
+        self.logger.info("Workflow completed.")
+
+    def _run_subvention_and_marche(self):
         # Create blank dict to store dataframes that will be saved to the DB
         df_to_save_to_db = {}
 
@@ -60,8 +71,6 @@ class WorkflowManager:
         # Save data to the database if the config allows it
         if self.config["workflow"]["save_to_db"]:
             self.save_data_to_db(df_to_save_to_db)
-
-        self.logger.info("Workflow completed.")
 
     def check_file_age(self, config):
         """
