@@ -257,16 +257,20 @@ function Map({ topoJson, height, width }: MapProps) {
   );
 
   return (
-    <div style={{ height: '100%', width: '100%', position: 'relative', background: 'pink' }}>
-      <DeckGL
-        width={width}
-        height={height}
-        viewState={viewState}
-        onViewStateChange={handleViewStateChange}
-        controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
-        layers={layers}
-        getTooltip={getTooltip}
-      />
+    <div className="flex justify-center items-center h-screen w-screen">
+      <div className="w-[60vw] h-[60vh] flex justify-center items-center" >
+        <DeckGL
+         style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}
+          width={width}
+          height={height}
+          viewState={viewState}
+          onViewStateChange={handleViewStateChange}
+          controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
+          layers={layers}
+          getTooltip={getTooltip}
+        />
+      </div>
     </div>
+
   );
 }
