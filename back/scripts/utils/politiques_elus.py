@@ -52,6 +52,10 @@ class ElusWorkflow:
         self.dataset_id = "5c34c4d1634f4173183a64f1"
 
     def fetch_raw_datasets(self):
+        """
+        Fetch all resources from the target dataset.
+        Each resource consist in the data for a different elected position (mayor, senator, etc.).
+        """
         resources = dataset_resources(self.dataset_id, savedir=self.data_folder)
         for _, resource in tqdm(resources.iterrows()):
             filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
