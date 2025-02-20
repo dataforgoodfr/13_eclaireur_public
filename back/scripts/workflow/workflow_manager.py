@@ -9,7 +9,6 @@ from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.psql_connector import PSQLConnector
 from scripts.utils.config import get_project_data_path
 from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (

@@ -16,6 +16,11 @@ class PSQLConnector:
         self.port = os.getenv("DB_PORT", "5432")
         self.engine = None
 
+    def close_connection(self):
+        if self.engine:
+            self.engine.dispose()  # Ferme toutes les connexions ouvertes
+            self.logger.info("Database connection closed.")
+
     def _connect(self):
         if self.engine is not None:
             return
