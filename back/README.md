@@ -150,7 +150,7 @@ Se reporter à la [documentation](https://docs.docker.com/engine/install/) docke
 ### Démarrer une instance
 Depuis un terminal:
 
-    docker-compose -f docker-compose.yaml up -d
+    docker compose -f docker-compose.yaml up -d
 
 ## Lancer le script
 ``` bash
