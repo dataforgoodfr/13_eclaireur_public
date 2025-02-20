@@ -142,13 +142,13 @@ class WorkflowManager:
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
-        self.connector.save_df_to_sql_drop_existing(
-            self.config["workflow"]["save_to_db"],
-            topic_datafiles.normalized_data,
-            topic + "_normalized_data",
-            index=True,
-            index_label=["id", "acheteur.id", "codeCPV"],
-        )
+            self.connector.save_df_to_sql_drop_existing(
+                self.config["workflow"]["save_to_db"],
+                topic_datafiles.normalized_data,
+                topic + "_normalized_data",
+                index=True,
+                index_label=["id", "acheteur.id", "codeCPV"],
+            )
 
         if self.config["workflow"]["save_to_db"]:
             self.connector.close_connection()
