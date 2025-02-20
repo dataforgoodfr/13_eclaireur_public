@@ -8,7 +8,7 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.utils.config import get_project_base_path, get_project_data_path
+from scripts.utils.config import get_project_data_path
 from scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -28,7 +28,7 @@ class WorkflowManager:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        self.source_folder = get_project_base_path() / "back" / "data"
+        self.source_folder = get_project_data_path()
         self.source_folder.mkdir(exist_ok=True, parents=True)
 
     def run_workflow(self):
