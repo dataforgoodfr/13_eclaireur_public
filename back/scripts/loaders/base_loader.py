@@ -57,6 +57,7 @@ class BaseLoader:
             return self.process_data(response.content)
 
         self.logger.error(f"Failed to load data from {self.file_url}")
+        return None
 
     def process_data(self, data):
         raise NotImplementedError("This method should be implemented by subclasses.")
