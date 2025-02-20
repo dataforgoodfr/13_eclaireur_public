@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import {
   FlyToInterpolator,
@@ -16,7 +16,8 @@ import { GeoPermissibleObjects, geoMercator, geoPath } from 'd3';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { feature } from 'topojson-client';
 import { Topology } from 'topojson-specification';
-//import { useCommunities } from 'hooks/useCommunities';
+
+
 
 const URL_TOPOJSON =
   'https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20220219-094943/a-com2022-topo.json';
@@ -257,38 +258,23 @@ function Map({ topoJson, height, width }: MapProps) {
     },
     [],
   );
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
-  
-  // Utilise l'API pour récupérer les données filtrées selon le type sélectionné
- // const { data: communities, isLoading } = useCommunities({ type: selectedType });
+
+
   return (
-
-
-    <div className="flex flex-col items-center justify-center h-screen w-screen space-y-4">
-      {/* Sélecteur ShadCN pour filtrer */}
-      <Select onValueChange={setSelectedType} value={selectedType}>
-        <SelectTrigger className="w-60 border border-gray-300 rounded-md p-2">
-          <SelectValue placeholder="Sélectionnez un type de collectivité" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="communes">Communes</SelectItem>
-          <SelectItem value="departements">Départements</SelectItem>
-          <SelectItem value="regions">Régions</SelectItem>
-        </SelectContent>
-      </Select>
-      <div className="w-[60vw] h-[60vh] flex justify-center items-center" >
-        <DeckGL
-          style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
-          width={width}
-          height={height}
-          viewState={viewState}
-          onViewStateChange={handleViewStateChange}
-          controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
-          layers={layers}
-          getTooltip={getTooltip}
-        />
-      </div>
-    </div>
-
+    <>  
+        <div className="w-[60vw] h-[60vh] flex justify-center items-center" >
+          <DeckGL
+            style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
+            width={width}
+            height={height}
+            viewState={viewState}
+            onViewStateChange={handleViewStateChange}
+            controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
+            layers={layers}
+            getTooltip={getTooltip}
+          />
+        </div>
+  
+    </>
   );
 }
