@@ -11,7 +11,9 @@
     "format": "prettier --write \"(components|app)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
   },
   "dependencies": {
+    "@types/pg": "^8.11.11",
     "next": "15.1.6",
+    "pg": "^8.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
