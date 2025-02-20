@@ -37,11 +37,10 @@ communities:
       filename: odf_data.csv
 
   sirene:
-    path: back/data/communities/
-    filename: scrapped_data/sirene/download_20230413.csv
     columns:
       - "siren"
       - "trancheEffectifsUniteLegale"
+    scrapped_data_file: back/data/communities/scrapped_data/sirene/download_20230413.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
