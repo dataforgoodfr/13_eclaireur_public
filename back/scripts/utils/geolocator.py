@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 import pandas as pd
 
-from scripts.utils.config import get_project_base_path
+from scripts.utils.config import get_project_base_path, get_project_data_path
 
 
 class GeoLocator:
@@ -20,14 +20,7 @@ class GeoLocator:
 
     def _get_reg_dep_coords(self) -> pd.DataFrame:
         """Return scrapped data for regions and departements."""
-        data_folder = (
-            Path(get_project_base_path())
-            / "back"
-            / "data"
-            / "communities"
-            / "scrapped_data"
-            / "geoloc"
-        )
+        data_folder = get_project_data_path() / "communities" / "scrapped_data" / "geoloc"
         reg_dep_geoloc_filename = "dep_reg_centers.csv"  # TODO: To add to config
         reg_dep_geoloc_df = pd.read_csv(
             data_folder / reg_dep_geoloc_filename, sep=";"

@@ -6,7 +6,7 @@ import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
 from scripts.communities.loaders.sirene import SireneLoader
-from scripts.utils.config import get_project_base_path
+from scripts.utils.config import get_project_data_path
 from scripts.utils.geolocator import GeoLocator
 
 
@@ -44,7 +44,7 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = get_project_base_path() / "data" / "communities" / "processed_data"
+        data_folder = get_project_data_path() / "communities" / "processed_data"
         all_communities_filename = data_folder / "all_communities_data.parquet"
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
