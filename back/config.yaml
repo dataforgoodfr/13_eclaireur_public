@@ -2,6 +2,11 @@ workflow:
   save_to_db: True
 
 communities:
+  processed_data:
+    path: back/data/communities/processed_data
+    all_communities_file: all_communities_data.parquet
+    selected_communities_file: selected_communities_data.parquet
+    
   ofgl:
     url:
       regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B

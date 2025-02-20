@@ -6,7 +6,7 @@ import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
 from scripts.communities.loaders.sirene import SireneLoader
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path
 from scripts.utils.geolocator import GeoLocator
 
 
@@ -44,8 +44,10 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = get_project_data_path() / "communities" / "processed_data"
-        all_communities_filename = data_folder / "all_communities_data.parquet"
+        data_folder = get_project_base_path() / self.config["processed_data"]["path"]
+        all_communities_filename = (
+            data_folder / self.config["processed_data"]["all_communities_file"]
+        )
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
         else:
@@ -53,7 +55,9 @@ class CommunitiesSelector:
             self.all_data.to_parquet(all_communities_filename)
             self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
 
-        selected_communities_filename = data_folder / "selected_communities_data.parquet"
+        selected_communities_filename = (
+            data_folder / self.config["processed_data"]["selected_communities_file"]
+        )
         if selected_communities_filename.exists():
             self.selected_data = pd.read_parquet(selected_communities_filename)
         else:
