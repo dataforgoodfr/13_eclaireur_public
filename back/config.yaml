@@ -61,6 +61,13 @@ datagouv:
   datafiles:
     url: "file:./back/data/test/datagouv-datafiles-10000.csv"
     # url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
+  paths:
+    root: back/data/datagouv_search
+    organization_datasets: organization_datasets
+  files:
+    catalog: datagouv_catalog.parquet
+    catalog_metadata: catalog_metadata.parquet
+    datasets: datagouv_datasets.parquet
 
 search:
   subventions:

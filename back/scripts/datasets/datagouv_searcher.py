@@ -8,7 +8,7 @@ from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
 from back.scripts.loaders.base_loader import retry_session
-from back.scripts.utils.config import get_project_data_path
+from back.scripts.utils.config import get_project_base_path
 
 DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
 
@@ -25,16 +25,19 @@ class DataGouvSearcher:
 
         self._config = datagouv_config
         self.scope = communities_selector
-        self.data_folder = get_project_data_path() / "datagouv_search"
-        self.data_folder.mkdir(parents=True, exist_ok=True)
-        (self.data_folder / "organization_datasets").mkdir(parents=True, exist_ok=True)
+        self.data_folder = get_project_base_path() / self._config["paths"]["root"]
+        self.organization_data_folder = (
+            self.data_folder / self._config["paths"]["organization_datasets"]
+        )
+
+        self.organization_data_folder.mkdir(parents=True, exist_ok=True)
 
     def initialize_catalog(self):
         """
         Load or create the data.gouv dataset catalog and metadata catalog.
         """
 
-        catalog_filename = self.data_folder / "datagouv_catalog.parquet"
+        catalog_filename = self.data_folder / self._config["files"]["catalog"]
         if catalog_filename.exists():
             return pd.read_parquet(catalog_filename)
 
@@ -57,7 +60,7 @@ class DataGouvSearcher:
         return datasets_catalog
 
     def initialize_catalog_metadata(self):
-        catalog_metadata_filename = self.data_folder / "catalog_metadata.parquet"
+        catalog_metadata_filename = self.data_folder / self._config["files"]["catalog_metadata"]
         if catalog_metadata_filename.exists():
             return pd.read_parquet(catalog_metadata_filename)
 
@@ -141,7 +144,7 @@ class DataGouvSearcher:
 
     def _fetch_organisation_datasets(self, url: str, organization_id: str) -> pd.DataFrame:
         organisation_datasets_filename = (
-            self.data_folder / "organization_datasets" / f"{organization_id}.parquet"
+            self.organization_data_folder / f"{organization_id}.parquet"
         )
         if organisation_datasets_filename.exists():
             return pd.read_parquet(organisation_datasets_filename)
@@ -278,9 +281,9 @@ class DataGouvSearcher:
                 f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
             )
 
-        final_datasets_filenname = self.data_folder / "datagouv_datasets.parquet"
-        if final_datasets_filenname.exists():
-            return pd.read_parquet(final_datasets_filenname)
+        final_datasets_filename = self.data_folder / self._config["files"]["datasets"]
+        if final_datasets_filename.exists():
+            return pd.read_parquet(final_datasets_filename)
 
         catalog = self.initialize_catalog()
         metadata_catalog = self.initialize_catalog_metadata()[
@@ -314,6 +317,6 @@ class DataGouvSearcher:
         )
         self.logger.info("Total datafiles basic info :")
         self._log_basic_info(datafiles)
-        datafiles.to_parquet(final_datasets_filenname)
+        datafiles.to_parquet(final_datasets_filename)
 
         return datafiles
