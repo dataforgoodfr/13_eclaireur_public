@@ -1,8 +1,7 @@
 import logging
-from pathlib import Path
 import pandas as pd
 
-from scripts.utils.config import get_project_base_path
+from scripts.utils.config import get_project_data_path
 
 
 class SingleUrlsBuilder:
@@ -18,9 +17,7 @@ class SingleUrlsBuilder:
     # Function to build list of dictionaries of datafiles
     def get_datafiles(self, search_config):
         single_urls_source_file = (
-            Path(get_project_base_path())
-            / "back"
-            / "data"
+            get_project_data_path()
             / "datasets"
             / "subventions"
             / "inputs"

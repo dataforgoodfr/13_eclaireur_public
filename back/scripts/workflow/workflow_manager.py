@@ -8,7 +8,7 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.utils.config import get_project_base_path
+from scripts.utils.config import get_project_base_path, get_project_data_path
 from scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -150,9 +150,7 @@ class WorkflowManager:
         modifications_data=None,
     ):
         # Define the output folder path
-        output_folder = (
-            Path(get_project_base_path()) / "back" / "data" / "datasets" / topic / "outputs"
-        )
+        output_folder = get_project_data_path() / "datasets" / topic / "outputs"
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:

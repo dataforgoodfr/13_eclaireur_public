@@ -4,7 +4,7 @@ import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.datagouv_api import organisation_datasets
 
 DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
@@ -22,7 +22,7 @@ class DataGouvSearcher:
 
         self._config = datagouv_config
         self.scope = communities_selector
-        self.data_folder = get_project_base_path() / "back" / "data" / "datagouv_search"
+        self.data_folder = get_project_data_path() / "datagouv_search"
         self.data_folder.mkdir(parents=True, exist_ok=True)
         (self.data_folder / "organization_datasets").mkdir(parents=True, exist_ok=True)
 
