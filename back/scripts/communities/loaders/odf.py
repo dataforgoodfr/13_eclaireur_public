@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 import pandas as pd
 
+from back.scripts.utils.dataframe_operation import normalize_column_names
 from scripts.utils.files_operation import save_csv
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
@@ -34,6 +35,7 @@ class OdfLoader:
             self._config["url"], dtype=self._config["dtype"]
         )
         data = odf_data_loader.load()
+        normalize_column_names(data)
         save_csv(
             data,
             Path(processed_data_config["path"]),

@@ -3,7 +3,8 @@ import logging
 from pathlib import Path
 import pandas as pd
 
-from back.scripts.utils.psql_connector import PSQLConnector
+from back.scripts.utils.dataframe_operation import normalize_column_names
+from scripts.utils.psql_connector import PSQLConnector
 from scripts.communities.communities_selector import CommunitiesSelector
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
@@ -169,6 +170,7 @@ class WorkflowManager:
             self.config["outputs_csv"]["path"] % {"topic": topic}
         )
         output_folder.mkdir(parents=True, exist_ok=True)
+        normalize_column_names(normalized_data)
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:
             save_csv(normalized_data, output_folder, NORMALIZED_DATA_FILENAME, sep=";")

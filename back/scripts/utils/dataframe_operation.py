@@ -1,4 +1,5 @@
 import logging
+import re
 import pandas as pd
 
 """
@@ -142,3 +143,10 @@ def detect_skiprows(df):
 def detect_skipcolumns(df):
     df_transposed = df.transpose().reset_index(drop=True)
     return detect_skiprows(df_transposed)
+
+
+def normalize_column_names(df):
+    """This modify the dataframe in place."""
+    df.columns = [
+        re.sub(r"[.-]", "_", col.lower()) for col in df.columns
+    ]  # to adjust column for SQL format and ensure consistency
