@@ -43,9 +43,9 @@ class GeoLocator:
 
     def _request_geolocator_api(self, payload) -> pd.DataFrame:
         """Save payload to CSV to send to API, and return the response as dataframe"""
-        payload_filename = self._config["processed_data"]["filename"]
+        payload_filename = self._config["temp_folder"]["filename"]
         payload_path = (
-            get_project_base_path() / self._config["processed_data"]["path"] / payload_filename
+            get_project_base_path() / self._config["temp_folder"]["path"] / payload_filename
         )
         payload.to_csv(payload_path, sep=";", index=False)
 
