@@ -114,7 +114,7 @@ class DataGouvSearcher:
                 .fillna(len(DATAGOUV_PREFERED_FORMAT))
             )
             .sort_values("priority")
-            .drop_duplicates(subset=["dataset_id"], keep="first")
+            .drop_duplicates(subset=["url"], keep="first")
             .drop(columns=["priority"])
         )
 
@@ -241,7 +241,6 @@ class DataGouvSearcher:
                 propagated_columns,
                 on="dataset_id",
             )
-            .pipe(self._select_prefered_format)
             .merge(
                 datagouv_ids_to_siren,
                 left_on="organization_id",
@@ -309,7 +308,6 @@ class DataGouvSearcher:
 
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
-            .drop_duplicates(subset=["url"])
             .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
