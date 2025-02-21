@@ -44,8 +44,11 @@ communities:
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
-    processed_data_folder: back/data/communities/processed_data/
+    reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
     geolocator_api_url: https://api-adresse.data.gouv.fr/search/csv/
+    processed_data:
+      path: back/data/communities/processed_data
+      filename: cities_to_geolocate.csv
 
 datagouv:
   datasets:

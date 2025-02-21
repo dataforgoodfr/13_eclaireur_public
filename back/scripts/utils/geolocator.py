@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 import pandas as pd
 
-from scripts.utils.config import get_project_base_path, get_project_data_path
+from scripts.utils.config import get_project_base_path
 
 
 class GeoLocator:
@@ -20,10 +20,8 @@ class GeoLocator:
 
     def _get_reg_dep_coords(self) -> pd.DataFrame:
         """Return scrapped data for regions and departements."""
-        data_folder = get_project_data_path() / "communities" / "scrapped_data" / "geoloc"
-        reg_dep_geoloc_filename = "dep_reg_centers.csv"  # TODO: To add to config
         reg_dep_geoloc_df = pd.read_csv(
-            data_folder / reg_dep_geoloc_filename, sep=";"
+            Path(self._config["reg_dep_coords_scrapped_data_file"]), sep=";"
         )  # TODO: Use CSVLoader
         if reg_dep_geoloc_df.empty:
             raise Exception("Regions and departements dataset should not be empty.")
@@ -45,9 +43,10 @@ class GeoLocator:
 
     def _request_geolocator_api(self, payload) -> pd.DataFrame:
         """Save payload to CSV to send to API, and return the response as dataframe"""
-        folder = get_project_base_path() / self._config["processed_data_folder"]
-        payload_filename = "cities_to_geolocate.csv"
-        payload_path = folder / payload_filename
+        payload_filename = self._config["processed_data"]["filename"]
+        payload_path = (
+            get_project_base_path() / self._config["processed_data"]["path"] / payload_filename
+        )
         payload.to_csv(payload_path, sep=";", index=False)
 
         with open(payload_path, "rb") as payload_file:
