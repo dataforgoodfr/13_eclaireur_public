@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path
 
 from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
@@ -132,11 +132,9 @@ class DatafilesLoader:
 
         # Load the schema dictionary to rename the columns
         schema_dict_file = (
-            get_project_data_path()
-            / "datasets"
-            / topic
-            / "inputs"
-            / topic_config["schema_dict_file"]
+            get_project_base_path()
+            / (topic_config["schema_dict"]["path"] % {"topic": topic})
+            / topic_config["schema_dict"]["file"]
         )
         schema_dict = (
             pd.read_csv(schema_dict_file, sep=";")

@@ -1,7 +1,7 @@
 import logging
 
 import pandas as pd
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path
 
 
 class SingleUrlsBuilder:
@@ -16,11 +16,9 @@ class SingleUrlsBuilder:
 
     def get_datafiles(self, search_config):
         single_urls_source_file = (
-            get_project_data_path()
-            / "datasets"
-            / "subventions"
-            / "inputs"
-            / search_config["single_urls_file"]
+            get_project_base_path()
+            / search_config["single_urls"]["path"]
+            / search_config["single_urls"]["file"]
         )
         single_urls_files_in_scope = pd.read_csv(single_urls_source_file, sep=";")
         return single_urls_files_in_scope.merge(
