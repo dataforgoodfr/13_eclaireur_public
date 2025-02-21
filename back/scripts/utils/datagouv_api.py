@@ -10,6 +10,9 @@ from back.scripts.loaders.base_loader import retry_session
 
 
 class DataGouvAPI:
+    def __init__(self):
+        raise Exception("Utility class.")
+
     @staticmethod
     def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
         """
