@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-from back.scripts.loaders.csv_loader import CSVLoader
+from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import dataset_resources
 
 RENAME_COMMON_COLUMNS = {
@@ -71,7 +71,7 @@ class ElusWorkflow:
             filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
             if filename.exists():
                 continue
-            self.raw_datasets[resource["resource_description"]] = CSVLoader(
+            self.raw_datasets[resource["resource_description"]] = BaseLoader.loader_factory(
                 resource["resource_url"]
             ).load()
 
