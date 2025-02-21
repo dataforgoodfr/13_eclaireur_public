@@ -9,25 +9,6 @@ import pandas as pd
 from back.scripts.loaders.base_loader import retry_session
 
 
-def datagouv_page_content(url: str, params: dict | None = None) -> Tuple[dict, str]:
-    """
-    Fetch the content of a given page and eventually the link to the next page.
-    """
-    session = retry_session(retries=5)
-    response = session.get(url, params=params)
-    try:
-        response.raise_for_status()
-    except Exception as e:
-        logging.error(f"Error while downloading file from {url} : {e}")
-        return [], None
-    try:
-        data = response.json()
-    except json.JSONDecodeError as e:
-        logging.error(f"Error while decoding json from {url} : {e}")
-        return [], None
-    return data.get("data", data), data.get("next_page")
-
-
 def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
     """
     Fetch information about all resources of a given dataset.
@@ -39,7 +20,7 @@ def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFr
     url = f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/"
     datasets = []
     while url:
-        metadata, url = datagouv_page_content(url)
+        metadata, url = _next_page(url)
         datasets.append(
             [
                 {
@@ -86,7 +67,7 @@ def organisation_datasets(organization_id: str, savedir: Path | None = None) -> 
     params = {"organization": organization_id}
     datasets = []
     while url:
-        orga_datasets, url = datagouv_page_content(url, params)
+        orga_datasets, url = _next_page(url, params)
         datasets.append(
             [
                 {
@@ -138,3 +119,22 @@ def resource_infos(resource: dict) -> dict:
 
 def organization_infos(organization: dict) -> dict:
     return {"organization_id": organization["id"], "organization": organization["name"]}
+
+
+def _next_page(url: str, params: dict | None = None) -> Tuple[dict, str]:
+    """
+    Fetch the content of a given page and eventually the link to the next page.
+    """
+    session = retry_session(retries=5)
+    response = session.get(url, params=params)
+    try:
+        response.raise_for_status()
+    except Exception as e:
+        logging.error(f"Error while downloading file from {url} : {e}")
+        return [], None
+    try:
+        data = response.json()
+    except json.JSONDecodeError as e:
+        logging.error(f"Error while decoding json from {url} : {e}")
+        return [], None
+    return data.get("data", data), data.get("next_page")
