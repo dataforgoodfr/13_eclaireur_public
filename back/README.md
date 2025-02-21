@@ -139,6 +139,18 @@ pre-commit run --all-files
 tox -vv
 ```
 
+## Executer PostgreSQL localement avec docker
+Par défaut, le script sauvegarde ses résultats dans une base PostgreSQL locale. Il est donc nécésaire d'éxécuter localement une instance, ce qu'il est possible de faire avec docker.
+
+> Vous pouvez désactiver cette fonctionnalité en changeant `workflow.save_to_db: False` dans la config.
+
+### Installer docker
+Se reporter à la [documentation](https://docs.docker.com/engine/install/) docker.
+
+### Démarrer une instance
+Depuis un terminal:
+
+    docker-compose -f docker-compose.yaml up -d
 
 ## Lancer le script
 ``` bash

@@ -175,3 +175,5 @@ loc_env/
 # Ignore all .pyc & .ipynb files
 *.pyc
 *.ipynb
+
+psql_env.sh
