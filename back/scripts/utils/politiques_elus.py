@@ -53,8 +53,12 @@ class ElusWorkflow:
         self.DATASET_ID = "5c34c4d1634f4173183a64f1"
 
     def run(self):
+        combined_filename = self.processed_data_folder / "elus.parquet"
+        if combined_filename.exists():
+            return
         self._fetch_raw_datasets()
         self._combine_datasets()
+        self.elus.to_parquet(combined_filename)
 
     def _fetch_raw_datasets(self):
         """
@@ -62,33 +66,26 @@ class ElusWorkflow:
         Each resource consist in the data for a different elected position (mayor, senator, etc.).
         """
         resources = dataset_resources(self.DATASET_ID, savedir=self.data_folder)
+        self.raw_datasets = {}
         for _, resource in tqdm(resources.iterrows()):
             filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
             if filename.exists():
                 continue
-            df = CSVLoader(resource["resource_url"]).load()
-            df.to_parquet(filename)
+            self.raw_datasets[resource["resource_description"]] = CSVLoader(
+                resource["resource_url"]
+            ).load()
 
     def _combine_datasets(self):
-        filename = self.processed_data_folder / "elus.parquet"
-        if filename.exists():
-            return
-
-        resources = dataset_resources(self.DATASET_ID, savedir=self.data_folder)
         combined = []
-        for _, resource in tqdm(resources.iterrows()):
-            df = pd.read_parquet(self.raw_data_folder / f"{resource['resource_id']}.parquet")
+        for mandat, df in self.raw_datasets.items():
             present_columns = {
                 k: v for k, v in RENAME_COMMON_COLUMNS.items() if k in df.columns
             }
-            df = (
-                df[present_columns.keys()]
-                .rename(columns=present_columns)
-                .assign(mandat=resource["resource_description"])
+            combined.append(
+                df[present_columns.keys()].rename(columns=present_columns).assign(mandat=mandat)
             )
-            combined.append(df)
 
-        final = (
+        self.elus = (
             pd.concat(combined, ignore_index=True)
             .assign(
                 date_naissance=lambda df: pd.to_datetime(
@@ -108,7 +105,6 @@ class ElusWorkflow:
                 }
             )
         )
-        final.to_parquet(filename)
 
     @property
     def elus(self):
