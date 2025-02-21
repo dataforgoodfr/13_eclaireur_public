@@ -5,7 +5,7 @@ from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
 from back.scripts.utils.config import get_project_data_path
-from back.scripts.utils.datagouv_api import organisation_datasets
+from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
 
@@ -134,7 +134,9 @@ class DataGouvSearcher:
         datasets = (
             pd.concat(
                 [
-                    organisation_datasets(orga, self.data_folder / "organization_datasets")
+                    DataGouvAPI.organisation_datasets(
+                        orga, self.data_folder / "organization_datasets"
+                    )
                     for orga in tqdm(datagouv_ids_list)
                 ],
                 ignore_index=True,

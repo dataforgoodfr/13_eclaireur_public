@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from back.scripts.loaders.base_loader import BaseLoader
-from back.scripts.utils.datagouv_api import dataset_resources
+from back.scripts.utils.datagouv_api import DataGouvAPI
 
 RENAME_COMMON_COLUMNS = {
     "Nom de l'élu": "nom",
@@ -65,7 +65,7 @@ class ElusWorkflow:
         Fetch all resources from the target dataset.
         Each resource consist in the data for a different elected position (mayor, senator, etc.).
         """
-        resources = dataset_resources(self.DATASET_ID, savedir=self.data_folder)
+        resources = DataGouvAPI.dataset_resources(self.DATASET_ID, savedir=self.data_folder)
         self.raw_datasets = {}
         for _, resource in tqdm(resources.iterrows()):
             filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
