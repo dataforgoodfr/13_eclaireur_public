@@ -9,7 +9,7 @@ from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path
 from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (
     FILES_IN_SCOPE_FILENAME,
@@ -165,8 +165,9 @@ class WorkflowManager:
         modifications_data=None,
     ):
         # Define the output folder path
-        output_folder = get_project_data_path() / "datasets" / topic / "outputs"
-
+        output_folder = get_project_base_path() / (
+            self.config["outputs_csv"]["path"] % {"topic": topic}
+        )
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:
             save_csv(normalized_data, output_folder, NORMALIZED_DATA_FILENAME, sep=";")

@@ -129,6 +129,8 @@ file_age_to_check:
     sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
   age: 365
 
+outputs_csv:
+  path: 'back/data/datasets/%(topic)s/outputs'
 
 logging:
   version: 1
