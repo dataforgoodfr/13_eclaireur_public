@@ -29,8 +29,8 @@ def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFr
                     "description": metadata["description"],
                     "frequency": metadata["frequency"],
                 }
-                | resource_infos(resource)
-                | organization_infos(metadata["organization"])
+                | _resource_infos(resource)
+                | _organisation_infos(metadata["organization"])
                 for resource in metadata["resources"]
             ]
         )
@@ -79,7 +79,7 @@ def organisation_datasets(organization_id: str, savedir: Path | None = None) -> 
                     "frequency": metadata["frequency"],
                     "created_at": resource["created_at"],
                 }
-                | resource_infos(resource)
+                | _resource_infos(resource)
                 for metadata in orga_datasets
                 for resource in metadata["resources"]
             ]
@@ -107,7 +107,8 @@ def organisation_datasets(organization_id: str, savedir: Path | None = None) -> 
     return datasets
 
 
-def resource_infos(resource: dict) -> dict:
+@staticmethod
+def _resource_infos(resource: dict) -> dict:
     return {
         "resource_id": resource["id"],
         "resource_url": resource["url"],
@@ -117,7 +118,8 @@ def resource_infos(resource: dict) -> dict:
     }
 
 
-def organization_infos(organization: dict) -> dict:
+@staticmethod
+def _organisation_infos(organization: dict) -> dict:
     return {"organization_id": organization["id"], "organization": organization["name"]}
 
 

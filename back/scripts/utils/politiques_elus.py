@@ -50,14 +50,18 @@ class ElusWorkflow:
         self.processed_data_folder = self.data_folder / "processed"
         self.processed_data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.dataset_id = "5c34c4d1634f4173183a64f1"
+        self.DATASET_ID = "5c34c4d1634f4173183a64f1"
 
-    def fetch_raw_datasets(self):
+    def run(self):
+        self._fetch_raw_datasets()
+        self._combine_datasets()
+
+    def _fetch_raw_datasets(self):
         """
         Fetch all resources from the target dataset.
         Each resource consist in the data for a different elected position (mayor, senator, etc.).
         """
-        resources = dataset_resources(self.dataset_id, savedir=self.data_folder)
+        resources = dataset_resources(self.DATASET_ID, savedir=self.data_folder)
         for _, resource in tqdm(resources.iterrows()):
             filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
             if filename.exists():
@@ -65,12 +69,12 @@ class ElusWorkflow:
             df = CSVLoader(resource["resource_url"]).load()
             df.to_parquet(filename)
 
-    def combine_datasets(self):
+    def _combine_datasets(self):
         filename = self.processed_data_folder / "elus.parquet"
         if filename.exists():
             return
 
-        resources = dataset_resources(self.dataset_id, savedir=self.data_folder)
+        resources = dataset_resources(self.DATASET_ID, savedir=self.data_folder)
         combined = []
         for _, resource in tqdm(resources.iterrows()):
             df = pd.read_parquet(self.raw_data_folder / f"{resource['resource_id']}.parquet")
@@ -110,5 +114,5 @@ class ElusWorkflow:
     def elus(self):
         filename = self.processed_data_folder / "elus.parquet"
         if not filename.exists():
-            self.combine_datasets()
+            self._combine_datasets()
         return pd.read_parquet(filename)

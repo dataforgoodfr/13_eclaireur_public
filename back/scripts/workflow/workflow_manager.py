@@ -40,8 +40,7 @@ class WorkflowManager:
 
     def _run_elus(self):
         elus = ElusWorkflow(self.source_folder)
-        elus.fetch_raw_datasets()
-        elus.combine_datasets()
+        elus.run()
 
     def _run_subvention_and_marche(self):
         # Create blank dict to store dataframes that will be saved to the DB
