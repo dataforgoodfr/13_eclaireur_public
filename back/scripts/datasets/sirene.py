@@ -15,21 +15,29 @@ class SireneWorkflow:
         self.filename = self.data_folder / "sirene.parquet"
         self.URL = "https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip"
 
+        self.zip_filename = self.data_folder / "sirene.zip"
+
     def run(self):
+        self._fetch_zip()
+        self._format_to_parquet()
+
+    def _fetch_zip(self):
+        if self.zip_filename.exists():
+            return
+        urllib.request.urlretrieve(self.URL, self.zip_filename)
+
+    def _format_to_parquet(self):
         if self.filename.exists():
             return
 
-        zip_filename = self.data_folder / "sirene.zip"
-        urllib.request.urlretrieve(self.URL, zip_filename)
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with zipfile.ZipFile(zip_filename) as zip_ref:
+            with zipfile.ZipFile(self.zip_filename) as zip_ref:
                 zip_ref.extractall(tmpdirname)
                 csv_fn = Path(tmpdirname) / "StockUniteLegale_utf8.csv"
-                print(csv_fn)
                 pl.scan_csv(
                     csv_fn,
                 ).select(
-                    col("siren"),
+                    col("siren").cast(pl.String).str.zfill(9),
                     (col("etatAdministratifUniteLegale") == "A").alias("is_active"),
                     pl.coalesce(
                         col("nomUsageUniteLegale"),
@@ -37,6 +45,8 @@ class SireneWorkflow:
                         col("nomUniteLegale"),
                     ).alias("raison_sociale"),
                     col("prenomUsuelUniteLegale").alias("prenom"),
-                    col("activitePrincipaleUniteLegale").alias("naf8"),
+                    col("activitePrincipaleUniteLegale")
+                    .str.replace_all(".", "", literal=True)
+                    .alias("naf8"),
                     col("categorieJuridiqueUniteLegale").alias("code_ju"),
                 ).sink_parquet(self.filename)
