@@ -35,7 +35,7 @@ class SireneWorkflow:
                 zip_ref.extractall(tmpdirname)
                 csv_fn = Path(tmpdirname) / "StockUniteLegale_utf8.csv"
                 pl.scan_csv(
-                    csv_fn,
+                    csv_fn, schema_overrides={"trancheEffectifsUniteLegale": pl.String}
                 ).select(
                     col("siren").cast(pl.String).str.zfill(9),
                     (col("etatAdministratifUniteLegale") == "A").alias("is_active"),
@@ -49,4 +49,5 @@ class SireneWorkflow:
                     .str.replace_all(".", "", literal=True)
                     .alias("naf8"),
                     col("categorieJuridiqueUniteLegale").alias("code_ju"),
+                    col("trancheEffectifsUniteLegale").alias("tranche_effectif"),
                 ).sink_parquet(self.filename)
