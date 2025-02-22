@@ -27,7 +27,7 @@ class OdfLoader:
 
         if data_file.exists():
             self._logger.info("Found ODF file on disk, loading it.")
-            return pd.read_csv(data_file, sep=";")
+            return pd.read_csv(data_file, sep=";", dtype={"siren": "str"})
 
         self._logger.info("Loading ODF data.")
         odf_data_loader = BaseLoader.loader_factory(

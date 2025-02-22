@@ -20,7 +20,7 @@ class OfglLoader:
         # Load data from OFGL dataset if it was already processed
         if data_file.exists():
             self._logger.info("Found OFGL data on disk, loading it.")
-            return pd.read_csv(data_file, sep=";")
+            return pd.read_csv(data_file, sep=";", dtype={"siren": "str"})
 
         self._logger.info("Downloading and processing OFGL data.")
         # Load the mapping between EPCI and communes, downloaded from the OFGL website
