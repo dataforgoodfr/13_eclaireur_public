@@ -65,7 +65,7 @@ class SireneWorkflow:
                         col("denominationUniteLegale"),
                         col("nomUniteLegale"),
                     ).alias("raison_sociale"),
-                    col("prenomUsuelUniteLegale").alias("prenom"),
+                    col("prenomUsuelUniteLegale").alias("raison_sociale_prenom"),
                     col("activitePrincipaleUniteLegale")
                     .str.replace_all(".", "", literal=True)
                     .alias("naf8"),
