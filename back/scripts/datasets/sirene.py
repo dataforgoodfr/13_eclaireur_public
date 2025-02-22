@@ -6,8 +6,29 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+# Source : http://freturb.laet.science/tables/Sirextra.htm
+EFFECTIF_CODE_TO_EMPLOYEES = {
+    "00": 0,
+    "01": 1,
+    "02": 3,
+    "03": 6,
+    "11": 10,
+    "12": 20,
+    "21": 50,
+    "22": 100,
+    "31": 200,
+    "41": 500,
+    "42": 1000,
+    "51": 2000,
+    "52": 5000,
+}
+
 
 class SireneWorkflow:
+    """
+    https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
+    """
+
     def __init__(self, source_folder: Path):
         self.data_folder = source_folder / "sirene"
         self.data_folder.mkdir(exist_ok=True, parents=True)
@@ -49,5 +70,8 @@ class SireneWorkflow:
                     .str.replace_all(".", "", literal=True)
                     .alias("naf8"),
                     col("categorieJuridiqueUniteLegale").alias("code_ju"),
-                    col("trancheEffectifsUniteLegale").alias("tranche_effectif"),
-                ).sink_parquet(self.filename)
+                    col("trancheEffectifsUniteLegale")
+                    .replace_strict(EFFECTIF_CODE_TO_EMPLOYEES, default=None)
+                    .cast(pl.Int32)
+                    .alias("tranche_effectif"),
+                ).collect().write_parquet(self.filename)
