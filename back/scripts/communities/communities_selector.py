@@ -100,15 +100,9 @@ class CommunitiesSelector:
             ]
         ]
 
-        self.all_data = (
-            all_data.merge(sirene, on="siren", how="left")
-            .assign(
-                population=lambda df: pd.to_numeric(
-                    df["population"].astype(str), errors="coerce"
-                ),
-                EffectifsSup15=lambda df: df["tranche_effectif"] > 15,
-            )
-            .astype({"code_region": str})
+        self.all_data = all_data.merge(sirene, on="siren", how="left").assign(
+            population=lambda df: pd.to_numeric(df["population"].astype(str), errors="coerce"),
+            EffectifsSup15=lambda df: df["tranche_effectif"] > 15,
         )
 
     def load_selected_communities(self):

@@ -52,10 +52,14 @@ class OfglLoader:
         data = (
             pd.concat(dataframes, axis=0, ignore_index=True)
             .astype({"SIREN": str})
-            .assign(SIREN=lambda df: df["SIREN"].str.replace(".0", ""))
+            .assign(
+                SIREN=lambda df: df["SIREN"].str.replace(".0", ""),
+                code_region=lambda df: df["code_region"]
+                .astype(str)
+                .where(df["code_region"].notna()),
+            )
             .dropna(subset=["nom"])
         )
-
         # Save the processed data to the instance & a CSV file
         save_csv(
             data,
