@@ -1,23 +1,25 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
-import pandas as pd
 
-from back.scripts.utils.psql_connector import PSQLConnector
+import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
+from scripts.datasets.datafile_loader import DatafileLoader
+from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.datasets.datafiles_loader import DatafilesLoader
-from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.utils.config import get_project_data_path
-from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (
-    FILES_IN_SCOPE_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-    DATAFILES_OUT_FILENAME,
     DATACOLUMNS_OUT_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    FILES_IN_SCOPE_FILENAME,
     MODIFICATIONS_DATA_FILENAME,
+    NORMALIZED_DATA_FILENAME,
 )
+from scripts.utils.files_operation import save_csv
+
+from back.scripts.utils.politiques_elus import ElusWorkflow
+from back.scripts.utils.psql_connector import PSQLConnector
 
 
 class WorkflowManager:
@@ -27,8 +29,23 @@ class WorkflowManager:
         self.logger = logging.getLogger(__name__)
         self.connector = PSQLConnector()
 
+        self.source_folder = get_project_data_path()
+        self.source_folder.mkdir(exist_ok=True, parents=True)
+
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        self._run_elus()
+        self._run_subvention_and_marche()
+
+        self.logger.info("Workflow completed.")
+
+    def _run_elus(self):
+        elus = ElusWorkflow(self.source_folder)
+        elus.run()
+
+    def _run_subvention_and_marche(self):
+        # Create blank dict to store dataframes that will be saved to the DB
+        df_to_save_to_db = {}
 
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
@@ -52,7 +69,13 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-        self.logger.info("Workflow completed.")
+            # If config requires it, add normalized data of the topic to df_to_save
+            if self.config["workflow"]["save_to_db"]:
+                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
+
+        # Save data to the database if the config allows it
+        if self.config["workflow"]["save_to_db"]:
+            self.save_data_to_db(df_to_save_to_db)
 
     def check_file_age(self, config):
         """
