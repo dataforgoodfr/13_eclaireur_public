@@ -1,11 +1,9 @@
 import logging
 import re
 
-import numpy as np
 import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
-from scripts.communities.loaders.sirene import SireneLoader
 from scripts.utils.config import get_project_data_path
 from scripts.utils.geolocator import GeoLocator
 
@@ -69,18 +67,14 @@ class CommunitiesSelector:
         # Load data from OFGL, ODF, and Sirene datasets
         ofgl = OfglLoader(self.config["ofgl"])
         odf = OdfLoader(self.config["odf"])
-        sirene = SireneLoader(self.config["sirene"])
-        ofgl_data = ofgl.get()
-        odf_data = odf.get()
+        sirene = pd.read_parquet(get_project_data_path() / "sirene" / "sirene.parquet")
+        ofgl_data = ofgl.get().assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
+        odf_data = odf.get().assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
 
         # Prepare & Merge OFGL and ODF data on 'siren' column
         # TODO : If you cast to Int, it breaks
         # TODO : casting seems redundant, check if it's necessary
         # TODO Manage columns outside of classes (configs ?)
-        ofgl_data["siren"] = pd.to_numeric(ofgl_data["siren"], errors="coerce")
-        ofgl_data["siren"] = ofgl_data["siren"].fillna(0).astype(int)
-        odf_data["siren"] = pd.to_numeric(odf_data["siren"], errors="coerce")
-        odf_data["siren"] = odf_data["siren"].fillna(0).astype(int)
         all_data = ofgl_data.merge(
             odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
             on="siren",
@@ -106,26 +100,16 @@ class CommunitiesSelector:
             ]
         ]
 
-        # Merge Sirene data on 'siren' column
-        all_data["siren"] = pd.to_numeric(all_data["siren"], errors="coerce")
-        all_data["siren"] = all_data["siren"].fillna(0).astype(int)
-        all_data = all_data.merge(sirene.get(), on="siren", how="left")
-
-        # Conversion of the 'trancheEffectifsUniteLegale' and 'population' columns to numeric type
-        all_data["trancheEffectifsUniteLegale"] = pd.to_numeric(
-            all_data["trancheEffectifsUniteLegale"].astype(str), errors="coerce"
+        self.all_data = (
+            all_data.merge(sirene, on="siren", how="left")
+            .assign(
+                population=lambda df: pd.to_numeric(
+                    df["population"].astype(str), errors="coerce"
+                ),
+                EffectifsSup15=lambda df: df["tranche_effectif"] > 15,
+            )
+            .astype({"code_region": str})
         )
-        all_data["population"] = pd.to_numeric(
-            all_data["population"].astype(str), errors="coerce"
-        )
-
-        # Add the variable EffectifsSup50, default legal filter for open data application (50 FTE employees)
-        all_data["EffectifsSup50"] = np.where(
-            all_data["trancheEffectifsUniteLegale"] > 15, True, False
-        )
-
-        # Save all communities data to instance
-        self.all_data = all_data.astype({"code_region": str})
 
     def load_selected_communities(self):
         selected_data = self.all_data.copy()
