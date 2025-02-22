@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
@@ -50,10 +49,13 @@ class OfglLoader:
 
             dataframes.append(df)
 
-        # Concatenate the dataframes
-        data = pd.concat(dataframes, axis=0, ignore_index=True)
-        # Fill NaN values with np.nan
-        data.fillna(np.nan, inplace=True)
+        data = (
+            pd.concat(dataframes, axis=0, ignore_index=True)
+            .astype({"SIREN": str})
+            .assign(SIREN=lambda df: df["SIREN"].str.replace(".0", ""))
+            .dropna(subset=["nom"])
+        )
+
         # Save the processed data to the instance & a CSV file
         save_csv(
             data,
