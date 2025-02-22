@@ -68,8 +68,8 @@ class CommunitiesSelector:
         ofgl = OfglLoader(self.config["ofgl"])
         odf = OdfLoader(self.config["odf"])
         sirene = pd.read_parquet(get_project_data_path() / "sirene" / "sirene.parquet")
-        ofgl_data = ofgl.get().assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
-        odf_data = odf.get().assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
+        ofgl_data = ofgl.get()
+        odf_data = odf.get()
 
         # Prepare & Merge OFGL and ODF data on 'siren' column
         # TODO : If you cast to Int, it breaks

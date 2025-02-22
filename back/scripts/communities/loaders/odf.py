@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
-import pandas as pd
 
-from scripts.utils.files_operation import save_csv
+import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
+from scripts.utils.files_operation import save_csv
 
 
 class OdfLoader:
@@ -33,7 +33,9 @@ class OdfLoader:
         odf_data_loader = BaseLoader.loader_factory(
             self._config["url"], dtype=self._config["dtype"]
         )
-        data = odf_data_loader.load()
+        data = odf_data_loader.load().assign(
+            siren=lambda df: df["siren"].astype(str).str.zfill(9)
+        )
         save_csv(
             data,
             Path(processed_data_config["path"]),
