@@ -18,6 +18,7 @@ from scripts.utils.constants import (
 )
 from scripts.utils.files_operation import save_csv
 
+from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.politiques_elus import ElusWorkflow
 from back.scripts.utils.psql_connector import PSQLConnector
 
@@ -34,6 +35,7 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        SireneWorkflow(self.source_folder).run()
         self._run_elus()
         self._run_subvention_and_marche()
 
