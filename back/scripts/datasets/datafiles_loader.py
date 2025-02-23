@@ -131,11 +131,7 @@ class DatafilesLoader:
         schema_mapping = dict(zip(schema_lower, self.schema["name"].values, strict=False))
 
         # Load the schema dictionary to rename the columns
-        schema_dict_file = (
-            get_project_base_path()
-            / (topic_config["schema_dict"]["path"] % {"topic": topic})
-            / topic_config["schema_dict"]["file"]
-        )
+        schema_dict_file = get_project_base_path() / topic_config["schema_dict_file"]
         schema_dict = (
             pd.read_csv(schema_dict_file, sep=";")
             .set_index("original_name")["official_name"]

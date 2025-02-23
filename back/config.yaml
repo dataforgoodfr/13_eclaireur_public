@@ -95,12 +95,8 @@ search:
         - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
-    single_urls:
-      path: back/data/datasets/subventions/inputs
-      file: single_urls.csv
-    schema_dict:
-      path: 'back/data/datasets/%(topic)s/inputs'
-      file: dataset_dict.csv
+    single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
+    schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
   marches_publics:
     source: "single"
     unified_dataset:
