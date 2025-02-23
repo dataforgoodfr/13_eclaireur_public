@@ -58,7 +58,11 @@ class DeclaInteretWorkflow:
 
     @staticmethod
     def parse_declaration(declaration: BeautifulSoup) -> list[dict]:
-        return [DeclaInteretWorkflow._declaration_global_infos(declaration)]
+        global_infos = DeclaInteretWorkflow._declaration_global_infos(declaration)
+        itemized_sections = list(
+            chain(*[DeclaInteretWorkflow._parse_mandat_revenues(declaration)])
+        )
+        return [global_infos | x for x in itemized_sections]
 
     @staticmethod
     def _declaration_global_infos(declaration: BeautifulSoup) -> dict:
@@ -116,6 +120,33 @@ class DeclaInteretWorkflow:
 
         return ",".join(sorted(to_parse)) if to_parse else None
 
+    @staticmethod
+    def _parse_mandat_revenues(declaration: BeautifulSoup) -> list[dict]:
+        section = declaration.find("mandatElectifDto")
+        if not section:
+            return []
+        items = section.find("items").find("items")
+        if not items or not len(items.contents):
+            return []
+
+        remuneration = items.find("remuneration")
+        general_infos = {
+            "description": get_text(items.find("description")),
+            "commentaire": get_text(items.find("commentaire")),
+            "remuneration_brut_net": get_text(remuneration.find("brutNet")),
+        }
+        montants = remuneration.find("montant", recursive=False)
+        return [
+            general_infos
+            | {
+                "montant": get_int(item.find("montant")),
+                "date_remuneration": datetime(
+                    year=get_int(item.find("annee")) or 1970, month=12, day=31
+                ),
+            }
+            for item in montants.find_all("montant", recursive=False)
+        ]
+
 
 def to_datetime(tag: BeautifulSoup) -> datetime:
     if tag and tag.text:
@@ -129,4 +160,10 @@ def to_datetime(tag: BeautifulSoup) -> datetime:
 def get_text(tag: BeautifulSoup) -> str | None:
     if tag and tag.text and (tag.text != "[Données non publiées]"):
         return tag.text
+    return None
+
+
+def get_int(tag: BeautifulSoup) -> int | None:
+    if tag and tag.text:
+        return int(tag.text.replace(" ", "").replace("\u202f", ""))
     return None
