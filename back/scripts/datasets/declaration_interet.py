@@ -141,7 +141,7 @@ class DeclaInteretWorkflow:
             return []
 
         if not items:
-            logging.info(f"Wrongly parsed mandat : {uuid}")
+            logging.info(f"Error parsing mandat, no items and neant is fales : {uuid}")
             return []
 
         items = items.find("items")
@@ -157,7 +157,7 @@ class DeclaInteretWorkflow:
             "description": get_text(items.find("description")),
             "commentaire": get_text(items.find("commentaire")),
             "remuneration_brut_net": get_text(remuneration.find("brutNet")),
-            "description_mandat": get_text(remuneration.get("descriptionMandat")),
+            "description_mandat": get_text(section.find("descriptionMandat")),
         }
         montants = remuneration.find("montant", recursive=False)
         if not montants and any(v is not None for v in general_infos.values()):

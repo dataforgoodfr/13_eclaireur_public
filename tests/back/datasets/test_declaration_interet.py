@@ -54,6 +54,19 @@ class TestParseMandat:
             "description": None,
             "commentaire": "186 euros par mois",
             "remuneration_brut_net": None,
-            "description_mandat": None,
+            "description_mandat": "conseilère communautaire",
+        }
+        assert out[0] == exp
+
+    def test_parse_mandat_revenus_inversion(self):
+        with open(FIXTURES_DIRECTORY / "mandat_revenus_inversion.xml") as f:
+            soup = BeautifulSoup(f.read(), features="xml").find("declaration")
+
+        out = DeclaInteretWorkflow._parse_mandat_revenues(soup)
+        exp = {
+            "description": None,
+            "commentaire": None,
+            "remuneration_brut_net": None,
+            "description_mandat": "Maire",
         }
         assert out[0] == exp
