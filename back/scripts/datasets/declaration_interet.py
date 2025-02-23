@@ -1,3 +1,4 @@
+import logging
 import urllib.request
 from datetime import datetime
 from itertools import chain
@@ -6,6 +7,7 @@ from pathlib import Path
 import bs4
 import pandas as pd
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 PARSED_SECTIONS = []
 GENERAL_TAGS = [
@@ -50,7 +52,7 @@ class DeclaInteretWorkflow:
         declarations = soup.find_all("declaration")
         print(len(declarations))
         df = pd.DataFrame.from_records(
-            chain(*[self.parse_declaration(declaration) for declaration in declarations])
+            chain(*[self.parse_declaration(declaration) for declaration in tqdm(declarations)])
         )
         print(df.head())
         print(df.dtypes)
@@ -66,7 +68,9 @@ class DeclaInteretWorkflow:
                 ]
             )
         )
-        return [global_infos | x for x in itemized_sections]
+        if itemized_sections:
+            return [global_infos | x for x in itemized_sections]
+        return [global_infos]
 
     @staticmethod
     def _declaration_global_infos(declaration: BeautifulSoup) -> dict:
@@ -76,7 +80,7 @@ class DeclaInteretWorkflow:
 
         global_infos = {
             "date_depot": to_datetime(declaration.find("dateDepot")),
-            "uuid": declaration.find("uuid"),
+            "declaration_id": declaration.find("uuid"),
             "complete": declaration.find("complete") == "true",
             "nothing_to_declare": declaration.find("neant") == "true",
             "type_declaration": general.find("typeDeclaration").find("id"),
@@ -129,8 +133,20 @@ class DeclaInteretWorkflow:
         section = declaration.find("mandatElectifDto")
         if not section:
             return []
-        items = section.find("items").find("items")
+        uuid = get_text(declaration.find("uuid"))
+
+        items = section.find("items")
+        neant = section.find("neant")
+        if not items and neant and get_bool(neant):
+            return []
+
+        if not items:
+            logging.info(f"Wrongly parsed mandat : {uuid}")
+            return []
+
+        items = items.find("items")
         if not items or not len(items.contents):
+            logging.info(f"Wrongly parsed mandat : {uuid}")
             return []
 
         remuneration = items.find("remuneration")
@@ -140,6 +156,9 @@ class DeclaInteretWorkflow:
             "remuneration_brut_net": get_text(remuneration.find("brutNet")),
         }
         montants = remuneration.find("montant", recursive=False)
+        if not montants:
+            logging.info(f"Wrongly parsed mandat : {uuid}")
+            return []
         return [
             general_infos
             | {
@@ -167,7 +186,12 @@ def get_text(tag: BeautifulSoup) -> str | None:
     return None
 
 
+def get_bool(tag: BeautifulSoup) -> str | None:
+    txt = get_text(tag)
+    return txt and (txt == "true")
+
+
 def get_int(tag: BeautifulSoup) -> int | None:
     if tag and tag.text:
-        return int(tag.text.replace(" ", "").replace("\u202f", ""))
+        return int(tag.text.replace(" ", "").replace("\u202f", "").replace("\xa0", ""))
     return None
