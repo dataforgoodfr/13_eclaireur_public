@@ -157,15 +157,19 @@ class DeclaInteretWorkflow:
             "description": get_text(items.find("description")),
             "commentaire": get_text(items.find("commentaire")),
             "remuneration_brut_net": get_text(remuneration.find("brutNet")),
+            "description_mandat": get_text(remuneration.get("descriptionMandat")),
         }
         montants = remuneration.find("montant", recursive=False)
+        if not montants and any(v is not None for v in general_infos.values()):
+            return [general_infos]
+
         if not montants:
             logging.info(f"Wrongly parsed mandat : {uuid}")
             return []
         return [
             general_infos
             | {
-                "montant": get_int(item.find("montant")),
+                "montant": get_float(item.find("montant")),
                 "date_remuneration": datetime(
                     year=get_int(item.find("annee")) or 1970, month=12, day=31
                 ),
@@ -194,7 +198,19 @@ def get_bool(tag: BeautifulSoup) -> str | None:
     return txt and (txt == "true")
 
 
-def get_int(tag: BeautifulSoup) -> int | None:
+def get_float(tag: BeautifulSoup) -> float | None:
     if tag and tag.text:
-        return int(tag.text.replace(" ", "").replace("\u202f", "").replace("\xa0", ""))
+        return float(
+            tag.text.replace(" ", "")
+            .replace("\u202f", "")
+            .replace("\xa0", "")
+            .replace(",", ".")
+        )
+    return None
+
+
+def get_int(tag: BeautifulSoup) -> int | None:
+    f = get_float(tag)
+    if f is not None:
+        return int(f)
     return None

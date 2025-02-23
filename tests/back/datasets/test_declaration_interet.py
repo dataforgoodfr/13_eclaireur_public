@@ -26,7 +26,7 @@ class TestParseMandat:
         exp = pd.read_csv(
             FIXTURES_DIRECTORY / "exp_mandat_revenus_0.csv",
             sep=";",
-            dtype={"description": str, "montant": int},
+            dtype={"description": str, "description_mandat": str},
             parse_dates=["date_remuneration"],
         )
         pd.testing.assert_frame_equal(out, exp)
@@ -44,3 +44,16 @@ class TestParseMandat:
 
         out = DeclaInteretWorkflow._parse_mandat_revenues(soup)
         assert not out
+
+    def test_parse_mandat_revenus_com_only(self):
+        with open(FIXTURES_DIRECTORY / "mandat_revenus_com_only.xml") as f:
+            soup = BeautifulSoup(f.read(), features="xml").find("declaration")
+
+        out = DeclaInteretWorkflow._parse_mandat_revenues(soup)
+        exp = {
+            "description": None,
+            "commentaire": "186 euros par mois",
+            "remuneration_brut_net": None,
+            "description_mandat": None,
+        }
+        assert out[0] == exp
