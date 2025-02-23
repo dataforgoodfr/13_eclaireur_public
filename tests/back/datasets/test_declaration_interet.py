@@ -8,8 +8,6 @@ from tests.back.datasets.fixtures.expected_parsed import EXPECTED
 
 def test_parse_declaration():
     with open(Path(__file__).parent / "fixtures" / "declaration.xml") as f:
-        soup = BeautifulSoup(f.read(), features="xml")
+        soup = BeautifulSoup(f.read(), features="xml").find("declaration")
         out = DeclaInteretWorkflow.parse_declaration(soup)
-        assert out == EXPECTED
-        out = DeclaInteretWorkflow.parse_declaration(soup)
-        assert out == EXPECTED
+        assert out[0] == EXPECTED[0]

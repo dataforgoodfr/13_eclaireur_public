@@ -7,6 +7,17 @@ import bs4
 import pandas as pd
 from bs4 import BeautifulSoup
 
+PARSED_SECTIONS = []
+GENERAL_TAGS = [
+    "dateDepot",
+    "uuid",
+    "origine",
+    "complete",
+    "attachedFiles",
+    "general",
+    "declarationVersion",
+]
+
 
 class DeclaInteretWorkflow:
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
@@ -78,11 +89,32 @@ class DeclaInteretWorkflow:
             "entreprise_mere": general.find("nomSocieteMere"),
             "entreprise_ca": general.find("chiffreAffaire"),
             "nb_logements": general.find("nbLogements"),
+            "to_parse": DeclaInteretWorkflow._non_parsed_sections(declaration),
         }
         return {
             k: (get_text(v) if isinstance(v, bs4.element.Tag) else v)
             for k, v in global_infos.items()
         }
+
+    @staticmethod
+    def _non_parsed_sections(declaration: BeautifulSoup) -> str:
+        """
+        Identify sections with content but haven't been implemented yet
+        """
+        children = declaration.findChildren(recursive=False)
+        non_parsed = set([c.name for c in children]) - set(GENERAL_TAGS) - set(PARSED_SECTIONS)
+
+        to_parse = []
+        for name in non_parsed:
+            tag = declaration.find(name)
+            items = tag.find("items")
+            if (not items or not len(items.contents)) and (
+                get_text(tag.find("neant")) == "true"
+            ):
+                continue
+            to_parse.append(name)
+
+        return ",".join(sorted(to_parse)) if to_parse else None
 
 
 def to_datetime(tag: BeautifulSoup) -> datetime:
@@ -97,5 +129,4 @@ def to_datetime(tag: BeautifulSoup) -> datetime:
 def get_text(tag: BeautifulSoup) -> str | None:
     if tag and tag.text:
         return tag.text
-
     return None

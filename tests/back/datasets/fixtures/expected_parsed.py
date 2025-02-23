@@ -24,5 +24,6 @@ EXPECTED = [
         "entreprise_mere": None,
         "entreprise_ca": None,
         "nb_logements": None,
+        "to_parse": "activCollaborateursDto,activProfConjointDto,mandatElectifDto,participationDirigeantDto,participationFinanciereDto",
     }
 ]
