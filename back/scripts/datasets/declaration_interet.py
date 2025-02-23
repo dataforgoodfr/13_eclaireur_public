@@ -60,7 +60,11 @@ class DeclaInteretWorkflow:
     def parse_declaration(declaration: BeautifulSoup) -> list[dict]:
         global_infos = DeclaInteretWorkflow._declaration_global_infos(declaration)
         itemized_sections = list(
-            chain(*[DeclaInteretWorkflow._parse_mandat_revenues(declaration)])
+            chain(
+                *[
+                    DeclaInteretWorkflow._parse_mandat_revenues(declaration),
+                ]
+            )
         )
         return [global_infos | x for x in itemized_sections]
 

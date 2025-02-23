@@ -7,13 +7,12 @@ from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 
 FIXTURES_DIRECTORY = Path(__file__).parent / "fixtures"
 
-# def test_parse_declaration():
-#     with open(Path(__file__).parent / "fixtures" / "declaration.xml") as f:
-#         soup = BeautifulSoup(f.read(), features="xml").find("declaration")
-#         out = DeclaInteretWorkflow.parse_declaration(soup)
 
-#         pd.DataFrame(out).to_csv("dum.csv", sep=";", index=False)
-#         assert out[0] == EXPECTED[0]
+def test_parse_declaration():
+    with open(Path(__file__).parent / "fixtures" / "declaration.xml") as f:
+        soup = BeautifulSoup(f.read(), features="xml").find("declaration")
+        out = DeclaInteretWorkflow.parse_declaration(soup)
+        assert len(out) == 7
 
 
 def test_parse_mandat_revenus():
