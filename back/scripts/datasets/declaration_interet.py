@@ -127,6 +127,6 @@ def to_datetime(tag: BeautifulSoup) -> datetime:
 
 
 def get_text(tag: BeautifulSoup) -> str | None:
-    if tag and tag.text:
+    if tag and tag.text and (tag.text != "[Données non publiées]"):
         return tag.text
     return None
