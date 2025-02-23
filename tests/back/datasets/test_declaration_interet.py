@@ -37,3 +37,10 @@ class TestParseMandat:
 
         out = DeclaInteretWorkflow._parse_mandat_revenues(soup)
         assert not out
+
+    def test_parse_mandat_revenus_emtpy2(self):
+        with open(FIXTURES_DIRECTORY / "mandat_revenus_empty2.xml") as f:
+            soup = BeautifulSoup(f.read(), features="xml").find("declaration")
+
+        out = DeclaInteretWorkflow._parse_mandat_revenues(soup)
+        assert not out

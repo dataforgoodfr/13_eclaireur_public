@@ -136,8 +136,8 @@ class DeclaInteretWorkflow:
         uuid = get_text(declaration.find("uuid"))
 
         items = section.find("items")
-        neant = section.find("neant")
-        if not items and neant and get_bool(neant):
+        is_neant = get_bool(section.find("neant"))
+        if not items and is_neant:
             return []
 
         if not items:
@@ -145,6 +145,9 @@ class DeclaInteretWorkflow:
             return []
 
         items = items.find("items")
+        if not items and is_neant:
+            return []
+
         if not items or not len(items.contents):
             logging.info(f"Wrongly parsed mandat : {uuid}")
             return []
