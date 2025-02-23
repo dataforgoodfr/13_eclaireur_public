@@ -1,0 +1,101 @@
+import urllib.request
+from datetime import datetime
+from itertools import chain
+from pathlib import Path
+
+import bs4
+import pandas as pd
+from bs4 import BeautifulSoup
+
+
+class DeclaInteretWorkflow:
+    """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
+
+    def __init__(self, source_folder: Path):
+        self.data_folder = source_folder / "declas_interet"
+        self.data_folder.mkdir(exist_ok=True, parents=True)
+
+        self.xml_filename = self.data_folder / "declarations.xml"
+        self.filename = self.data_folder / "declarations.parquet"
+
+        self.URL = "https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74"
+
+    def _fetch_xml(self):
+        if self.xml_filename.exists():
+            return
+        urllib.request.urlretrieve(self.URL, self.xml_filename)
+
+    def run(self):
+        self._fetch_xml()
+        self._format_to_parquet()
+
+    def _format_to_parquet(self):
+        if self.filename.exists():
+            return
+        with self.xml_filename.open() as f:
+            soup = BeautifulSoup(f.read(), features="xml")
+            print("soup created")
+
+        declarations = soup.find_all("declaration")
+        print(len(declarations))
+        df = pd.DataFrame.from_records(
+            chain(*[self.parse_declaration(declaration) for declaration in declarations])
+        )
+        print(df.head())
+        print(df.dtypes)
+        df.to_parquet(self.filename)
+
+    @staticmethod
+    def parse_declaration(declaration: BeautifulSoup) -> list[dict]:
+        return [DeclaInteretWorkflow._declaration_global_infos(declaration)]
+
+    @staticmethod
+    def _declaration_global_infos(declaration: BeautifulSoup) -> dict:
+        general = declaration.find("general")
+        declarant = general.find("declarant")
+        qualite_mandat = general.find("qualiteMandat")
+
+        global_infos = {
+            "date_depot": to_datetime(declaration.find("dateDepot")),
+            "uuid": declaration.find("uuid"),
+            "complete": declaration.find("complete") == "true",
+            "nothing_to_declare": declaration.find("neant") == "true",
+            "type_declaration": general.find("typeDeclaration").find("id"),
+            "mandat": ",".join(get_text(x) for x in general.find("mandat").find_all("label")),
+            "civilite": declarant.find("civilite"),
+            "nom": declarant.find("nom"),
+            "prenom": declarant.find("prenom"),
+            "date_naissance": to_datetime(declarant.find("dateNaissance")),
+            "type_mandat": qualite_mandat.find("typeMandat"),
+            "qualite_mandat": general.find("qualiteDeclarant"),
+            "categorie_mandat": qualite_mandat.find("codCategorieMandat"),
+            "mandat_organe_type": qualite_mandat.find("codeListeOrgane"),
+            "mandat_organe_code": general.find("organe").find("codeOrgane"),
+            "debut_mandat": to_datetime(general.find("dateDebutMandat")),
+            "fin_mandat": to_datetime(general.find("dateFinMandat")),
+            "regime_matrimonial": general.find("regimeMatrimonial"),
+            "entreprise": general.find("nomSociete"),
+            "entreprise_mere": general.find("nomSocieteMere"),
+            "entreprise_ca": general.find("chiffreAffaire"),
+            "nb_logements": general.find("nbLogements"),
+        }
+        return {
+            k: (get_text(v) if isinstance(v, bs4.element.Tag) else v)
+            for k, v in global_infos.items()
+        }
+
+
+def to_datetime(tag: BeautifulSoup) -> datetime:
+    if tag and tag.text:
+        fmt = "%d/%m/%Y"
+        if " " in tag.text:
+            fmt += " %H:%M:%S"
+        return datetime.strptime(tag.text, fmt)
+    return None
+
+
+def get_text(tag: BeautifulSoup) -> str | None:
+    if tag and tag.text:
+        return tag.text
+
+    return None
