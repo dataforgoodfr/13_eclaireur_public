@@ -1,6 +1,8 @@
 workflow:
   save_to_db: True
 
+is_test: true
+
 communities:
   processed_data:
     path: back/tests/data/communities/
@@ -125,6 +127,9 @@ file_age_to_check:
 
 elected_officials:
   data_folder: back/tests/data/elected_officials
+
+sirene:
+  data_folder: back/tests/data/sirene
 
 datagouv_api:
   organization_folder: back/tests/data/datagouv_api/organizations

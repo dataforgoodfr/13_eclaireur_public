@@ -37,7 +37,9 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
-        SireneWorkflow(self.config["sirene"]["data_folder"]).run()
+        SireneWorkflow(
+            self.config["sirene"]["data_folder"], bool(self.config.get("is_test"))
+        ).run()
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
