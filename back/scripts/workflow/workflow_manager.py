@@ -31,9 +31,8 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
-        self._run_subvention_and_marche()
-
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
+
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
