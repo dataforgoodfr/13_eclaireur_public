@@ -1,0 +1,51 @@
+<declaration>
+<mandatElectifDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>Indemnité parlementaire nette des cotisations réglementaires. Pour l'année 2017, revenus de octobre à décembre. Pour l'année 2023, revenus de janvier à octobre.</commentaire>
+<conservee>false</conservee>
+<descriptionMandat>Président du Sénat</descriptionMandat>
+<remuneration>
+<brutNet>Net</brutNet>
+<montant>
+<montant>
+<annee>2017</annee>
+<montant>37 786</montant>
+</montant>
+<montant>
+<annee>2018</annee>
+<montant>148 424</montant>
+</montant>
+<montant>
+<annee>2019</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2020</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2021</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2022</annee>
+<montant>151 654</montant>
+</montant>
+<montant>
+<annee>2023</annee>
+<montant>120 194</montant>
+</montant>
+</montant>
+</remuneration>
+<dateDebut>10/2017</dateDebut>
+<dateFin>10/2023</dateFin>
+</items>
+</items>
+<neant>false</neant>
+</mandatElectifDto>
+</declaration>

@@ -1,0 +1,18 @@
+<declaration>
+<mandatElectifDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>186 euros par mois</commentaire>
+<descriptionMandat>conseilère communautaire</descriptionMandat>
+<remuneration/>
+<dateDebut>03/2020</dateDebut>
+<dateFin>03/2020</dateFin>
+</items>
+</items>
+<neant>false</neant>
+</mandatElectifDto>
+</declaration>

@@ -1,0 +1,294 @@
+<declaration>
+<dateDepot>12/12/2023 11:52:37</dateDepot>
+<uuid>78610b60-f6bc-4eeb-9f51-f3c28b11f23e</uuid>
+<origine>ADEL</origine>
+<complete>true</complete>
+<attachedFiles>
+<attachedFiles>
+<fileName>VUE_PDF_DU_RECEPISSE_DU_DEPOT_XML</fileName>
+<serverFileName/>
+<base64EncodedContent/>
+</attachedFiles>
+</attachedFiles>
+<declarationVersion>20171221</declarationVersion>
+<activConsultantDto>
+<items/>
+<neant>true</neant>
+</activConsultantDto>
+<activProfCinqDerniereDto>
+<neant>true</neant>
+</activProfCinqDerniereDto>
+<activProfConjointDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>
+        [Données non publiées]
+    </commentaire>
+<nomConjoint>
+            [Données non publiées]
+        </nomConjoint>
+<employeurConjoint>néant</employeurConjoint>
+<activiteProf>néant</activiteProf>
+</items>
+</items>
+<neant>false</neant>
+</activProfConjointDto>
+<fonctionBenevoleDto>
+<items/>
+<neant>true</neant>
+</fonctionBenevoleDto>
+<mandatElectifDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>Indemnité parlementaire nette des cotisations réglementaires. Pour l'année 2017, revenus de octobre à décembre. Pour l'année 2023, revenus de janvier à octobre.</commentaire>
+<conservee>false</conservee>
+<descriptionMandat>Président du Sénat</descriptionMandat>
+<remuneration>
+<brutNet>Net</brutNet>
+<montant>
+<montant>
+<annee>2017</annee>
+<montant>37 786</montant>
+</montant>
+<montant>
+<annee>2018</annee>
+<montant>148 424</montant>
+</montant>
+<montant>
+<annee>2019</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2020</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2021</annee>
+<montant>149 045</montant>
+</montant>
+<montant>
+<annee>2022</annee>
+<montant>151 654</montant>
+</montant>
+<montant>
+<annee>2023</annee>
+<montant>120 194</montant>
+</montant>
+</montant>
+</remuneration>
+<dateDebut>10/2017</dateDebut>
+<dateFin>10/2023</dateFin>
+</items>
+</items>
+<neant>false</neant>
+</mandatElectifDto>
+<participationDirigeantDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>
+        [Données non publiées]
+    </commentaire>
+<conservee>false</conservee>
+<nomSociete>Société des courses de Rambouillet</nomSociete>
+<activite>Membre du CA</activite>
+<remuneration>
+<brutNet>Net</brutNet>
+<montant>
+<montant>
+<annee>2017</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2018</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2019</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2020</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2021</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2022</annee>
+<montant>0</montant>
+</montant>
+<montant>
+<annee>2023</annee>
+<montant>0</montant>
+</montant>
+</montant>
+</remuneration>
+<dateDebut>01/2017</dateDebut>
+<dateFin>09/2023</dateFin>
+</items>
+</items>
+<neant>false</neant>
+</participationDirigeantDto>
+<participationFinanciereDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire/>
+<nomSociete>SCI 
+        [Données non publiées]
+    </nomSociete>
+<evaluation>285000</evaluation>
+<remuneration>Perçu au titre de revenu foncier 2022 : 18019€</remuneration>
+<capitalDetenu>30</capitalDetenu>
+<nombreParts>30</nombreParts>
+<actiConseil>Non</actiConseil>
+</items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>
+        [Données non publiées]
+    </commentaire>
+<nomSociete>Crédit Mutuel</nomSociete>
+<evaluation>30</evaluation>
+<remuneration>0</remuneration>
+<capitalDetenu/>
+<nombreParts>1</nombreParts>
+<actiConseil>Non</actiConseil>
+</items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>
+        [Données non publiées]
+    </commentaire>
+<nomSociete>CENTRAVET</nomSociete>
+<evaluation>610</evaluation>
+<remuneration>0</remuneration>
+<capitalDetenu/>
+<nombreParts>2</nombreParts>
+<actiConseil>Non</actiConseil>
+</items>
+</items>
+<neant>false</neant>
+</participationFinanciereDto>
+<activCollaborateursDto>
+<items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire/>
+<nom>PIGNOL Catherine</nom>
+<employeur>NÉANT</employeur>
+<descriptionActivite/>
+</items>
+<items>
+<motif>
+<id>CREATION</id>
+<label/>
+</motif>
+<commentaire>
+        [Données non publiées]
+    </commentaire>
+<nom>Blanzat épouse Debey Armelle</nom>
+<employeur>NEANT</employeur>
+<descriptionActivite/>
+</items>
+</items>
+<neant>false</neant>
+</activCollaborateursDto>
+<observationInteretDto>
+<neant>true</neant>
+</observationInteretDto>
+<general>
+<typeDeclaration>
+<id>DIA</id>
+<label>Déclaration d'intérêts et d'activités modificative</label>
+</typeDeclaration>
+<mandat>
+<label>Député ou sénateur</label>
+</mandat>
+<qualiteMandat>
+<typeMandat>Sénateur</typeMandat>
+<codCategorieMandat>PAR</codCategorieMandat>
+<nomCategorieMandat>Député ou sénateur</nomCategorieMandat>
+<codTypeMandatFichier>senateur</codTypeMandatFichier>
+<labelTypeMandat>Sénateur</labelTypeMandat>
+<labelOrgane>Département d'élection</labelOrgane>
+<codeListeOrgane>ZEP</codeListeOrgane>
+</qualiteMandat>
+<organe>
+<codeOrgane>78</codeOrgane>
+<codeListeOrgane>ZEP</codeListeOrgane>
+<nomListeOrgane>Zones d'élection des parlementaires</nomListeOrgane>
+<labelOrgane>Yvelines(78)</labelOrgane>
+<labelDeclaration/>
+<organeParent/>
+</organe>
+<qualiteDeclarant/>
+<qualiteDeclarantForPDF>Sénateur/Yvelines(78)</qualiteDeclarantForPDF>
+<dateDebutMandat>02/10/2023</dateDebutMandat>
+<dateFinMandat/>
+<dateDernDeclar/>
+<regimeMatrimonial/>
+<regimeMatrimonialComments/>
+<nomSociete/>
+<nomSocieteMere/>
+<chiffreAffaire/>
+<nbLogements/>
+<declarationModificative>true</declarationModificative>
+<etablissement/>
+<declarant>
+<civilite>M.</civilite>
+<nom>LARCHER</nom>
+<prenom>Gérard</prenom>
+<email>
+            [Données non publiées]
+        </email>
+<dateNaissance>14/09/1949</dateNaissance>
+<pieceIdentite/>
+<telephoneDec>
+            [Données non publiées]
+        </telephoneDec>
+<adresseDec>
+<voie>
+            [Données non publiées]
+        </voie>
+<complement>
+            [Données non publiées]
+        </complement>
+<codePostal>
+            [Données non publiées]
+        </codePostal>
+<ville>
+            [Données non publiées]
+        </ville>
+<pays>
+            [Données non publiées]
+        </pays>
+</adresseDec>
+</declarant>
+</general>
+</declaration>
