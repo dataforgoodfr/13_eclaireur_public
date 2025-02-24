@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from back.scripts.utils.dataframe_operation import normalize_column_names
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
 from scripts.utils.files_operation import save_csv
@@ -15,7 +16,8 @@ class OfglLoader:
 
     def get(self):
         base_path = get_project_base_path()
-        data_folder = Path(base_path) / self._config["processed_data"]["path"]
+        data_folder = base_path / self._config["processed_data"]["path"]
+        data_folder.mkdir(parents=True, exist_ok=True)
         data_file = data_folder / self._config["processed_data"]["filename"]
 
         # Load data from OFGL dataset if it was already processed
@@ -50,11 +52,10 @@ class OfglLoader:
 
             dataframes.append(df)
 
-        # Concatenate the dataframes
         data = pd.concat(dataframes, axis=0, ignore_index=True)
-        # Fill NaN values with np.nan
         data.fillna(np.nan, inplace=True)
         # Save the processed data to the instance & a CSV file
+        data = normalize_column_names(data)
         save_csv(
             data,
             Path(self._config["processed_data"]["path"]),

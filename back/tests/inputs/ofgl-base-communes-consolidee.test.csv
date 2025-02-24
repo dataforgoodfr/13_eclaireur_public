@@ -1,0 +1,145 @@
+Exercice;Outre-mer;Code Insee 2023 Région;Nom 2023 Région;Code Insee 2023 Département;Nom 2023 Département;Code Siren 2023 EPCI;Nom 2023 EPCI;Strate population 2023;Commune rurale;Commune de montagne;Commune touristique;Tranche revenu par habitant;Présence QPV;Code Insee 2023 Commune;Nom 2023 Commune;Catégorie;Code Siren Collectivité;Code Insee Collectivité;Libellé Budget;Agrégat;Montant BP;Montant BA;Montant flux BP-BA;Montant;Montant en millions;Population totale;Montant en € par habitant;Compte 2023 Disponible;ordre_analyse1_section1;ordre_analyse1_section2;ordre_analyse1_section3;ordre_analyse2_section1;ordre_analyse2_section2;ordre_analyse2_section3;ordre_analyse3_section1;ordre_analyse3_section2;ordre_analyse3_section3;ordre_analyse4_section1;annee_join;Population totale du dernier exercice;siren
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;241100593
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200041333
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;247700339
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;221700016
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200053767
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;245701222
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;221500010
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;217500016
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200073096
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200056232
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200039949
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200069839
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200066918
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;223600016
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;227000015
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;243700754
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200054781
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;243900479
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200057859
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200022986
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;246900740
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200043396
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200072015
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;247700032
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;221200017
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;221927205
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200069052
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200035814
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;241200906
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200067064
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;240200584
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;243400694
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;244900882
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200065597
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200071553
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200040442
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;240500439
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;241400555
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200072999
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;226100014
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;243100518
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200052264
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200053726
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;234400034
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;3;Oui;Oui;Non;2;Non;01204;Le Poizat-Lalleyriat;Commune;200053395;01204;LE POIZAT-LALLEYRIAT;Dépenses totales;1428946.69;132972.84;0.0;1561919.53;1.56191953;735;2125.0605850340135;1;;1;;;;;;;;;2020;762;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;2;Non;01015;Arboys en Bugey;Commune;200053668;01015;ARBOYS EN BUGEY;Dépenses totales;446117.55;90728.17;9270.0;527575.72;0.52757572;661;798.1478366111951;1;;1;;;;;;;;;2020;678;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;2;Non;01187;Haut Valromey;Commune;200053676;01187;HAUT VALROMEY;Dépenses totales;1278881.59;836992.4;197500.0;1918373.99;1.91837399;691;2776.2286396526774;1;;1;;;;;;;;;2020;634;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;3;Oui;Oui;Non;2;Non;01080;Champdor-Corcelles;Commune;200056695;01080;CHAMPDOR-CORCELLES;Dépenses totales;920219.09;159017.22;0.0;1079236.31;1.07923631;665;1622.9117443609023;1;;1;;;;;;;;;2020;652;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;4;Oui;Non;Non;2;Non;01426;Val-Revermont;Commune;200057347;01426;VAL REVERMONT;Dépenses totales;3556919.77;631455.49;96876.35;4091498.91;4.09149891;2654;1541.6348568198946;1;;1;;;;;;;;;2020;2561;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;2;Non;01286;Parves et Nattages;Commune;200059913;01286;PARVES ET NATTAGES;Dépenses totales;1046731.17;0.0;0.0;1046731.17;1.04673117;980;1068.093030612245;1;;1;;;;;;;;;2020;996;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;2;Non;01338;Groslée-Saint-Benoit;Commune;200060143;01338;GROSLEE SAINT BENOIT;Dépenses totales;932520.0;565619.22;6600.0;1491539.22;1.49153922;1229;1213.620195280716;1;;1;;;;;;;;;2020;1279;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;3;Oui;Non;Non;1;Non;01095;Nivigne et Suran;Commune;200062537;01095;NIVIGNE ET SURAN;Dépenses totales;652292.47;0.0;0.0;652292.47;0.65229247;825;790.6575393939394;1;;1;;;;;;;;;2020;861;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;1;Non;01098;Chazey-Bons;Commune;200063121;01098;CHAZEY-BONS;Dépenses totales;930659.22;138543.58;46419.0;1022783.8;1.0227838;1148;890.9266550522649;1;;1;;;;;;;;;2020;1213;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;5;Non;Non;Non;2;Non;01025;Bâgé-Dommartin;Commune;200077220;01025;BAGE-DOMMARTIN;Dépenses totales;2569082.8;282063.15;0.0;2851145.95;2.8511459500000003;4200;678.8442738095239;1;;1;;;;;;;;;2020;4172;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100891;CC du Pays Bellegardien (CCPB);7;Non;Oui;Non;2;Non;01033;Valserhône;Commune;200083863;01033;VALSERHONE;Dépenses totales;28853107.55;391537.82;367437.0;28877208.37;28.87720837;16804;1718.4722905260653;1;;1;;;;;;;;;2020;16770;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;2;Non;01227;Magnieu;Commune;200084978;01227;MAGNIEU;Dépenses totales;615303.65;157254.19;0.0;772557.84;0.7725578399999999;657;1175.887123287671;1;;1;;;;;;;;;2020;654;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100891;CC du Pays Bellegardien (CCPB);1;Oui;Oui;Non;2;Non;01215;Surjoux-Lhopital;Commune;200085306;01215;SURJOUX-LHOPITAL;Dépenses totales;189612.23;0.0;0.0;189612.23;0.18961223000000002;134;1415.0166417910448;1;;1;;;;;;;;;2020;145;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;5;Non;Oui;Non;1;Non;01185;Plateau d'Hauteville;Commune;200086122;01185;PLATEAU D'HAUTEVILLE;Dépenses totales;6231851.41;1208260.41;86800.0;7353311.82;7.35331182;5031;1461.6004412641623;1;;1;;;;;;;;;2020;4981;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;1;Non;01453;Arvière-en-Valromey;Commune;200086403;01453;ARVIERE EN VALROMEY;Dépenses totales;726870.04;262377.46;100000.0;889247.5;0.8892475;735;1209.860544217687;1;;1;;;;;;;;;2020;729;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;2;Non;01036;Valromey-sur-Séran;Commune;200086411;01036;VALROMEY SUR SERAN;Dépenses totales;1010425.04;253502.24;0.0;1263927.28;1.26392728;1329;951.0363280662152;1;;1;;;;;;;;;2020;1358;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;4;Oui;Non;Non;1;Non;01130;Bresse Vallons;Commune;200086965;01130;BRESSE VALLONS;Dépenses totales;5005494.91;175443.58;0.0;5180938.49;5.18093849;2327;2226.4454189944136;1;;1;;;;;;;;;2020;2406;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;3;Oui;Non;Non;2;Non;01001;L'Abergement-Clémenciat;Commune;210100012;01001;L ABERGEMENT-CLEMENCIAT;Dépenses totales;458191.35;153040.54;0.0;611231.89;0.61123189;794;769.8134634760705;1;;1;;;;;;;;;2020;821;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;2;Oui;Oui;Non;2;Non;01002;L'Abergement-de-Varey;Commune;210100020;01002;ABERGEMENT-DE-VAREY (L');Dépenses totales;252332.81;120748.84;23886.0;349195.65;0.34919565;249;1402.392168674699;1;;1;;;;;;;;;2020;268;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;7;Non;Non;Non;2;Oui;01004;Ambérieu-en-Bugey;Commune;210100046;01004;AMBERIEU-EN-BUGEY;Dépenses totales;18501345.24;784081.19;151574.28;19133852.15;19.13385215;14428;1326.161086082617;1;;1;;;;;;;;;2020;14662;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042497;CC Dombes Saône Vallée;3;Oui;Non;Non;2;Non;01005;Ambérieux-en-Dombes;Commune;210100053;01005;AMBERIEUX-EN-DOMBES;Dépenses totales;1230198.41;0.0;0.0;1230198.41;1.2301984099999999;1723;713.986308763784;1;;1;;;;;;;;;2020;1806;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;1;Oui;Oui;Non;2;Non;01006;Ambléon;Commune;210100061;01006;AMBLEON;Dépenses totales;84883.63;3491.55;0.0;88375.18;0.08837518;117;755.3434188034188;1;;1;;;;;;;;;2020;113;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;4;Oui;Non;Non;2;Non;01007;Ambronay;Commune;210100079;01007;AMBRONAY;Dépenses totales;2087013.32;99323.6;0.0;2186336.92;2.18633692;2841;769.5659697289686;1;;1;;;;;;;;;2020;2946;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Non;Non;Non;2;Non;01008;Ambutrix;Commune;210100087;01008;AMBUTRIX;Dépenses totales;1016726.38;0.0;0.0;1016726.38;1.01672638;767;1325.5885006518904;1;;1;;;;;;;;;2020;781;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;2;Oui;Non;Non;3;Non;01009;Andert-et-Condon;Commune;210100095;01009;ANDERT CONDON;Dépenses totales;170102.73;14152.76;0.0;184255.49;0.18425549;339;543.5265191740413;1;;1;;;;;;;;;2020;332;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070852;CC Usses et Rhône;3;Oui;Oui;Non;2;Non;01010;Anglefort;Commune;210100103;01010;ANGLEFORT;Dépenses totales;1923699.42;64392.34;0.0;1988091.76;1.98809176;1132;1756.2648056537103;1;;1;;;;;;;;;2020;1116;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;2;Oui;Oui;Non;2;Non;01011;Apremont;Commune;210100111;01011;APREMONT;Dépenses totales;295173.8;102704.25;40000.0;357878.05;0.35787805;387;924.7494832041343;1;;1;;;;;;;;;2020;379;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;2;Oui;Oui;Non;1;Non;01012;Aranc;Commune;210100129;01012;ARANC;Dépenses totales;360724.35;0.0;0.0;360724.35;0.36072434999999997;330;1093.104090909091;1;;1;;;;;;;;;2020;330;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;1;Oui;Oui;Non;1;Non;01013;Arandas;Commune;210100137;01013;ARANDAS;Dépenses totales;275690.61;222004.13;0.0;497694.74;0.49769473999999997;148;3362.802297297297;1;;1;;;;;;;;;2020;147;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;4;Non;Oui;Non;2;Non;01014;Arbent;Commune;210100145;01014;ARBENT;Dépenses totales;5126926.65;326113.12;296352.78;5156686.99;5.15668699;3459;1490.8028302977739;1;;1;;;;;;;;;2020;3427;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;2;Oui;Non;Non;1;Non;01016;Arbigny;Commune;210100160;01016;ARBIGNY;Dépenses totales;397925.3;0.0;0.0;397925.3;0.3979253;468;850.267735042735;1;;1;;;;;;;;;2020;467;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;2;Oui;Oui;Non;1;Non;01017;Argis;Commune;210100178;01017;ARGIS;Dépenses totales;406772.62;89433.45;0.0;496206.07;0.49620607;458;1083.419366812227;1;;1;;;;;;;;;2020;456;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;0;Oui;Oui;Non;0;Non;01019;Armix;Commune;210100194;01019;ARMIX;Dépenses totales;139055.95;2866.61;6455.0;135467.56;0.13546756;29;4671.295172413793;1;;1;;;;;;;;;2020;30;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042497;CC Dombes Saône Vallée;3;Oui;Non;Non;2;Non;01021;Ars-sur-Formans;Commune;210100210;01021;ARS-SUR-FORMANS;Dépenses totales;1247655.78;0.0;0.0;1247655.78;1.24765578;1438;867.6326703755216;1;;1;;;;;;;;;2020;1520;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;1;Non;01022;Artemare;Commune;210100228;01022;ARTEMARE;Dépenses totales;992116.35;144912.48;0.0;1137028.83;1.13702883;1255;905.9990677290838;1;;1;;;;;;;;;2020;1229;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;0;Oui;Non;Non;1;Non;01023;Asnières-sur-Saône;Commune;210100236;01023;ASNIERES-SUR-SAONE;Dépenses totales;74627.32;0.0;0.0;74627.32;0.07462732000000001;66;1130.7169696969697;1;;1;;;;;;;;;2020;76;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;4;Non;Non;Non;2;Non;01024;Attignat;Commune;210100244;01024;ATTIGNAT;Dépenses totales;2263881.86;2553.33;0.0;2266435.19;2.26643519;3275;692.041279389313;1;;1;;;;;;;;;2020;3365;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;3;Non;Non;Non;1;Non;01026;Bâgé-le-Châtel;Commune;210100269;01026;BAGE-LE-CHATEL;Dépenses totales;859464.94;46374.46;0.0;905839.4;0.9058394000000001;983;921.5049847405901;1;;1;;;;;;;;;2020;1045;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100610;CC de la Côtière à Montluel;4;Non;Non;Non;1;Non;01027;Balan;Commune;210100277;01027;BALAN;Dépenses totales;1679427.53;0.0;0.0;1679427.53;1.6794275300000001;2741;612.7061400948559;1;;1;;;;;;;;;2020;2699;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;3;Oui;Non;Non;1;Non;01028;Baneins;Commune;210100285;01028;BANEINS;Dépenses totales;890840.73;98397.57;0.0;989238.3;0.9892383;611;1619.0479541734862;1;;1;;;;;;;;;2020;642;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;3;Oui;Non;Non;2;Non;01029;Beaupont;Commune;210100293;01029;BEAUPONT;Dépenses totales;479931.46;19289.48;0.0;499220.94;0.49922094;697;716.2423816355811;1;;1;;;;;;;;;2020;691;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042497;CC Dombes Saône Vallée;3;Non;Non;Non;2;Non;01030;Beauregard;Commune;210100301;01030;BEAUREGARD;Dépenses totales;761692.5;0.0;0.0;761692.5;0.7616925;880;865.5596590909091;1;;1;;;;;;;;;2020;836;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;5;Non;Oui;Non;1;Oui;01031;Bellignat;Commune;210100319;01031;BELLIGNAT;Dépenses totales;4275991.51;222002.03;0.0;4497993.54;4.49799354;3859;1165.5852656128532;1;;1;;;;;;;;;2020;3905;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100610;CC de la Côtière à Montluel;4;Non;Non;Non;2;Non;01032;Béligneux;Commune;210100327;01032;BELIGNEUX;Dépenses totales;2883790.46;0.0;0.0;2883790.46;2.88379046;3362;857.7603985722784;1;;1;;;;;;;;;2020;3443;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;6;Non;Non;Non;1;Oui;01034;Belley;Commune;210100343;01034;BELLEY;Dépenses totales;13180190.1;4943719.88;1763268.1;16360641.88;16.36064188;9499;1722.3541299084116;1;;1;;;;;;;;;2020;9550;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;2;Oui;Oui;Non;2;Non;01035;Belleydoux;Commune;210100350;01035;BELLEYDOUX;Dépenses totales;1197483.11;0.0;0.0;1197483.11;1.19748311;322;3718.891645962733;1;;1;;;;;;;;;2020;316;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;2;Oui;Oui;Non;1;Non;01037;Bénonces;Commune;210100376;01037;BENONCES;Dépenses totales;343711.16;0.0;0.0;343711.16;0.34371115999999996;302;1138.1164238410595;1;;1;;;;;;;;;2020;312;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;3;Oui;Non;Non;2;Non;01038;Bény;Commune;210100384;01038;BENY;Dépenses totales;520283.71;0.0;0.0;520283.71;0.5202837100000001;777;669.6058043758044;1;;1;;;;;;;;;2020;778;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;4;Non;Non;Non;1;Non;01138;Culoz-Béon;Commune;210100392;01039;BEON;Dépenses totales;490422.6;63466.84;0.0;553889.44;0.55388944;462;1198.8948917748917;1;;1;;;;;;;;;2020;3494;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;2;Oui;Non;Non;1;Non;01040;Béréziat;Commune;210100400;01040;BEREZIAT;Dépenses totales;503279.32;0.0;0.0;503279.32;0.50327932;501;1004.5495409181636;1;;1;;;;;;;;;2020;490;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Oui;Non;Non;2;Non;01041;Bettant;Commune;210100418;01041;BETTANT;Dépenses totales;433510.17;29414.86;0.0;462925.03;0.46292503;769;601.9831339401821;1;;1;;;;;;;;;2020;768;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070555;CC de la Veyle;2;Oui;Non;Non;2;Non;01042;Bey;Commune;210100426;01042;BEY;Dépenses totales;193316.78;2674.03;0.0;195990.81;0.19599081;293;668.910614334471;1;;1;;;;;;;;;2020;298;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100800;CC de Miribel et du Plateau;5;Non;Non;Non;3;Non;01043;Beynost;Commune;210100434;01043;BEYNOST;Dépenses totales;7400241.8;0.0;0.0;7400241.8;7.4002418;4721;1567.5157381910612;1;;1;;;;;;;;;2020;4943;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100891;CC du Pays Bellegardien (CCPB);3;Oui;Oui;Non;2;Non;01044;Billiat;Commune;210100442;01044;BILLIAT;Dépenses totales;622025.96;1104979.46;0.0;1727005.42;1.72700542;637;2711.1545054945054;1;;1;;;;;;;;;2020;645;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;2;Oui;Non;Non;2;Non;01045;Birieux;Commune;210100459;01045;BIRIEUX;Dépenses totales;148740.23;5995.14;0.0;154735.37;0.15473536999999998;287;539.1476306620209;1;;1;;;;;;;;;2020;288;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070555;CC de la Veyle;3;Oui;Non;Non;1;Non;01046;Biziat;Commune;210100467;01046;BIZIAT;Dépenses totales;535178.71;50526.1;0.0;585704.81;0.5857048100000001;885;661.8133446327685;1;;1;;;;;;;;;2020;920;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Oui;Non;Non;2;Non;01047;Blyes;Commune;210100475;01047;BLYES;Dépenses totales;1889069.26;432615.46;24973.35;2296711.37;2.29671137;1032;2225.4955135658915;1;;1;;;;;;;;;2020;1303;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100610;CC de la Côtière à Montluel;4;Non;Non;Non;2;Non;01049;La Boisse;Commune;210100491;01049;BOISSE (LA );Dépenses totales;2281438.63;0.0;0.0;2281438.63;2.28143863;3267;698.3283226201407;1;;1;;;;;;;;;2020;3412;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;2;Oui;Non;Non;1;Non;01050;Boissey;Commune;210100509;01050;BOISSEY;Dépenses totales;271500.77;1194.04;0.0;272694.81;0.27269481;342;797.3532456140351;1;;1;;;;;;;;;2020;384;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;0;Oui;Oui;Non;1;Non;01051;Bolozon;Commune;210100517;01051;BOLOZON;Dépenses totales;166331.18;0.0;0.0;166331.18;0.16633118;90;1848.1242222222222;1;;1;;;;;;;;;2020;92;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;2;Oui;Non;Non;2;Non;01052;Bouligneux;Commune;210100525;01052;BOULIGNEUX;Dépenses totales;349136.67;0.0;0.0;349136.67;0.34913667;334;1045.319371257485;1;;1;;;;;;;;;2020;338;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;8;Non;Non;Non;1;Oui;01053;Bourg-en-Bresse;Commune;210100533;01053;BOURG EN BRESSE;Dépenses totales;72172149.27;1865675.72;218877.73;73818947.26;73.81894726;43306;1704.5893700641946;1;;1;;;;;;;;;2020;43363;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Non;Non;Non;2;Non;01054;Bourg-Saint-Christophe;Commune;210100541;01054;BOURG-SAINT-CHRISTOPHE;Dépenses totales;1370513.18;58009.68;0.0;1428522.86;1.4285228600000002;1395;1024.030724014337;1;;1;;;;;;;;;2020;1517;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200029999;CC Rives de l'Ain - Pays du Cerdon;2;Oui;Oui;Non;1;Non;01056;Boyeux-Saint-Jérôme;Commune;210100566;01056;BOYEUX-SAINT-JEROME;Dépenses totales;266460.45;250360.65;18000.0;498821.1;0.49882109999999996;351;1421.142735042735;1;;1;;;;;;;;;2020;355;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;3;Oui;Non;Non;1;Non;01057;Boz;Commune;210100574;01057;BOZ;Dépenses totales;357870.23;178557.45;0.0;536427.68;0.5364276800000001;519;1033.5793448940271;1;;1;;;;;;;;;2020;530;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;1;Non;01058;Brégnier-Cordon;Commune;210100582;01058;BREGNIER-CORDON;Dépenses totales;1637318.58;1087744.44;783404.61;1941658.41;1.9416584099999998;852;2278.9417957746477;1;;1;;;;;;;;;2020;838;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;3;Oui;Oui;Non;2;Non;01060;Brénod;Commune;210100608;01060;BRENOD;Dépenses totales;644135.38;67116.58;35000.0;676251.96;0.67625196;530;1275.9470943396225;1;;1;;;;;;;;;2020;505;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Non;Non;Non;2;Non;01061;Brens;Commune;210100616;01061;BRENS;Dépenses totales;741326.77;63191.22;0.0;804517.99;0.80451799;1193;674.3654568315171;1;;1;;;;;;;;;2020;1166;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100610;CC de la Côtière à Montluel;3;Oui;Non;Non;3;Non;01062;Bressolles;Commune;210100624;01062;BRESSOLLES;Dépenses totales;951090.19;0.0;0.0;951090.19;0.95109019;931;1021.5791514500537;1;;1;;;;;;;;;2020;974;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;3;Non;Oui;Non;2;Non;01063;Brion;Commune;210100632;01063;BRION;Dépenses totales;806969.25;0.0;0.0;806969.25;0.80696925;528;1528.3508522727273;1;;1;;;;;;;;;2020;577;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Oui;Non;Non;1;Non;01064;Briord;Commune;210100640;01064;BRIORD;Dépenses totales;1947771.5;219702.55;7000.0;2160474.05;2.16047405;1026;2105.725194931774;1;;1;;;;;;;;;2020;1114;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;3;Non;Non;Non;2;Non;01065;Buellas;Commune;210100657;01065;BUELLAS;Dépenses totales;1028661.68;54725.63;0.0;1083387.31;1.08338731;1845;587.2017940379404;1;;1;;;;;;;;;2020;1889;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;0;Oui;Oui;Non;1;Non;01066;La Burbanche;Commune;210100665;01066;BURBANCHE (LA );Dépenses totales;272499.04;37056.55;17000.0;292555.59;0.29255559000000003;78;3750.7126923076926;1;;1;;;;;;;;;2020;93;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;2;Oui;Oui;Non;2;Non;01067;Ceignes;Commune;210100673;01067;CEIGNES;Dépenses totales;884521.73;0.0;0.0;884521.73;0.88452173;267;3312.815468164794;1;;1;;;;;;;;;2020;271;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200029999;CC Rives de l'Ain - Pays du Cerdon;3;Oui;Oui;Non;1;Non;01068;Cerdon;Commune;210100681;01068;CERDON;Dépenses totales;477908.24;150899.58;0.0;628807.82;0.6288078199999999;797;788.9684065244667;1;;1;;;;;;;;;2020;788;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;3;Non;Non;Non;2;Non;01069;Certines;Commune;210100699;01069;CERTINES;Dépenses totales;1389053.73;291052.75;0.0;1680106.48;1.68010648;1557;1079.0664611432242;1;;1;;;;;;;;;2020;1553;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100750;CA du Pays de Gex;6;Non;Non;Non;4;Non;01071;Cessy;Commune;210100715;01071;CESSY;Dépenses totales;5547689.06;0.0;0.0;5547689.06;5.54768906;4972;1115.7862148028962;1;;1;;;;;;;;;2020;5168;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071751;CA du Bassin de Bourg-en-Bresse;4;Non;Non;Non;2;Non;01072;Ceyzériat;Commune;210100723;01072;CEYZERIAT;Dépenses totales;2393108.96;467717.75;0.0;2860826.71;2.86082671;3218;889.0076786824114;1;;1;;;;;;;;;2020;3265;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Non;Non;2;Non;01073;Ceyzérieu;Commune;210100731;01073;CEYZERIEU;Dépenses totales;687020.91;614972.65;304105.15;997888.41;0.9978884100000001;1033;966.010077444337;1;;1;;;;;;;;;2020;1020;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;4;Non;Non;Non;1;Non;01074;Chalamont;Commune;210100749;01074;CHALAMONT;Dépenses totales;1787895.26;374007.24;26883.0;2135019.5;2.1350195;2484;859.5086553945249;1;;1;;;;;;;;;2020;2612;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070118;CC Val de Saône Centre;3;Oui;Non;Non;2;Non;01075;Chaleins;Commune;210100756;01075;CHALEINS;Dépenses totales;1128389.02;6300.23;0.0;1134689.25;1.13468925;1376;824.6288154069767;1;;1;;;;;;;;;2020;1433;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;1;Oui;Oui;Non;2;Non;01076;Chaley;Commune;210100764;01076;CHALEY;Dépenses totales;172629.01;46553.3;0.0;219182.31;0.21918231;133;1647.9872932330827;1;;1;;;;;;;;;2020;125;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200029999;CC Rives de l'Ain - Pays du Cerdon;1;Oui;Oui;Non;1;Non;01077;Challes-la-Montagne;Commune;210100772;01077;CHALLES LA MONTAGNE;Dépenses totales;200114.05;1148095.77;0.0;1348209.82;1.3482098200000001;197;6843.704670050762;1;;1;;;;;;;;;2020;194;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100750;CA du Pays de Gex;3;Oui;Non;Non;4;Non;01078;Challex;Commune;210100780;01078;CHALLEX;Dépenses totales;1492908.69;0.0;0.0;1492908.69;1.49290869;1498;996.6012616822429;1;;1;;;;;;;;;2020;1631;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;3;Oui;Oui;Non;1;Non;01079;Champagne-en-Valromey;Commune;210100798;01079;CHAMPAGNE-EN-VALROMEY;Dépenses totales;997538.45;152162.69;47789.0;1101912.14;1.1019121399999998;851;1294.843877790834;1;;1;;;;;;;;;2020;852;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100891;CC du Pays Bellegardien (CCPB);3;Oui;Oui;Non;3;Non;01081;Champfromier;Commune;210100814;01081;CHAMPFROMIER;Dépenses totales;1094511.49;26509.15;0.0;1121020.64;1.1210206399999998;750;1494.6941866666666;1;;1;;;;;;;;;2020;747;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100891;CC du Pays Bellegardien (CCPB);3;Oui;Oui;Non;1;Non;01082;Chanay;Commune;210100822;01082;CHANAY;Dépenses totales;595528.38;0.0;0.0;595528.38;0.59552838;639;931.9692957746479;1;;1;;;;;;;;;2020;652;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;3;Oui;Non;Non;2;Non;01083;Chaneins;Commune;210100830;01083;CHANEINS;Dépenses totales;646917.52;108347.56;0.0;755265.08;0.7552650799999999;925;816.5027891891891;1;;1;;;;;;;;;2020;982;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070555;CC de la Veyle;3;Oui;Non;Non;1;Non;01084;Chanoz-Châtenay;Commune;210100848;01084;CHANOZ-CHATENAY;Dépenses totales;474602.75;18668.81;0.0;493271.56;0.49327156;861;572.905412311266;1;;1;;;;;;;;;2020;940;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;2;Oui;Non;Non;2;Non;01085;La Chapelle-du-Châtelard;Commune;210100855;01085;LA CHAPELLE DU CHATELARD;Dépenses totales;251868.55;53048.74;0.0;304917.29;0.30491728999999995;393;775.8709669211196;1;;1;;;;;;;;;2020;403;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200042935;CA Haut - Bugey Agglomération;2;Oui;Oui;Non;2;Non;01087;Charix;Commune;210100871;01087;CHARIX;Dépenses totales;353940.78;40039.48;42885.0;351095.26;0.35109526;295;1190.1534237288136;1;;1;;;;;;;;;2020;289;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Oui;Non;Non;2;Non;01088;Charnoz-sur-Ain;Commune;210100889;01088;CHARNOZ;Dépenses totales;945144.07;130645.17;0.0;1075789.24;1.07578924;940;1144.4566382978724;1;;1;;;;;;;;;2020;930;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;4;Oui;Non;Non;1;Non;01089;Château-Gaillard;Commune;210100897;01089;CHATEAU-GAILLARD;Dépenses totales;2132336.16;313111.57;0.0;2445447.73;2.44544773;2187;1118.174545038866;1;;1;;;;;;;;;2020;2303;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;2;Oui;Non;Non;2;Non;01090;Châtenay;Commune;210100905;01090;CHATENAY;Dépenses totales;377429.47;21981.0;1946.16;397464.31;0.39746431;345;1152.070463768116;1;;1;;;;;;;;;2020;367;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;3;Non;Non;Non;2;Non;01092;Châtillon-la-Palud;Commune;210100921;01092;CHATILLON-LA-PALUD;Dépenses totales;1348560.38;652683.03;30000.0;1971243.41;1.9712434099999998;1652;1193.2466162227602;1;;1;;;;;;;;;2020;1682;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200069193;CC de la Dombes;6;Non;Non;Non;2;Non;01093;Châtillon-sur-Chalaronne;Commune;210100939;01093;CHATILLON-SUR-CHALARONNE;Dépenses totales;7198801.63;375656.42;23964.27;7550493.78;7.55049378;5060;1492.1924466403163;1;;1;;;;;;;;;2020;5171;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200071371;CC Bresse et Saône;3;Oui;Non;Non;2;Non;01094;Chavannes-sur-Reyssouze;Commune;210100947;01094;CHAVANNES-SUR-REYSSOUZE;Dépenses totales;519553.89;30260.04;0.0;549813.93;0.54981393;765;718.7110196078432;1;;1;;;;;;;;;2020;773;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200070555;CC de la Veyle;3;Oui;Non;Non;1;Non;01096;Chaveyriat;Commune;210100962;01096;CHAVEYRIAT;Dépenses totales;840435.98;22015.07;0.0;862451.05;0.86245105;1037;831.6789296046288;1;;1;;;;;;;;;2020;1063;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;240100883;CC de la Plaine de l'Ain;3;Oui;Non;Non;2;Non;01099;Chazey-sur-Ain;Commune;210100996;01099;CHAZEY-SUR-AIN;Dépenses totales;605598.32;127208.35;0.0;732806.67;0.73280667;1551;472.4736750483559;1;;1;;;;;;;;;2020;1650;
+2020;Non;84;Auvergne-Rhône-Alpes;01;Ain;200040350;CC Bugey Sud;1;Oui;Oui;Non;2;Non;01100;Cheignieu-la-Balme;Commune;210101002;01100;CHEIGNIEU-LA-BALME;Dépenses totales;278598.5;6296.77;0.0;284895.27;0.28489527000000003;138;2064.45847826087;1;;1;;;;;;;;;2020;135;

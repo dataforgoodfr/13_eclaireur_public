@@ -17,9 +17,9 @@ from scripts.utils.constants import (
     NORMALIZED_DATA_FILENAME,
 )
 from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
 
 from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
-from back.scripts.utils.psql_connector import PSQLConnector
 
 
 class WorkflowManager:
@@ -29,28 +29,19 @@ class WorkflowManager:
         self.logger = logging.getLogger(__name__)
         self.connector = PSQLConnector()
 
-        self.source_folder = get_project_data_path()
-        self.source_folder.mkdir(exist_ok=True, parents=True)
-
     def run_workflow(self):
         self.logger.info("Workflow started.")
-        self._run_elus()
+        self._run_subvention_and_marche()
+
+        ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
 
-    def _run_elus(self):
-        elus = ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"])
-        elus.run()
-
     def _run_subvention_and_marche(self):
-        # Create blank dict to store dataframes that will be saved to the DB
-        df_to_save_to_db = {}
-
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
-        # Build communities scope, and add selected communities to df_to_save
         communities_selector = self.initialize_communities_scope()
 
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
@@ -69,13 +60,7 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # If config requires it, add normalized data of the topic to df_to_save
-            if self.config["workflow"]["save_to_db"]:
-                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
+        self.logger.info("Workflow completed.")
 
     def check_file_age(self, config):
         """

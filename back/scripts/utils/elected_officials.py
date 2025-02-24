@@ -53,6 +53,7 @@ class ElectedOfficialsWorkflow:
         self._fetch_raw_datasets()
         self._combine_datasets()
         self.elected_officials.to_parquet(combined_filename)
+        return self
 
     def _fetch_raw_datasets(self):
         """
