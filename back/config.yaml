@@ -121,6 +121,7 @@ elected_officials:
 
 sirene:
   data_folder: back/data/sirene
+  url: https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip
 
 datagouv_api:
   organization_folder: back/data/datagouv_api/organizations
