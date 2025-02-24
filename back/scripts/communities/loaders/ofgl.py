@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
@@ -21,7 +20,7 @@ class OfglLoader:
         # Load data from OFGL dataset if it was already processed
         if data_file.exists():
             self._logger.info("Found OFGL data on disk, loading it.")
-            return pd.read_csv(data_file, sep=";")
+            return pd.read_csv(data_file, sep=";", dtype={"siren": "str"})
 
         self._logger.info("Downloading and processing OFGL data.")
         # Load the mapping between EPCI and communes, downloaded from the OFGL website
@@ -50,10 +49,18 @@ class OfglLoader:
 
             dataframes.append(df)
 
-        # Concatenate the dataframes
-        data = pd.concat(dataframes, axis=0, ignore_index=True)
-        # Fill NaN values with np.nan
-        data.fillna(np.nan, inplace=True)
+        data = (
+            pd.concat(dataframes, axis=0, ignore_index=True)
+            .astype({"SIREN": str})
+            .assign(
+                SIREN=lambda df: df["SIREN"].str.replace(".0", "").str.zfill(9),
+                code_region=lambda df: df["code_region"]
+                .astype(str)
+                .where(df["code_region"].notna()),
+            )
+            .dropna(subset=["nom"])
+        )
+
         # Save the processed data to the instance & a CSV file
         save_csv(
             data,
