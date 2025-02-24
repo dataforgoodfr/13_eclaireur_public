@@ -40,11 +40,11 @@ RENAME_COMMON_COLUMNS = {
 
 
 class ElectedOfficialsWorkflow:
+    DATASET_ID = "5c34c4d1634f4173183a64f1"
+
     def __init__(self, source_folder: Path | str):
         self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
-
-        self.DATASET_ID = "5c34c4d1634f4173183a64f1"
 
     def run(self):
         combined_filename = self.data_folder / "elected_officials.parquet"

@@ -114,6 +114,9 @@ file_age_to_check:
 elected_officials:
   data_folder: back/data/elected_officials
 
+datagouv_api:
+  organization_folder: back/data/datagouv_api/organizations
+
 
 logging:
   version: 1

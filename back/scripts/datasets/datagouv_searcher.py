@@ -135,7 +135,7 @@ class DataGouvSearcher:
             pd.concat(
                 [
                     DataGouvAPI.organisation_datasets(
-                        orga, self.data_folder / "organization_datasets"
+                        orga, self._config["datagouv_api"]["organization_folder"]
                     )
                     for orga in tqdm(datagouv_ids_list)
                 ],
