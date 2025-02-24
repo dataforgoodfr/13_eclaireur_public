@@ -12,7 +12,7 @@ export default function HomepageHeader() {
           <p className='text-base italic'>Derniér mise a jour: le 24 février 2025</p>
         </div>
         <div className='flex h-72 w-3/5 flex-col items-center justify-center rounded-2xl border border-black bg-gray-500'>
-          <h2 className='w-3/4 text-center text-xl font-semibold'>
+          <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
             Comment les dépense publiques sont-elles réparties autour de chez vous ?
           </h2>
           <SearchBar />
