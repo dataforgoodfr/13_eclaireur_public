@@ -122,6 +122,13 @@ file_age_to_check:
   files: {}
   age: 365
 
+
+elected_officials:
+  data_folder: back/tests/data/elected_officials
+
+datagouv_api:
+  organization_folder: back/tests/data/datagouv_api/organizations
+
 outputs_csv:
   path: 'back/tests/data/datasets/%(topic)s/outputs'
 
