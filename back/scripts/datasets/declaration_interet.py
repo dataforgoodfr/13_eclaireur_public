@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from scripts.utils.config import get_project_base_path
 from tqdm import tqdm
 
-PARSED_SECTIONS = []
+PARSED_SECTIONS = ["mandatElectifDto"]
 GENERAL_TAGS = [
     "dateDepot",
     "uuid",
