@@ -35,7 +35,7 @@ class OdfLoader:
             self._config["url"], dtype=self._config["dtype"]
         )
         data = odf_data_loader.load()
-        normalize_column_names(data)
+        data = normalize_column_names(data)
         save_csv(
             data,
             Path(processed_data_config["path"]),

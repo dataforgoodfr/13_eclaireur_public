@@ -55,7 +55,7 @@ class OfglLoader:
         data = pd.concat(dataframes, axis=0, ignore_index=True)
         data.fillna(np.nan, inplace=True)
         # Save the processed data to the instance & a CSV file
-        normalize_column_names(data)
+        data = normalize_column_names(data)
         save_csv(
             data,
             Path(self._config["processed_data"]["path"]),

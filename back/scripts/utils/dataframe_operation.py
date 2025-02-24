@@ -146,7 +146,4 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df):
-    """This modify the dataframe in place."""
-    df.columns = [
-        re.sub(r"[.-]", "_", col.lower()) for col in df.columns
-    ]  # to adjust column for SQL format and ensure consistency
+    return df.rename(columns=lambda col: re.sub(r"[.-]", "_", col.lower()))
