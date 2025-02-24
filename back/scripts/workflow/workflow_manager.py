@@ -8,7 +8,7 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path
 from scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -19,6 +19,7 @@ from scripts.utils.constants import (
 from scripts.utils.files_operation import save_csv
 from scripts.utils.psql_connector import PSQLConnector
 
+from back.scripts.utils.dataframe_operation import normalize_column_names
 from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
 
 
@@ -171,8 +172,11 @@ class WorkflowManager:
         datafiles_out=None,
         modifications_data=None,
     ):
-        # Define the output folder path
-        output_folder = get_project_data_path() / "datasets" / topic / "outputs"
+        output_folder = get_project_base_path() / (
+            self.config["outputs_csv"]["path"] % {"topic": topic}
+        )
+        output_folder.mkdir(parents=True, exist_ok=True)
+        normalized_data = normalize_column_names(normalized_data)
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:
