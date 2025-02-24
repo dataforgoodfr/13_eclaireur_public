@@ -194,12 +194,15 @@ class DataGouvSearcher:
         title_filter: list[str],
         description_filter: list[str],
         column_filter: list[str],
+        test_ids: list[str],
     ) -> list[dict]:
         """
         Select datasets based on metadata fetched from data.gouv organisation page.
         """
         datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
-        datagouv_ids_list = sorted(datagouv_ids_to_siren["id_datagouv"].unique())
+        datagouv_ids_list = (
+            sorted(datagouv_ids_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
+        )
 
         pattern_title = "|".join([x.lower() for x in title_filter])
         pattern_description = "|".join([x.lower() for x in description_filter])
@@ -304,6 +307,7 @@ class DataGouvSearcher:
                 search_config["api"]["title"],
                 search_config["api"]["description"],
                 search_config["api"]["columns"],
+                search_config["api"]["testIds"],
             )
             datafiles.append(bottomup_datafiles)
             self.logger.info("Bottomup datafiles basic info :")

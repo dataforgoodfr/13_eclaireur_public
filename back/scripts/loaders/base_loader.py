@@ -71,10 +71,13 @@ class BaseLoader:
 
         logger = logging.getLogger(__name__)
 
-        # Get the content type of the file from the headers
-        response = requests.head(file_url)
-        content_type = response.headers.get("content-type")
-        # logger.info(f"Content type : {content_type}")
+        parsed_url = urlparse(file_url)
+        if parsed_url.scheme == "file":
+            content_type = file_url.split(".")[-1]
+        else:
+            # Get the content type of the file from the headers
+            response = requests.head(file_url)
+            content_type = response.headers.get("content-type")
 
         # Determine the loader based on the content type
         if "json" in content_type:

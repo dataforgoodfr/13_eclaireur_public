@@ -61,6 +61,9 @@ class GeoLocator:
                 raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
 
             df = pd.read_csv(io.StringIO(response.text), sep=";")
+            if df.empty:
+                return df
+
             df = df[df["result_status"] == "ok"]
             df = df[["cog", "latitude", "longitude"]]
             df.loc[:, "type"] = "COM"
