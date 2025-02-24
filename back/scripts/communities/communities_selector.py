@@ -45,6 +45,8 @@ class CommunitiesSelector:
         self.logger = logging.getLogger(__name__)
 
         data_folder = get_project_base_path() / self.config["processed_data"]["path"]
+        data_folder.mkdir(parents=True, exist_ok=True)
+
         all_communities_filename = (
             data_folder / self.config["processed_data"]["all_communities_file"]
         )

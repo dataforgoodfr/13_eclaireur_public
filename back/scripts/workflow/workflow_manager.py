@@ -168,6 +168,7 @@ class WorkflowManager:
         output_folder = get_project_base_path() / (
             self.config["outputs_csv"]["path"] % {"topic": topic}
         )
+        output_folder.mkdir(parents=True, exist_ok=True)
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:
             save_csv(normalized_data, output_folder, NORMALIZED_DATA_FILENAME, sep=";")

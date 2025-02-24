@@ -22,7 +22,7 @@ class OdfLoader:
 
     def get(self):
         processed_data_config = self._config["processed_data"]
-        data_folder = Path(get_project_base_path()) / processed_data_config["path"]
+        data_folder = get_project_base_path() / processed_data_config["path"]
         data_file = data_folder / processed_data_config["filename"]
 
         if data_file.exists():

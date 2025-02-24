@@ -12,9 +12,8 @@ class SireneLoader:
     """
 
     def __init__(self, config):
-        base_path = get_project_base_path()
-        payload_path = base_path / config["scrapped_data_file"]
-        self.data = pd.read_csv(payload_path, usecols=config["columns"])
+        filepath = get_project_base_path() / config["scrapped_data_file"]
+        self.data = pd.read_csv(filepath, usecols=config["columns"])
 
     def get(self):
         return self.data

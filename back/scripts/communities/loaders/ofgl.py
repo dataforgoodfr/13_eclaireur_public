@@ -15,7 +15,8 @@ class OfglLoader:
 
     def get(self):
         base_path = get_project_base_path()
-        data_folder = Path(base_path) / self._config["processed_data"]["path"]
+        data_folder = base_path / self._config["processed_data"]["path"]
+        data_folder.mkdir(parents=True, exist_ok=True)
         data_file = data_folder / self._config["processed_data"]["filename"]
 
         # Load data from OFGL dataset if it was already processed
