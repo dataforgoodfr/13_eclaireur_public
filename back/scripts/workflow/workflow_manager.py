@@ -8,7 +8,7 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.utils.config import get_project_data_path
+from scripts.utils.config import get_project_base_path, get_project_data_path
 from scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -17,10 +17,11 @@ from scripts.utils.constants import (
     NORMALIZED_DATA_FILENAME,
 )
 from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
 
 from back.scripts.datasets.sirene import SireneWorkflow
-from back.scripts.utils.politiques_elus import ElusWorkflow
-from back.scripts.utils.psql_connector import PSQLConnector
+from back.scripts.utils.dataframe_operation import normalize_column_names
+from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
 
 
 class WorkflowManager:
@@ -35,24 +36,16 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.source_folder).run()
-        self._run_elus()
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
 
-    def _run_elus(self):
-        elus = ElusWorkflow(self.source_folder)
-        elus.run()
-
     def _run_subvention_and_marche(self):
-        # Create blank dict to store dataframes that will be saved to the DB
-        df_to_save_to_db = {}
-
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
-        # Build communities scope, and add selected communities to df_to_save
         communities_selector = self.initialize_communities_scope()
 
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
@@ -71,13 +64,6 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # If config requires it, add normalized data of the topic to df_to_save
-            if self.config["workflow"]["save_to_db"]:
-                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
 
     def check_file_age(self, config):
         """
@@ -121,7 +107,9 @@ class WorkflowManager:
 
         if topic_config["source"] == "multiple":
             # Find multiple datafiles from datagouv
-            datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
+            config = self.config["datagouv"]
+            config["datagouv_api"] = self.config["datagouv_api"]
+            datagouv_searcher = DataGouvSearcher(communities_selector, config)
             datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
@@ -189,8 +177,11 @@ class WorkflowManager:
         datafiles_out=None,
         modifications_data=None,
     ):
-        # Define the output folder path
-        output_folder = get_project_data_path() / "datasets" / topic / "outputs"
+        output_folder = get_project_base_path() / (
+            self.config["outputs_csv"]["path"] % {"topic": topic}
+        )
+        output_folder.mkdir(parents=True, exist_ok=True)
+        normalized_data = normalize_column_names(normalized_data)
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:

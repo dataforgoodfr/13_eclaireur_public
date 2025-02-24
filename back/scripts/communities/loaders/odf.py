@@ -6,6 +6,8 @@ from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
 from scripts.utils.files_operation import save_csv
 
+from back.scripts.utils.dataframe_operation import normalize_column_names
+
 
 class OdfLoader:
     """
@@ -22,7 +24,7 @@ class OdfLoader:
 
     def get(self):
         processed_data_config = self._config["processed_data"]
-        data_folder = Path(get_project_base_path()) / processed_data_config["path"]
+        data_folder = get_project_base_path() / processed_data_config["path"]
         data_file = data_folder / processed_data_config["filename"]
 
         if data_file.exists():
@@ -33,8 +35,10 @@ class OdfLoader:
         odf_data_loader = BaseLoader.loader_factory(
             self._config["url"], dtype=self._config["dtype"]
         )
-        data = odf_data_loader.load().assign(
-            siren=lambda df: df["siren"].astype(str).str.zfill(9)
+        data = (
+            odf_data_loader.load()
+            .assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
+            .pipe(normalize_column_names)
         )
         save_csv(
             data,
