@@ -17,11 +17,11 @@ from scripts.utils.constants import (
     NORMALIZED_DATA_FILENAME,
 )
 from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
 
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.utils.dataframe_operation import normalize_column_names
-from back.scripts.utils.psql_connector import PSQLConnector
 
 
 class WorkflowManager:
