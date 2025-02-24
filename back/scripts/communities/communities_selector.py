@@ -109,7 +109,7 @@ class CommunitiesSelector:
 
         self.all_data = all_data.merge(sirene, on="siren", how="left").assign(
             population=lambda df: pd.to_numeric(df["population"].astype(str), errors="coerce"),
-            EffectifsSup15=lambda df: df["tranche_effectif"] > 15,
+            effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
         )
 
     def load_selected_communities(self):
@@ -119,7 +119,7 @@ class CommunitiesSelector:
             | (
                 (self.all_data["type"] == "COM")
                 & (self.all_data["population"] >= 3500)
-                & self.all_data["EffectifsSup15"]
+                & self.all_data["effectifs_sup_50"]
             )
         ]
 
