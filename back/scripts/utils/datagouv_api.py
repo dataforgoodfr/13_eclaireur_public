@@ -18,7 +18,7 @@ class DataGouvAPI:
         """
         Fetch information about all resources of a given dataset.
         """
-        savedir = savedir or Path(".")
+        savedir = Path(savedir or ".")
         savedir.mkdir(exist_ok=True, parents=True)
         save_filename = savedir / f"dataset_{dataset_id}.parquet"
         if savedir and save_filename.exists():
@@ -68,7 +68,7 @@ class DataGouvAPI:
         """
         Fetch information about all datasets and resources of a given organization.
         """
-        savedir = savedir or Path(".")
+        savedir = Path(savedir or ".")
         savedir.mkdir(exist_ok=True, parents=True)
         organisation_datasets_filename = savedir / f"orga_{organization_id}.parquet"
         if savedir and organisation_datasets_filename.exists():

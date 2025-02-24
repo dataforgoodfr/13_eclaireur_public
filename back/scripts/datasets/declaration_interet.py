@@ -24,14 +24,14 @@ GENERAL_TAGS = [
 class DeclaInteretWorkflow:
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
+    URL = "https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74"
+
     def __init__(self, source_folder: Path):
-        self.data_folder = source_folder / "declas_interet"
+        self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
         self.xml_filename = self.data_folder / "declarations.xml"
         self.filename = self.data_folder / "declarations.parquet"
-
-        self.URL = "https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74"
 
     def _fetch_xml(self):
         if self.xml_filename.exists():

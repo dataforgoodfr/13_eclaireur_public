@@ -3,7 +3,7 @@ workflow:
 
 communities:
   processed_data:
-    path: back/data/communities/processed_data
+    path: back/tests/data/communities/
     all_communities_file: all_communities_data.parquet
     selected_communities_file: selected_communities_data.parquet
 
@@ -11,14 +11,14 @@ communities:
     url:
       regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
       departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      communes: https://data.ofgl.fr/explore/dataset/ofgl-base-communes-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_name=true&disjunctive.epci_name=true&disjunctive.tranche_population=true&disjunctive.tranche_revenu_imposable_par_habitant=true&disjunctive.com_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+      communes: file:./back/tests/inputs/ofgl-base-communes-consolidee.test.csv
       intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
     dtype:
       Code Insee 2023 Région: str
       Code Insee 2023 Département: str
       Code Insee 2023 Commune: str
     processed_data:
-      path: back/data/communities/processed_data
+      path: back/tests/data/ofgl/
       filename: ofgl_data.csv
 
     epci:
@@ -32,7 +32,7 @@ communities:
     dtype:
       siren: str
     processed_data:
-      path: back/data/communities/processed_data
+      path: back/tests/data/odf/
       filename: odf_data.csv
 
   sirene:
@@ -46,12 +46,11 @@ communities:
     reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
     geolocator_api_url: https://api-adresse.data.gouv.fr/search/csv/
     temp_folder:
-      path: back/data/communities/processed_data
+      path: back/tests/data/geolocator/
       filename: cities_to_geolocate.csv
 
 datagouv:
   datasets:
-    testIds: [] # use full input
     url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
     columns:
       - "id"
@@ -62,9 +61,9 @@ datagouv:
       - "organization_id"
       - "frequency"
   datafiles:
-    url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
+    url: "file:./back/tests/inputs/datagouv-datafiles-10000.csv"
   paths:
-    root: back/data/datagouv_search
+    root: back/tests/data/datagouv_search
     organization_datasets: organization_datasets
   files:
     catalog: datagouv_catalog.parquet
@@ -77,6 +76,9 @@ search:
     title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
     description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
     api:
+      testIds:
+        - 534fffa7a3a7292c64a780c5
+        - 534fffada3a7292c64a780f9
       url: "https://www.data.gouv.fr/api/1/datasets/"
       title:
         - "association"
@@ -94,12 +96,12 @@ search:
         - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
-    single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
+    single_urls_file: back/tests/inputs/single_urls_2.csv
     schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
   marches_publics:
     source: "single"
     unified_dataset:
-      url: "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
+      url: "file:./back/tests/inputs/decp-2019-10000.json"
       root: "marches"
     schema:
       url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
@@ -117,23 +119,18 @@ datafile_loader:
     - "source"
 
 file_age_to_check:
-  files:
-    odf_data: back/data/communities/processed_data/odf_data.csv
-    ofgl_data: back/data/communities/processed_data/ofgl_data.csv
-    sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
+  files: {}
   age: 365
 
+
 elected_officials:
-  data_folder: back/data/elected_officials
+  data_folder: back/tests/data/elected_officials
 
 datagouv_api:
-  organization_folder: back/data/datagouv_api/organizations
+  organization_folder: back/tests/data/datagouv_api/organizations
 
-declarations_interet:
-  data_folder: back/data/declarations_interet
-  
 outputs_csv:
-  path: 'back/data/datasets/%(topic)s/outputs'
+  path: 'back/tests/data/datasets/%(topic)s/outputs'
 
 logging:
   version: 1
