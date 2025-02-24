@@ -111,6 +111,9 @@ file_age_to_check:
     sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
   age: 365
 
+elected_officials:
+  data_folder: back/data/elected_officials
+
 
 logging:
   version: 1

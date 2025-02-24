@@ -177,3 +177,4 @@ loc_env/
 *.ipynb
 
 psql_env.sh
+.DS_Store

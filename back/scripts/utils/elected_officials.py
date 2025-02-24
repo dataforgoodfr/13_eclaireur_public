@@ -39,26 +39,20 @@ RENAME_COMMON_COLUMNS = {
 }
 
 
-class ElusWorkflow:
-    def __init__(self, source_folder: Path):
-        self.data_folder = source_folder / "elus"
+class ElectedOfficialsWorkflow:
+    def __init__(self, source_folder: Path | str):
+        self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
-
-        self.raw_data_folder = self.data_folder / "raw"
-        self.raw_data_folder.mkdir(exist_ok=True, parents=True)
-
-        self.processed_data_folder = self.data_folder / "processed"
-        self.processed_data_folder.mkdir(exist_ok=True, parents=True)
 
         self.DATASET_ID = "5c34c4d1634f4173183a64f1"
 
     def run(self):
-        combined_filename = self.processed_data_folder / "elus.parquet"
+        combined_filename = self.data_folder / "elected_officials.parquet"
         if combined_filename.exists():
             return
         self._fetch_raw_datasets()
         self._combine_datasets()
-        self.elus.to_parquet(combined_filename)
+        self.elected_officials.to_parquet(combined_filename)
 
     def _fetch_raw_datasets(self):
         """
@@ -68,7 +62,7 @@ class ElusWorkflow:
         resources = DataGouvAPI.dataset_resources(self.DATASET_ID, savedir=self.data_folder)
         self.raw_datasets = {}
         for _, resource in tqdm(resources.iterrows()):
-            filename = self.raw_data_folder / f"{resource['resource_id']}.parquet"
+            filename = self.data_folder / f"{resource['resource_id']}.parquet"
             if filename.exists():
                 continue
             self.raw_datasets[resource["resource_description"]] = BaseLoader.loader_factory(
@@ -85,7 +79,7 @@ class ElusWorkflow:
                 df[present_columns.keys()].rename(columns=present_columns).assign(mandat=mandat)
             )
 
-        self.elus = (
+        self.elected_officials = (
             pd.concat(combined, ignore_index=True)
             .assign(
                 date_naissance=lambda df: pd.to_datetime(
@@ -105,10 +99,3 @@ class ElusWorkflow:
                 }
             )
         )
-
-    @property
-    def elus(self):
-        filename = self.processed_data_folder / "elus.parquet"
-        if not filename.exists():
-            self._combine_datasets()
-        return pd.read_parquet(filename)

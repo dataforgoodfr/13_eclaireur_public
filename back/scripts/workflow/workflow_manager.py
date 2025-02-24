@@ -18,7 +18,7 @@ from scripts.utils.constants import (
 )
 from scripts.utils.files_operation import save_csv
 
-from back.scripts.utils.politiques_elus import ElusWorkflow
+from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.utils.psql_connector import PSQLConnector
 
 
@@ -40,7 +40,7 @@ class WorkflowManager:
         self.logger.info("Workflow completed.")
 
     def _run_elus(self):
-        elus = ElusWorkflow(self.source_folder)
+        elus = ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"])
         elus.run()
 
     def _run_subvention_and_marche(self):
