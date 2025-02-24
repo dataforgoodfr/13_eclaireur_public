@@ -7,6 +7,7 @@ from pathlib import Path
 import bs4
 import pandas as pd
 from bs4 import BeautifulSoup
+from scripts.utils.config import get_project_base_path
 from tqdm import tqdm
 
 PARSED_SECTIONS = []
@@ -24,19 +25,31 @@ GENERAL_TAGS = [
 class DeclaInteretWorkflow:
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
-    URL = "https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74"
-
-    def __init__(self, source_folder: Path):
+    def __init__(self, source_folder: Path, is_test: bool = None):
         self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
         self.xml_filename = self.data_folder / "declarations.xml"
         self.filename = self.data_folder / "declarations.parquet"
 
+        self.url = (
+            "file://"
+            + str(
+                get_project_base_path()
+                / "tests"
+                / "back"
+                / "datasets"
+                / "fixtures"
+                / "declaration.xml"
+            )
+            if is_test
+            else "https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74"
+        )
+
     def _fetch_xml(self):
         if self.xml_filename.exists():
             return
-        urllib.request.urlretrieve(self.URL, self.xml_filename)
+        urllib.request.urlretrieve(self.url, self.xml_filename)
 
     def run(self):
         self._fetch_xml()
