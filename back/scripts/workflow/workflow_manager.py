@@ -37,7 +37,7 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
-        SireneWorkflow(self.source_folder).run()
+        SireneWorkflow(self.config["sirene"]["data_folder"]).run()
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
@@ -88,7 +88,8 @@ class WorkflowManager:
     def initialize_communities_scope(self):
         self.logger.info("Initializing communities scope.")
         # Initialize CommunitiesSelector with the config and select communities
-        communities_selector = CommunitiesSelector(self.config["communities"])
+        config = self.config["communities"] | {"sirene": self.config["sirene"]}
+        communities_selector = CommunitiesSelector(config)
 
         self.connector.save_df_to_sql_drop_existing(
             self.config["workflow"]["save_to_db"],

@@ -1,10 +1,11 @@
 import logging
 import re
+from pathlib import Path
 
 import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
-from scripts.utils.config import get_project_base_path, get_project_data_path
+from scripts.utils.config import get_project_base_path
 from scripts.utils.geolocator import GeoLocator
 
 
@@ -73,7 +74,7 @@ class CommunitiesSelector:
         # Load data from OFGL, ODF, and Sirene datasets
         ofgl = OfglLoader(self.config["ofgl"])
         odf = OdfLoader(self.config["odf"])
-        sirene = pd.read_parquet(get_project_data_path() / "sirene" / "sirene.parquet")
+        sirene = pd.read_parquet(Path(self.config["sirene"]["data_folder"]) / "sirene.parquet")
         ofgl_data = ofgl.get()
         odf_data = odf.get()
 
@@ -118,7 +119,7 @@ class CommunitiesSelector:
             | (
                 (self.all_data["type"] == "COM")
                 & (self.all_data["population"] >= 3500)
-                & self.all_data["EffectifsSup50"]
+                & self.all_data["EffectifsSup15"]
             )
         ]
 

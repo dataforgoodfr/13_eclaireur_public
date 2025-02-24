@@ -30,12 +30,11 @@ class SireneWorkflow:
     """
 
     def __init__(self, source_folder: Path):
-        self.data_folder = source_folder / "sirene"
+        self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.filename = self.data_folder / "sirene.parquet"
         self.URL = "https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip"
-
+        self.filename = self.data_folder / "sirene.parquet"
         self.zip_filename = self.data_folder / "sirene.zip"
 
     def run(self):

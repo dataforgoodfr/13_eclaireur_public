@@ -1,9 +1,9 @@
 import io
 import logging
-import requests
 from pathlib import Path
-import pandas as pd
 
+import pandas as pd
+import requests
 from scripts.utils.config import get_project_base_path
 
 
@@ -20,25 +20,30 @@ class GeoLocator:
 
     def _get_reg_dep_coords(self) -> pd.DataFrame:
         """Return scrapped data for regions and departements."""
+        # TODO: Use CSVLoader
         reg_dep_geoloc_df = pd.read_csv(
-            Path(self._config["reg_dep_coords_scrapped_data_file"]), sep=";"
-        )  # TODO: Use CSVLoader
+            Path(self._config["reg_dep_coords_scrapped_data_file"]), sep=";", dtype={"cog": str}
+        ).drop(columns=["nom"])
         if reg_dep_geoloc_df.empty:
             raise Exception("Regions and departements dataset should not be empty.")
 
-        reg_dep_geoloc_df["cog"] = reg_dep_geoloc_df["cog"].astype(str)
-        return reg_dep_geoloc_df.drop(columns=["nom"])
+        return reg_dep_geoloc_df
 
     # we are forced to used scrapped this following a break in the BANATIC dataset.
     # see https://data-for-good.slack.com/archives/C08AW9JJ93P/p1739369130352499
     def _get_epci_coords(self) -> pd.DataFrame:
         """Return scrapped data for ECPI."""
-        df = pd.read_csv(Path(self._config["epci_coords_scrapped_data_file"]), sep=";")
+        df = (
+            pd.read_csv(
+                Path(self._config["epci_coords_scrapped_data_file"]),
+                sep=";",
+                dtype={"latitude": str, "longitude": str, "siren": str},
+            )
+            .drop(columns=["nom"])
+            .assign(siren=lambda df: df["siren"].str.zfill(9))
+        )
         if df.empty:
             raise Exception("EPCI coordinates file not found.")
-
-        df = df.drop(columns=["nom"])
-        df = df.astype({"latitude": str, "longitude": str})
         return df
 
     def _request_geolocator_api(self, payload) -> pd.DataFrame:
