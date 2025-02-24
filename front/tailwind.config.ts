@@ -8,6 +8,9 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'homepage-header': "url('/transparency.jpg')",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
