@@ -46,8 +46,6 @@ class WorkflowManager:
         self.logger.info("Workflow completed.")
 
     def _run_subvention_and_marche(self):
-        df_to_save_to_db = {}
-
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
@@ -60,7 +58,6 @@ class WorkflowManager:
                 communities_selector, topic, topic_config
             )
 
-            # Save the topics outputs to csv
             self.save_output_to_csv(
                 topic,
                 topic_datafiles.normalized_data,
@@ -69,13 +66,6 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # If config requires it, add normalized data of the topic to df_to_save
-            if self.config["workflow"]["save_to_db"]:
-                df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
 
     def check_file_age(self, config):
         """
