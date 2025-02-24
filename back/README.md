@@ -153,12 +153,13 @@ Depuis un terminal:
     docker compose -f docker-compose.yaml up -d
 
 ## Lancer le script
-``` bash
-poetry run python back/main.py
+### Sur des données de test
 
-# Pour charger un config.yaml d'une autre source, utiliser --filename :
-poetry run python back/main.py --filename <path_to_config.yaml>
-```
+    poetry run python back/main.py -f back/config-test.yaml
+
+### Sur l'ensemble des données
+
+    poetry run python back/main.py
 
 
 ## License
