@@ -1,5 +1,3 @@
-'use client';
-
 import { Community } from '@/utils/types';
 
 import { SearchBar } from './SearchBar';
