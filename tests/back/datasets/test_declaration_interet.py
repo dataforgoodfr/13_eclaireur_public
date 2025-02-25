@@ -11,7 +11,7 @@ FIXTURES_DIRECTORY = Path(__file__).parent / "fixtures"
 def test_parse_declaration():
     with open(Path(__file__).parent / "fixtures" / "declaration.xml") as f:
         soup = BeautifulSoup(f.read(), features="xml").find("declaration")
-        out = DeclaInteretWorkflow.parse_declaration(soup)
+        out = DeclaInteretWorkflow._parse_declaration(soup)
         assert len(out) == 7
 
 

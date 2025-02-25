@@ -9,6 +9,14 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+from back.scripts.utils.beautifulsoup_utils import (
+    get_tag_bool,
+    get_tag_datetime,
+    get_tag_float,
+    get_tag_int,
+    get_tag_text,
+)
+
 PARSED_SECTIONS = ["mandatElectifDto"]
 GENERAL_TAGS = [
     "dateDepot",
@@ -49,12 +57,12 @@ class DeclaInteretWorkflow:
 
         declarations = soup.find_all("declaration")
         df = pd.DataFrame.from_records(
-            chain(*[self.parse_declaration(declaration) for declaration in tqdm(declarations)])
+            chain(*[self._parse_declaration(declaration) for declaration in tqdm(declarations)])
         )
         df.to_parquet(self.filename)
 
     @staticmethod
-    def parse_declaration(declaration: BeautifulSoup) -> list[dict]:
+    def _parse_declaration(declaration: BeautifulSoup) -> list[dict]:
         """
         Flatten the XML of a single declaration into a list of all the items.
         """
@@ -80,23 +88,25 @@ class DeclaInteretWorkflow:
         qualite_mandat = general.find("qualiteMandat")
 
         global_infos = {
-            "date_depot": tag_datetime(declaration.find("dateDepot")),
+            "date_depot": get_tag_datetime(declaration.find("dateDepot")),
             "declaration_id": declaration.find("uuid"),
             "complete": declaration.find("complete") == "true",
             "nothing_to_declare": declaration.find("neant") == "true",
             "type_declaration": general.find("typeDeclaration").find("id"),
-            "mandat": ",".join(tag_text(x) for x in general.find("mandat").find_all("label")),
+            "mandat": ",".join(
+                get_tag_text(x) for x in general.find("mandat").find_all("label")
+            ),
             "civilite": declarant.find("civilite"),
             "nom": declarant.find("nom"),
             "prenom": declarant.find("prenom"),
-            "date_naissance": tag_datetime(declarant.find("dateNaissance")),
+            "date_naissance": get_tag_datetime(declarant.find("dateNaissance")),
             "type_mandat": qualite_mandat.find("typeMandat"),
             "qualite_mandat": general.find("qualiteDeclarant"),
             "categorie_mandat": qualite_mandat.find("codCategorieMandat"),
             "mandat_organe_type": qualite_mandat.find("codeListeOrgane"),
             "mandat_organe_code": general.find("organe").find("codeOrgane"),
-            "debut_mandat": tag_datetime(general.find("dateDebutMandat")),
-            "fin_mandat": tag_datetime(general.find("dateFinMandat")),
+            "debut_mandat": get_tag_datetime(general.find("dateDebutMandat")),
+            "fin_mandat": get_tag_datetime(general.find("dateFinMandat")),
             "regime_matrimonial": general.find("regimeMatrimonial"),
             "entreprise": general.find("nomSociete"),
             "entreprise_mere": general.find("nomSocieteMere"),
@@ -105,7 +115,7 @@ class DeclaInteretWorkflow:
             "to_parse": DeclaInteretWorkflow._non_parsed_sections(declaration),
         }
         return {
-            k: (tag_text(v) if isinstance(v, bs4.element.Tag) else v)
+            k: (get_tag_text(v) if isinstance(v, bs4.element.Tag) else v)
             for k, v in global_infos.items()
         }
 
@@ -122,7 +132,7 @@ class DeclaInteretWorkflow:
             tag = declaration.find(name)
             items = tag.find("items")
             if (not items or not len(items.contents)) and (
-                tag_text(tag.find("neant")) == "true"
+                get_tag_text(tag.find("neant")) == "true"
             ):
                 continue
             to_parse.append(name)
@@ -137,10 +147,10 @@ class DeclaInteretWorkflow:
         section = declaration.find("mandatElectifDto")
         if not section:
             return []
-        uuid = tag_text(declaration.find("uuid"))
+        uuid = get_tag_text(declaration.find("uuid"))
 
         items = section.find("items")
-        is_neant = tag_bool(section.find("neant"))
+        is_neant = get_tag_bool(section.find("neant"))
         if not items and is_neant:
             return []
 
@@ -158,10 +168,10 @@ class DeclaInteretWorkflow:
 
         remuneration = items.find("remuneration")
         general_infos = {
-            "description": tag_text(items.find("description")),
-            "commentaire": tag_text(items.find("commentaire")),
-            "remuneration_brut_net": tag_text(remuneration.find("brutNet")),
-            "description_mandat": tag_text(section.find("descriptionMandat")),
+            "description": get_tag_text(items.find("description")),
+            "commentaire": get_tag_text(items.find("commentaire")),
+            "remuneration_brut_net": get_tag_text(remuneration.find("brutNet")),
+            "description_mandat": get_tag_text(section.find("descriptionMandat")),
         }
         montants = remuneration.find("montant", recursive=False)
         if not montants and any(v is not None for v in general_infos.values()):
@@ -173,48 +183,10 @@ class DeclaInteretWorkflow:
         return [
             general_infos
             | {
-                "montant": tag_float(item.find("montant")),
+                "montant": get_tag_float(item.find("montant")),
                 "date_remuneration": datetime(
-                    year=tag_int(item.find("annee")) or 1970, month=12, day=31
+                    year=get_tag_int(item.find("annee")) or 1970, month=12, day=31
                 ),
             }
             for item in montants.find_all("montant", recursive=False)
         ]
-
-
-def tag_datetime(tag: BeautifulSoup) -> datetime:
-    if tag and tag.text:
-        fmt = "%d/%m/%Y"
-        if " " in tag.text:
-            fmt += " %H:%M:%S"
-        return datetime.strptime(tag.text, fmt)
-    return None
-
-
-def tag_text(tag: BeautifulSoup) -> str | None:
-    if tag and tag.text and (tag.text != "[Données non publiées]"):
-        return tag.text
-    return None
-
-
-def tag_bool(tag: BeautifulSoup) -> str | None:
-    txt = tag_text(tag)
-    return txt and (txt == "true")
-
-
-def tag_float(tag: BeautifulSoup) -> float | None:
-    if tag and tag.text:
-        return float(
-            tag.text.replace(" ", "")
-            .replace("\u202f", "")
-            .replace("\xa0", "")
-            .replace(",", ".")
-        )
-    return None
-
-
-def tag_int(tag: BeautifulSoup) -> int | None:
-    f = tag_float(tag)
-    if f is not None:
-        return int(f)
-    return None
