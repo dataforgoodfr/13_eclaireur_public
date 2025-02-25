@@ -9,7 +9,6 @@ on:
       - "node_modules/**"
       - "yarn.lock"
       - ".gitignore"
-      - "README.md"
       - ".github/workflows/review.yml"
 
 jobs:
