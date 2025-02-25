@@ -52,8 +52,7 @@ class GeoLocator:
         payload_folder = get_project_base_path() / self._config["temp_folder"]["path"]
         payload_folder.mkdir(parents=True, exist_ok=True)
         payload_path = payload_folder / payload_filename
-        payload.to_csv(payload_path, sep=";", index=False)
-
+        payload.to_csv(payload_path, index=False)
         with open(payload_path, "rb") as payload_file:
             data = {
                 "citycode": "cog",
@@ -65,7 +64,7 @@ class GeoLocator:
             if response.status_code != 200:
                 raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
 
-            df = pd.read_csv(io.StringIO(response.text), sep=";")
+            df = pd.read_csv(io.StringIO(response.text))
             if df.empty:
                 return df
 

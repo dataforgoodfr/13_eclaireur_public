@@ -125,10 +125,9 @@ class CommunitiesSelector:
 
         # Add geocoordinates to selected data
         geolocator = GeoLocator(self.config["geolocator"])
-        selected_data = geolocator.add_geocoordinates(selected_data)
-        selected_data.columns = [
-            re.sub(r"[.-]", "_", col.lower()) for col in selected_data.columns
-        ]  # to adjust column for SQL format and ensure consistency
+        selected_data = geolocator.add_geocoordinates(selected_data).rename(
+            columns=lambda col: re.sub(r"[.-]", "_", col.lower())
+        )
         self.selected_data = selected_data
 
     def get_datagouv_ids_to_siren(self):
