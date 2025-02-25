@@ -9,6 +9,5 @@ if __name__ == "__main__":
     config = ConfigManager.load_config(args.filename)
     LoggerManager.configure_logger(config)
 
-    # Run workflow
     workflow_manager = WorkflowManager(args, config)
     workflow_manager.run_workflow()

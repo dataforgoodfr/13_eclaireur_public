@@ -1,17 +1,22 @@
 workflow:
-  save_to_db: False
+  save_to_db: True
 
 communities:
+  processed_data:
+    path: back/data/communities/processed_data
+    all_communities_file: all_communities_data.parquet
+    selected_communities_file: selected_communities_data.parquet
+
   ofgl:
     url:
       regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
       departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
       communes: https://data.ofgl.fr/explore/dataset/ofgl-base-communes-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_name=true&disjunctive.epci_name=true&disjunctive.tranche_population=true&disjunctive.tranche_revenu_imposable_par_habitant=true&disjunctive.com_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      interco: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
+      intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
     dtype:
-      Code Insee 2021 Région: str
-      Code Insee 2021 Département: str
-      Code Insee 2021 Commune: str
+      Code Insee 2023 Région: str
+      Code Insee 2023 Département: str
+      Code Insee 2023 Commune: str
     processed_data:
       path: back/data/communities/processed_data
       filename: ofgl_data.csv
@@ -21,7 +26,6 @@ communities:
       dtype:
         siren: str
         siren_membre: str
-    processed_data_folder: back/data/communities/processed_data/
 
   odf:
     url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
@@ -32,18 +36,22 @@ communities:
       filename: odf_data.csv
 
   sirene:
-    path: back/data/communities/
-    filename: scrapped_data/sirene/download_20230413.csv
     columns:
       - "siren"
       - "trancheEffectifsUniteLegale"
+    scrapped_data_file: back/data/communities/scrapped_data/sirene/download_20230413.csv
 
   geolocator:
-    epci_coord_url : https://www.data.gouv.fr/fr/datasets/r/c4cdd239-c82d-41ac-b0fb-530cccbab108
-    communes_id_url : https://www.data.gouv.fr/fr/datasets/r/863a5d6f-cc5c-40e0-a349-8a15719cb25e
+    epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
+    reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
+    geolocator_api_url: https://api-adresse.data.gouv.fr/search/csv/
+    temp_folder:
+      path: back/data/communities/processed_data
+      filename: cities_to_geolocate.csv
 
 datagouv:
   datasets:
+    testIds: [] # use full input
     url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
     columns:
       - "id"
@@ -55,6 +63,13 @@ datagouv:
       - "frequency"
   datafiles:
     url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
+  paths:
+    root: back/data/datagouv_search
+    organization_datasets: organization_datasets
+  files:
+    catalog: datagouv_catalog.parquet
+    catalog_metadata: catalog_metadata.parquet
+    datasets: datagouv_datasets.parquet
 
 search:
   subventions:
@@ -79,8 +94,8 @@ search:
         - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
-    single_urls_file: single_urls.csv
-    schema_dict_file: dataset_dict.csv
+    single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
+    schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
   marches_publics:
     source: "single"
     unified_dataset:
@@ -108,6 +123,14 @@ file_age_to_check:
     sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
   age: 365
 
+elected_officials:
+  data_folder: back/data/elected_officials
+
+datagouv_api:
+  organization_folder: back/data/datagouv_api/organizations
+
+outputs_csv:
+  path: 'back/data/datasets/%(topic)s/outputs'
 
 logging:
   version: 1

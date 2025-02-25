@@ -15,9 +15,7 @@ class ExcelLoader(BaseLoader):
         self.dtype = dtype
         self.columns_to_keep = columns_to_keep
 
-    def process_data(self, response):
-        data = response.content
-
+    def process_data(self, data):
         df = pd.read_excel(BytesIO(data), header=None, dtype=self.dtype)
 
         # Detect and skip rows and columns with missing values

@@ -9,6 +9,7 @@ class ArgumentParser:
         # Update parser.add_argument: - Now have a defualt value
         #                             - The argument --filename is no longer required to execute the script if config.yaml is at the same location than main.py
         parser.add_argument(
+            "-f",
             "--filename",
             type=str,
             required=False,

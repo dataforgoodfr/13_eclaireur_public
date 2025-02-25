@@ -1,23 +1,26 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
-import pandas as pd
 
+import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
+from scripts.datasets.datafile_loader import DatafileLoader
+from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.datasets.datafiles_loader import DatafilesLoader
-from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.psql_connector import PSQLConnector
 from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
 from scripts.utils.constants import (
-    FILES_IN_SCOPE_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-    DATAFILES_OUT_FILENAME,
     DATACOLUMNS_OUT_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    FILES_IN_SCOPE_FILENAME,
     MODIFICATIONS_DATA_FILENAME,
+    NORMALIZED_DATA_FILENAME,
 )
+from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
+
+from back.scripts.utils.dataframe_operation import normalize_column_names
+from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
 
 
 class WorkflowManager:
@@ -25,19 +28,23 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
+        self.connector = PSQLConnector()
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
-        # Create blank dict to store dataframes that will be saved to the DB
-        df_to_save_to_db = {}
+        ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
 
+        self._run_subvention_and_marche()
+
+        self.logger.info("Workflow completed.")
+
+    def _run_subvention_and_marche(self):
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
-        # Build communities scope, and add selected communities to df_to_save
-        communities_selector = self.initialize_communities_scope(df_to_save_to_db)
+        communities_selector = self.initialize_communities_scope()
 
-        # Loop through the topics defined in the config
+        # Loop through the topics defined in the config, e.g. marches publics or subventions.
         for topic, topic_config in self.config["search"].items():
             # Process each topic to get files in scope and datafiles
             topic_files_in_scope, topic_datafiles = self.process_topic(
@@ -53,13 +60,6 @@ class WorkflowManager:
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-            # Add normalized data of the topic to df_to_save
-            df_to_save_to_db[topic + "_normalized"] = topic_datafiles.normalized_data
-
-        # Save data to the database if the config allows it
-        if self.config["workflow"]["save_to_db"]:
-            self.save_data_to_db(df_to_save_to_db)
-
         self.logger.info("Workflow completed.")
 
     def check_file_age(self, config):
@@ -82,12 +82,19 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def initialize_communities_scope(self, df_to_save_to_db):
+    def initialize_communities_scope(self):
         self.logger.info("Initializing communities scope.")
         # Initialize CommunitiesSelector with the config and select communities
         communities_selector = CommunitiesSelector(self.config["communities"])
-        # Add selected communities data to df_to_save
-        df_to_save_to_db["communities"] = communities_selector.selected_data
+
+        self.connector.save_df_to_sql_drop_existing(
+            self.config["workflow"]["save_to_db"],
+            communities_selector.selected_data,
+            "selected_communities",
+            index=True,
+            index_label=["siren"],
+        )
+
         self.logger.info("Communities scope initialized.")
         return communities_selector
 
@@ -97,8 +104,10 @@ class WorkflowManager:
 
         if topic_config["source"] == "multiple":
             # Find multiple datafiles from datagouv
-            datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
-            datagouv_topic_files_in_scope = datagouv_searcher.get_datafiles(topic_config)
+            config = self.config["datagouv"]
+            config["datagouv_api"] = self.config["datagouv_api"]
+            datagouv_searcher = DataGouvSearcher(communities_selector, config)
+            datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder(communities_selector)
@@ -110,14 +119,48 @@ class WorkflowManager:
                 ignore_index=True,
             )
 
+            self.connector.save_df_to_sql_drop_existing(
+                self.config["workflow"]["save_to_db"],
+                topic_files_in_scope,
+                topic + "_files_in_scope",
+                index=True,
+                index_label=["url"],
+            )
+
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
 
+            self.connector.save_df_to_sql_drop_existing(
+                self.config["workflow"]["save_to_db"],
+                topic_datafiles.normalized_data,
+                topic + "_normalized_data",
+                index=True,
+                index_label=[
+                    "idAttribuant",
+                    "idBeneficiaire",
+                    "dateConvention",
+                    "referenceDecision",
+                    "montant",
+                    "idRAE",
+                ],
+            )
+
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
+
+            self.connector.save_df_to_sql_drop_existing(
+                self.config["workflow"]["save_to_db"],
+                topic_datafiles.normalized_data,
+                topic + "_normalized_data",
+                index=True,
+                index_label=["id", "acheteur.id", "codeCPV"],
+            )
+
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.close_connection()
 
         self.logger.info(f"Topic {topic} processed.")
         return topic_files_in_scope, topic_datafiles
@@ -131,10 +174,11 @@ class WorkflowManager:
         datafiles_out=None,
         modifications_data=None,
     ):
-        # Define the output folder path
-        output_folder = (
-            Path(get_project_base_path()) / "back" / "data" / "datasets" / topic / "outputs"
+        output_folder = get_project_base_path() / (
+            self.config["outputs_csv"]["path"] % {"topic": topic}
         )
+        output_folder.mkdir(parents=True, exist_ok=True)
+        normalized_data = normalize_column_names(normalized_data)
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:
@@ -147,12 +191,3 @@ class WorkflowManager:
             save_csv(datafiles_out, output_folder, DATAFILES_OUT_FILENAME, sep=";")
         if modifications_data is not None:
             save_csv(modifications_data, output_folder, MODIFICATIONS_DATA_FILENAME, sep=";")
-
-    def save_data_to_db(self, df_to_save_to_db):
-        self.logger.info("Saving data to the database.")
-        # Initialize the database connector
-        connector = PSQLConnector()
-        connector.connect()
-        # Save each dataframe to the database
-        for df_name, df in df_to_save_to_db.items():
-            connector.save_df_to_sql(df, df_name)
