@@ -1,14 +1,11 @@
-import json
 import logging
-from itertools import chain
-from typing import Tuple
 
 import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
-from back.scripts.loaders.base_loader import retry_session
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
 
@@ -121,76 +118,8 @@ class DataGouvSearcher:
             .drop(columns=["priority"])
         )
 
-    def _get_organization_datasets_page(
-        self, url: str, organization_id: str
-    ) -> Tuple[dict, str]:
-        """
-        List all datasets under an organization through data.gouv API.
-        """
-        session = retry_session(retries=5)
-        params = {"organization": organization_id}
-        response = session.get(url, params=params)
-        try:
-            response.raise_for_status()
-        except Exception as e:
-            self.logger.error(f"Error while downloading file from {url} : {e}")
-            return [], None
-        try:
-            data = response.json()
-        except json.JSONDecodeError as e:
-            self.logger.error(f"Error while decoding json from {url} : {e}")
-            return [], None
-        return data["data"], data.get("next_page")
-
-    def _fetch_organisation_datasets(self, url: str, organization_id: str) -> pd.DataFrame:
-        organisation_datasets_filename = (
-            self.organization_data_folder / f"{organization_id}.parquet"
-        )
-        if organisation_datasets_filename.exists():
-            return pd.read_parquet(organisation_datasets_filename)
-
-        datasets = []
-        while url:
-            orga_datasets, url = self._get_organization_datasets_page(url, organization_id)
-            datasets.append(
-                [
-                    {
-                        "organization_id": metadata["organization"]["id"],
-                        "organization": metadata["organization"]["name"],
-                        "title": metadata["title"],
-                        "description": metadata["description"],
-                        "dataset_id": metadata["id"],
-                        "frequency": metadata["frequency"],
-                        "format": resource["format"],
-                        "url": resource["url"],
-                        "created_at": resource["created_at"],
-                        "resource_description": resource["description"],
-                    }
-                    for metadata in orga_datasets
-                    for resource in metadata["resources"]
-                ]
-            )
-        datasets = pd.DataFrame(
-            list(chain.from_iterable(datasets)),
-            columns=[
-                "organization_id",
-                "organization",
-                "title",
-                "description",
-                "dataset_id",
-                "frequency",
-                "format",
-                "url",
-                "created_at",
-                "resource_description",
-            ],
-        )
-        datasets.to_parquet(organisation_datasets_filename)
-        return datasets
-
     def _select_dataset_by_metadata(
         self,
-        url: str,
         title_filter: list[str],
         description_filter: list[str],
         column_filter: list[str],
@@ -211,7 +140,9 @@ class DataGouvSearcher:
         datasets = (
             pd.concat(
                 [
-                    self._fetch_organisation_datasets(url, orga)
+                    DataGouvAPI.organisation_datasets(
+                        orga, self._config["datagouv_api"]["organization_folder"]
+                    )
                     for orga in tqdm(datagouv_ids_list)
                 ],
                 ignore_index=True,
@@ -303,7 +234,6 @@ class DataGouvSearcher:
 
         if method in ["bu_only", "all"]:
             bottomup_datafiles = self._select_dataset_by_metadata(
-                search_config["api"]["url"],
                 search_config["api"]["title"],
                 search_config["api"]["description"],
                 search_config["api"]["columns"],
