@@ -178,7 +178,7 @@ class DeclaInteretWorkflow:
             return [general_infos]
 
         if not montants:
-            logging.info(f"Wrongly parsed mandat : {uuid}")
+            logging.error(f"Wrongly parsed mandat : {uuid}")
             return []
         return [
             general_infos
