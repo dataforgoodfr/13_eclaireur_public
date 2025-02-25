@@ -147,3 +147,6 @@ def detect_skipcolumns(df):
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=lambda col: re.sub(r"[.-]", "_", col.lower()))
+
+def ci_should_run():
+    return
