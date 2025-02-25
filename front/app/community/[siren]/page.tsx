@@ -1,4 +1,4 @@
-export default function CommunityPage({ params }: { params: { siren: string } }) {
-  console.log(params);
-  return <div>Community page for {params?.siren}</div>;
+export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
+  const siren = (await params).siren;
+  return <div>Community page for {siren}</div>;
 }
