@@ -23,15 +23,6 @@ jobs:
               ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
               fetch-depth: 0
-          
-          # Debug Step: Print the environment variables
-          - name: Debug environment variables
-            run: |
-              cd $APP_FOLDER
-              echo "CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}"
-              echo "CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}"
-              echo "ORGA_ID: ${{ secrets.ORGA_ID }}"
-              echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
     
           - name: Create review app
             uses: CleverCloud/clever-cloud-review-app@v1.1.1
