@@ -9,11 +9,10 @@ const DEFAULT_OPTIONS = {
 };
 
 
-
-
 export async function fetchCommunities(options?: Options) {
   
   const baseURL =  process.env.BASE_URL
+
   const limit = options?.limit ?? DEFAULT_OPTIONS.limit;
   const type = options?.type;
 

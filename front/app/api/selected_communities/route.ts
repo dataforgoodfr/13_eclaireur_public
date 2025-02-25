@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import db from '@/utils/db';
+
 import { CommunityType } from './types';
 
 type CommunitiesParamsOptions = {
