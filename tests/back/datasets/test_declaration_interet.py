@@ -1,3 +1,5 @@
+import filecmp
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -13,10 +15,12 @@ def test_parse_declaration():
         soup = BeautifulSoup(f.read(), features="xml").find("declaration")
         out = pd.DataFrame(DeclaInteretWorkflow._parse_declaration(soup))
 
-    exp_filename = FIXTURES_DIRECTORY / "complete_decla.parquet"
-    # out.to_parquet(exp_filename, index=False)
-    exp = pd.read_parquet(exp_filename)
-    pd.testing.assert_frame_equal(out, exp)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        out_filename = Path(tmpdirname) / "complete_decla.csv"
+        out.to_csv(out_filename, index=False)
+
+        exp_filename = FIXTURES_DIRECTORY / "complete_decla.csv"
+        assert filecmp.cmp(str(out_filename), str(exp_filename))
 
 
 class TestParseMandat:
