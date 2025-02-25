@@ -5,8 +5,13 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "front/**"
       - "data-analyst/**"
+      - "front/**"
+      - "node_modules/**"
+      - "yarn.lock"
+      - ".gitignore"
+      - "README.md"
+      - ".github/workflows/review.yml"
 
 jobs:
   test-run:

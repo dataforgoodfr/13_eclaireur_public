@@ -6,6 +6,11 @@ on:
     branches: [main]
     paths-ignore:
       - "front/**"
+      - "node_modules/**"
+      - "yarn.lock"
+      - ".gitignore"
+      - "README.md"
+      - ".github/workflows/review.yml"
 
 jobs:
   pre-commit:
