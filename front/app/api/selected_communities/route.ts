@@ -56,7 +56,7 @@ export async function GET(request: Request) {
     const limit = Number(searchParams.get('limit')) ?? undefined;
 
     // Vérification des valeurs
-    if (limit < 1 || limit > 1000) {
+    if (limit < 1 || limit > 5000) {
       return NextResponse.json({ error: 'Limit must be between 1 and 1000' }, { status: 400 });
     }
 

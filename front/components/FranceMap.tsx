@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
 //import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import {
@@ -16,8 +17,6 @@ import { GeoPermissibleObjects, geoMercator, geoPath } from 'd3';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { feature } from 'topojson-client';
 import { Topology } from 'topojson-specification';
-
-
 
 const URL_TOPOJSON =
   'https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20220219-094943/a-com2022-topo.json';
@@ -259,22 +258,25 @@ function Map({ topoJson, height, width }: MapProps) {
     [],
   );
 
-
   return (
-    <>  
-        <div className="w-[60vw] h-[60vh] flex justify-center items-center" >
-          <DeckGL
-            style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
-            width={width}
-            height={height}
-            viewState={viewState}
-            onViewStateChange={handleViewStateChange}
-            controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
-            layers={layers}
-            getTooltip={getTooltip}
-          />
-        </div>
-  
+    <>
+      <div className='flex h-[60vh] w-[60vw] items-center justify-center'>
+        <DeckGL
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+          width={width}
+          height={height}
+          viewState={viewState}
+          onViewStateChange={handleViewStateChange}
+          controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
+          layers={layers}
+          getTooltip={getTooltip}
+        />
+      </div>
     </>
   );
 }

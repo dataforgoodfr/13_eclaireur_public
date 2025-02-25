@@ -1,9 +1,11 @@
 import HomepageHeader from '@/components/HomepageHeader';
+import { fetchCommunities } from '@/utils/fetchers/fetchCommunities';
 
-export default function Home() {
+export default async function Home() {
+  const communities = await fetchCommunities();
   return (
     <>
-      <HomepageHeader />
+      <HomepageHeader communities={communities} />
     </>
   );
 }

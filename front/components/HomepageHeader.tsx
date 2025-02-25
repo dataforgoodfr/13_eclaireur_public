@@ -1,8 +1,14 @@
 'use client';
 
+import { Community } from '@/utils/types';
+
 import { SearchBar } from './SearchBar';
 
-export default function HomepageHeader() {
+interface HomepageHeaderProps {
+  communities: Community[];
+}
+
+export default function HomepageHeader({ communities }: HomepageHeaderProps) {
   return (
     <div className='h-[600px] bg-homepage-header bg-cover object-cover'>
       <div className='global-margin flex h-full flex-col items-center justify-center gap-y-12'>
@@ -15,7 +21,7 @@ export default function HomepageHeader() {
           <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
             Comment les dépense publiques sont-elles réparties autour de chez vous ?
           </h2>
-          <SearchBar />
+          <SearchBar communities={communities} />
         </div>
       </div>
     </div>
