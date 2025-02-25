@@ -12,7 +12,7 @@ export async function fetchCommunities(options?: Options) {
   const limit = options?.limit ?? DEFAULT_OPTIONS.limit;
   const type = options?.type;
 
-  const url = new URL('/api/selected_communities', "http://localhost:3000/");
+  const url = new URL('/api/selected_communities', window.location.host);
 
   if (type) url.searchParams.append('type', type);
   url.searchParams.append('limit', limit.toString());
