@@ -32,14 +32,14 @@ class DeclaInteretWorkflow:
         self.xml_filename = self.data_folder / "declarations.xml"
         self.filename = self.data_folder / "declarations.parquet"
 
+    def run(self):
+        self._fetch_xml()
+        self._format_to_parquet()
+
     def _fetch_xml(self):
         if self.xml_filename.exists():
             return
         urllib.request.urlretrieve(self._config["url"], self.xml_filename)
-
-    def run(self):
-        self._fetch_xml()
-        self._format_to_parquet()
 
     def _format_to_parquet(self):
         if self.filename.exists():
