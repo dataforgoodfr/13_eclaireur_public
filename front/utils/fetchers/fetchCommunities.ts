@@ -8,11 +8,16 @@ const DEFAULT_OPTIONS = {
   limit: 5000,
 };
 
+
+
+
 export async function fetchCommunities(options?: Options) {
+  
+  const baseURL =  process.env.BASE_URL
   const limit = options?.limit ?? DEFAULT_OPTIONS.limit;
   const type = options?.type;
 
-  const url = new URL('/api/selected_communities', window.location.host);
+  const url = new URL('/api/selected_communities', baseURL);
 
   if (type) url.searchParams.append('type', type);
   url.searchParams.append('limit', limit.toString());
