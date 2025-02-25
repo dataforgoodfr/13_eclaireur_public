@@ -155,7 +155,7 @@ class DeclaInteretWorkflow:
             return []
 
         if not items:
-            logging.info(f"Error parsing mandat, no items and neant is fales : {uuid}")
+            logging.error(f"Error parsing mandat, no items and neant is fales : {uuid}")
             return []
 
         items = items.find("items")
@@ -163,7 +163,7 @@ class DeclaInteretWorkflow:
             return []
 
         if not items or not len(items.contents):
-            logging.info(f"Wrongly parsed mandat : {uuid}")
+            logging.error(f"Wrongly parsed mandat : {uuid}")
             return []
 
         remuneration = items.find("remuneration")
