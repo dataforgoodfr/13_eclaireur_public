@@ -1,11 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
+Some update
 ## Getting Started
 
 You can get started by installing the dependencies by running:
 
 ```
-yarn 
+yarn
 ```
 
 Then run and watch the dev environment with:
