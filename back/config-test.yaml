@@ -1,8 +1,6 @@
 workflow:
   save_to_db: True
 
-is_test: true
-
 communities:
   processed_data:
     path: back/tests/data/communities/
@@ -133,6 +131,7 @@ datagouv_api:
 
 declarations_interet:
   data_folder: back/tests/data/declarations_interet
+  url:  file:./tests/back/datasets/fixtures/declaration.xml
 
 outputs_csv:
   path: 'back/tests/data/datasets/%(topic)s/outputs'
