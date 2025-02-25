@@ -11,8 +11,12 @@ FIXTURES_DIRECTORY = Path(__file__).parent / "fixtures"
 def test_parse_declaration():
     with open(Path(__file__).parent / "fixtures" / "declaration.xml") as f:
         soup = BeautifulSoup(f.read(), features="xml").find("declaration")
-        out = DeclaInteretWorkflow._parse_declaration(soup)
-        assert len(out) == 7
+        out = pd.DataFrame(DeclaInteretWorkflow._parse_declaration(soup))
+
+    exp_filename = FIXTURES_DIRECTORY / "complete_decla.parquet"
+    # out.to_parquet(exp_filename, index=False)
+    exp = pd.read_parquet(exp_filename)
+    pd.testing.assert_frame_equal(out, exp)
 
 
 class TestParseMandat:
