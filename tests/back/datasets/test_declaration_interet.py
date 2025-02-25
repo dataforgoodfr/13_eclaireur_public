@@ -58,7 +58,7 @@ class TestParseMandat:
         }
         assert out[0] == exp
 
-    def test_parse_mandat_revenus_inversion(self):
+    def test_parse_mandat_revenus_when_info_outside_of_item(self):
         with open(FIXTURES_DIRECTORY / "mandat_revenus_inversion.xml") as f:
             soup = BeautifulSoup(f.read(), features="xml").find("declaration")
 
