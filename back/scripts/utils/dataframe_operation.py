@@ -15,13 +15,13 @@ This script contains functions to manipulate DataFrames.
 
 # Function to merge duplicate columns in a DataFrame
 def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.DataFrame:
-    df.columns = df.columns.astype(str)
     duplicate_columns = df.columns[df.columns.duplicated(keep=False)]
 
     for col in duplicate_columns.unique():
         first_col_index = df.columns.to_list().index(col)
         merged_serie = df[col].apply(lambda x: separator.join(x.dropna().astype(str)), axis=1)
-        df = df.drop(col, axis=1)
+
+        df = df.drop(columns=col)
         # The original order is retained to avoid any problems
         df.insert(first_col_index, col, merged_serie)
 
