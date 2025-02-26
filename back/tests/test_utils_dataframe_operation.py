@@ -48,9 +48,9 @@ class TestMergeDuplicateColumns:
         pd.testing.assert_frame_equal(result, expected_df)
 
     def test_nan_values_in_duplicate_columns(self):
-        df = pd.DataFrame([[1, np.nan], [4, 2.0]], columns=["A", "A"])
+        df = pd.DataFrame([[1, np.nan], [4, 2]], columns=["A", "A"], dtype="Int64")
         result = merge_duplicate_columns(df, separator=" / ")
 
-        expected_df = pd.DataFrame([["1.0"], ["4.0 / 2.0"]], columns=["A"])
+        expected_df = pd.DataFrame([["1"], ["4 / 2"]], columns=["A"])
 
         pd.testing.assert_frame_equal(result, expected_df)
