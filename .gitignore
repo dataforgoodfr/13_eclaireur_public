@@ -163,4 +163,18 @@ cython_debug/
 .ruff_cache
 
 
-# node
+# back
+back/data/communities/processed_data/
+back/data/datasets/subventions/outputs/
+back/data/datasets/marches_publics/outputs/
+back/data/logs/
+data/
+
+loc_env/
+
+# Ignore all .pyc & .ipynb files
+*.pyc
+*.ipynb
+
+psql_env.sh
+.DS_Store
