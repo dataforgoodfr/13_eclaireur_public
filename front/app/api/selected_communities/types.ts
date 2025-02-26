@@ -1,8 +1,4 @@
-// TODO - ajouter tous les types
-export enum CommunityType {
-  Region = 'REG',
-  Departement = 'DEP',
-}
+import { CommunityType } from '@/utils/types';
 
 export type CommunitiesParamsOptions = {
   type: CommunityType | undefined;
