@@ -1,5 +1,6 @@
-import { ArrowRight } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
+
+import { ArrowRight } from 'lucide-react';
 
 interface CtaCardProps {
   title: string;
@@ -16,7 +17,7 @@ export default function CtaCard({ title, caption, image, buttonText, href }: Cta
         <h3 className='text-lg font-bold'>{title}</h3>
         <p>{caption}</p>
         <div className='relative aspect-square w-full'>
-          <Image className='rounded-sm' fill={true} src={image}  alt='Card illustration image'/>
+          <Image className='rounded-sm' fill={true} src={image} alt='Card illustration image' />
         </div>
         <div className='flex w-full justify-around rounded-sm bg-neutral-600 p-2 text-white'>
           <span>{buttonText}</span>

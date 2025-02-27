@@ -263,6 +263,7 @@ function Map({ topoJson, height, width }: MapProps) {
       <div className='flex h-[60vh] w-[60vw] items-center justify-center'>
         <DeckGL
           style={{
+            zIndex: '0',
             position: 'absolute',
             left: '50%',
             top: '50%',
