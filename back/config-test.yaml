@@ -35,12 +35,6 @@ communities:
       path: back/tests/data/odf/
       filename: odf_data.csv
 
-  sirene:
-    columns:
-      - "siren"
-      - "trancheEffectifsUniteLegale"
-    scrapped_data_file: back/data/communities/scrapped_data/sirene/download_20230413.csv
-
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
     reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
@@ -125,6 +119,10 @@ file_age_to_check:
 
 elected_officials:
   data_folder: back/tests/data/elected_officials
+
+sirene:
+  data_folder: back/tests/data/sirene
+  url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
 
 datagouv_api:
   organization_folder: back/tests/data/datagouv_api/organizations
