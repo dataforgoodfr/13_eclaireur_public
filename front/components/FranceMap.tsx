@@ -43,7 +43,7 @@ type Color = [number, number, number, number];
 const black: Color = [0, 0, 0, 255];
 
 const INITIAL_VIEW_STATE: MapViewState = {
-  longitude: 2.5,
+  longitude: 2,
   latitude: 46.5,
   zoom: 4,
   pitch: 0,
@@ -139,7 +139,7 @@ type FranceMapProps = Omit<MapProps, 'topoJson'>;
 export default function FranceMap(props: FranceMapProps) {
   const topoJson = useTopoJson();
 
-  return topoJson === undefined ? 'loading' : <Map topoJson={topoJson} {...props} />;
+  return topoJson === undefined ? 'Chargement...' : <Map topoJson={topoJson} {...props} />;
 }
 
 type MapProps = {
@@ -176,8 +176,6 @@ function Map({ topoJson, height, width }: MapProps) {
       >,
     [topoJson],
   );
-
-  console.log(geojsonReg, geojsonDep, geojsonCom);
 
   function getObjectBoundingBox(
     object: GeoPermissibleObjects,
@@ -259,24 +257,17 @@ function Map({ topoJson, height, width }: MapProps) {
   );
 
   return (
-    <>
-      <div className='flex h-[60vh] w-[60vw] items-center justify-center'>
-        <DeckGL
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-          width={width}
-          height={height}
-          viewState={viewState}
-          onViewStateChange={handleViewStateChange}
-          controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
-          layers={layers}
-          getTooltip={getTooltip}
-        />
-      </div>
-    </>
+    <div className='border-2 border-solid' style={{ position: 'relative', width, height }}>
+      <DeckGL
+        style={{ position: 'absolute' }}
+        width={width}
+        height={height}
+        viewState={viewState}
+        onViewStateChange={handleViewStateChange}
+        controller={{ scrollZoom: true, dragPan: true, dragRotate: false }}
+        layers={layers}
+        getTooltip={getTooltip}
+      />
+    </div>
   );
 }

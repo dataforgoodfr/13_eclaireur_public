@@ -15,16 +15,16 @@ type SelectCommunityTypeProps = {
 };
 
 export default function SelectCommunityType({ onChange }: SelectCommunityTypeProps) {
-  const types = Object.keys(CommunityType) as CommunityType[];
+  const types = Object.values(CommunityType) as CommunityType[];
 
   return (
     <Select onValueChange={onChange}>
-      <SelectTrigger className='w-[180px]'>
-        <SelectValue placeholder='Select a fruit' />
+      <SelectTrigger className='w-[230px]'>
+        <SelectValue placeholder='Choisi un type de collectivite' />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Type de communaute</SelectLabel>
+          <SelectLabel>Type de collectivite</SelectLabel>
           {types.map((item) => (
             <SelectItem key={item} value={item}>
               {item}
