@@ -1,3 +1,5 @@
+import placeHolderImage from '@/public/placeholder.jpg';
+
 import CtaCard from './CtaCard';
 
 export default function CtaGroup() {
@@ -5,7 +7,7 @@ export default function CtaGroup() {
     {
       title: 'Cartographie',
       caption: 'Quelles sont les collectivités les plus transparentes ?',
-      image: '',
+      image: placeHolderImage,
       buttonText: 'Filtrer par indicateur',
       href: '/',
     },
@@ -13,7 +15,7 @@ export default function CtaGroup() {
     {
       title: 'Portrait',
       caption: 'Comment ma collectivité dépense-t-elle ?',
-      image: '',
+      image: placeHolderImage,
       buttonText: 'Filtrer par collectivité',
       href: '/',
     },
@@ -21,7 +23,7 @@ export default function CtaGroup() {
     {
       title: 'Interpeller',
       caption: 'Ma collectivité est-elle transparente ?',
-      image: '',
+      image: placeHolderImage,
       buttonText: 'Engagement citoyen',
       href: '/',
     },
