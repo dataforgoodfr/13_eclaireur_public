@@ -45,7 +45,6 @@ communities:
 
 datagouv:
   datasets:
-    testIds: [] # use full input
     url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
     columns:
       - "id"
@@ -71,6 +70,7 @@ search:
     title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
     description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
     api:
+      testIds: [] # use full input
       url: "https://www.data.gouv.fr/api/1/datasets/"
       title:
         - "association"
@@ -126,6 +126,10 @@ sirene:
 datagouv_api:
   organization_folder: back/data/datagouv_api/organizations
 
+declarations_interet:
+  data_folder: back/data/declarations_interet
+  url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
+  
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
 

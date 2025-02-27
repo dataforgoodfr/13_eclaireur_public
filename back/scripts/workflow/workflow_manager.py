@@ -19,9 +19,10 @@ from scripts.utils.constants import (
 from scripts.utils.files_operation import save_csv
 from scripts.utils.psql_connector import PSQLConnector
 
+from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
+from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.dataframe_operation import normalize_column_names
-from back.scripts.utils.elected_officials import ElectedOfficialsWorkflow
 
 
 class WorkflowManager:
@@ -38,6 +39,7 @@ class WorkflowManager:
         self.logger.info("Workflow started.")
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.config["sirene"]).run()
+        DeclaInteretWorkflow(self.config["declarations_interet"]).run()
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
@@ -55,7 +57,6 @@ class WorkflowManager:
                 communities_selector, topic, topic_config
             )
 
-            # Save the topics outputs to csv
             self.save_output_to_csv(
                 topic,
                 topic_datafiles.normalized_data,
