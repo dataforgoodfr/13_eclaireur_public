@@ -129,6 +129,10 @@ elected_officials:
 datagouv_api:
   organization_folder: back/tests/data/datagouv_api/organizations
 
+declarations_interet:
+  data_folder: back/tests/data/declarations_interet
+  url:  file:./tests/back/datasets/fixtures/declaration.xml
+
 outputs_csv:
   path: 'back/tests/data/datasets/%(topic)s/outputs'
 
