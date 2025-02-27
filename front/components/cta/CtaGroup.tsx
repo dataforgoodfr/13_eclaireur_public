@@ -4,7 +4,7 @@ export default function CtaGroup() {
   const CtaInfo = [
     {
       title: 'Cartographie',
-      caption: 'Quels sont les collectivités les plus transparentes ?',
+      caption: 'Quelles sont les collectivités les plus transparentes ?',
       image: '',
       buttonText: 'Filtrer par indicateur',
       href: '/',
