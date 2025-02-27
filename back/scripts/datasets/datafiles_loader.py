@@ -1,12 +1,140 @@
+import hashlib
 import logging
+import urllib
+import urllib.request
+
 import pandas as pd
-
-from scripts.utils.config import get_project_base_path
-
 from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
 from scripts.loaders.json_loader import JSONLoader
-from scripts.utils.dataframe_operation import merge_duplicate_columns, safe_rename, cast_data
+from scripts.utils.config import get_project_base_path
+from scripts.utils.dataframe_operation import cast_data, merge_duplicate_columns, safe_rename
+from tqdm import tqdm
+
+LOGGER = logging.getLogger(__name__)
+
+LOADER_CLASSES = {
+    "csv": CSVLoader,
+    "xls": ExcelLoader,
+    "xlsx": ExcelLoader,
+    "excel": ExcelLoader,
+    "json": JSONLoader,
+}
+
+
+def sha256(s: str):
+    return hashlib.sha256(s.encode("utf-8")).hexdigest() if s else None
+
+
+class TopicAggregator:
+    """
+    This class is responsible for loading the datafiles from the files_in_scope dataframe.
+    It loads the schema of the topic, filters the readable files, loads the datafiles into dataframes, and normalizes the data according to the schema.
+    The main difference with DataFilesLoader is that it loads, saves and normalizes each dataset independently.
+    Each step (download, load, normalize) generates a local file that must be saved.
+    A given step on a given file must not be run if the output file already exists on disk.
+    """
+
+    def __init__(
+        self,
+        files_in_scope: pd.DataFrame,
+        topic: str,
+        topic_config: dict,
+        datafile_loader_config: dict,
+    ):
+        self.files_in_scope = files_in_scope.assign(url_hash=lambda df: df["url"].apply(sha256))
+        self.topic = topic
+        self.topic_config = topic_config
+        self.datafile_loader_config = datafile_loader_config
+
+        self.corpus: list = []
+        self.datafiles_out: list = []
+
+        self.data_folder = get_project_base_path() / (
+            self.datafile_loader_config["data_folder"] % {"topic": topic}
+        )
+        print(self.data_folder)
+        self.data_folder.mkdir(parents=True, exist_ok=True)
+
+        self._load_schema(topic_config["schema"])
+
+    def _load_schema(self, schema_topic_config):
+        json_schema_loader = JSONLoader(schema_topic_config["url"], key="fields")
+        schema_df = json_schema_loader.load()
+        LOGGER.info("Schema loaded.")
+        self.official_topic_schema = schema_df
+
+    def run(self) -> None:
+        for file_infos in tqdm(self.files_in_scope.itertuples(index=False)):
+            if file_infos.format not in LOADER_CLASSES:
+                LOGGER.warning(f"Format {file_infos.format} not supported")
+                continue
+
+            if file_infos.url is None or pd.isna(file_infos.url):
+                LOGGER.warning(f"URL not specified for file {file_infos.name}")
+                continue
+
+            self._treat_datafile(file_infos)
+
+    def _treat_datafile(self, file: dict) -> None:
+        self._download_file(file)
+        return
+        output_filename = self.data_folder / (
+            self.datafile_loader_config["filename"] % {"name": file.name}
+        )
+
+        if output_filename.exists():
+            self.logger.info(f"File {output_filename} already exists, skipping")
+            return
+
+        # Load data
+        loader = self.loader_classes[file.format](file.url)
+        data = loader.load()
+
+        # Save data
+        save_csv(data, self.data_folder, output_filename.name, sep=";")
+
+        # Normalize data
+        normalized_data = self._normalize_data(data)
+
+        # Save normalized data
+        normalized_filename = self.data_folder / (
+            self.datafile_loader_config["normalized_filename"] % {"name": file.name}
+        )
+        save_csv(normalized_data, self.data_folder, normalized_filename.name, sep=";")
+
+        self.corpus.append(normalized_data)
+        self.datafiles_out.append(normalized_filename)
+
+    def _download_file(self, file_info: dict):
+        output_filename = (
+            self.data_folder / f"{self.topic}_{file_info.url_hash}.{file_info.format}"
+        )
+        if output_filename.exists():
+            LOGGER.debug(f"File {output_filename} already exists, skipping")
+            return
+
+        try:
+            urllib.request.urlretrieve(file_info.url, output_filename)
+        except Exception as e:
+            print(e)
+            LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
+
+    def _normalize_data(self, data: pd.DataFrame) -> pd.DataFrame:
+        # Read topic schema
+        schema_loader = JSONLoader(self.topic_config["schema"]["url"])
+        schema_df = schema_loader.load()
+
+        # Normalize data
+        normalized_data = cast_data(data, schema_df)
+
+        # Merge duplicate columns
+        normalized_data = merge_duplicate_columns(normalized_data)
+
+        # Rename columns
+        normalized_data = safe_rename(normalized_data, schema_df)
+
+        return normalized_data
 
 
 class DatafilesLoader:
@@ -40,6 +168,8 @@ class DatafilesLoader:
         self.normalized_data, self.datacolumns_out = self._normalize_data(
             topic, topic_config, datafile_loader_config
         )
+        self.normalized_data.to_csv("normalized.csv")
+        self.normalized_data.to_parquet("normalized.parquet")
 
     # Internal function to load the offical schema of the topic normalized data
     def _load_schema(self, schema_topic_config):
@@ -232,4 +362,5 @@ class DatafilesLoader:
             normalized_data.isna().sum(),
         )
 
+        return normalized_data, datacolumns_out
         return normalized_data, datacolumns_out
