@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 
 import db from '@/utils/db';
+import { createSQLQueryParams } from '@/utils/fetchers/communities/createSQLQueryParams';
 import { CommunityType } from '@/utils/types';
 
-type CommunitiesParamsOptions = {
-  type: CommunityType | undefined;
-  limit: number;
-};
+import { CommunitiesParamsOptions } from './types';
 
 function mapCommunityType(type: string | null) {
   if (type === null) return null;
@@ -19,21 +17,12 @@ function mapCommunityType(type: string | null) {
 }
 
 async function getDataFromPool(options: CommunitiesParamsOptions) {
-  const { type, limit } = options;
   const client = await db.connect();
 
-  let query = 'SELECT * FROM selected_communities';
-  const values: unknown[] = [];
+  const params = createSQLQueryParams(options);
 
-  query += ' LIMIT $1';
-  values.push(limit);
+  const { rows } = await client.query(...params);
 
-  if (type) {
-    query += ' WHERE type = $2';
-    values.push(type);
-  }
-
-  const { rows } = await client.query(query, values);
   client.release();
 
   return rows;

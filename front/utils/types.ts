@@ -15,9 +15,9 @@ export enum CommunityType {
 }
 
 export type Community = {
-  siren: string;
+  siren: `${number}`;
   nom: string;
-  type: string;
+  type: CommunityType;
   population: number;
   longitude: number;
   latitude: number;
