@@ -35,12 +35,6 @@ communities:
       path: back/data/communities/processed_data
       filename: odf_data.csv
 
-  sirene:
-    columns:
-      - "siren"
-      - "trancheEffectifsUniteLegale"
-    scrapped_data_file: back/data/communities/scrapped_data/sirene/download_20230413.csv
-
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
     reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
@@ -120,15 +114,22 @@ file_age_to_check:
   files:
     odf_data: back/data/communities/processed_data/odf_data.csv
     ofgl_data: back/data/communities/processed_data/ofgl_data.csv
-    sirene_base: back/data/communities/scrapped_data/sirene/download_20230413.csv
   age: 365
 
 elected_officials:
   data_folder: back/data/elected_officials
 
+sirene:
+  data_folder: back/data/sirene
+  url: https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip
+
 datagouv_api:
   organization_folder: back/data/datagouv_api/organizations
 
+declarations_interet:
+  data_folder: back/data/declarations_interet
+  url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
+  
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
 

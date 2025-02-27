@@ -1,4 +1,5 @@
 import HomepageHeader from '@/components/HomepageHeader';
+import CtaGroup from '@/components/cta/CtaGroup';
 import db from '@/utils/db';
 
 async function getCommunities() {
@@ -16,6 +17,7 @@ export default async function Home() {
   return (
     <>
       <HomepageHeader communities={communities} />
+      <CtaGroup />
     </>
   );
 }
