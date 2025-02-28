@@ -1,5 +1,6 @@
 import logging
 import re
+
 import pandas as pd
 
 """
@@ -19,17 +20,23 @@ def merge_duplicate_columns(df):
     for col in duplicate_columns.unique():
         cols_to_merge = df.filter(like=col, axis=1)
         df[col] = cols_to_merge.apply(lambda x: " / ".join(x.dropna().astype(str)), axis=1)
-        df.drop(cols_to_merge.columns[1:], axis=1, inplace=True)
+        df = df.drop(cols_to_merge.columns[1:], axis=1)
     return df
 
 
-# Function to rename columns in a DataFrame
-def safe_rename(df, schema_dict):
-    schema_dict_copy = schema_dict.copy()
-    for original_name, official_name in schema_dict.items():
-        if official_name in df.columns and original_name != official_name:
-            del schema_dict_copy[original_name]
-    df.rename(columns=schema_dict_copy, inplace=True)
+def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
+    """
+    This function renames columns of a DataFrame based on a dictionary of original column names mapped to new column names.
+
+    If a column does not exist in the DataFrame, it is not raised as an error, but rather ignored.
+
+    :param df: the DataFrame to rename columns in
+    :param schema_dict: the dictionary of original column names mapped to new column names
+    :return: the DataFrame with columns renamed
+    """
+    df = df.rename(columns=str)
+    actual_matching = {k: v for k, v in schema_dict.items() if k in df.columns and k != v}
+    return df.rename(columns=actual_matching)
 
 
 # Function to cast the data in a DataFrame based on a schema (a DataFrame with two columns: 'name' and 'type')
@@ -146,4 +153,5 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
+    return df.rename(columns=lambda col: re.sub(r"[.-]", "_", col.lower()))
     return df.rename(columns=lambda col: re.sub(r"[.-]", "_", col.lower()))
