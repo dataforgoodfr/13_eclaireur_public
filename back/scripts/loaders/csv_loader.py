@@ -11,13 +11,6 @@ from .base_loader import BaseLoader
 LOGGER = logging.getLogger(__name__)
 
 
-def get_delimiter(file_path, bytes=4096):
-    sniffer = csv.Sniffer()
-    data = open(file_path, "r").read(bytes)
-    delimiter = sniffer.sniff(data).delimiter
-    return delimiter
-
-
 class CSVLoader(BaseLoader):
     def __init__(self, source, columns_to_keep=None, dtype=None):
         """
@@ -71,16 +64,7 @@ class CSVLoader(BaseLoader):
             LOGGER.error(f"Error loading data from file {self.source}: {str(e)}")
             return None
 
-    def process_data(self, data):
-        """
-        Process binary data into a pandas DataFrame.
-
-        Args:
-            data (bytes): The binary CSV data
-
-        Returns:
-            pandas.DataFrame: The loaded data or None if processing fails
-        """
+    def process_data(self, data) -> pd.DataFrame | None:
         # Try different encodings for the data
         encodings_to_try = ["utf-8", "windows-1252", "latin1", "utf-16"]
 
@@ -100,7 +84,6 @@ class CSVLoader(BaseLoader):
         return None
 
     def _process_from_decoded(self, decoded_content):
-        # Use csv.Sniffer to detect the dialect and delimiter
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {
@@ -116,12 +99,11 @@ class CSVLoader(BaseLoader):
 
         try:
             has_header = sniffer.has_header(sample)
-            dialect = sniffer.sniff(sample)
-            delimiter = dialect.delimiter
-            LOGGER.debug(f"Detected delimiter: '{delimiter}', Has header: {has_header}")
-
-            csv_params["delimiter"] = delimiter
             csv_params["header"] = 0 if has_header else None
+
+            dialect = sniffer.sniff(sample)
+            csv_params["delimiter"] = dialect.delimiter
+            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}', Has header: {has_header}")
 
         except csv.Error as e:
             LOGGER.warning(f"CSV Sniffer error with encoding: {str(e)}")
