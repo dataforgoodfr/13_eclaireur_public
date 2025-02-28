@@ -20,8 +20,10 @@ export default function MapPage() {
         <SelectCommunityType onChange={setCommunityType} />
         {isLoading && 'Chargement...'}
       </div>
+      <div className='min-h-screen'>
       <div style={{ width: 500, height: 500 }}>
-        <FranceMap width={500} height={500} />
+          <FranceMap width={500} height={500} />
+      </div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.utils.config import get_project_base_path
+from scripts.utils.config import get_project_base_path, get_project_data_path
 from scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -21,6 +21,7 @@ from scripts.utils.psql_connector import PSQLConnector
 
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
+from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.dataframe_operation import normalize_column_names
 
 
@@ -31,9 +32,13 @@ class WorkflowManager:
         self.logger = logging.getLogger(__name__)
         self.connector = PSQLConnector()
 
+        self.source_folder = get_project_data_path()
+        self.source_folder.mkdir(exist_ok=True, parents=True)
+
     def run_workflow(self):
         self.logger.info("Workflow started.")
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
+        SireneWorkflow(self.config["sirene"]).run()
         DeclaInteretWorkflow(self.config["declarations_interet"]).run()
         self._run_subvention_and_marche()
 
@@ -84,7 +89,8 @@ class WorkflowManager:
     def initialize_communities_scope(self):
         self.logger.info("Initializing communities scope.")
         # Initialize CommunitiesSelector with the config and select communities
-        communities_selector = CommunitiesSelector(self.config["communities"])
+        config = self.config["communities"] | {"sirene": self.config["sirene"]}
+        communities_selector = CommunitiesSelector(config)
 
         self.connector.save_df_to_sql_drop_existing(
             self.config["workflow"]["save_to_db"],

@@ -1,11 +1,12 @@
 import logging
 from pathlib import Path
-import pandas as pd
 
-from back.scripts.utils.dataframe_operation import normalize_column_names
-from scripts.utils.files_operation import save_csv
+import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
+from scripts.utils.files_operation import save_csv
+
+from back.scripts.utils.dataframe_operation import normalize_column_names
 
 
 class OdfLoader:
@@ -28,14 +29,17 @@ class OdfLoader:
 
         if data_file.exists():
             self._logger.info("Found ODF file on disk, loading it.")
-            return pd.read_csv(data_file, sep=";")
+            return pd.read_csv(data_file, sep=";", dtype=self._config["dtype"])
 
         self._logger.info("Loading ODF data.")
         odf_data_loader = BaseLoader.loader_factory(
             self._config["url"], dtype=self._config["dtype"]
         )
-        data = odf_data_loader.load()
-        data = normalize_column_names(data)
+        data = (
+            odf_data_loader.load()
+            .assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
+            .pipe(normalize_column_names)
+        )
         save_csv(
             data,
             Path(processed_data_config["path"]),
