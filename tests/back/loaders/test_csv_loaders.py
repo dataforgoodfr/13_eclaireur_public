@@ -1,5 +1,6 @@
 import os
 import tempfile
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -110,7 +111,7 @@ class TestCSVLoader:
 
     def test_load_from_file_comma(self, setup_temp_csv_files):
         """Test loading a comma-delimited CSV from a file."""
-        file_path = setup_temp_csv_files["comma.csv"]
+        file_path = Path(setup_temp_csv_files["comma.csv"])
 
         loader = CSVLoader(file_path)
         df = loader.load()
