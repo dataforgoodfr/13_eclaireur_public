@@ -8,20 +8,12 @@ interface Community {
   latitude: number;
 }
 
-
-
-
-
-
-
-
-
-
-
 export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
   const siren = (await params).siren;
 
-  const response = await fetch(`${process.env.BASE_URL}/api/selected_communities?siren=${siren}&limit=1`);
+  const response = await fetch(
+    `${process.env.BASE_URL}/api/selected_communities?siren=${siren}&limit=1`,
+  );
 
   // Gestion d'erreur basique
   if (!response.ok) {
@@ -40,16 +32,24 @@ export default async function CommunityPage({ params }: { params: Promise<{ sire
   const community = communities[0];
 
   return (
-    <div className="community-page">
+    <div className='community-page'>
       <h1>{community.nom}</h1>
 
-      <div className="community-details">
-        <p><strong>SIREN:</strong> {community.siren}</p>
-        <p><strong>Type:</strong> {community.type}</p>
-        <p><strong>Population:</strong> {community.population.toLocaleString()} habitants</p>
-        <p><strong>Coordonnées géographiques:</strong> {community.latitude.toFixed(6)}, {community.longitude.toFixed(6)}</p>
+      <div className='community-details'>
+        <p>
+          <strong>SIREN:</strong> {community.siren}
+        </p>
+        <p>
+          <strong>Type:</strong> {community.type}
+        </p>
+        <p>
+          <strong>Population:</strong> {community.population.toLocaleString()} habitants
+        </p>
+        <p>
+          <strong>Coordonnées géographiques:</strong> {community.latitude.toFixed(6)},{' '}
+          {community.longitude.toFixed(6)}
+        </p>
       </div>
     </div>
-
   );
 }

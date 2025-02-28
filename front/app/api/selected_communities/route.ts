@@ -35,7 +35,6 @@ async function getDataFromPool(options: CommunitiesParamsOptions) {
     values.push(type);
   }
 
-
   if (siren) {
     whereConditions.push(`siren = $${values.length + 1}`);
     values.push(siren);
@@ -48,7 +47,6 @@ async function getDataFromPool(options: CommunitiesParamsOptions) {
   //Ajout de la limite
   query += ' LIMIT $' + (values.length + 1);
   values.push(limit);
-
 
   const { rows } = await client.query(query, values);
   client.release();
