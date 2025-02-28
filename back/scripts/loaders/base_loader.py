@@ -39,17 +39,21 @@ class BaseLoader:
         self.num_retries = num_retries
         self.delay_between_retries = delay_between_retries
         self.logger = logging.getLogger(__name__)
+        self.is_url = file_url.startswith(("http://", "https://"))
 
     def load(self):
         parsed_url = urlparse(self.file_url)
 
-        if parsed_url.scheme == "file":
-            # Handle local file
-            local_path = parsed_url.path
-            if local_path.startswith("./"):
-                local_path = os.path.abspath(local_path)
-            with open(local_path, "rb") as file:
-                return self.process_data(file.read())
+        if not self.is_url:
+            try:
+                local_path = parsed_url.path
+                if local_path.startswith("./"):
+                    local_path = os.path.abspath(local_path)
+                with open(local_path, "rb") as file:
+                    return self.process_data(file.read())
+            except FileNotFoundError as e:
+                self.logger.error(f"File not found: {e}")
+                return None
 
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(self.file_url)

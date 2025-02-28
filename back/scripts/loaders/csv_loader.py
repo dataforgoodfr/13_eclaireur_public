@@ -1,10 +1,8 @@
 import csv
 import logging
-import os
 from io import StringIO
 
 import pandas as pd
-import requests
 
 from .base_loader import BaseLoader
 
@@ -12,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class CSVLoader(BaseLoader):
-    def __init__(self, source, columns_to_keep=None, dtype=None):
+    def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
         """
         Initialize the CSV loader for either URL or local file.
 
@@ -22,47 +20,14 @@ class CSVLoader(BaseLoader):
             dtype (dict, optional): Dictionary of column data types
             logger (logging.Logger, optional): Logger object for logging
         """
-        self.source = source
+        super().__init__(file_url, **kwargs)
+        self.file_url = file_url
         self.columns_to_keep = columns_to_keep
         self.dtype = dtype
 
-        self.is_url = source.startswith(("http://", "https://")) if source else False
-
-    def load(self):
-        """Load the CSV data from either URL or local file."""
-        if self.is_url:
-            return self._load_from_url()
-        else:
-            return self._load_from_file()
-
-    def _load_from_url(self):
-        """Load CSV data from a URL."""
-        try:
-            response = requests.get(self.source)
-            if response.status_code != 200:
-                LOGGER.error(
-                    f"Failed to retrieve data from URL: {self.source}. Status code: {response.status_code}"
-                )
-                return None
-
-            return self.process_data(response.content)
-        except Exception as e:
-            LOGGER.error(f"Error loading data from URL {self.source}: {str(e)}")
-            return None
-
-    def _load_from_file(self):
-        """Load CSV data from a local file."""
-        try:
-            if not os.path.exists(self.source):
-                LOGGER.error(f"File not found: {self.source}")
-                return None
-
-            with open(self.source, "rb") as file:
-                data = file.read()
-            return self.process_data(data)
-        except Exception as e:
-            LOGGER.error(f"Error loading data from file {self.source}: {str(e)}")
-            return None
+        self.is_url = (
+            file_url.startswith(("http://", "https://", "file:")) if file_url else False
+        )
 
     def process_data(self, data) -> pd.DataFrame | None:
         # Try different encodings for the data
@@ -80,7 +45,7 @@ class CSVLoader(BaseLoader):
                 # Try the next encoding
                 continue
 
-        LOGGER.error(f"Unable to process CSV content from: {self.source}")
+        LOGGER.error(f"Unable to process CSV content from: {self.file_url}")
         return None
 
     def _process_from_decoded(self, decoded_content):
@@ -111,7 +76,9 @@ class CSVLoader(BaseLoader):
 
         try:
             df = pd.read_csv(StringIO(decoded_content), **csv_params)
-            LOGGER.debug(f"CSV Data from {self.source} loaded successfully. Shape: {df.shape}")
+            LOGGER.debug(
+                f"CSV Data from {self.file_url} loaded successfully. Shape: {df.shape}"
+            )
             return df
         except Exception:
             # Continue to next encoding
