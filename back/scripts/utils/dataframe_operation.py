@@ -161,7 +161,15 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
-    frame = frame.assign(**{id_col: frame[id_col].str.strip().str.replace(".0", "")})
+    frame = frame.assign(
+        **{
+            id_col: frame[id_col]
+            .astype(str)
+            .where(frame[id_col].notnull())
+            .str.strip()
+            .str.replace(".0", "")
+        }
+    )
     median_length = frame[id_col].str.len().median()
     if median_length == 9:
         # identifier is actually siren
@@ -169,4 +177,7 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     elif median_length == 14:
         # identifier is actually siret
         return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
+    import pdb
+
+    pdb.set_trace()
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")

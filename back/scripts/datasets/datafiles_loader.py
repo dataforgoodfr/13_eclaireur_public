@@ -1,8 +1,8 @@
 import hashlib
 import logging
+import re
 import urllib
 import urllib.request
-from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
@@ -10,7 +10,13 @@ from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
 from scripts.loaders.json_loader import JSONLoader
 from scripts.utils.config import get_project_base_path
-from scripts.utils.dataframe_operation import cast_data, merge_duplicate_columns, safe_rename
+from scripts.utils.dataframe_operation import (
+    cast_data,
+    merge_duplicate_columns,
+    normalize_column_names,
+    normalize_identifiant,
+    safe_rename,
+)
 from tqdm import tqdm
 
 LOGGER = logging.getLogger(__name__)
@@ -21,6 +27,22 @@ LOADER_CLASSES = {
     "xlsx": ExcelLoader,
     "excel": ExcelLoader,
     "json": JSONLoader,
+}
+
+COLUMNS_KEYWORDS = {
+    r"(raison_sociale)": "nomBeneficiaire",
+    "(montant)": "montant",
+    "(sire[nt])": "idBeneficiaire",
+    "nom[_ ].*attribuant": "nomAttribuant",
+    "id(entification)?[_ ].*attribuant": "idAttribuant",
+    "id(entification)?[_ ].*b[eé]n[ée]ficiaire": "idBeneficiaire",
+    "nature": "nature",
+    "date.*convention": "dateConvention",
+    "pourcentage": "pourcentageSubvention",
+    "notification.*[_ ]ue": "notificationUE",
+    "(date|periode).*versement": "datesPeriodeVersement",
+    "nom.*b[eé]n[ée]ficiaire": "nomBeneficiaire",
+    "condition": "conditionsVersement",
 }
 
 
@@ -55,16 +77,33 @@ class TopicAggregator:
         self.data_folder = get_project_base_path() / (
             self.datafile_loader_config["data_folder"] % {"topic": topic}
         )
-        print(self.data_folder)
         self.data_folder.mkdir(parents=True, exist_ok=True)
 
         self._load_schema(topic_config["schema"])
+        self._load_manual_column_rename()
 
     def _load_schema(self, schema_topic_config):
         json_schema_loader = JSONLoader(schema_topic_config["url"], key="fields")
         schema_df = json_schema_loader.load()
         LOGGER.info("Schema loaded.")
-        self.official_topic_schema = schema_df
+        extra_concepts = [
+            {
+                "name": "categoryUsage",
+                "title": "Role de la subventio (investissement / fonctionnement)",
+            }
+        ]
+        self.official_topic_schema = pd.concat(
+            [schema_df, pd.DataFrame(extra_concepts)], ignore_index=True
+        ).assign(lower_name=lambda df: df["name"].str.lower())
+        print(self.official_topic_schema)
+
+    def _load_manual_column_rename(self):
+        schema_dict_file = get_project_base_path() / self.topic_config["schema_dict_file"]
+        self.manual_column_rename = (
+            pd.read_csv(schema_dict_file, sep=";")
+            .set_index("original_name")["official_name"]
+            .to_dict()
+        )
 
     def run(self) -> None:
         for file_infos in tqdm(self.files_in_scope.itertuples(index=False)):
@@ -79,35 +118,8 @@ class TopicAggregator:
             self._treat_datafile(file_infos)
 
     def _treat_datafile(self, file: Tuple) -> None:
-        # self._download_file(file)
-        self._normalize_data(file, raw_filename)
-        1 / 0
-        output_filename = self.data_folder / (
-            self.datafile_loader_config["filename"] % {"name": file.name}
-        )
-
-        if output_filename.exists():
-            self.logger.info(f"File {output_filename} already exists, skipping")
-            return
-
-        # Load data
-        loader = self.loader_classes[file.format](file.url)
-        data = loader.load()
-
-        # Save data
-        save_csv(data, self.data_folder, output_filename.name, sep=";")
-
-        # Normalize data
-        normalized_data = self._normalize_data(data)
-
-        # Save normalized data
-        normalized_filename = self.data_folder / (
-            self.datafile_loader_config["normalized_filename"] % {"name": file.name}
-        )
-        save_csv(normalized_data, self.data_folder, normalized_filename.name, sep=";")
-
-        self.corpus.append(normalized_data)
-        self.datafiles_out.append(normalized_filename)
+        self._download_file(file)
+        self._normalize_data(file)
 
     def _download_file(self, file_info: dict):
         output_filename = self.dataset_filename(file_info, "raw")
@@ -135,22 +147,44 @@ class TopicAggregator:
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
 
-        loader = LOADER_CLASSES[file.format](file.url)
-        df = loader.load()
-        print(df)
-        import pdb
+        opts = {"dtype": str} if file.format == "csv" else {}
+        loader = LOADER_CLASSES[file.format](file.url, **opts)
 
-        pdb.set_trace()
-        # Normalize data
-        normalized_data = cast_data(data, schema_df)
+        df = (
+            loader.load()
+            .pipe(normalize_column_names)
+            .pipe(merge_duplicate_columns)
+            .pipe(safe_rename, self.manual_column_rename)
+            .rename(
+                columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
+            )
+            .pipe(self._flag_columns_by_keyword)
+            .pipe(normalize_identifiant, "idBeneficiaire")
+            .pipe(normalize_identifiant, "idAttribuant")
+        )
 
-        # Merge duplicate columns
-        normalized_data = merge_duplicate_columns(normalized_data)
+        n_attribuant = df["idAttribuant"].nunique() if "idAttribuant" in df.columns else 0
+        if n_attribuant > 1:
+            import pdb
 
-        # Rename columns
-        normalized_data = safe_rename(normalized_data, schema_df)
+            pdb.set_trace()
 
-        return normalized_data
+        extra_columns = set(df.columns) - set(self.official_topic_schema["name"])
+        if isinstance(df, pd.DataFrame) and extra_columns:
+            print(df)
+            print(df[sorted(extra_columns)])
+            import pdb
+
+            pdb.set_trace()
+
+    def _flag_columns_by_keyword(self, frame: pd.DataFrame) -> pd.DataFrame:
+        extra_colums = set(frame.columns) - set(self.official_topic_schema["name"])
+        matching = {}
+        for col in extra_colums:
+            options = {v for k, v in COLUMNS_KEYWORDS.items() if re.search(k, col.lower())}
+            if len(options) == 1:
+                matching[col] = list(options)[0]
+        return frame.rename(columns=matching)
 
 
 class DatafilesLoader:
@@ -378,5 +412,4 @@ class DatafilesLoader:
             normalized_data.isna().sum(),
         )
 
-        return normalized_data, datacolumns_out
         return normalized_data, datacolumns_out
