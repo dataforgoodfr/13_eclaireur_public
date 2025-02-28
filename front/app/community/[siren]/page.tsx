@@ -21,7 +21,7 @@ interface Community {
 export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
   const siren = (await params).siren;
 
-  const response = await fetch(`${process.env.BASE_URL}/api/selected_communities?siren=${siren}&limit=1`);
+  const response = await fetch(`https://${process.env.BASE_URL}/api/selected_communities?siren=${siren}&limit=1`);
 
   // Gestion d'erreur basique
   if (!response.ok) {
