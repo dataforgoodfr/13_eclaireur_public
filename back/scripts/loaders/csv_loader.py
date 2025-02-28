@@ -26,7 +26,7 @@ class CSVLoader(BaseLoader):
         self.columns_to_keep = columns_to_keep
         self.dtype = dtype
 
-        self.is_url = source.startswith(("http://", "https://"))
+        self.is_url = source.startswith(("http://", "https://")) if source else False
 
     def load(self):
         """Load the CSV data from either URL or local file."""
