@@ -21,7 +21,6 @@ class CSVLoader(BaseLoader):
             logger (logging.Logger, optional): Logger object for logging
         """
         super().__init__(file_url, **kwargs)
-        self.file_url = file_url
         self.columns_to_keep = columns_to_keep
         self.dtype = dtype
 

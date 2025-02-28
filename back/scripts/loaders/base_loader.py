@@ -35,11 +35,11 @@ class BaseLoader:
         # file_url : URL of the file to load
         # num_retries : Number of retries in case of failure
         # delay_between_retries : Delay between retries in seconds
-        self.file_url = file_url
+        self.file_url = str(file_url)
         self.num_retries = num_retries
         self.delay_between_retries = delay_between_retries
         self.logger = logging.getLogger(__name__)
-        self.is_url = file_url.startswith(("http://", "https://")) if file_url else False
+        self.is_url = self.file_url.startswith(("http://", "https://")) if file_url else False
 
     def load(self):
         if not self.file_url:
