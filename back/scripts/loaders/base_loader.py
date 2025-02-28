@@ -83,11 +83,11 @@ class BaseLoader:
         if "json" in content_type:
             return JSONLoader(file_url)
         elif "csv" in content_type:
-            return CSVLoader(file_url, dtype, columns_to_keep)
+            return CSVLoader(file_url, dtype=dtype, columns_to_keep=columns_to_keep)
         elif re.search(
             r"(excel|spreadsheet|xls|xlsx)", content_type, re.IGNORECASE
         ) or file_url.endswith((".xls", ".xlsx")):
-            return ExcelLoader(file_url, dtype, columns_to_keep)
+            return ExcelLoader(file_url, dtype=dtype, columns_to_keep=columns_to_keep)
         else:
             logger = logging.getLogger(__name__)
             logger.warning(f"Type de fichier non pris en charge pour l'URL : {file_url}")
