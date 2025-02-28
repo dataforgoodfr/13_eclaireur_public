@@ -39,21 +39,15 @@ class BaseLoader:
         self.num_retries = num_retries
         self.delay_between_retries = delay_between_retries
         self.logger = logging.getLogger(__name__)
-        self.is_url = file_url.startswith(("http://", "https://"))
+        self.is_url = file_url.startswith(("http://", "https://")) if file_url else False
 
     def load(self):
-        parsed_url = urlparse(self.file_url)
+        if not self.file_url:
+            self.logger.error("Empty file URL provided")
+            return
 
         if not self.is_url:
-            try:
-                local_path = parsed_url.path
-                if local_path.startswith("./"):
-                    local_path = os.path.abspath(local_path)
-                with open(local_path, "rb") as file:
-                    return self.process_data(file.read())
-            except FileNotFoundError as e:
-                self.logger.error(f"File not found: {e}")
-                return None
+            return self._load_from_file()
 
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(self.file_url)
@@ -61,6 +55,21 @@ class BaseLoader:
             return self.process_data(response.content)
 
         self.logger.error(f"Failed to load data from {self.file_url}")
+        return None
+
+    def _load_from_file(self):
+        parsed_url = urlparse(self.file_url)
+        try:
+            local_path = parsed_url.path
+            if local_path.startswith("./"):
+                local_path = os.path.abspath(local_path)
+            with open(local_path, "rb") as file:
+                return self.process_data(file.read())
+        except FileNotFoundError as e:
+            self.logger.error(f"File not found: {e}")
+            return None
+        except Exception as e:
+            print(e)
         return None
 
     def process_data(self, data):

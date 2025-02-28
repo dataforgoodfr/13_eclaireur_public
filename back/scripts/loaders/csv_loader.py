@@ -25,10 +25,6 @@ class CSVLoader(BaseLoader):
         self.columns_to_keep = columns_to_keep
         self.dtype = dtype
 
-        self.is_url = (
-            file_url.startswith(("http://", "https://", "file:")) if file_url else False
-        )
-
     def process_data(self, data) -> pd.DataFrame | None:
         # Try different encodings for the data
         encodings_to_try = ["utf-8", "windows-1252", "latin1", "utf-16"]
