@@ -2,6 +2,8 @@ import hashlib
 import logging
 import urllib
 import urllib.request
+from pathlib import Path
+from typing import Tuple
 
 import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
@@ -76,9 +78,10 @@ class TopicAggregator:
 
             self._treat_datafile(file_infos)
 
-    def _treat_datafile(self, file: dict) -> None:
-        self._download_file(file)
-        return
+    def _treat_datafile(self, file: Tuple) -> None:
+        # self._download_file(file)
+        self._normalize_data(file, raw_filename)
+        1 / 0
         output_filename = self.data_folder / (
             self.datafile_loader_config["filename"] % {"name": file.name}
         )
@@ -107,12 +110,9 @@ class TopicAggregator:
         self.datafiles_out.append(normalized_filename)
 
     def _download_file(self, file_info: dict):
-        output_filename = (
-            self.data_folder / f"{self.topic}_{file_info.url_hash}.{file_info.format}"
-        )
+        output_filename = self.dataset_filename(file_info, "raw")
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
-            return
 
         try:
             urllib.request.urlretrieve(file_info.url, output_filename)
@@ -120,11 +120,27 @@ class TopicAggregator:
             print(e)
             LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
 
-    def _normalize_data(self, data: pd.DataFrame) -> pd.DataFrame:
-        # Read topic schema
-        schema_loader = JSONLoader(self.topic_config["schema"]["url"])
-        schema_df = schema_loader.load()
+    def dataset_filename(self, file: Tuple, step: str):
+        return (
+            self.data_folder
+            / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
+        )
 
+    def _normalize_data(self, file: Tuple) -> pd.DataFrame:
+        raw_filename = self.dataset_filename(file, "raw")
+        if not raw_filename.exists():
+            return
+
+        out_filename = self.dataset_filename(file, "norm")
+        if out_filename.exists():
+            LOGGER.debug(f"File {out_filename} already exists, skipping")
+
+        loader = LOADER_CLASSES[file.format](file.url)
+        df = loader.load()
+        print(df)
+        import pdb
+
+        pdb.set_trace()
         # Normalize data
         normalized_data = cast_data(data, schema_df)
 
