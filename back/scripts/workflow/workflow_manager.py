@@ -23,6 +23,10 @@ from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.dataframe_operation import normalize_column_names
+from back.scripts.utils.datagouv_api import (
+    normalize_formats_description,
+    select_implemented_formats,
+)
 
 
 class WorkflowManager:
@@ -119,9 +123,13 @@ class WorkflowManager:
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
 
             # Concatenate both datafiles lists into one
-            topic_files_in_scope = pd.concat(
-                [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
-                ignore_index=True,
+            topic_files_in_scope = (
+                pd.concat(
+                    [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
+                    ignore_index=True,
+                )
+                .assign(format=lambda df: normalize_formats_description(df["format"]))
+                .pipe(select_implemented_formats)
             )
 
             self.connector.save_df_to_sql_drop_existing(
