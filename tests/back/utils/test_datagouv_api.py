@@ -41,6 +41,7 @@ def test_clean_format():
         ("html", "html"),
         ("odata", "odata"),
         ("arcgis geoservices rest api", "arcgis geoservices rest api"),
+        (None, None),
     ]
     source, target = zip(*parameters, strict=True)
     out = normalize_formats(pd.Series(source))
