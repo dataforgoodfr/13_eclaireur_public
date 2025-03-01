@@ -167,7 +167,7 @@ class DataGouvAPI:
         return data.get("data", data), data.get("next_page")
 
 
-def normalize_formats(formats: pd.Series) -> str:
+def normalize_formats_description(formats: pd.Series) -> str:
     matching = {
         source: target
         for pat, target in FORMATS_PATTERNS.items()

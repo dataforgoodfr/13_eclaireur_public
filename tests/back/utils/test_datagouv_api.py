@@ -1,6 +1,6 @@
 import pandas as pd
 
-from back.scripts.utils.datagouv_api import normalize_formats
+from back.scripts.utils.datagouv_api import normalize_formats_description
 
 
 def test_clean_format():
@@ -44,9 +44,6 @@ def test_clean_format():
         (None, None),
     ]
     source, target = zip(*parameters, strict=True)
-    out = normalize_formats(pd.Series(source))
+    out = normalize_formats_description(pd.Series(source))
     expected = pd.Series(target)
-    mask = out != expected
-    print(out[mask])
-    print(expected[mask])
     pd.testing.assert_series_equal(out, expected)
