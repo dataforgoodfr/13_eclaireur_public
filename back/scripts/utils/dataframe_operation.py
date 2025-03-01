@@ -2,6 +2,7 @@ import logging
 import re
 
 import pandas as pd
+from unidecode import unidecode
 
 """
 This script contains functions to manipulate DataFrames.
@@ -34,7 +35,7 @@ def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
     :param schema_dict: the dictionary of original column names mapped to new column names
     :return: the DataFrame with columns renamed
     """
-    df = df.rename(columns=str)
+    df = df.rename(columns=lambda col: unidecode(str(col).strip()))
     actual_matching = {k: v for k, v in schema_dict.items() if k in df.columns and k != v}
     return df.rename(columns=actual_matching)
 
@@ -180,4 +181,5 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     import pdb
 
     pdb.set_trace()
+    raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")

@@ -23,6 +23,12 @@ def test_safe_rename(schema_dict, expected_columns):
     assert out.columns.tolist() == expected_columns
 
 
+def test_safe_rename_remove_accents():
+    inp = pd.DataFrame({"idBénéficiaire": [1, 2, 3]})
+    out = safe_rename(inp, {})
+    assert out.columns.tolist() == ["idBeneficiaire"]
+
+
 class TestNormalizeBeneficiaireIdentifiant:
     def test_no_id(self):
         df = pd.DataFrame({"foo": [1]})
