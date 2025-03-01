@@ -7,6 +7,7 @@ from collections import Counter
 from typing import Tuple
 
 import pandas as pd
+import polars as pl
 from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
 from scripts.loaders.json_loader import JSONLoader
@@ -114,6 +115,7 @@ class TopicAggregator:
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
+        self._add_filenames()
 
     def _load_schema(self, schema_topic_config):
         json_schema_loader = JSONLoader(schema_topic_config["url"], key="fields")
@@ -139,7 +141,7 @@ class TopicAggregator:
         )
 
     def run(self) -> None:
-        for file_infos in tqdm(list(self.files_in_scope.itertuples(index=False))):
+        for file_infos in tqdm(self._files_to_run()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
                 continue
@@ -149,6 +151,28 @@ class TopicAggregator:
                 continue
 
             self._treat_datafile(file_infos)
+
+        self._combine_files()
+
+    def _add_filenames(self):
+        all_files = list(self.files_in_scope.itertuples(index=False))
+        fns = [str(self.dataset_filename(file, "norm")) for file in all_files]
+        self.files_in_scope = self.files_in_scope.assign(filename=fns)
+
+    def _files_to_run(self):
+        current = pd.DataFrame(
+            {"filename": [str(x) for x in self.data_folder.glob("*_norm.parquet")], "exists": 1}
+        )
+        return list(
+            self.files_in_scope.merge(
+                current,
+                how="left",
+                on="filename",
+            )
+            .pipe(lambda df: df[df["exists"].isnull()])
+            .drop(columns="exists")
+            .itertuples()
+        )
 
     def _treat_datafile(self, file: Tuple) -> None:
         self._download_file(file)
@@ -261,6 +285,13 @@ class TopicAggregator:
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
+
+    def _combine_files(self):
+        all_files = list(self.data_folder.glob("*_norm.parquet"))
+        LOGGER.info(f"Concatenating {len(all_files)} files for topic {self.topic}")
+        dfs = [pl.scan_parquet(f) for f in all_files]
+        df = pl.concat(dfs, how="diagonal_relaxed")
+        df.sink_parquet(self.data_folder / f"{self.topic}_final.parquet")
 
 
 class DatafilesLoader:
