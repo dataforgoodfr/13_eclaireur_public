@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from itertools import chain
 from pathlib import Path
 from typing import Tuple
@@ -149,3 +150,24 @@ class DataGouvAPI:
             logging.error(f"Error while decoding json from {url} : {e}")
             return [], None
         return data.get("data", data), data.get("next_page")
+
+
+def normalize_formats(formats: pd.Series) -> str:
+    patterns = {
+        r"\bcsv\b": "csv",
+        r"\bjson\b": "json",
+        r"\bxml\b": "xml",
+        r"\bhtml\b": "html",
+        r"\bzip\b": "zip",
+        r"\bexcel\b": "excel",
+        r"\bxlsx\b": "excel",
+        r"\bxls\b": "excel",
+        r"\bparquet\b": "parquet",
+    }
+    matching = {
+        source: target
+        for pat, target in patterns.items()
+        for source in formats.unique()
+        if re.search(pat, source.lower())
+    }
+    return formats.map(matching).fillna(formats)
