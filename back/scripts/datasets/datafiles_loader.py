@@ -31,18 +31,24 @@ LOADER_CLASSES = {
 
 COLUMNS_KEYWORDS = {
     r"(raison_sociale)": "nomBeneficiaire",
-    "(montant)": "montant",
+    "(montant|euros)": "montant",
+    "collectivite": "nomAttribuant",
     "(sire[nt])": "idBeneficiaire",
-    "nom[_ ].*attribuant": "nomAttribuant",
-    "id(entification)?[_ ].*attribuant": "idAttribuant",
-    "id(entification)?[_ ].*b[eé]n[ée]ficiaire": "idBeneficiaire",
+    "nom[_ ].*attribu(ant|taire)": "nomAttribuant",
+    "nom[_ ].*beneficiaire": "nomBeneficiaire",
+    "association[_ ].*nom": "nomBeneficiaire",
+    "id(entification)?[_ ].*attribu(ant|taire)": "idAttribuant",
+    "id(entification)?[_ ].*beneficiaire": "idBeneficiaire",
     "nature": "nature",
     "date.*convention": "dateConvention",
+    "ann[éez_]e": "dateConvention",
     "pourcentage": "pourcentageSubvention",
     "notification.*[_ ]ue": "notificationUE",
     "(date|periode).*versement": "datesPeriodeVersement",
-    "nom.*b[eé]n[ée]ficiaire": "nomBeneficiaire",
     "condition": "conditionsVersement",
+    "(description|objet).*(dossier)?": "objet",
+    "subvention.*accord": "montant",
+    "numero.*dossier": "referenceDecision",
 }
 
 
