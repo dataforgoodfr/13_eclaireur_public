@@ -36,7 +36,15 @@ def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
     :return: the DataFrame with columns renamed
     """
     df = df.rename(columns=lambda col: unidecode(str(col).strip()))
-    actual_matching = {k: v for k, v in schema_dict.items() if k in df.columns and k != v}
+    lowered = [str.lower(x) for x in df.columns]
+    actual_matching = {
+        k: v
+        for k, v in schema_dict.items()
+        if k in df.columns
+        and k != v
+        # do not create a column that may become a duplicate
+        and v.lower() not in lowered
+    }
     return df.rename(columns=actual_matching)
 
 
@@ -169,6 +177,7 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
             .where(frame[id_col].notnull())
             .str.strip()
             .str.replace(".0", "")
+            .str.replace(r"[\xa0 ]", "", regex=True)
         }
     )
     median_length = frame[id_col].str.len().median()
@@ -178,8 +187,4 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     elif median_length == 14:
         # identifier is actually siret
         return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
-    import pdb
-
-    pdb.set_trace()
-    raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")

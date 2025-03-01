@@ -58,7 +58,6 @@ objet_de_la_subvention;objet
 % du mt de la subvention attribuee au beneficiaire;pourcentageSubvention
 Pourcentage Subvention;pourcentageSubvention
 Pourcentage du montant de la subvention attribuee au beneficiaire;pourcentageSubvention
-Reference de la decision;referenceDecision
 Raison sociale (SIRENE);rnaBeneficiaire
 section;categoryUsage
 type_de_subvention;categoryUsage
@@ -68,3 +67,12 @@ type_d_avantage;nature
 annze;dateConvention
 reference administrative (demande);referenceDecision
 numero_complet_engagement;referenceDecision
+cscollnom;nomAttribuant
+coll_siret;idAttribuant
+attrib_siret;idBeneficiaire
+coll_nom;nomAttribuant
+attrib_nom;nomBeneficiaire
+acte_date;dateConvention
+acte_ref;referenceDecision
+rae_num;idRAE
+subv_versement;conditionsVersement

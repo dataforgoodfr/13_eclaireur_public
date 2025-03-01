@@ -3,6 +3,7 @@ import logging
 import re
 import urllib
 import urllib.request
+from collections import Counter
 from typing import Tuple
 
 import pandas as pd
@@ -35,21 +36,46 @@ COLUMNS_KEYWORDS = {
     "collectivite": "nomAttribuant",
     "(sire[nt])": "idBeneficiaire",
     "nom[_ ].*attribu(ant|taire)": "nomAttribuant",
-    "nom[_ ].*beneficiaire": "nomBeneficiaire",
+    "nom[_ ].*(beneficiaire|association)": "nomBeneficiaire",
     "association[_ ].*nom": "nomBeneficiaire",
     "id(entification)?[_ ].*attribu(ant|taire)": "idAttribuant",
     "id(entification)?[_ ].*beneficiaire": "idBeneficiaire",
     "nature": "nature",
-    "date.*convention": "dateConvention",
+    "date.*(convention|deliberation)": "dateConvention",
     "ann[éez_]e": "dateConvention",
     "pourcentage": "pourcentageSubvention",
-    "notification.*[_ ]ue": "notificationUE",
+    "notif(ication)?.*[_ ]ue": "notificationUE",
     "(date|periode).*versement": "datesPeriodeVersement",
     "condition": "conditionsVersement",
     "(description|objet).*(dossier)?": "objet",
     "subvention.*accord": "montant",
     "numero.*dossier": "referenceDecision",
+    "reference.*(deliberation|decision)": "referenceDecision",
 }
+
+NEGLECT_EXTRA_COLUMNS = [
+    "domaine",
+    "sous_domaine",
+    "secteur",
+    "sous_secteur",
+    "association_code",
+    "unknown",
+    "objet_1",
+    "objet_2",
+    "secteurs d'activités définies par l'association",
+    "direction",
+    "code_tranche",
+    "cscollnom",
+    "cscollsiret",
+    "csmodificationdate",
+    "attrib_type",
+    "coll_type",
+    "sub_date_debut",
+    "sub_date_fin",
+    "sub_dispositif",
+    "siege",
+    "intdomaine_id",
+]
 
 
 def sha256(s: str):
@@ -84,6 +110,7 @@ class TopicAggregator:
             self.datafile_loader_config["data_folder"] % {"topic": topic}
         )
         self.data_folder.mkdir(parents=True, exist_ok=True)
+        self.extra_columns = Counter()
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
@@ -112,7 +139,7 @@ class TopicAggregator:
         )
 
     def run(self) -> None:
-        for file_infos in tqdm(self.files_in_scope.itertuples(index=False)):
+        for file_infos in tqdm(list(self.files_in_scope.itertuples(index=False))):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
                 continue
@@ -135,7 +162,6 @@ class TopicAggregator:
         try:
             urllib.request.urlretrieve(file_info.url, output_filename)
         except Exception as e:
-            print(e)
             LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
 
     def dataset_filename(self, file: Tuple, step: str):
@@ -145,8 +171,13 @@ class TopicAggregator:
         )
 
     def _normalize_data(self, file: Tuple) -> pd.DataFrame:
+        skip = [
+            "https://data.ampmetropole.fr/api/explore/v2.1/catalog/datasets/fr-orthophoto-mamp-2022/exports/csv?use_labels=true"
+        ]
         raw_filename = self.dataset_filename(file, "raw")
-        if not raw_filename.exists():
+        if not raw_filename.exists() or file.url in skip:
+            return
+        if file.format != "csv":
             return
 
         out_filename = self.dataset_filename(file, "norm")
@@ -155,39 +186,78 @@ class TopicAggregator:
 
         opts = {"dtype": str} if file.format == "csv" else {}
         loader = LOADER_CLASSES[file.format](file.url, **opts)
+        try:
+            df = loader.load().pipe(self._normalize_frame, file)
+            df.to_parquet(out_filename)
+        except Exception as e:
+            print(e)
+            return
 
+    def _flag_extra_columns(self, df: pd.DataFrame, file: Tuple):
+        extra_columns = (
+            set(df.columns)
+            - set(self.official_topic_schema["name"])
+            - set(NEGLECT_EXTRA_COLUMNS)
+        )
+        if not extra_columns:
+            return
+
+        self.extra_columns.update(extra_columns)
+        LOGGER.warning(f"File {file.url} has extra columns: {extra_columns}")
+        raise RuntimeError("File has extra columns")
+
+    def _normalize_frame(self, df: pd.DataFrame, file: Tuple):
         df = (
-            loader.load()
-            .pipe(normalize_column_names)
+            df.pipe(normalize_column_names)
             .pipe(merge_duplicate_columns)
+            # .pipe(_print, "post merge")
             .pipe(safe_rename, self.manual_column_rename)
+            # .pipe(_print, "post rename")
             .rename(
                 columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
             )
+            # .pipe(_print, "post official")
             .pipe(self._flag_columns_by_keyword)
+            # .pipe(_print, "post keyword")
             .pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
         )
+        self._flag_inversion_siret(df, file)
+        self._flag_extra_columns(df, file)
+        return self._add_metadata(df, file)
 
-        n_attribuant = df["idAttribuant"].nunique() if "idAttribuant" in df.columns else 0
-        if n_attribuant > 1:
-            import pdb
+    def _add_metadata(self, df: pd.DataFrame, file: Tuple):
+        optional_features = {}
+        if "idAttribuant" not in df.columns:
+            optional_features["idAttribuant"] = str(file.siren).zfill(9) + "0" * 5
+        return df.assign(
+            topic=self.topic, url=file.url, coll_type=file.type, **optional_features
+        )
 
-            pdb.set_trace()
-
-        extra_columns = set(df.columns) - set(self.official_topic_schema["name"])
-        if isinstance(df, pd.DataFrame) and extra_columns:
-            print(df)
-            print(df[sorted(extra_columns)])
-            import pdb
-
-            pdb.set_trace()
+    def _flag_inversion_siret(self, df: pd.DataFrame, file: Tuple):
+        """
+        Flag datasets which have more unique attribuant sire    t than beneficiaire
+        """
+        if "idAttribuant" not in df.columns or "idBeneficiaire" not in df.columns:
+            return
+        n_attribuant = (
+            df["idAttribuant"].str[:9].nunique() if "idAttribuant" in df.columns else 0
+        )
+        n_beneficiaire = df["idBeneficiaire"].str[:9].nunique()
+        if n_attribuant < n_beneficiaire:
+            return
+        LOGGER.error(f"Data with more unique attribuant siret than beneficiaire : {file.url}")
+        raise RuntimeError("Data with more unique attribuant siret than beneficiaire")
 
     def _flag_columns_by_keyword(self, frame: pd.DataFrame) -> pd.DataFrame:
         extra_colums = set(frame.columns) - set(self.official_topic_schema["name"])
         matching = {}
         for col in extra_colums:
-            options = {v for k, v in COLUMNS_KEYWORDS.items() if re.search(k, col.lower())}
+            options = {
+                v
+                for k, v in COLUMNS_KEYWORDS.items()
+                if re.search(k, col.lower()) and v not in frame.columns
+            }
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
@@ -281,7 +351,7 @@ class DatafilesLoader:
         len_out = len(self.datafiles_out)
         data = []
 
-        for _i, file_info in readable_files.iterrows():
+        for _, file_info in readable_files.iterrows():
             df = self._load_file_data(file_info, datafile_loader_config)
             if df is not None:
                 data.append(df)
