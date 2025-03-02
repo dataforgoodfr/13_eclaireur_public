@@ -35,7 +35,9 @@ def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
     :param schema_dict: the dictionary of original column names mapped to new column names
     :return: the DataFrame with columns renamed
     """
-    df = df.rename(columns=lambda col: unidecode(str(col).strip()))
+    df = df.rename(columns=lambda col: unidecode(str(col).strip())).rename(
+        columns=lambda col: col.split("/")[-1] if col.startswith("https") else col
+    )
     lowered = [str.lower(x) for x in df.columns]
     actual_matching = {
         k: v
@@ -170,10 +172,18 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
 def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
+
+    if str(frame[id_col].dtype) == "float64":
+        return frame
+    if str(frame[id_col].dtype) == "int64":
+        return frame.assign(**{id_col: frame[id_col].astype("float64")})
+
     return frame.assign(
         **{
             id_col: frame[id_col]
-            .str.replace(r"[\xa0 ]", "", regex=True)
+            .astype(str)
+            .where(frame[id_col].notnull())
+            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
             .str.replace(",", ".")
             .astype("float")
         }

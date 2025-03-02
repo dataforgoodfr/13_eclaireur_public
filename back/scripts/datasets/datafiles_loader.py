@@ -24,6 +24,8 @@ from scripts.utils.dataframe_operation import (
 )
 from tqdm import tqdm
 
+from back.scripts.loaders.parquet_loader import ParquetLoader
+
 LOGGER = logging.getLogger(__name__)
 
 LOADER_CLASSES = {
@@ -32,6 +34,7 @@ LOADER_CLASSES = {
     "xlsx": ExcelLoader,
     "excel": ExcelLoader,
     "json": JSONLoader,
+    "parquet": ParquetLoader,
 }
 
 COLUMNS_KEYWORDS = {
