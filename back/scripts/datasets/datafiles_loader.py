@@ -1,9 +1,11 @@
 import hashlib
+import json
 import logging
 import re
 import urllib
 import urllib.request
-from collections import Counter
+from collections import Counter, defaultdict
+from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
@@ -17,6 +19,7 @@ from scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
     normalize_column_names,
     normalize_identifiant,
+    normalize_montant,
     safe_rename,
 )
 from tqdm import tqdm
@@ -116,6 +119,7 @@ class TopicAggregator:
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
         self._add_filenames()
+        self.errors = defaultdict(list)
 
     def _load_schema(self, schema_topic_config):
         schema_filename = self.data_folder / f"official_schema_{self.topic}.parquet"
@@ -134,6 +138,7 @@ class TopicAggregator:
         self.official_topic_schema = pd.concat(
             [schema_df, pd.DataFrame(extra_concepts)], ignore_index=True
         ).assign(lower_name=lambda df: df["name"].str.lower())
+        self.official_topic_schema.to_parquet(schema_filename)
         print(self.official_topic_schema)
 
     def _load_manual_column_rename(self):
@@ -156,7 +161,8 @@ class TopicAggregator:
 
             self._treat_datafile(file_infos)
 
-        self._combine_files()
+        with open(self.data_folder / "errors.json", "w") as f:
+            json.dump(self.errors, f)
 
     def _add_filenames(self):
         all_files = list(self.files_in_scope.itertuples(index=False))
@@ -186,7 +192,7 @@ class TopicAggregator:
         output_filename = self.dataset_filename(file_info, "raw")
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
-
+            return
         try:
             urllib.request.urlretrieve(file_info.url, output_filename)
         except Exception as e:
@@ -199,26 +205,20 @@ class TopicAggregator:
         )
 
     def _normalize_data(self, file: Tuple) -> pd.DataFrame:
-        skip = [
-            "https://data.ampmetropole.fr/api/explore/v2.1/catalog/datasets/fr-orthophoto-mamp-2022/exports/csv?use_labels=true"
-        ]
-        raw_filename = self.dataset_filename(file, "raw")
-        if not raw_filename.exists() or file.url in skip:
-            return
-        if file.format != "csv":
-            return
-
         out_filename = self.dataset_filename(file, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
+            return
 
+        raw_filename = self.dataset_filename(file, "raw")
         opts = {"dtype": str} if file.format == "csv" else {}
-        loader = LOADER_CLASSES[file.format](file.url, **opts)
+        loader = LOADER_CLASSES[file.format](raw_filename, **opts)
         try:
             df = loader.load().pipe(self._normalize_frame, file)
             df.to_parquet(out_filename)
         except Exception as e:
             print(e)
+            self.errors[str(e)].append(Path(file.filename).name)
             return
 
     def _flag_extra_columns(self, df: pd.DataFrame, file: Tuple):
@@ -249,10 +249,11 @@ class TopicAggregator:
             # .pipe(_print, "post keyword")
             .pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
+            .pipe(normalize_montant, "montant")
         )
         self._flag_inversion_siret(df, file)
         self._flag_extra_columns(df, file)
-        return self._add_metadata(df, file)
+        return df.pipe(self._select_official_columns).pipe(self._add_metadata, file)
 
     def _add_metadata(self, df: pd.DataFrame, file: Tuple):
         optional_features = {}
@@ -261,6 +262,10 @@ class TopicAggregator:
         return df.assign(
             topic=self.topic, url=file.url, coll_type=file.type, **optional_features
         )
+
+    def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
+        columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
+        return frame[columns]
 
     def _flag_inversion_siret(self, df: pd.DataFrame, file: Tuple):
         """

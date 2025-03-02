@@ -167,6 +167,19 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    if id_col not in frame.columns:
+        return frame
+    return frame.assign(
+        **{
+            id_col: frame[id_col]
+            .str.replace(r"[\xa0 ]", "", regex=True)
+            .str.replace(",", ".")
+            .astype("float")
+        }
+    )
+
+
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
