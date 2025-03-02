@@ -214,7 +214,11 @@ class TopicAggregator:
         opts = {"dtype": str} if file.format == "csv" else {}
         loader = LOADER_CLASSES[file.format](raw_filename, **opts)
         try:
-            df = loader.load().pipe(self._normalize_frame, file)
+            df = loader.load()
+            if not isinstance(df, pd.DataFrame):
+                LOGGER.error(f"Unable to load file into a DataFrame = {file.url}")
+                raise RuntimeError("Unable to load file into a DataFrame")
+            df = df.pipe(self._normalize_frame, file)
             df.to_parquet(out_filename)
         except Exception as e:
             print(e)
