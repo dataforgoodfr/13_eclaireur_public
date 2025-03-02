@@ -118,6 +118,10 @@ class TopicAggregator:
         self._add_filenames()
 
     def _load_schema(self, schema_topic_config):
+        schema_filename = self.data_folder / f"official_schema_{self.topic}.parquet"
+        if schema_filename.exists():
+            self.official_topic_schema = pd.read_parquet(schema_filename)
+            return
         json_schema_loader = JSONLoader(schema_topic_config["url"], key="fields")
         schema_df = json_schema_loader.load()
         LOGGER.info("Schema loaded.")
