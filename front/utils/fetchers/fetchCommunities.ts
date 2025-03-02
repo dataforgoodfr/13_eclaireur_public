@@ -17,7 +17,6 @@ export async function fetchCommunities(options?: Options) {
   const type = options?.type;
 
   const url = new URL('/api/selected_communities', baseURL);
-
   if (type) url.searchParams.append('type', type);
   url.searchParams.append('limit', limit.toString());
 

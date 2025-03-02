@@ -1,4 +1,6 @@
 // Interface pour typer les données de communauté
+import fetchCommunityBySiren from '@/utils/fetchers/fetchCommunityBySiren';
+
 interface Community {
   siren: string;
   nom: string;
@@ -11,26 +13,7 @@ interface Community {
 export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
   const siren = (await params).siren;
 
-  const response = await fetch(
-    `${process.env.BASE_URL}/api/selected_communities?siren=${siren}&limit=1`,
-  );
-
-  // Gestion d'erreur basique
-  if (!response.ok) {
-    return <div>Erreur lors de la récupération des données</div>;
-  }
-
-  // Conversion de la réponse en JSON
-  const communities: Community[] = await response.json();
-
-  // Vérification si des données ont été trouvées
-  if (communities.length === 0) {
-    return <div>Aucune communauté trouvée avec le SIREN {siren}</div>;
-  }
-
-  // Récupération de la communauté
-  const community = communities[0];
-
+  const community: Community = await fetchCommunityBySiren(siren);
   return (
     <div className='community-page'>
       <h1>{community.nom}</h1>
