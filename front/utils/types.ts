@@ -1,7 +1,7 @@
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
-  Communes = 'COM',
+  Commune = 'COM',
   /** Metropole au sens de la ville principale d une region geographique */
   Metropole = 'MET',
   /** Collectivite territoriale unique (ex: Corse, Martinique, Guyane) */
