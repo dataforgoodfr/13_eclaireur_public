@@ -34,6 +34,7 @@ psycopg2-binary = "^2.9.10"
 polars = "^1.23.0"
 beautifulsoup4 = "^4.13.3"
 lxml = "^5.3.1"
+responses = "^0.25.6"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.20.0"

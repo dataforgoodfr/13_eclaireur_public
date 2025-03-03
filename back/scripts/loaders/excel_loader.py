@@ -1,8 +1,10 @@
-import pandas as pd
 from io import BytesIO
 
+import pandas as pd
+
+from back.scripts.utils.dataframe_operation import detect_skipcolumns, detect_skiprows
+
 from .base_loader import BaseLoader
-from scripts.utils.dataframe_operation import detect_skiprows, detect_skipcolumns
 
 
 class ExcelLoader(BaseLoader):

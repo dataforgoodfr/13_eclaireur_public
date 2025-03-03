@@ -35,21 +35,19 @@ class BaseLoader:
         # file_url : URL of the file to load
         # num_retries : Number of retries in case of failure
         # delay_between_retries : Delay between retries in seconds
-        self.file_url = file_url
+        self.file_url = str(file_url)
         self.num_retries = num_retries
         self.delay_between_retries = delay_between_retries
         self.logger = logging.getLogger(__name__)
+        self.is_url = self.file_url.startswith(("http://", "https://")) if file_url else False
 
     def load(self):
-        parsed_url = urlparse(self.file_url)
+        if not self.file_url:
+            self.logger.error("Empty file URL provided")
+            return
 
-        if parsed_url.scheme == "file":
-            # Handle local file
-            local_path = parsed_url.path
-            if local_path.startswith("./"):
-                local_path = os.path.abspath(local_path)
-            with open(local_path, "rb") as file:
-                return self.process_data(file.read())
+        if not self.is_url:
+            return self._load_from_file()
 
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(self.file_url)
@@ -57,6 +55,21 @@ class BaseLoader:
             return self.process_data(response.content)
 
         self.logger.error(f"Failed to load data from {self.file_url}")
+        return None
+
+    def _load_from_file(self):
+        parsed_url = urlparse(self.file_url)
+        try:
+            local_path = parsed_url.path
+            if local_path.startswith("./"):
+                local_path = os.path.abspath(local_path)
+            with open(local_path, "rb") as file:
+                return self.process_data(file.read())
+        except FileNotFoundError as e:
+            self.logger.error(f"File not found: {e}")
+            return None
+        except Exception as e:
+            print(e)
         return None
 
     def process_data(self, data):
@@ -83,11 +96,11 @@ class BaseLoader:
         if "json" in content_type:
             return JSONLoader(file_url)
         elif "csv" in content_type:
-            return CSVLoader(file_url, dtype, columns_to_keep)
+            return CSVLoader(file_url, dtype=dtype, columns_to_keep=columns_to_keep)
         elif re.search(
             r"(excel|spreadsheet|xls|xlsx)", content_type, re.IGNORECASE
         ) or file_url.endswith((".xls", ".xlsx")):
-            return ExcelLoader(file_url, dtype, columns_to_keep)
+            return ExcelLoader(file_url, dtype=dtype, columns_to_keep=columns_to_keep)
         else:
             logger = logging.getLogger(__name__)
             logger.warning(f"Type de fichier non pris en charge pour l'URL : {file_url}")
