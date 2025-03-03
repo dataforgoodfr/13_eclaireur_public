@@ -28,18 +28,30 @@ async function getDataFromPool(options: CommunitiesParamsOptions) {
   return rows;
 }
 
+function isLimitValid(limit: number) {
+  return limit < 1 || limit > 5000;
+}
+
+function isSirenValid(siren?: string) {
+  return siren && !/^\d{9}$/.test(siren);
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const type = mapCommunityType(searchParams.get('type')) ?? undefined;
     const limit = Number(searchParams.get('limit')) ?? undefined;
+    const siren = searchParams.get('siren') ?? undefined;
 
-    // Vérification des valeurs
-    if (limit < 1 || limit > 5000) {
+    if (isLimitValid(limit)) {
       return NextResponse.json({ error: 'Limit must be between 1 and 5000' }, { status: 400 });
     }
 
-    const data = await getDataFromPool({ type, limit });
+    if (isSirenValid(siren)) {
+      return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
+    }
+
+    const data = await getDataFromPool({ type, limit, siren });
 
     return NextResponse.json(data);
   } catch (error) {
