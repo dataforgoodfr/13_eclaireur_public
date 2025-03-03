@@ -115,12 +115,13 @@ class WorkflowManager:
 
             if self.config["workflow"]["save_to_db"]:
                 self.connector.upsert_df_to_sql(topic_files_in_scope, topic + "_files_in_scope", ["url"])
-                self.connector.upsert_df_to_sql(topic_files_in_scope.normalized_data, topic + "_normalized_data", ["url"])
 
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, topic + "_normalized_data", ["url"])
 
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
