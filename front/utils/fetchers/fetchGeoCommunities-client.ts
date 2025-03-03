@@ -1,7 +1,8 @@
+import { getClientBaseURL } from '../getHostURL';
 import { CommunityTopoJSON } from '../types';
 
 export async function fetchGeoCommunities(): Promise<CommunityTopoJSON> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseURL = getClientBaseURL();
 
   const url = new URL('/api/geojson_communities', baseURL);
 
