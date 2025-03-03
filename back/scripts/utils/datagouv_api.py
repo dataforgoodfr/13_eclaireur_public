@@ -168,6 +168,12 @@ class DataGouvAPI:
 
 
 def normalize_formats_description(formats: pd.Series) -> str:
+    """
+    Classify with regex the various description of formats available on data.gouv into a set of fixed categories.
+    See `FORMATS_PATTERNS`for the list of patterns.
+
+    For example : "file:///srv/udata/ftype/csv" will be transformed into "csv".
+    """
     matching = {
         source: target
         for pat, target in FORMATS_PATTERNS.items()
@@ -178,6 +184,10 @@ def normalize_formats_description(formats: pd.Series) -> str:
 
 
 def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Select datasets for which we implemented a reader for their formats.
+    Log formats to be added.
+    """
     valid_formats = df["format"].isin(IMPLEMENTED_FORMATS)
     incorrects = df.loc[~valid_formats, "format"].dropna().value_counts().to_dict()
     LOGGER.info("Non implemented file formats: %s", incorrects)
