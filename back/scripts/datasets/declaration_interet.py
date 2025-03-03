@@ -90,8 +90,10 @@ class DeclaInteretWorkflow:
         global_infos = {
             "date_depot": get_tag_datetime(declaration.find("dateDepot")),
             "declaration_id": declaration.find("uuid"),
-            "complete": declaration.find("complete") == "true",
-            "nothing_to_declare": declaration.find("neant") == "true",
+            "complete": get_tag_text(declaration.find("complete")) == "true",
+            "nothing_to_declare": all(
+                get_tag_text(x) == "true" for x in declaration.find_all("neant")
+            ),
             "type_declaration": general.find("typeDeclaration").find("id"),
             "mandat": ",".join(
                 get_tag_text(x) for x in general.find("mandat").find_all("label")
