@@ -9,28 +9,33 @@ import { CommunityType } from '../../types';
  */
 export function createSQLQueryParams(options?: CommunitiesParamsOptions) {
   let query = 'SELECT * FROM selected_communities';
-  let values: (CommunityType | number | undefined)[] = [];
+  let values: (CommunityType | number | string | undefined)[] = [];
 
   if (options === undefined) {
     return [query, values] as const;
   }
 
-  const { type, limit } = options;
+  const { type, siren, limit } = options;
 
-  if (type !== undefined && limit !== undefined) {
-    query += ' WHERE type = $1 LIMIT $2';
-    values = [type, limit];
+  //Construction des conditions WHERE
+  const whereConditions: string[] = [];
+
+  if (type) {
+    whereConditions.push(`type = $${values.length + 1}`);
+    values.push(type);
   }
 
-  if (type !== undefined && limit === undefined) {
-    query += ' WHERE type = $1';
-    values = [type];
+  if (siren) {
+    whereConditions.push(`siren = $${values.length + 1}`);
+    values.push(siren);
   }
 
-  if (type === undefined && limit !== undefined) {
-    query += ' LIMIT $1';
-    values = [limit];
+  if (whereConditions.length > 0) {
+    query += ' WHERE ' + whereConditions.join(' AND ');
   }
+
+  query += ' LIMIT $' + (values.length + 1);
+  values.push(limit);
 
   return [query, values] as const;
 }
