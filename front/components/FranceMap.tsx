@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 //import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
+import { useCommunitiesTopoJSON } from '@/utils/hooks/useCommunitiesTopoJSON';
 import {
   FlyToInterpolator,
   MapViewState,
@@ -113,33 +114,16 @@ function createCommunesLayer(props?: Omit<GeoJsonLayerProps, 'id'>) {
   });
 }
 
-async function fetchJson(url: string) {
-  const response = await fetch(url);
-  const data = await response.json();
-
-  return data;
-}
-
-async function fetchTopoJson() {
-  return (await fetchJson(URL_TOPOJSON)) as Topology;
-}
-
-function useTopoJson() {
-  const [data, setData] = useState<Topology>();
-
-  useEffect(() => {
-    fetchTopoJson().then(setData).catch(console.error);
-  }, [setData]);
-
-  return data;
-}
-
 type FranceMapProps = Omit<MapProps, 'topoJson'>;
 
 export default function FranceMap(props: FranceMapProps) {
-  const topoJson = useTopoJson();
+  const { data, isError, isPending } = useCommunitiesTopoJSON();
 
-  return topoJson === undefined ? 'loading' : <Map topoJson={topoJson} {...props} />;
+  if (isError) return <div>error</div>;
+
+  if (isPending) return <div>loading</div>;
+
+  return <Map topoJson={data} {...props} />;
 }
 
 type MapProps = {
@@ -154,7 +138,7 @@ function Map({ topoJson, height, width }: MapProps) {
 
   const geojsonCom = useMemo(
     () =>
-      feature(topoJson, topoJson.objects.a_com2022) as FeatureCollection<
+      feature(topoJson, topoJson.objects.communes) as FeatureCollection<
         Geometry,
         GeoJsonProperties
       >,
@@ -162,7 +146,7 @@ function Map({ topoJson, height, width }: MapProps) {
   );
   const geojsonDep = useMemo(
     () =>
-      feature(topoJson, topoJson.objects.a_dep2022) as FeatureCollection<
+      feature(topoJson, topoJson.objects.departements) as FeatureCollection<
         Geometry,
         GeoJsonProperties
       >,
@@ -170,14 +154,9 @@ function Map({ topoJson, height, width }: MapProps) {
   );
   const geojsonReg = useMemo(
     () =>
-      feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
-        Geometry,
-        GeoJsonProperties
-      >,
+      feature(topoJson, topoJson.objects.regions) as FeatureCollection<Geometry, GeoJsonProperties>,
     [topoJson],
   );
-
-  console.log(geojsonReg, geojsonDep, geojsonCom);
 
   function getObjectBoundingBox(
     object: GeoPermissibleObjects,
