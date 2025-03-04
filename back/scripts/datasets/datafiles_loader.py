@@ -49,24 +49,35 @@ COLUMNS_KEYWORDS = {
     "id(entification)?[_ ].*beneficiaire": "idBeneficiaire",
     "nature": "nature",
     "date.*(convention|deliberation)": "dateConvention",
-    "ann[éez_]e": "dateConvention",
+    "ann[ez_]e": "dateConvention",
     "pourcentage": "pourcentageSubvention",
     "notif(ication)?.*[_ ]ue": "notificationUE",
+    "europeenne": "notificationUE",
     "(date|periode).*versement": "datesPeriodeVersement",
     "condition": "conditionsVersement",
     "(description|objet).*(dossier)?": "objet",
     "subvention.*accord": "montant",
     "numero.*dossier": "referenceDecision",
     "reference.*(deliberation|decision)": "referenceDecision",
+    "\brae\b": "idRAE",
+    "_rae_?": "idRAE",
+    "_?rae_": "idRAE",
 }
 
 NEGLECT_EXTRA_COLUMNS = [
+    "annee",
+    "datedecision_tri",
+    "objectif_id",
+    "objectid",
+    "nombreversements",
     "domaine",
     "sous_domaine",
     "secteur",
     "sous_secteur",
     "association_code",
     "unknown",
+    "nb_adherents_isseens",
+    "nb_adherents_totaux",
     "objet_1",
     "objet_2",
     "secteurs d'activités définies par l'association",
@@ -75,6 +86,7 @@ NEGLECT_EXTRA_COLUMNS = [
     "cscollnom",
     "cscollsiret",
     "csmodificationdate",
+    "nb adherents totaux",
     "attrib_type",
     "coll_type",
     "sub_date_debut",
@@ -82,6 +94,21 @@ NEGLECT_EXTRA_COLUMNS = [
     "sub_dispositif",
     "siege",
     "intdomaine_id",
+    "typetiers",
+    "localisationprojetcommune",
+    "localisationcodeinsee",
+    "sous_theme",
+    "nb_adherents_isseens",
+    "geo_point_2d",
+    "code_postal",
+    "cp",
+    "geometry",
+    "code_commune",
+    "libelle_commune",
+    "point_geo",
+    "datasetid",
+    "naf_section_code",
+    "nb adherents isseens",
 ]
 
 
@@ -164,15 +191,22 @@ class TopicAggregator:
 
             self._treat_datafile(file_infos)
 
+        self._combine_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
 
     def _add_filenames(self):
+        """
+        Add to the DataFrame of input files the expected name of the normalized file.
+        """
         all_files = list(self.files_in_scope.itertuples(index=False))
         fns = [str(self.dataset_filename(file, "norm")) for file in all_files]
         self.files_in_scope = self.files_in_scope.assign(filename=fns)
 
     def _files_to_run(self):
+        """
+        Select among the input files the ones for which we do not have yet the normalized file.
+        """
         current = pd.DataFrame(
             {"filename": [str(x) for x in self.data_folder.glob("*_norm.parquet")], "exists": 1}
         )
@@ -188,10 +222,16 @@ class TopicAggregator:
         )
 
     def _treat_datafile(self, file: Tuple) -> None:
-        self._download_file(file)
+        """
+        Download and normalize a spécific file.
+        """
+        # self._download_file(file)
         self._normalize_data(file)
 
     def _download_file(self, file_info: dict):
+        """
+        Save locally the output of the URL.
+        """
         output_filename = self.dataset_filename(file_info, "raw")
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
@@ -202,6 +242,9 @@ class TopicAggregator:
             LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
 
     def dataset_filename(self, file: Tuple, step: str):
+        """
+        Expected path for a given file depending on the step (raw or norm).
+        """
         return (
             self.data_folder
             / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"

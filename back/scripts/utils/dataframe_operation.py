@@ -182,8 +182,9 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         **{
             id_col: frame[id_col]
             .astype(str)
-            .where(frame[id_col].notnull())
+            .where(frame[id_col].notnull() & (frame[id_col] != ""))
             .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+            .str.replace("euros", "")
             .str.replace(",", ".")
             .astype("float")
         }
