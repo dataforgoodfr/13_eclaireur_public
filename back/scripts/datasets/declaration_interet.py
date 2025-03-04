@@ -4,9 +4,9 @@ from datetime import datetime
 from itertools import chain
 from pathlib import Path
 
-import bs4
 import pandas as pd
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from tqdm import tqdm
 
 from back.scripts.utils.beautifulsoup_utils import (
@@ -34,14 +34,14 @@ GENERAL_TAGS = [
 NONE_VALUE = "[Données non publiées]"
 
 
-def get_tag_text(tag: bs4.element.Tag | None) -> str | None:
+def get_tag_text(tag: Tag | None) -> str | None:
     txt = get_tag_text_base(tag)
     if txt != NONE_VALUE:
         return txt
     return None
 
 
-def get_tag_bool(tag: bs4.element.Tag | None) -> bool | None:
+def get_tag_bool(tag: Tag | None) -> bool | None:
     txt = get_tag_bool_base(tag)
     if txt != NONE_VALUE:
         return txt
@@ -134,8 +134,7 @@ class DeclaInteretWorkflow:
             "to_parse": DeclaInteretWorkflow._non_parsed_sections(declaration),
         }
         return {
-            k: (get_tag_text(v) if isinstance(v, bs4.element.Tag) else v)
-            for k, v in global_infos.items()
+            k: (get_tag_text(v) if isinstance(v, Tag) else v) for k, v in global_infos.items()
         }
 
     @staticmethod
