@@ -10,11 +10,15 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from back.scripts.utils.beautifulsoup_utils import (
-    get_tag_bool,
+    get_tag_bool as get_tag_bool_base,
+)
+from back.scripts.utils.beautifulsoup_utils import (
     get_tag_datetime,
     get_tag_float,
     get_tag_int,
-    get_tag_text,
+)
+from back.scripts.utils.beautifulsoup_utils import (
+    get_tag_text as get_tag_text_base,
 )
 
 PARSED_SECTIONS = ["mandatElectifDto"]
@@ -27,6 +31,21 @@ GENERAL_TAGS = [
     "general",
     "declarationVersion",
 ]
+NONE_VALUE = "[Données non publiées]"
+
+
+def get_tag_text(tag: bs4.element.Tag | None) -> str | None:
+    txt = get_tag_text_base(tag)
+    if txt != NONE_VALUE:
+        return txt
+    return None
+
+
+def get_tag_bool(tag: bs4.element.Tag | None) -> bool | None:
+    txt = get_tag_bool_base(tag)
+    if txt != NONE_VALUE:
+        return txt
+    return None
 
 
 class DeclaInteretWorkflow:
@@ -90,10 +109,8 @@ class DeclaInteretWorkflow:
         global_infos = {
             "date_depot": get_tag_datetime(declaration.find("dateDepot")),
             "declaration_id": declaration.find("uuid"),
-            "complete": get_tag_text(declaration.find("complete")) == "true",
-            "nothing_to_declare": all(
-                get_tag_text(x) == "true" for x in declaration.find_all("neant")
-            ),
+            "complete": get_tag_bool(declaration.find("complete")),
+            "nothing_to_declare": all(get_tag_bool(x) for x in declaration.find_all("neant")),
             "type_declaration": general.find("typeDeclaration").find("id"),
             "mandat": ",".join(
                 get_tag_text(x) for x in general.find("mandat").find_all("label")
