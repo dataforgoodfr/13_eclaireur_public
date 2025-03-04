@@ -1,6 +1,8 @@
-from io import BytesIO, StringIO
-import pandas as pd
 import json
+from io import BytesIO, StringIO
+
+import pandas as pd
+
 from .base_loader import BaseLoader
 
 
@@ -21,11 +23,21 @@ class JSONLoader(BaseLoader):
             data = json.dumps(data)
 
         if isinstance(data, str):
-            df = pd.read_json(StringIO(data))
+            df = self._process_dict(json.loads(StringIO(data)))
         elif isinstance(data, bytes):
-            df = pd.read_json(BytesIO(data))
+            df = self._process_dict(json.load(BytesIO(data)))
         else:
             raise Exception("Unhandled type")
 
         self.logger.info(f"JSON Data from {self.file_url} loaded.")
         return df
+
+    def _process_dict(self, data: dict | list) -> pd.DataFrame:
+        if isinstance(data, list):
+            return pd.DataFrame.from_records(data)
+
+        if isinstance(data, dict):
+            for _, v in data.items():
+                if isinstance(v, list):
+                    return pd.DataFrame.from_records(v)
+        raise RuntimeError("Did not identified JSON pattern")
