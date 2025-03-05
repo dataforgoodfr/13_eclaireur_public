@@ -31,21 +31,17 @@ GENERAL_TAGS = [
     "general",
     "declarationVersion",
 ]
-NONE_VALUE = "[Données non publiées]"
+EXCLUDE_VALUES = [
+    "[Données non publiées]",
+]
 
 
-def get_tag_text(tag: Tag | None) -> str | None:
-    txt = get_tag_text_base(tag)
-    if txt != NONE_VALUE:
-        return txt
-    return None
+def get_tag_text(tag, exclude=EXCLUDE_VALUES) -> str | None:
+    return get_tag_text_base(tag, exclude=exclude)
 
 
-def get_tag_bool(tag: Tag | None) -> bool | None:
-    txt = get_tag_bool_base(tag)
-    if txt != NONE_VALUE:
-        return txt
-    return None
+def get_tag_bool(tag, exclude=EXCLUDE_VALUES) -> bool | None:
+    return get_tag_bool_base(tag, exclude=exclude)
 
 
 class DeclaInteretWorkflow:
