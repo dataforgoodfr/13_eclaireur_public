@@ -5,7 +5,6 @@ from pathlib import Path
 import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
 from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.datasets.datafiles_loader import TopicAggregator
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from scripts.utils.config import get_project_base_path, get_project_data_path
@@ -22,6 +21,7 @@ from scripts.utils.psql_connector import PSQLConnector
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.sirene import SireneWorkflow
+from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.dataframe_operation import normalize_column_names
 from back.scripts.utils.datagouv_api import (
     normalize_formats_description,

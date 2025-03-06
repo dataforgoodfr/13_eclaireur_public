@@ -24,6 +24,10 @@ from scripts.utils.dataframe_operation import (
 )
 from tqdm import tqdm
 
+from back.scripts.datasets.constants import (
+    TOPIC_COLUMNS_NORMALIZATION_REGEX,
+    TOPIC_IGNORE_EXTRA_COLUMNS,
+)
 from back.scripts.loaders.parquet_loader import ParquetLoader
 
 LOGGER = logging.getLogger(__name__)
@@ -36,84 +40,6 @@ LOADER_CLASSES = {
     "json": JSONLoader,
     "parquet": ParquetLoader,
 }
-
-COLUMNS_KEYWORDS = {
-    r"(raison_sociale)": "nomBeneficiaire",
-    "(montant|euros)": "montant",
-    "collectivite": "nomAttribuant",
-    "(sire[nt])": "idBeneficiaire",
-    "nom[_ ].*attribu(ant|taire)": "nomAttribuant",
-    "nom[_ ].*(beneficiaire|association)": "nomBeneficiaire",
-    "association[_ ].*nom": "nomBeneficiaire",
-    "id(entification)?[_ ].*attribu(ant|taire)": "idAttribuant",
-    "id(entification)?[_ ].*beneficiaire": "idBeneficiaire",
-    "nature": "nature",
-    "date.*(convention|deliberation)": "dateConvention",
-    "ann[ez_]e": "dateConvention",
-    "pourcentage": "pourcentageSubvention",
-    "notif(ication)?.*[_ ]ue": "notificationUE",
-    "europeenne": "notificationUE",
-    "(date|periode).*versement": "datesPeriodeVersement",
-    "condition": "conditionsVersement",
-    "(description|objet).*(dossier)?": "objet",
-    "subvention.*accord": "montant",
-    "numero.*dossier": "referenceDecision",
-    "reference.*(deliberation|decision)": "referenceDecision",
-    "\brae\b": "idRAE",
-    "_rae_?": "idRAE",
-    "_?rae_": "idRAE",
-}
-
-NEGLECT_EXTRA_COLUMNS = [
-    "annee",
-    "datedecision_tri",
-    "objectif_id",
-    "objectid",
-    "nombreversements",
-    "domaine",
-    "sous_domaine",
-    "secteur",
-    "sous_secteur",
-    "association_code",
-    "unknown",
-    "nb_adherents_isseens",
-    "nb_adherents_totaux",
-    "objet_1",
-    "objet_2",
-    "secteurs d'activités définies par l'association",
-    "direction",
-    "code_tranche",
-    "cscollnom",
-    "cscollsiret",
-    "csmodificationdate",
-    "nb adherents totaux",
-    "attrib_type",
-    "coll_type",
-    "sub_date_debut",
-    "sub_date_fin",
-    "sub_dispositif",
-    "siege",
-    "intdomaine_id",
-    "typetiers",
-    "localisationprojetcommune",
-    "localisationcodeinsee",
-    "sous_theme",
-    "nb_adherents_isseens",
-    "geo_point_2d",
-    "code_postal",
-    "cp",
-    "geometry",
-    "code_commune",
-    "libelle_commune",
-    "point_geo",
-    "datasetid",
-    "naf_section_code",
-    "nb adherents isseens",
-]
-
-
-def sha256(s: str):
-    return hashlib.sha256(s.encode("utf-8")).hexdigest() if s else None
 
 
 class TopicAggregator:
@@ -132,7 +58,9 @@ class TopicAggregator:
         topic_config: dict,
         datafile_loader_config: dict,
     ):
-        self.files_in_scope = files_in_scope.assign(url_hash=lambda df: df["url"].apply(sha256))
+        self.files_in_scope = files_in_scope.assign(
+            url_hash=lambda df: df["url"].apply(_sha256)
+        )
         self.topic = topic
         self.topic_config = topic_config
         self.datafile_loader_config = datafile_loader_config
@@ -155,6 +83,9 @@ class TopicAggregator:
         self.errors = defaultdict(list)
 
     def _load_schema(self, schema_topic_config):
+        """
+        Load a Dataframe in memory containing official columns conventions.
+        """
         schema_filename = self.data_folder / f"official_schema_{self.topic}.parquet"
         if schema_filename.exists():
             self.official_topic_schema = pd.read_parquet(schema_filename)
@@ -174,6 +105,9 @@ class TopicAggregator:
         self.official_topic_schema.to_parquet(schema_filename)
 
     def _load_manual_column_rename(self):
+        """
+        Load a manually defiend mapping between the original column name and an official column name.
+        """
         schema_dict_file = get_project_base_path() / self.topic_config["schema_dict_file"]
         self.manual_column_rename = (
             pd.read_csv(schema_dict_file, sep=";")
@@ -193,7 +127,7 @@ class TopicAggregator:
 
             self._treat_datafile(file_infos)
 
-        self._combine_files()
+        self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
         return self
@@ -228,7 +162,7 @@ class TopicAggregator:
         """
         Download and normalize a spécific file.
         """
-        # self._download_file(file)
+        self._download_file(file)
         self._normalize_data(file)
 
     def _download_file(self, file_info: dict):
@@ -254,6 +188,18 @@ class TopicAggregator:
         )
 
     def _normalize_data(self, file: Tuple) -> pd.DataFrame:
+        """
+        Read a saved raw dataset and transform its columns and type
+        to fit into the official schema.
+
+        Automatically load a dataset into a pandas dataframe, whatever the initial format.
+        A mixture of explicit matching and keyword matching identify the columns of interest
+        and adapt their name.
+        Ensure the correct data type.
+
+        If the process raises an exception, the file is skipped, a message is logged,
+        and the error is added to the errors.csv tracking file.
+        """
         out_filename = self.dataset_filename(file, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
@@ -270,15 +216,20 @@ class TopicAggregator:
             df = df.pipe(self._normalize_frame, file)
             df.to_parquet(out_filename)
         except Exception as e:
-            print(e)
             self.errors[str(e)].append(Path(file.filename).name)
             return
 
     def _flag_extra_columns(self, df: pd.DataFrame, file: Tuple):
+        """
+        Identify in the dataset columns that are neither in the official schema
+        nor in the list of columns to ignore.
+        If such columns exists, the normalization process must fail for this file
+        and those columns are logged to allow further analysis.
+        """
         extra_columns = (
             set(df.columns)
             - set(self.official_topic_schema["name"])
-            - set(NEGLECT_EXTRA_COLUMNS)
+            - set(TOPIC_IGNORE_EXTRA_COLUMNS)
         )
         if not extra_columns:
             return
@@ -288,6 +239,9 @@ class TopicAggregator:
         raise RuntimeError("File has extra columns")
 
     def _normalize_frame(self, df: pd.DataFrame, file: Tuple):
+        """
+        Set of steps to transform a raw DataFrame into a normalized one.
+        """
         df = (
             df.pipe(normalize_column_names)
             .pipe(merge_duplicate_columns)
@@ -305,6 +259,9 @@ class TopicAggregator:
         return df.pipe(self._select_official_columns).pipe(self._add_metadata, file)
 
     def _add_metadata(self, df: pd.DataFrame, file: Tuple):
+        """
+        Add to the normalized dataframe infos about the source of the raw file.
+        """
         optional_features = {}
         if "idAttribuant" not in df.columns:
             optional_features["idAttribuant"] = str(file.siren).zfill(9) + "0" * 5
@@ -313,6 +270,9 @@ class TopicAggregator:
         )
 
     def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        Select from the dataframe the columns that are in the official schema.
+        """
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
 
@@ -332,19 +292,27 @@ class TopicAggregator:
         raise RuntimeError("Data with more unique attribuant siret than beneficiaire")
 
     def _flag_columns_by_keyword(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        Identify columns that may correspond to the one in the official schema based on regex.
+        Ensure that this process may not create a duplicate of a column.
+        """
         extra_colums = set(frame.columns) - set(self.official_topic_schema["name"])
         matching = {}
         for col in extra_colums:
             options = {
                 v
-                for k, v in COLUMNS_KEYWORDS.items()
+                for k, v in TOPIC_COLUMNS_NORMALIZATION_REGEX.items()
                 if re.search(k, col.lower()) and v not in frame.columns
             }
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
 
-    def _combine_files(self):
+    def _concatenate_files(self):
+        """
+        Concatenate all the normalized files which have succeeded into a single parquet file.
+        This step is made in polars as the sum of all dataset by be heavy on memory.
+        """
         all_files = list(self.data_folder.glob("*_norm.parquet"))
         LOGGER.info(f"Concatenating {len(all_files)} files for topic {self.topic}")
         dfs = [pl.scan_parquet(f) for f in all_files]
@@ -353,9 +321,16 @@ class TopicAggregator:
 
     @property
     def aggregated_dataset(self):
+        """
+        Property to return the aggregated dataset.
+        """
         if not self.combined_filename.exists():
             raise RuntimeError("Combined file does not exists. You must run .load() first.")
         return pd.read_parquet(self.combined_filename)
+
+
+def _sha256(s: str):
+    return hashlib.sha256(s.encode("utf-8")).hexdigest() if s else None
 
 
 class DatafilesLoader:
