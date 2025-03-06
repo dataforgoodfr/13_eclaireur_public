@@ -170,6 +170,9 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Transform the selected columns to be float.
+    """
     if id_col not in frame.columns:
         return frame
 
@@ -192,6 +195,9 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
 
 
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Ensure that the selected column can be interpreted as a string siret.
+    """
     if id_col not in frame.columns:
         return frame
     frame = frame.assign(
