@@ -144,6 +144,9 @@ class TopicAggregator:
             self.datafile_loader_config["data_folder"] % {"topic": topic}
         )
         self.data_folder.mkdir(parents=True, exist_ok=True)
+        self.combined_filename = get_project_base_path() / (
+            self.datafile_loader_config["combined_filename"] % {"topic": topic}
+        )
         self.extra_columns = Counter()
 
         self._load_schema(topic_config["schema"])
@@ -169,7 +172,6 @@ class TopicAggregator:
             [schema_df, pd.DataFrame(extra_concepts)], ignore_index=True
         ).assign(lower_name=lambda df: df["name"].str.lower())
         self.official_topic_schema.to_parquet(schema_filename)
-        print(self.official_topic_schema)
 
     def _load_manual_column_rename(self):
         schema_dict_file = get_project_base_path() / self.topic_config["schema_dict_file"]
@@ -186,7 +188,7 @@ class TopicAggregator:
                 continue
 
             if file_infos.url is None or pd.isna(file_infos.url):
-                LOGGER.warning(f"URL not specified for file {file_infos.name}")
+                LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
 
             self._treat_datafile(file_infos)
@@ -194,6 +196,7 @@ class TopicAggregator:
         self._combine_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
+        return self
 
     def _add_filenames(self):
         """
@@ -288,15 +291,11 @@ class TopicAggregator:
         df = (
             df.pipe(normalize_column_names)
             .pipe(merge_duplicate_columns)
-            # .pipe(_print, "post merge")
             .pipe(safe_rename, self.manual_column_rename)
-            # .pipe(_print, "post rename")
             .rename(
                 columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
             )
-            # .pipe(_print, "post official")
             .pipe(self._flag_columns_by_keyword)
-            # .pipe(_print, "post keyword")
             .pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
             .pipe(normalize_montant, "montant")
@@ -350,7 +349,13 @@ class TopicAggregator:
         LOGGER.info(f"Concatenating {len(all_files)} files for topic {self.topic}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
-        df.sink_parquet(self.data_folder / f"{self.topic}_final.parquet")
+        df.sink_parquet(self.combined_filename)
+
+    @property
+    def aggregated_dataset(self):
+        if not self.combined_filename.exists():
+            raise RuntimeError("Combined file does not exists. You must run .load() first.")
+        return pd.read_parquet(self.combined_filename)
 
 
 class DatafilesLoader:
