@@ -10,15 +10,11 @@ from bs4.element import Tag
 from tqdm import tqdm
 
 from back.scripts.utils.beautifulsoup_utils import (
-    get_tag_bool as get_tag_bool_base,
-)
-from back.scripts.utils.beautifulsoup_utils import (
+    get_tag_bool,
     get_tag_datetime,
     get_tag_float,
     get_tag_int,
-)
-from back.scripts.utils.beautifulsoup_utils import (
-    get_tag_text as get_tag_text_base,
+    get_tag_text,
 )
 
 PARSED_SECTIONS = ["mandatElectifDto"]
@@ -31,17 +27,17 @@ GENERAL_TAGS = [
     "general",
     "declarationVersion",
 ]
-EXCLUDE_VALUES = [
+UNPUBLISHED_VALUES = [
     "[Données non publiées]",
 ]
 
 
-def get_tag_text(tag, exclude=EXCLUDE_VALUES) -> str | None:
-    return get_tag_text_base(tag, exclude=exclude)
+def get_published_text(tag, exclude=UNPUBLISHED_VALUES) -> str | None:
+    return get_tag_text(tag, exclude=exclude)
 
 
-def get_tag_bool(tag, exclude=EXCLUDE_VALUES) -> bool | None:
-    return get_tag_bool_base(tag, exclude=exclude)
+def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
+    return get_tag_bool(tag, exclude=exclude)
 
 
 class DeclaInteretWorkflow:
@@ -105,11 +101,13 @@ class DeclaInteretWorkflow:
         global_infos = {
             "date_depot": get_tag_datetime(declaration.find("dateDepot")),
             "declaration_id": declaration.find("uuid"),
-            "complete": get_tag_bool(declaration.find("complete")),
-            "nothing_to_declare": all(get_tag_bool(x) for x in declaration.find_all("neant")),
+            "complete": get_published_bool(declaration.find("complete")),
+            "nothing_to_declare": all(
+                get_published_bool(x) for x in declaration.find_all("neant")
+            ),
             "type_declaration": general.find("typeDeclaration").find("id"),
             "mandat": ",".join(
-                get_tag_text(x) for x in general.find("mandat").find_all("label")
+                get_published_text(x) for x in general.find("mandat").find_all("label")
             ),
             "civilite": declarant.find("civilite"),
             "nom": declarant.find("nom"),
@@ -130,7 +128,8 @@ class DeclaInteretWorkflow:
             "to_parse": DeclaInteretWorkflow._non_parsed_sections(declaration),
         }
         return {
-            k: (get_tag_text(v) if isinstance(v, Tag) else v) for k, v in global_infos.items()
+            k: (get_published_text(v) if isinstance(v, Tag) else v)
+            for k, v in global_infos.items()
         }
 
     @staticmethod
@@ -146,7 +145,7 @@ class DeclaInteretWorkflow:
             tag = declaration.find(name)
             items = tag.find("items")
             if (not items or not len(items.contents)) and (
-                get_tag_text(tag.find("neant")) == "true"
+                get_published_bool(tag.find("neant"))
             ):
                 continue
             to_parse.append(name)
@@ -161,10 +160,10 @@ class DeclaInteretWorkflow:
         section = declaration.find("mandatElectifDto")
         if not section:
             return []
-        uuid = get_tag_text(declaration.find("uuid"))
+        uuid = get_published_text(declaration.find("uuid"))
 
         items = section.find("items")
-        is_neant = get_tag_bool(section.find("neant"))
+        is_neant = get_published_bool(section.find("neant"))
         if not items and is_neant:
             return []
 
@@ -182,10 +181,10 @@ class DeclaInteretWorkflow:
 
         remuneration = items.find("remuneration")
         general_infos = {
-            "description": get_tag_text(items.find("description")),
-            "commentaire": get_tag_text(items.find("commentaire")),
-            "remuneration_brut_net": get_tag_text(remuneration.find("brutNet")),
-            "description_mandat": get_tag_text(section.find("descriptionMandat")),
+            "description": get_published_text(items.find("description")),
+            "commentaire": get_published_text(items.find("commentaire")),
+            "remuneration_brut_net": get_published_text(remuneration.find("brutNet")),
+            "description_mandat": get_published_text(section.find("descriptionMandat")),
         }
         montants = remuneration.find("montant", recursive=False)
         if not montants and any(v is not None for v in general_infos.values()):
