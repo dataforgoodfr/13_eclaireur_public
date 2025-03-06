@@ -41,8 +41,8 @@ LOADER_CLASSES = {
 }
 
 
-def _sha256(s: str):
-    return hashlib.sha256(s.encode("utf-8")).hexdigest() if s else None
+def _sha256(s):
+    return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
 class TopicAggregator:
