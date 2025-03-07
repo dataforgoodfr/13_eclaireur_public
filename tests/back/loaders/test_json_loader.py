@@ -3,7 +3,6 @@ import tempfile
 from pathlib import Path
 
 from back.scripts.loaders.json_loader import JSONLoader
-from back.scripts.utils.config import get_project_base_path
 
 
 def test_json_with_substructure():
@@ -19,7 +18,7 @@ def test_json_with_substructure():
 
 
 def test_decp():
-    filename = get_project_base_path() / "back" / "tests" / "inputs" / "decp-2019-10000.json"
+    filename = Path(__file__).parent / "fixtures" / "reduced_decp_2019.json"
     out = JSONLoader(filename).load()
 
     with tempfile.TemporaryDirectory() as tmpdirname:
