@@ -75,6 +75,9 @@ class TestBaseLoader:
         can_load = BaseLoaderFakeNoCsv.can_load_file_media_type("csv")
         assert can_load is False
 
+        can_load = BaseLoaderFakeCsv.can_load_file_media_type("file:///srv/udata/ftype/csv")
+        assert can_load is True
+
         can_load = BaseLoaderFakeJson.can_load_file_media_type("csv")
         assert can_load is False
 
