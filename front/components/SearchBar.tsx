@@ -23,6 +23,7 @@ export function SearchBar({ communities }: SearchbarProps) {
   const [query, setQuery] = useState('');
 
   const router = useRouter();
+
   const filteredItems = useMemo(() => {
     return communities.filter((item) => item.nom.toLowerCase().includes(query.toLowerCase()));
   }, [query, communities]);

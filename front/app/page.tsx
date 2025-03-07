@@ -14,6 +14,7 @@ async function getCommunities() {
 
 export default async function Home() {
   const communities = await getCommunities();
+
   return (
     <>
       <HomepageHeader communities={communities} />

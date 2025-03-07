@@ -1,5 +1,4 @@
-// lib/db.ts
-import { Pool } from 'pg';
+import { Pool, QueryConfig } from 'pg';
 
 const db = new Pool({
   user: process.env.POSTGRESQL_ADDON_USER,
@@ -10,3 +9,20 @@ const db = new Pool({
 });
 
 export default db;
+
+export async function getQueryFromPool(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  queryTextOrConfig: string | QueryConfig<any[]>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  values?: any[] | undefined,
+) {
+  const client = await db.connect();
+  try {
+    const { rows } = await client.query(queryTextOrConfig, values);
+    return rows;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    client.release();
+  }
+}
