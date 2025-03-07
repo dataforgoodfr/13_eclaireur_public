@@ -24,7 +24,9 @@ class DataWarehouseWorkflow:
         Enrich the raw subvention dataset
         """
         subventions = (
-            pl.read_parquet("back/data/datasets/subventions.parquet")
+            pl.read_parquet(
+                self._config["datafile_loader"]["combined_filename"] % {"topic": "subventions"}
+            )
             .with_columns(
                 # Transform idAttribuant from siret to siren.
                 # Data should already be normalized to 15 caracters.
