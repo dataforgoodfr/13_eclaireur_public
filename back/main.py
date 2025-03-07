@@ -14,4 +14,4 @@ if __name__ == "__main__":
     workflow_manager = WorkflowManager(args, config)
     workflow_manager.run_workflow()
 
-    data_warehouse_manager = DataWarehouseWorkflow().run()
+    data_warehouse_manager = DataWarehouseWorkflow(config).run()
