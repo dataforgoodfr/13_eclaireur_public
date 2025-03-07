@@ -2,6 +2,7 @@ import logging
 import re
 
 import pandas as pd
+from unidecode import unidecode
 
 """
 This script contains functions to manipulate DataFrames.
@@ -13,8 +14,10 @@ This script contains functions to manipulate DataFrames.
 """
 
 
-# Function to merge duplicate columns in a DataFrame
 def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.DataFrame:
+    """
+    Identify columns with the same name and merge their content into a single column.
+    """
     duplicate_columns = df.columns[df.columns.duplicated(keep=False)]
 
     for col in duplicate_columns.unique():
@@ -28,13 +31,29 @@ def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.Data
     return df
 
 
-# Function to rename columns in a DataFrame
-def safe_rename(df, schema_dict):
-    schema_dict_copy = schema_dict.copy()
-    for original_name, official_name in schema_dict.items():
-        if official_name in df.columns and original_name != official_name:
-            del schema_dict_copy[original_name]
-    df.rename(columns=schema_dict_copy, inplace=True)
+def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
+    """
+    This function renames columns of a DataFrame based on a dictionary of original column names mapped to new column names.
+
+    If a column does not exist in the DataFrame, it is not raised as an error, but rather ignored.
+
+    :param df: the DataFrame to rename columns in
+    :param schema_dict: the dictionary of original column names mapped to new column names
+    :return: the DataFrame with columns renamed
+    """
+    df = df.rename(columns=lambda col: unidecode(str(col).strip())).rename(
+        columns=lambda col: col.split("/")[-1] if col.startswith("http") else col
+    )
+    lowered = [str.lower(x) for x in df.columns]
+    actual_matching = {
+        k: v
+        for k, v in schema_dict.items()
+        if k in df.columns
+        and k != v
+        # do not create a column that may become a duplicate
+        and v.lower() not in lowered
+    }
+    return df.rename(columns=actual_matching)
 
 
 # Function to cast the data in a DataFrame based on a schema (a DataFrame with two columns: 'name' and 'type')
@@ -151,4 +170,57 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(columns=lambda col: re.sub(r"[.-]", "_", col.lower()))
+    return df.rename(
+        columns=lambda col: re.sub(r"_+", "_", re.sub(r"[.-]", "_", col.lower())).strip()
+    )
+
+
+def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Transform the selected columns to be float.
+    """
+    if id_col not in frame.columns:
+        return frame
+
+    if str(frame[id_col].dtype) == "float64":
+        return frame
+    if str(frame[id_col].dtype) == "int64":
+        return frame.assign(**{id_col: frame[id_col].astype("float64")})
+
+    return frame.assign(
+        **{
+            id_col: frame[id_col]
+            .astype(str)
+            .where(frame[id_col].notnull() & (frame[id_col] != ""))
+            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+            .str.replace("euros", "")
+            .str.replace(",", ".")
+            .astype("float")
+        }
+    )
+
+
+def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Ensure that the selected column can be interpreted as a string siret.
+    """
+    if id_col not in frame.columns:
+        return frame
+    frame = frame.assign(
+        **{
+            id_col: frame[id_col]
+            .astype(str)
+            .where(frame[id_col].notnull())
+            .str.strip()
+            .str.replace(".0", "")
+            .str.replace(r"[\xa0 ]", "", regex=True)
+        }
+    )
+    median_length = frame[id_col].str.len().median()
+    if median_length == 9:
+        # identifier is actually siren
+        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(14, "0")})
+    elif median_length == 14:
+        # identifier is actually siret
+        return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
+    raise RuntimeError("idBeneficiaire median length is neither siren not siret.")

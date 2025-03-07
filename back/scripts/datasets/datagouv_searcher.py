@@ -7,7 +7,7 @@ from tqdm import tqdm
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
-DATAGOUV_PREFERED_FORMAT = ["csv", "xls", "json", "zip"]
+DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
 
 class DataGouvSearcher:
