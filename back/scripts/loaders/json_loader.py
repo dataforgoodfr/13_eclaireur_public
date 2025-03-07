@@ -13,7 +13,7 @@ class JSONLoader(BaseLoader):
     """
 
     file_extensions = {"json"}
-    media_type_regex = re.compile(r"json", flags=re.IGNORECASE)
+    file_media_type_regex = re.compile(r"json", flags=re.IGNORECASE)
 
     def __init__(self, file_url, key=None, **kwargs):
         super().__init__(file_url, **kwargs)

@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 class CSVLoader(BaseLoader):
     file_extensions = {"csv"}
-    media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
+    file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
 
     def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
         """

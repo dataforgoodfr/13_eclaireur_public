@@ -7,7 +7,7 @@ from back.scripts.loaders import BaseLoader as BaseLoaderBase
 
 class BaseLoader(BaseLoaderBase):
     file_extensions = None
-    media_type_regex = None
+    file_media_type_regex = None
 
 
 class TestBaseLoader:
@@ -52,16 +52,16 @@ class TestBaseLoader:
 
     def test_can_load_file_media_type(self):
         class BaseLoaderFakeCsv(BaseLoader):
-            media_type_regex = r"csv"
+            file_media_type_regex = r"csv"
 
         class BaseLoaderFakeCsvWithRe(BaseLoader):
-            media_type_regex = re.compile(r"csv")
+            file_media_type_regex = re.compile(r"csv")
 
         class BaseLoaderFakeNoCsv(BaseLoader):
-            media_type_regex = r"no_csv"
+            file_media_type_regex = r"no_csv"
 
         class BaseLoaderFakeJson(BaseLoader):
-            media_type_regex = r"json"
+            file_media_type_regex = r"json"
 
         can_load = BaseLoader.can_load_file_media_type("csv")
         assert can_load is False
@@ -113,13 +113,13 @@ class TestBaseLoader:
     @responses.activate
     def test_can_load_file(self):
         class BaseLoaderFakeCsv(BaseLoader):
-            media_type_regex = r"csv"
+            file_media_type_regex = r"csv"
 
         class BaseLoaderFakeParquetExtension(BaseLoader):
             file_extensions = {"parquet"}
 
         class BaseLoaderFakeNoCsv(BaseLoader):
-            media_type_regex = r"no_csv"
+            file_media_type_regex = r"no_csv"
 
         can_load = BaseLoaderFakeParquetExtension.can_load_file(
             "back/data/geoloc/dep_reg_centers.parquet"

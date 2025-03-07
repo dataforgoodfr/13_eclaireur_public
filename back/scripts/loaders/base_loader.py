@@ -34,7 +34,7 @@ class BaseLoader:
 
     file_extensions: set[str] | None = None
     # http://www.iana.org/assignments/media-types/media-types.xhtml
-    media_type_regex: Pattern[str] | str | None = None
+    file_media_type_regex: Pattern[str] | str | None = None
 
     def __init__(self, file_url, num_retries=3, delay_between_retries=5):
         # file_url : URL of the file to load
@@ -159,10 +159,10 @@ class BaseLoader:
         Check if the given file media type can be loaded by the current loader class.
         """
         can_load = False
-        if cls.media_type_regex and file_media_type:
-            if isinstance(cls.media_type_regex, str):
-                can_load = re.search(cls.media_type_regex, file_media_type)
-            elif isinstance(cls.media_type_regex, re.Pattern):
-                can_load = cls.media_type_regex.search(file_media_type)
+        if cls.file_media_type_regex and file_media_type:
+            if isinstance(cls.file_media_type_regex, str):
+                can_load = re.search(cls.file_media_type_regex, file_media_type)
+            elif isinstance(cls.file_media_type_regex, re.Pattern):
+                can_load = cls.file_media_type_regex.search(file_media_type)
 
         return bool(can_load)
