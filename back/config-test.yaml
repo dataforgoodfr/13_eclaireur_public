@@ -102,6 +102,8 @@ search:
       name: "marche"
 
 datafile_loader:
+  data_folder: 'back/tests/data/datasets/%(topic)s'
+  combined_filename: 'back/tests/data/datasets/%(topic)s.parquet'
   file_info_columns:
     - "siren"
     - "organization"

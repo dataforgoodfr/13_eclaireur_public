@@ -5,7 +5,6 @@ from pathlib import Path
 import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
 from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.datasets.datafiles_loader import DatafilesLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from scripts.utils.config import get_project_base_path, get_project_data_path
@@ -22,6 +21,7 @@ from scripts.utils.psql_connector import PSQLConnector
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.sirene import SireneWorkflow
+from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.dataframe_operation import normalize_column_names
 from back.scripts.utils.datagouv_api import (
     normalize_formats_description,
@@ -63,7 +63,7 @@ class WorkflowManager:
 
             self.save_output_to_csv(
                 topic,
-                topic_datafiles.normalized_data,
+                topic_datafiles,
                 topic_files_in_scope,
                 getattr(topic_datafiles, "datacolumns_out", None),
                 getattr(topic_datafiles, "datafiles_out", None),
@@ -140,27 +140,12 @@ class WorkflowManager:
                 index_label=["url"],
             )
 
-            # Process the datafiles list: download & normalize
-            topic_datafiles = DatafilesLoader(
+            topic_agg = TopicAggregator(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
-            )
+            ).run()
+            return topic_files_in_scope, topic_agg.aggregated_dataset
 
-            self.connector.save_df_to_sql_drop_existing(
-                self.config["workflow"]["save_to_db"],
-                topic_datafiles.normalized_data,
-                topic + "_normalized_data",
-                index=True,
-                index_label=[
-                    "idAttribuant",
-                    "idBeneficiaire",
-                    "dateConvention",
-                    "referenceDecision",
-                    "montant",
-                    "idRAE",
-                ],
-            )
-
-        elif topic_config["source"] == "single":
+        if topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
@@ -172,11 +157,11 @@ class WorkflowManager:
                 index_label=["id", "acheteur.id", "codeCPV"],
             )
 
-        if self.config["workflow"]["save_to_db"]:
-            self.connector.close_connection()
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.close_connection()
 
-        self.logger.info(f"Topic {topic} processed.")
-        return topic_files_in_scope, topic_datafiles
+            self.logger.info(f"Topic {topic} processed.")
+            return topic_files_in_scope, topic_datafiles.normalized_data
 
     def save_output_to_csv(
         self,

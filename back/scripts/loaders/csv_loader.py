@@ -26,7 +26,7 @@ class CSVLoader(BaseLoader):
 
     def process_data(self, data) -> pd.DataFrame | None:
         # Try different encodings for the data
-        encodings_to_try = ["utf-8", "windows-1252", "latin1", "utf-16"]
+        encodings_to_try = ["utf-8-sig", "windows-1252", "latin1", "utf-16"]
 
         for encoding in encodings_to_try:
             try:
@@ -58,12 +58,9 @@ class CSVLoader(BaseLoader):
             csv_params["usecols"] = lambda c: c in self.columns_to_keep
 
         try:
-            has_header = sniffer.has_header(sample)
-            csv_params["header"] = 0 if has_header else None
-
             dialect = sniffer.sniff(sample)
             csv_params["delimiter"] = dialect.delimiter
-            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}', Has header: {has_header}")
+            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
 
         except csv.Error as e:
             LOGGER.warning(f"CSV Sniffer error with encoding: {str(e)}")
