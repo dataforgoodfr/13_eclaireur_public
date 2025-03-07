@@ -118,16 +118,16 @@ class TopicAggregator:
         )
 
     def run(self) -> None:
-        for file_infos in tqdm(self._files_to_run()):
-            if file_infos.format not in LOADER_CLASSES:
-                LOGGER.warning(f"Format {file_infos.format} not supported")
+        for file_metadata in tqdm(self._files_to_run()):
+            if file_metadata.format not in LOADER_CLASSES:
+                LOGGER.warning(f"Format {file_metadata.format} not supported")
                 continue
 
-            if file_infos.url is None or pd.isna(file_infos.url):
-                LOGGER.warning(f"URL not specified for file {file_infos.title}")
+            if file_metadata.url is None or pd.isna(file_metadata.url):
+                LOGGER.warning(f"URL not specified for file {file_metadata.title}")
                 continue
 
-            self._treat_datafile(file_infos)
+            self._treat_datafile(file_metadata)
 
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
@@ -160,36 +160,36 @@ class TopicAggregator:
             .itertuples()
         )
 
-    def _treat_datafile(self, file: tuple) -> None:
+    def _treat_datafile(self, file_metadata: tuple) -> None:
         """
         Download and normalize a spécific file.
         """
-        self._download_file(file)
-        self._normalize_data(file)
+        self._download_file(file_metadata)
+        self._normalize_data(file_metadata)
 
-    def _download_file(self, file_info: tuple):
+    def _download_file(self, file_metadata: tuple):
         """
         Save locally the output of the URL.
         """
-        output_filename = self.dataset_filename(file_info, "raw")
+        output_filename = self.dataset_filename(file_metadata, "raw")
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
             return
         try:
-            urllib.request.urlretrieve(file_info.url, output_filename)
+            urllib.request.urlretrieve(file_metadata.url, output_filename)
         except Exception as e:
-            LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
+            LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
 
-    def dataset_filename(self, file: tuple, step: str):
+    def dataset_filename(self, file_metadata: tuple, step: str):
         """
         Expected path for a given file depending on the step (raw or norm).
         """
         return (
             self.data_folder
-            / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
+            / f"{self.topic}_{file_metadata.url_hash}_{step}.{file_metadata.format if step == 'raw' else 'parquet'}"
         )
 
-    def _normalize_data(self, file: tuple) -> pd.DataFrame:
+    def _normalize_data(self, file_metadata: tuple) -> pd.DataFrame:
         """
         Read a saved raw dataset and transform its columns and type
         to fit into the official schema.
@@ -202,26 +202,26 @@ class TopicAggregator:
         If the process raises an exception, the file is skipped, a message is logged,
         and the error is added to the errors.csv tracking file.
         """
-        out_filename = self.dataset_filename(file, "norm")
+        out_filename = self.dataset_filename(file_metadata, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
             return
 
-        raw_filename = self.dataset_filename(file, "raw")
-        opts = {"dtype": str} if file.format == "csv" else {}
-        loader = LOADER_CLASSES[file.format](raw_filename, **opts)
+        raw_filename = self.dataset_filename(file_metadata, "raw")
+        opts = {"dtype": str} if file_metadata.format == "csv" else {}
+        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
         try:
             df = loader.load()
             if not isinstance(df, pd.DataFrame):
-                LOGGER.error(f"Unable to load file into a DataFrame = {file.url}")
+                LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
                 raise RuntimeError("Unable to load file into a DataFrame")
-            df = df.pipe(self._normalize_frame, file)
+            df = df.pipe(self._normalize_frame, file_metadata)
             df.to_parquet(out_filename)
         except Exception as e:
-            self.errors[str(e)].append(Path(file.filename).name)
+            self.errors[str(e)].append(Path(file_metadata.filename).name)
             return
 
-    def _flag_extra_columns(self, df: pd.DataFrame, file: tuple):
+    def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """
         Identify in the dataset columns that are neither in the official schema
         nor in the list of columns to ignore.
@@ -237,10 +237,10 @@ class TopicAggregator:
             return
 
         self.extra_columns.update(extra_columns)
-        LOGGER.warning(f"File {file.url} has extra columns: {extra_columns}")
+        LOGGER.warning(f"File {file_metadata.url} has extra columns: {extra_columns}")
         raise RuntimeError("File has extra columns")
 
-    def _normalize_frame(self, df: pd.DataFrame, file: tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
         """
         Set of steps to transform a raw DataFrame into a normalized one.
         """
@@ -256,19 +256,22 @@ class TopicAggregator:
             .pipe(normalize_identifiant, "idAttribuant")
             .pipe(normalize_montant, "montant")
         )
-        self._flag_inversion_siret(df, file)
-        self._flag_extra_columns(df, file)
-        return df.pipe(self._select_official_columns).pipe(self._add_metadata, file)
+        self._flag_inversion_siret(df, file_metadata)
+        self._flag_extra_columns(df, file_metadata)
+        return df.pipe(self._select_official_columns).pipe(self._add_metadata, file_metadata)
 
-    def _add_metadata(self, df: pd.DataFrame, file: tuple):
+    def _add_metadata(self, df: pd.DataFrame, file_metadata: tuple):
         """
         Add to the normalized dataframe infos about the source of the raw file.
         """
         optional_features = {}
         if "idAttribuant" not in df.columns:
-            optional_features["idAttribuant"] = str(file.siren).zfill(9) + "0" * 5
+            optional_features["idAttribuant"] = str(file_metadata.siren).zfill(9) + "0" * 5
         return df.assign(
-            topic=self.topic, url=file.url, coll_type=file.type, **optional_features
+            topic=self.topic,
+            url=file_metadata.url,
+            coll_type=file_metadata.type,
+            **optional_features,
         )
 
     def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
@@ -278,7 +281,7 @@ class TopicAggregator:
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
 
-    def _flag_inversion_siret(self, df: pd.DataFrame, file: tuple):
+    def _flag_inversion_siret(self, df: pd.DataFrame, file_metadata: tuple):
         """
         Flag datasets which have more unique attribuant sire    t than beneficiaire
         """
@@ -290,7 +293,9 @@ class TopicAggregator:
         n_beneficiaire = df["idBeneficiaire"].str[:9].nunique()
         if n_attribuant < n_beneficiaire:
             return
-        LOGGER.error(f"Data with more unique attribuant siret than beneficiaire : {file.url}")
+        LOGGER.error(
+            f"Data with more unique attribuant siret than beneficiaire : {file_metadata.url}"
+        )
         raise RuntimeError("Data with more unique attribuant siret than beneficiaire")
 
     def _flag_columns_by_keyword(self, frame: pd.DataFrame) -> pd.DataFrame:
