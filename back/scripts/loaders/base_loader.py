@@ -8,6 +8,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+LOGGER = logging.getLogger(__name__)
+
 
 def retry_session(retries, session=None, backoff_factor=0.3):
     """
@@ -46,9 +48,14 @@ class BaseLoader:
         self.logger = logging.getLogger(__name__)
         self.is_url = self.get_file_is_url(self.file_url)
 
-    def load(self):
+    def load(self, force: bool = True):
+        # FIXME: force == True for retro-compatilibity reasons
         if not self.file_url:
             self.logger.error("Empty file URL provided")
+            return
+
+        if not force and not self.can_load_file(self.file_url):
+            self.logger.error(f"File {self.file_url} is not supported by this loader")
             return
 
         if not self.is_url:
@@ -107,8 +114,7 @@ class BaseLoader:
             if response.status_code == 200:
                 return response.headers.get("content-type", "")
             else:
-                logger = logging.getLogger(__name__)
-                logger.error(f"Failed to load data from {file_url}")
+                LOGGER.error(f"Failed to load data from {file_url}")
         return ""
 
     @classmethod
@@ -125,8 +131,7 @@ class BaseLoader:
             ):
                 return loader_class
 
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Type de fichier non pris en charge pour : {file_url}")
+        LOGGER.warning(f"Type de fichier non pris en charge pour : {file_url}")
         return None
 
     @classmethod
@@ -159,10 +164,11 @@ class BaseLoader:
         Check if the given file media type can be loaded by the current loader class.
         """
         can_load = False
-        if cls.file_media_type_regex and file_media_type:
-            if isinstance(cls.file_media_type_regex, str):
-                can_load = re.search(cls.file_media_type_regex, file_media_type)
-            elif isinstance(cls.file_media_type_regex, re.Pattern):
-                can_load = cls.file_media_type_regex.search(file_media_type)
+        regex = cls.file_media_type_regex
+        if regex and file_media_type:
+            if isinstance(regex, str):
+                can_load = re.search(regex, file_media_type)
+            elif isinstance(regex, re.Pattern):
+                can_load = regex.search(file_media_type)
 
         return bool(can_load)
