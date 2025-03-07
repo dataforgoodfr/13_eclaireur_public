@@ -1,5 +1,6 @@
 import csv
 import logging
+import re
 from io import StringIO
 
 import pandas as pd
@@ -10,6 +11,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 class CSVLoader(BaseLoader):
+    file_extensions = {"csv"}
+    media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
+
     def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
         """
         Initialize the CSV loader for either URL or local file.

@@ -11,6 +11,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ParquetLoader(BaseLoader):
+    file_extensions = {"parquet"}
+
     def __init__(self, file_url, columns_to_keep=None, **kwargs):
         super().__init__(file_url, **kwargs)
         self.columns_to_keep = columns_to_keep
