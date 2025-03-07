@@ -1,5 +1,5 @@
 import json
-from io import BytesIO, StringIO
+from io import BytesIO
 
 import pandas as pd
 
@@ -24,7 +24,7 @@ class JSONLoader(BaseLoader):
 
         content = None
         if isinstance(data, str):
-            content = json.loads(StringIO(data))
+            content = json.loads(data)
         elif isinstance(data, bytes):
             content = json.load(BytesIO(data))
         else:
