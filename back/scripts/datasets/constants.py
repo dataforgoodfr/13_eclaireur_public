@@ -1,4 +1,6 @@
 # Use the following regex to attribute an official name to a column
+import re
+
 TOPIC_COLUMNS_NORMALIZATION_REGEX = {
     r"(raison_sociale)": "nomBeneficiaire",
     "(montant|euros)": "montant",
@@ -24,6 +26,9 @@ TOPIC_COLUMNS_NORMALIZATION_REGEX = {
     "\brae\b": "idRAE",
     "_rae_?": "idRAE",
     "_?rae_": "idRAE",
+}
+TOPIC_COLUMNS_NORMALIZATION_REGEX = {
+    re.compile(k): v for k, v in TOPIC_COLUMNS_NORMALIZATION_REGEX.items()
 }
 
 # TopicAggergator currently failes for a dataset if it has columns

@@ -6,7 +6,6 @@ import urllib
 import urllib.request
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Tuple
 
 import pandas as pd
 import polars as pl
@@ -161,14 +160,14 @@ class TopicAggregator:
             .itertuples()
         )
 
-    def _treat_datafile(self, file: Tuple) -> None:
+    def _treat_datafile(self, file: tuple) -> None:
         """
         Download and normalize a spécific file.
         """
         self._download_file(file)
         self._normalize_data(file)
 
-    def _download_file(self, file_info: dict):
+    def _download_file(self, file_info: tuple):
         """
         Save locally the output of the URL.
         """
@@ -181,7 +180,7 @@ class TopicAggregator:
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_info.url}: {e}")
 
-    def dataset_filename(self, file: Tuple, step: str):
+    def dataset_filename(self, file: tuple, step: str):
         """
         Expected path for a given file depending on the step (raw or norm).
         """
@@ -190,7 +189,7 @@ class TopicAggregator:
             / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
         )
 
-    def _normalize_data(self, file: Tuple) -> pd.DataFrame:
+    def _normalize_data(self, file: tuple) -> pd.DataFrame:
         """
         Read a saved raw dataset and transform its columns and type
         to fit into the official schema.
@@ -222,7 +221,7 @@ class TopicAggregator:
             self.errors[str(e)].append(Path(file.filename).name)
             return
 
-    def _flag_extra_columns(self, df: pd.DataFrame, file: Tuple):
+    def _flag_extra_columns(self, df: pd.DataFrame, file: tuple):
         """
         Identify in the dataset columns that are neither in the official schema
         nor in the list of columns to ignore.
@@ -241,7 +240,7 @@ class TopicAggregator:
         LOGGER.warning(f"File {file.url} has extra columns: {extra_columns}")
         raise RuntimeError("File has extra columns")
 
-    def _normalize_frame(self, df: pd.DataFrame, file: Tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file: tuple):
         """
         Set of steps to transform a raw DataFrame into a normalized one.
         """
@@ -261,7 +260,7 @@ class TopicAggregator:
         self._flag_extra_columns(df, file)
         return df.pipe(self._select_official_columns).pipe(self._add_metadata, file)
 
-    def _add_metadata(self, df: pd.DataFrame, file: Tuple):
+    def _add_metadata(self, df: pd.DataFrame, file: tuple):
         """
         Add to the normalized dataframe infos about the source of the raw file.
         """
@@ -279,7 +278,7 @@ class TopicAggregator:
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
 
-    def _flag_inversion_siret(self, df: pd.DataFrame, file: Tuple):
+    def _flag_inversion_siret(self, df: pd.DataFrame, file: tuple):
         """
         Flag datasets which have more unique attribuant sire    t than beneficiaire
         """
