@@ -11,16 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ParquetLoader(BaseLoader):
-    def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
-        """
-        Initialize the CSV loader for either URL or local file.
-
-        Args:
-            source (str): URL or file path to the CSV file
-            columns_to_keep (list, optional): List of column names to keep
-            dtype (dict, optional): Dictionary of column data types
-            logger (logging.Logger, optional): Logger object for logging
-        """
+    def __init__(self, file_url, columns_to_keep=None, **kwargs):
         super().__init__(file_url, **kwargs)
         self.columns_to_keep = columns_to_keep
 
