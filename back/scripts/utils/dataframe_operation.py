@@ -36,7 +36,7 @@ def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
     :return: the DataFrame with columns renamed
     """
     df = df.rename(columns=lambda col: unidecode(str(col).strip())).rename(
-        columns=lambda col: col.split("/")[-1] if col.startswith("https") else col
+        columns=lambda col: col.split("/")[-1] if col.startswith("http") else col
     )
     lowered = [str.lower(x) for x in df.columns]
     actual_matching = {
