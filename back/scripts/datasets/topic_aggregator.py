@@ -1,7 +1,6 @@
 import hashlib
 import json
 import logging
-import re
 import urllib
 import urllib.request
 from collections import Counter, defaultdict
@@ -309,7 +308,7 @@ class TopicAggregator:
             options = {
                 v
                 for k, v in TOPIC_COLUMNS_NORMALIZATION_REGEX.items()
-                if re.search(k, col.lower()) and v not in frame.columns
+                if k.search(col.lower()) and v not in frame.columns
             }
             if len(options) == 1:
                 matching[col] = list(options)[0]
