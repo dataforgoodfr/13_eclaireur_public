@@ -73,8 +73,16 @@ class DataGouvSearcher:
                 right_on="id_datagouv",
             )
             .drop(columns=["id_datagouv"])
-            .rename(columns={"dataset.id": "dataset_id", "type": "type_resource"})
             .pipe(expand_json_columns, column="extras")
+            .rename(
+                columns={
+                    "dataset.id": "dataset_id",
+                    "type": "type_resource",
+                    "extras_check:status": "resource_status",
+                }
+            )
+            .fillna({"resource_status": -1})
+            .astype({"resource_status": "int16"})
         )
         datasets_metadata.to_parquet(catalog_metadata_filename)
         return datasets_metadata
@@ -223,7 +231,14 @@ class DataGouvSearcher:
 
         catalog = self.initialize_catalog()
         metadata_catalog = self.initialize_catalog_metadata()[
-            ["dataset_id", "format", "created_at", "url"]
+            [
+                "dataset_id",
+                "format",
+                "created_at",
+                "url",
+                "type_resource",
+                "resource_status",
+            ]
         ]
         datafiles = []
         if method in ["all", "td_only"]:
@@ -247,6 +262,8 @@ class DataGouvSearcher:
 
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
+            .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
+            .pipe(lambda df: df[(df["resource_status"] // 100) < 4])
             .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
