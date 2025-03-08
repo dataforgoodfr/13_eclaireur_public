@@ -7,8 +7,8 @@ from .parquet_loader import *  # noqa
 """
 Dictionary mapping file extensions to their corresponding loader classes.
 """
-LOADER_CLASSES: dict = dict()
-
-for subclass in BaseLoader.__subclasses__():
-    if subclass.file_extensions:
-        LOADER_CLASSES |= dict.fromkeys(subclass.file_extensions, subclass)
+LOADER_CLASSES: dict = {
+    file_extension: subclass
+    for subclass in BaseLoader.__subclasses__()
+    for file_extension in subclass.file_extensions or ()
+}
