@@ -38,7 +38,7 @@ class BaseLoader:
     # http://www.iana.org/assignments/media-types/media-types.xhtml
     file_media_type_regex: Pattern[str] | str | None = None
 
-    def __init__(self, file_url, num_retries=3, delay_between_retries=5):
+    def __init__(self, file_url, num_retries=3, delay_between_retries=5, **kwargs):
         # file_url : URL of the file to load
         # num_retries : Number of retries in case of failure
         # delay_between_retries : Delay between retries in seconds
@@ -47,6 +47,7 @@ class BaseLoader:
         self.delay_between_retries = delay_between_retries
         self.logger = logging.getLogger(__name__)
         self.is_url = self.get_file_is_url(self.file_url)
+        self.kwargs = kwargs
 
     def load(self, force: bool = True):
         # FIXME: force == True for retro-compatilibity reasons
