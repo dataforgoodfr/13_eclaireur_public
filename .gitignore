@@ -178,3 +178,7 @@ loc_env/
 
 psql_env.sh
 .DS_Store
+
+
+# Ignore local db for testing
+front/db/
