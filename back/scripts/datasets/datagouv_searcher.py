@@ -5,6 +5,7 @@ from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
@@ -72,7 +73,8 @@ class DataGouvSearcher:
                 right_on="id_datagouv",
             )
             .drop(columns=["id_datagouv"])
-            .rename(columns={"dataset.id": "dataset_id"})
+            .rename(columns={"dataset.id": "dataset_id", "type": "type_resource"})
+            .pipe(expand_json_columns, column="extras")
         )
         datasets_metadata.to_parquet(catalog_metadata_filename)
         return datasets_metadata

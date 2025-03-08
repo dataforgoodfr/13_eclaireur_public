@@ -227,13 +227,13 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
 
 
-def expand_json_columns(df):
+def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.
     """
     expanded = pd.DataFrame.from_records(
-        [_parse_json(x) for x in df["extra"].tolist()], index=df.index
-    ).rename(columns=lambda col: f"extra_{col}")
+        [_parse_json(x) for x in df[column].tolist()], index=df.index
+    ).rename(columns=lambda col: f"{column}_{col}")
     return pd.concat([df, expanded], axis=1)
 
 
