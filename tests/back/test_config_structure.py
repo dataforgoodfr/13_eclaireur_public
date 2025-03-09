@@ -14,7 +14,7 @@ main_config_filename = "config.yaml"
 sub_config_filenames = ("config-test.yaml",)
 
 
-def config_structure_test() -> None:
+def test_config_structure():
     def check_keys(main_config: dict, sub_config: dict, path: str) -> None:
         # Check missing keys
         diff_keys = set(sub_config) - set(main_config)
@@ -41,7 +41,3 @@ def config_structure_test() -> None:
     for sub_config_filename in sub_config_filenames:
         sub_config = ConfigManager.load_config(config_folder / sub_config_filename)
         check_keys(main_config, sub_config, path)
-
-
-if __name__ == "__main__":
-    config_structure_test()
