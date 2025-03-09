@@ -1,6 +1,6 @@
 workflow:
-  save_to_db: True
-  soft_delete: True
+  save_to_db: False
+  replace_tables: False
 
 communities:
   ofgl:

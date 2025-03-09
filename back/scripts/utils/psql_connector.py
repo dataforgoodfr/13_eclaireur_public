@@ -9,13 +9,14 @@ import pandas as pd
 load_dotenv()  # Charge les variables d'environnement à partir du fichier .env
 
 class PSQLConnector:
-    def __init__(self):
+    def __init__(self, replace_tables):
         self.logger = logging.getLogger(__name__)
         self.dbname = os.getenv("DB_NAME")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
         self.host = os.getenv("DB_HOST")
         self.port = os.getenv("DB_PORT")
+        self.replace_tables = replace_tables
         
         self.engine = create_engine(
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
@@ -39,48 +40,42 @@ class PSQLConnector:
         pk_values = [str(row[pk]) for pk in primary_keys]
         return hashlib.sha256("".join(pk_values).encode('utf-8')).hexdigest()
 
-    # def save_df_to_sql_pandas(self, df, table_name, primary_keys, soft_delete=True, chunksize=1000, if_exists="replace", index=False):
-    #     if soft_delete:
-    #         try:
-    #             with self.engine.connect() as conn:
-
-    #                 if conn.dialect.has_table(conn, table_name):
-                
-    #                     df_pk = df[primary_keys].copy()
-    #                     df_pk.loc[:, "is_row_updated"] = True
-
-    #                     old_df = pd.read_sql(table_name, conn)
-    #                     old_df = old_df.merge(df_pk, on=primary_keys, how='left')
-    #                     old_df["is_row_updated"] = old_df["is_row_updated"].fillna(False)
-    #                     old_df = old_df.loc[~old_df["is_row_updated"]]
-    #                     old_df["deleted_flag"] = True
-    #                     del old_df["is_row_updated"]
-
-    #                     df["deleted_flag"] = False
-    #                     df = pd.concat([df, old_df])
-                    
-    #                 df["primary_key_hash"] = df.apply(lambda row: self.generate_primary_key_hash(row, primary_keys), axis=1)
-
-    #                 df.to_sql(
-    #                     table_name, conn, if_exists=if_exists, index=index, chunksize=chunksize
-    #                 )
-    #                 self.logger.info("Dataframe saved successfully to the database with soft_delete" + table_name + ".")
-            
-    #         except Exception as e:
-    #             self.logger.error(f"An error occurred: {e}")
+    def save_new_table(self, conn, df: pd.DataFrame, table_name: str, primary_keys: list):
+        df["primary_key_hash"] = df.apply(lambda row: self.generate_primary_key_hash(row, primary_keys), axis=1)
+        df["deleted_flag"] = False
+        df.to_sql(table_name, con=conn, if_exists="replace")
+        conn.commit()
         
-    #     else:
-    #         try:
-    #             df["primary_key_hash"] = df.apply(lambda row: self.generate_primary_key_hash(row, primary_keys), axis=1)
-    #             df["deleted_flag"] = False
-    #             df.to_sql(
-    #                 table_name, conn, if_exists="replace", index=index, chunksize=chunksize
-    #             )
-    #             self.logger.info("Dataframe saved successfully to the database without soft_delete" + table_name + ".")
-    #         except Exception as e:
-    #             self.logger.error(f"An error occurred: {e}")
+    def convert_types_for_sql(self, conn, df: pd.DataFrame, existing_df: pd.DataFrame, table_name: str, primary_keys: list) -> pd.DataFrame:
+                        
+        sql = text(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}';")
+        result = conn.execute(sql)
+        column_mapping = {row[0]: row[1] for row in result.fetchall()}
+        SQL_TO_PYTHON_TYPES = {
+                    "integer": "int64",
+                    "bigint": "int64",
+                    "smallint": "int64",
+                    "decimal": "float64",
+                    "numeric": "float64",
+                    "real": "float32",
+                    "double precision": "float64",
+                    "boolean": "bool",
+                    "char": "string",
+                    "varchar": "string",
+                    "text": "string",
+                    "date": "datetime64[ns]",
+                    "timestamp": "datetime64[ns]",
+                    "timestamp without time zone": "datetime64[ns]",
+                    "timestamp with time zone": "datetime64[ns, UTC]"
+                }
+                
+        common_columns = set(existing_df.columns) & set(df.columns) - set(primary_keys)
+        for col in common_columns:
+            df[col] = df[col].astype(SQL_TO_PYTHON_TYPES[column_mapping[col]])
+            existing_df[col] = existing_df[col].astype(SQL_TO_PYTHON_TYPES[column_mapping[col]])
+        return df, existing_df
 
-    def upsert_df_to_sql(self, df, table_name, primary_keys, soft_delete=True):
+    def upsert_df_to_sql(self, df, table_name, primary_keys):
         """
         Upserts data into the database:
         - Inserts new rows
@@ -94,63 +89,38 @@ class PSQLConnector:
         """
         with self.engine.connect() as conn:
 
+            if not conn.dialect.has_table(conn, table_name) or self.replace_tables:
+                self.save_new_table(conn, df, table_name, primary_keys)
 
-            # 1. Retrieve existing data from the database
-            existing_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
-            df["primary_key_hash"] = ''
-            self.add_new_columns(conn, table_name, existing_df, df)
-            existing_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
+            else:
+                existing_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
+                df["primary_key_hash"] = ''
+                self.add_new_columns(conn, table_name, existing_df, df)
+                existing_df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
 
-            sql = text(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}';")
-            result = conn.execute(sql)
-            column_mapping = {row[0]: row[1] for row in result.fetchall()}
-    
-            SQL_TO_PYTHON_TYPES = {
-                "integer": "int64",
-                "bigint": "int64",
-                "smallint": "int64",
-                "decimal": "float64",
-                "numeric": "float64",
-                "real": "float32",
-                "double precision": "float64",
-                "boolean": "bool",
-                "char": "string",
-                "varchar": "string",
-                "text": "string",
-                "date": "datetime64[ns]",
-                "timestamp": "datetime64[ns]",
-                "timestamp without time zone": "datetime64[ns]",
-                "timestamp with time zone": "datetime64[ns, UTC]"
-            }
-            
-            df["primary_key_hash"] = df.apply(lambda row: self.generate_primary_key_hash(row, primary_keys), axis=1)
-            
-            primary_keys += ["primary_key_hash"]
-            common_columns = set(existing_df.columns) & set(df.columns) - set(primary_keys)
-            for col in common_columns:
-                df[col] = df[col].astype(SQL_TO_PYTHON_TYPES[column_mapping[col]])
-                existing_df[col] = existing_df[col].astype(SQL_TO_PYTHON_TYPES[column_mapping[col]])
+                df["primary_key_hash"] = df.apply(lambda row: self.generate_primary_key_hash(row, primary_keys), axis=1)
+        
+                primary_keys += ["primary_key_hash"]
+                
+                df, existing_df = self.convert_types_for_sql(conn, df, existing_df, table_name, primary_keys)
 
-            if "deleted_flag" not in df.columns:
-                df["deleted_flag"] = False
+                if "deleted_flag" not in df.columns:
+                    df["deleted_flag"] = False
 
-            # 2. Identify new, updated, and missing rows
-            df = self.clean_df(df)
-            existing_df = self.clean_df(existing_df)
-            merged_df = df.merge(existing_df, on=primary_keys, how="outer", indicator=True, suffixes=("", "_existing"))
-            merged_df = self.clean_df(merged_df)
-            
+                df = self.clean_df(df)
+                existing_df = self.clean_df(existing_df)
+                merged_df = df.merge(existing_df, on=primary_keys, how="outer", indicator=True, suffixes=("", "_existing"))
+                merged_df = self.clean_df(merged_df)
+                
 
-            self.update_rows(conn, table_name, merged_df, existing_df.columns, df.columns, primary_keys)
-            
-            self.new_rows(conn, table_name, merged_df, df.columns)
+                self.update_rows(conn, table_name, merged_df, existing_df.columns, df.columns, primary_keys)
+                
+                self.new_rows(conn, table_name, merged_df, df.columns)
 
-            self.soft_delete_rows(conn, table_name, merged_df, df.columns)
+                self.soft_delete_rows(conn, table_name, merged_df, df.columns)
 
     def clean_df(self, df):
         df.replace({np.nan: None}, inplace = True)
-        # for col in df.columns:
-        #     df[col] = df[col].apply(lambda x: None if (pd.isna(x) or (x == np.nan)) else x)
         return df
 
     def update_rows(self, conn, table_name: str, merged_df: pd.DataFrame, existing_df_columns: list, df_columns: list, primary_keys: list):

@@ -27,7 +27,7 @@ class WorkflowManager:
         self.logger = logging.getLogger(__name__)
         
         if self.config["workflow"]["save_to_db"]:
-            self.connector = PSQLConnector()
+            self.connector = PSQLConnector(self.config["workflow"]["replace_tables"])
 
     def run_workflow(self):
         
@@ -114,42 +114,22 @@ class WorkflowManager:
             )
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_files_in_scope, topic + "_files_in_scope", ["url"])
+                self.connector.upsert_df_to_sql(topic_files_in_scope, "files_in_scope_" + topic, ["url"])
 
             # Process the datafiles list: download & normalize
             topic_datafiles = DatafilesLoader(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, topic + "_normalized_data", ["url"])
+                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, "normalized_" + topic, ["url"])
 
         elif topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_datafiles.loaded_data, topic + "_raw", ["acheteur.id", "codeCPV"])
-                self.connector.upsert_df_to_sql(topic_datafiles.cleaned_data, topic + "_clean", ["acheteur.id", "codeCPV"])
-                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, topic + "_normalized_data", ["acheteur.id", "codeCPV"])
-
-        #     if self.config["workflow"]["save_to_db"]:
-        #         self.connector.save_df_to_sql_pandas(topic_files_in_scope, topic + "_files_in_scope", ["url"], self.config["workflow"]["soft_delete"])
-        #     # Process the datafiles list: download & normalize
-        #     topic_datafiles = DatafilesLoader(
-        #         topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
-        #     )
-
-        #     if self.config["workflow"]["save_to_db"]:
-        #         self.connector.save_df_to_sql_pandas(topic_datafiles.normalized_data, topic + "_normalized_data", ["url", "idBeneficiaire", "idAttribuant", "datesPeriodeVersement", "referenceDecision", "objet"], self.config["workflow"]["soft_delete"])
-
-        # elif topic_config["source"] == "single":
-        #     # Process the single datafile: download & normalize
-        #     topic_datafiles = DatafileLoader(communities_selector, topic_config)
-
-        #     if self.config["workflow"]["save_to_db"]:
-        #         self.connector.save_df_to_sql_pandas(topic_datafiles.loaded_data, topic + "_raw", ["acheteur.id", "codeCPV"], self.config["workflow"]["soft_delete"])
-        #         self.connector.save_df_to_sql_pandas(topic_datafiles.normalized_data, topic + "_normalized_data", ["acheteur_id", "codeCPV"], self.config["workflow"]["soft_delete"])
-
+                self.connector.upsert_df_to_sql(topic_datafiles.loaded_data, "raw_" + topic, ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, "normalized_" + topic, ["acheteur.id", "codeCPV"])
 
         if self.config["workflow"]["save_to_db"]:
             self.connector.close_connection()
