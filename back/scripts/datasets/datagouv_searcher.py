@@ -81,6 +81,8 @@ class DataGouvSearcher:
                     "extras_check:status": "resource_status",
                 }
             )
+            # This line is necessary in case of absence of check:status in all jsons.
+            .assign(resource_status=lambda df: df.get("resource_status", -1))
             .fillna({"resource_status": -1})
             .astype({"resource_status": "int16"})
         )
