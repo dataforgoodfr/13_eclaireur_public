@@ -1,24 +1,15 @@
-import hashlib
-import json
+import copy
 import logging
 import ssl
-import urllib
-import urllib.request
-from collections import Counter, defaultdict
-from urllib.error import HTTPError
 
 import pandas as pd
-import polars as pl
-from tqdm import tqdm
 
 from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
 )
-from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.loaders.excel_loader import ExcelLoader
+from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
 from back.scripts.loaders.json_loader import JSONLoader
-from back.scripts.loaders.parquet_loader import ParquetLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
@@ -32,21 +23,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 LOGGER = logging.getLogger(__name__)
 
-LOADER_CLASSES = {
-    "csv": CSVLoader,
-    "xls": ExcelLoader,
-    "xlsx": ExcelLoader,
-    "excel": ExcelLoader,
-    "json": JSONLoader,
-    "parquet": ParquetLoader,
-}
 
-
-def _sha256(s):
-    return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
-
-
-class TopicAggregator:
+class TopicAggregator(DatasetAggregator):
     """
     This class is responsible for loading the datafiles from the files_in_scope dataframe.
     It loads the schema of the topic, filters the readable files, loads the datafiles into dataframes, and normalizes the data according to the schema.
@@ -62,29 +40,31 @@ class TopicAggregator:
         topic_config: dict,
         datafile_loader_config: dict,
     ):
-        self.files_in_scope = files_in_scope.assign(
-            url_hash=lambda df: df["url"].apply(_sha256)
+        datafile_loader_config = copy.deepcopy(datafile_loader_config)
+        formatting = {"topic": topic}
+        datafile_loader_config["data_folder"] = (
+            datafile_loader_config["data_folder"] % formatting
         )
+        datafile_loader_config["combined_filename"] = (
+            datafile_loader_config["combined_filename"] % formatting
+        )
+
         self.topic = topic
         self.topic_config = topic_config
-        self.datafile_loader_config = datafile_loader_config
 
-        self.corpus: list = []
-        self.datafiles_out: list = []
-
-        self.data_folder = get_project_base_path() / (
-            self.datafile_loader_config["data_folder"] % {"topic": topic}
-        )
-        self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.combined_filename = get_project_base_path() / (
-            self.datafile_loader_config["combined_filename"] % {"topic": topic}
-        )
-        self.extra_columns = Counter()
+        super().__init__(files_in_scope, datafile_loader_config)
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
-        self._add_filenames()
-        self.errors = defaultdict(list)
+
+    def dataset_filename(self, file: tuple, step: str):
+        """
+        Expected path for a given file depending on the step (raw or norm).
+        """
+        return (
+            self.data_folder
+            / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
+        )
 
     def _load_schema(self, schema_topic_config):
         """
@@ -117,85 +97,6 @@ class TopicAggregator:
             pd.read_csv(schema_dict_file, sep=";")
             .set_index("original_name")["official_name"]
             .to_dict()
-        )
-
-    def run(self) -> None:
-        for file_metadata in tqdm(self._files_to_run()):
-            if file_metadata.format not in LOADER_CLASSES:
-                LOGGER.warning(f"Format {file_metadata.format} not supported")
-                continue
-
-            if file_metadata.url is None or pd.isna(file_metadata.url):
-                LOGGER.warning(f"URL not specified for file {file_metadata.title}")
-                continue
-
-            self._treat_datafile(file_metadata)
-
-        self._concatenate_files()
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
-        return self
-
-    def _add_filenames(self):
-        """
-        Add to the DataFrame of input files the expected name of the normalized file.
-        """
-        all_files = list(self.files_in_scope.itertuples(index=False))
-        fns = [str(self.dataset_filename(file, "norm")) for file in all_files]
-        self.files_in_scope = self.files_in_scope.assign(filename=fns)
-
-    def _files_to_run(self):
-        """
-        Select among the input files the ones for which we do not have yet the normalized file.
-        """
-        current = pd.DataFrame(
-            {"filename": [str(x) for x in self.data_folder.glob("*_norm.parquet")], "exists": 1}
-        )
-        return list(
-            self.files_in_scope.merge(
-                current,
-                how="left",
-                on="filename",
-            )
-            .pipe(lambda df: df[df["exists"].isnull()])
-            .drop(columns="exists")
-            .itertuples()
-        )
-
-    def _treat_datafile(self, file_metadata: tuple) -> None:
-        """
-        Download and normalize a spécific file.
-        """
-        self._download_file(file_metadata)
-        self._normalize_data(file_metadata)
-
-    def _download_file(self, file_metadata: tuple):
-        """
-        Save locally the output of the URL.
-        """
-        output_filename = self.dataset_filename(file_metadata, "raw")
-        if output_filename.exists():
-            LOGGER.debug(f"File {output_filename} already exists, skipping")
-            return
-        try:
-            urllib.request.urlretrieve(file_metadata.url, output_filename)
-        except HTTPError as error:
-            LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
-            msg = (
-                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
-            )
-            self.errors[msg].append(file_metadata.url)
-        except Exception as e:
-            LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
-            self.errors[str(e)].append(file_metadata.url)
-
-    def dataset_filename(self, file_metadata: tuple, step: str):
-        """
-        Expected path for a given file depending on the step (raw or norm).
-        """
-        return (
-            self.data_folder
-            / f"{self.topic}_{file_metadata.url_hash}_{step}.{file_metadata.format if step == 'raw' else 'parquet'}"
         )
 
     def _normalize_data(self, file_metadata: tuple) -> pd.DataFrame:
@@ -326,23 +227,3 @@ class TopicAggregator:
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
-
-    def _concatenate_files(self):
-        """
-        Concatenate all the normalized files which have succeeded into a single parquet file.
-        This step is made in polars as the sum of all dataset by be heavy on memory.
-        """
-        all_files = list(self.data_folder.glob("*_norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for topic {self.topic}")
-        dfs = [pl.scan_parquet(f) for f in all_files]
-        df = pl.concat(dfs, how="diagonal_relaxed")
-        df.sink_parquet(self.combined_filename)
-
-    @property
-    def aggregated_dataset(self):
-        """
-        Property to return the aggregated dataset.
-        """
-        if not self.combined_filename.exists():
-            raise RuntimeError("Combined file does not exists. You must run .load() first.")
-        return pd.read_parquet(self.combined_filename)
