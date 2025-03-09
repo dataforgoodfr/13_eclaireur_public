@@ -1,7 +1,11 @@
 import pandas as pd
 import pytest
 
-from back.scripts.utils.dataframe_operation import normalize_identifiant, safe_rename
+from back.scripts.utils.dataframe_operation import (
+    expand_json_columns,
+    normalize_identifiant,
+    safe_rename,
+)
 
 
 @pytest.mark.parametrize(
@@ -59,3 +63,49 @@ class TestNormalizeBeneficiaireIdentifiant:
         )
         expected_df = pd.DataFrame({"idBeneficiaire": ["01234567890001"] * 3})
         pd.testing.assert_frame_equal(expected_df, normalize_identifiant(df, "idBeneficiaire"))
+
+
+class TestExpandJsonColumns:
+    def test_expand_valid_json(self):
+        """Test expand_json_columns with valid JSON data"""
+        df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "extra": [
+                    '{"field1": "value1", "field2": 123}',
+                    '{"field1": "value2", "field2": 456}',
+                    '{"field1": "value3", "field2": 789}',
+                ],
+            }
+        )
+
+        result = expand_json_columns(df)
+        expected_df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "extra": [
+                    '{"field1": "value1", "field2": 123}',
+                    '{"field1": "value2", "field2": 456}',
+                    '{"field1": "value3", "field2": 789}',
+                ],
+                "extra_field1": ["value1", "value2", "value3"],
+                "extra_field2": [123, 456, 789],
+            }
+        )
+        pd.testing.assert_frame_equal(result, expected_df)
+
+    def test_expand_invalid_json(self):
+        """Test expand_json_columns with invalid/missing JSON data"""
+        df_missing = pd.DataFrame(
+            {"id": [1, 2, 3], "extra": ['{"field1": "value1"}', None, "invalid json"]}
+        )
+        expected_df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "extra": ['{"field1": "value1"}', None, "invalid json"],
+                "extra_field1": ["value1", None, None],
+            }
+        )
+
+        result_missing = expand_json_columns(df_missing)
+        pd.testing.assert_frame_equal(result_missing, expected_df)

@@ -5,6 +5,7 @@ from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
@@ -72,7 +73,18 @@ class DataGouvSearcher:
                 right_on="id_datagouv",
             )
             .drop(columns=["id_datagouv"])
-            .rename(columns={"dataset.id": "dataset_id"})
+            .pipe(expand_json_columns, column="extras")
+            .rename(
+                columns={
+                    "dataset.id": "dataset_id",
+                    "type": "type_resource",
+                    "extras_check:status": "resource_status",
+                }
+            )
+            # This line is necessary in case of absence of check:status in all jsons.
+            .assign(resource_status=lambda df: df.get("resource_status", -1))
+            .fillna({"resource_status": -1})
+            .astype({"resource_status": "int16"})
         )
         datasets_metadata.to_parquet(catalog_metadata_filename)
         return datasets_metadata
@@ -221,7 +233,14 @@ class DataGouvSearcher:
 
         catalog = self.initialize_catalog()
         metadata_catalog = self.initialize_catalog_metadata()[
-            ["dataset_id", "format", "created_at", "url"]
+            [
+                "dataset_id",
+                "format",
+                "created_at",
+                "url",
+                "type_resource",
+                "resource_status",
+            ]
         ]
         datafiles = []
         if method in ["all", "td_only"]:
@@ -245,6 +264,7 @@ class DataGouvSearcher:
 
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
+            .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
             .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
