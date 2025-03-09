@@ -100,9 +100,7 @@ class TopicAggregator(DatasetAggregator):
             .to_dict()
         )
 
-    def _read_parse_file(
-        self, file_metadata: tuple, raw_filename: Path, out_filename: Path
-    ) -> pd.DataFrame | None:
+    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         """
         Read a saved raw dataset and transform its columns and type
         to fit into the official schema.
@@ -123,7 +121,6 @@ class TopicAggregator(DatasetAggregator):
                 LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
                 raise RuntimeError("Unable to load file into a DataFrame")
             return df.pipe(self._normalize_frame, file_metadata)
-            df.to_parquet(out_filename)
         except Exception as e:
             self.errors[str(e)].append(raw_filename.name)
 

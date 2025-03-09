@@ -18,9 +18,9 @@ class ParquetLoader(BaseLoader):
     def load(self):
         try:
             if self.is_url:
-                self._load_url()
+                return self._load_url()
             else:
-                pd.read_parquet(self.file_url, columns=self.columns_to_keep)
+                return pd.read_parquet(self.file_url, columns=self.columns_to_keep)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {self.file_url}: {e}")
 

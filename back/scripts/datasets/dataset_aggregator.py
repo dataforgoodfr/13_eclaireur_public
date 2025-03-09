@@ -108,13 +108,11 @@ class DatasetAggregator:
         if not raw_filename.exists():
             LOGGER.debug(f"File {raw_filename} does not exist, skipping")
             return
-        df = self._read_parse_file(file_metadata, raw_filename, out_filename)
+        df = self._read_parse_file(file_metadata, raw_filename)
         if isinstance(df, pd.DataFrame):
             df.to_parquet(out_filename)
 
-    def _read_parse_file(
-        self, file_metadata: tuple, raw_filename: Path, out_filename: Path
-    ) -> pd.DataFrame | None:
+    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()
 
     def _files_to_run(self):
@@ -149,7 +147,7 @@ class DatasetAggregator:
         This step is made in polars as the sum of all dataset by be heavy on memory.
         """
         all_files = list(self.data_folder.glob("*_norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for topic {self.topic}")
+        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.combined_filename)
