@@ -32,5 +32,5 @@ class ExcelLoader(BaseLoader):
         if self.columns_to_keep is not None:
             df = df.loc[:, self.columns_to_keep]
 
-        self.logger.info(f"Excel Data from {self.file_url} loaded.")
+        self.logger.debug(f"Excel Data from {self.file_url} loaded.")
         return df
