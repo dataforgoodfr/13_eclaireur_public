@@ -36,17 +36,47 @@ export default function PublicMarket() {
   //useEffect de contrôle
   useEffect(() =>{
     console.log(data);
-    const companiesList = data.reduce((acc, company) => acc + (company.titulaires), 0);
-    // console.log(companiesList)
-  },[data]);
+    const companiesList = data.reduce((acc, company) => acc + (company.titulaires), "");
+
+
+    const reducedCategories = data.reduce((acc, company) => acc + (company.cpv_2_label),"");
+
+    const elements = reducedCategories.match(/\p{Lu}[^\p{Lu}]*/gu) || [];
+    const allCategories = [...new Set(elements)];
   
- 
+    const totalByCategory = Object.values(
+      data.reduce((acc, item) => {
+        if (!acc[item.cpv_2_label]) {
+          acc[item.cpv_2_label] = { name: item.cpv_2_label, size: 0 };
+        }
+        acc[item.cpv_2_label].size += parseFloat(item.montant);
+        return acc;
+      }, {})
+    );
+    console.log(totalByCategory)
+    
+  },[data]);
+
+  
+  // Stats data
   const totalSubvention = data.reduce((acc, marche) => acc + parseFloat(marche.montant), 0);
   const formattedTotalSubvention = new Intl.NumberFormat('fr-FR', {
     style: 'decimal',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(totalSubvention);
+
+  // MarketByActivities data
+  const totalByCategory = Object.values(
+    data.reduce((acc, item) => {
+      if (!acc[item.cpv_2_label]) {
+        acc[item.cpv_2_label] = { name: item.cpv_2_label, size: 0 };
+      }
+      acc[item.cpv_2_label].size += parseFloat(item.montant);
+      return acc;
+    }, {})
+  );
+ 
 
 
 
@@ -58,7 +88,7 @@ export default function PublicMarket() {
       </div>
       <Stats marketNumber={data.length} marketAmount={formattedTotalSubvention} />
       <MarketAndAmount />
-      <MarketByActivities />
+      <MarketByActivities data={totalByCategory} />
       <Best10 />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-screen-lg mx-auto mt-6 mb-20">
         <MarketType />
