@@ -1,14 +1,12 @@
 import logging
 import os
 import re
-from typing import Pattern, Self, Type
+from typing import Pattern, Self
 from urllib.parse import urlparse
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
-LOGGER = logging.getLogger(__name__)
 
 
 def retry_session(retries, session=None, backoff_factor=0.3):
@@ -116,7 +114,7 @@ class BaseLoader:
         return ""
 
     @classmethod
-    def search_loader_class(cls, file_url: str) -> Type | None:
+    def search_loader_class(cls, file_url: str) -> type | None:
         """
         Searches for a loader class based on the file extension and content type.
         """

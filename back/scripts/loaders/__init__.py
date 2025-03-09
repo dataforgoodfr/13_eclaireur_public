@@ -7,7 +7,7 @@ from .parquet_loader import *  # noqa
 """
 Dictionary mapping file extensions to their corresponding loader classes.
 """
-LOADER_CLASSES: dict = {
+LOADER_CLASSES: dict[str, type[BaseLoader]] = {
     file_extension: subclass
     for subclass in BaseLoader.__subclasses__()
     for file_extension in subclass.file_extensions or ()
