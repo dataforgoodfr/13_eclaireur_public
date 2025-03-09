@@ -1,6 +1,8 @@
-from io import BytesIO, StringIO
-import pandas as pd
 import json
+from io import BytesIO, StringIO
+
+import pandas as pd
+
 from .base_loader import BaseLoader
 
 
@@ -27,5 +29,5 @@ class JSONLoader(BaseLoader):
         else:
             raise Exception("Unhandled type")
 
-        self.logger.info(f"JSON Data from {self.file_url} loaded.")
+        self.logger.debug(f"JSON Data from {self.file_url} loaded.")
         return df
