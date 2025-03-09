@@ -3,6 +3,7 @@ import json
 import logging
 import urllib
 from collections import defaultdict
+from pathlib import Path
 from urllib.error import HTTPError
 
 import pandas as pd
@@ -54,7 +55,7 @@ class DatasetAggregator:
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
 
-            self._treat_datafile(file_infos)
+            self._treat_file(file_infos)
 
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
@@ -66,7 +67,7 @@ class DatasetAggregator:
         Download and normalize a spécific file.
         """
         self._download_file(file)
-        self._normalize_data(file)
+        self._normalize_file(file)
 
     def _download_file(self, file_metadata: tuple):
         """
@@ -97,7 +98,23 @@ class DatasetAggregator:
             / f"{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
         )
 
-    def _normalize_data(self, file: tuple) -> pd.DataFrame:
+    def _normalize_file(self, file_metadata: tuple) -> pd.DataFrame:
+        out_filename = self.dataset_filename(file_metadata, "norm")
+        if out_filename.exists():
+            LOGGER.debug(f"File {out_filename} already exists, skipping")
+            return
+
+        raw_filename = self.dataset_filename(file_metadata, "raw")
+        if not raw_filename.exists():
+            LOGGER.debug(f"File {raw_filename} does not exist, skipping")
+            return
+        df = self._read_parse_file(file_metadata, raw_filename, out_filename)
+        if isinstance(df, pd.DataFrame):
+            df.to_parquet(out_filename)
+
+    def _read_parse_file(
+        self, file_metadata: tuple, raw_filename: Path, out_filename: Path
+    ) -> pd.DataFrame | None:
         raise NotImplementedError()
 
     def _files_to_run(self):
@@ -125,13 +142,6 @@ class DatasetAggregator:
         all_files = list(self.files_in_scope.itertuples(index=False))
         fns = [str(self.dataset_filename(file, "norm")) for file in all_files]
         self.files_in_scope = self.files_in_scope.assign(filename=fns)
-
-    def _treat_datafile(self, file_metadata: tuple) -> None:
-        """
-        Download and normalize a spécific file.
-        """
-        self._download_file(file_metadata)
-        self._normalize_data(file_metadata)
 
     def _concatenate_files(self):
         """

@@ -131,7 +131,12 @@ datagouv_api:
 declarations_interet:
   data_folder: back/data/declarations_interet
   url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
-  
+
+financial_accounts:
+  data_folder: back/data/financial_accounts
+  files_csv: back/scripts/datasets/static/communities_financial_accounts.csv
+  combined_filename: back/data/financial_accounts/financial_accounts.parquet
+
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
 

@@ -1,6 +1,7 @@
 import copy
 import logging
 import ssl
+from pathlib import Path
 
 import pandas as pd
 
@@ -99,7 +100,9 @@ class TopicAggregator(DatasetAggregator):
             .to_dict()
         )
 
-    def _normalize_data(self, file_metadata: tuple) -> pd.DataFrame:
+    def _read_parse_file(
+        self, file_metadata: tuple, raw_filename: Path, out_filename: Path
+    ) -> pd.DataFrame | None:
         """
         Read a saved raw dataset and transform its columns and type
         to fit into the official schema.
@@ -112,15 +115,6 @@ class TopicAggregator(DatasetAggregator):
         If the process raises an exception, the file is skipped, a message is logged,
         and the error is added to the errors.csv tracking file.
         """
-        out_filename = self.dataset_filename(file_metadata, "norm")
-        if out_filename.exists():
-            LOGGER.debug(f"File {out_filename} already exists, skipping")
-            return
-
-        raw_filename = self.dataset_filename(file_metadata, "raw")
-        if not raw_filename.exists():
-            LOGGER.debug(f"File {raw_filename} does not exist, skipping")
-            return
         opts = {"dtype": str} if file_metadata.format == "csv" else {}
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
         try:
@@ -128,11 +122,10 @@ class TopicAggregator(DatasetAggregator):
             if not isinstance(df, pd.DataFrame):
                 LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
                 raise RuntimeError("Unable to load file into a DataFrame")
-            df = df.pipe(self._normalize_frame, file_metadata)
+            return df.pipe(self._normalize_frame, file_metadata)
             df.to_parquet(out_filename)
         except Exception as e:
             self.errors[str(e)].append(raw_filename.name)
-            return
 
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """
