@@ -1,5 +1,6 @@
 import re
 
+import pytest
 import responses
 
 from back.scripts.loaders import BaseLoader as BaseLoaderBase
@@ -103,15 +104,10 @@ class TestBaseLoader:
     @responses.activate
     def test_get_file_media_type_404(self):
         url = "https://example.com/file.csv"
-        responses.add(
-            responses.HEAD,
-            url,
-            status=404,
-            content_type="text/csv",
-        )
+        responses.add(responses.HEAD, url, status=404)
 
-        file_media_type = BaseLoader.get_file_media_type(url)
-        assert file_media_type == ""
+        with pytest.raises(RuntimeError):
+            BaseLoader.get_file_media_type(url)
 
     @responses.activate
     def test_can_load_file(self):
@@ -150,3 +146,59 @@ class TestBaseLoader:
 
         can_load = BaseLoaderFakeNoCsv.can_load_file(url)
         assert can_load is False
+
+
+class TestBaseLoaderLoad:
+    @pytest.fixture
+    def loader_file(self):
+        yield BaseLoader("file_url", num_retries=3, delay_between_retries=5)
+
+    @pytest.fixture
+    def loader_url(self):
+        yield BaseLoader("https://example.com/file.csv", num_retries=3, delay_between_retries=5)
+
+    def test_empty_file_url(self, loader_file):
+        loader_file.file_url = ""
+        with pytest.raises(RuntimeError):
+            loader_file.load()
+
+    @responses.activate
+    def test_unsupported_file_url_force(self, loader_url):
+        # TODO: install pytest-mock
+        expected_data = "its working"
+        loader_url.can_load_file = lambda _: False
+        loader_url.process_data = lambda _: expected_data
+
+        responses.add(responses.GET, loader_url.file_url, status=200)
+
+        with pytest.raises(RuntimeError):
+            loader_url.load(force=False)
+        assert loader_url.load(force=True) == expected_data
+
+    def test_local_file_loading(self, loader_file):
+        loader_file._load_from_file = lambda: "data"
+        result = loader_file.load()
+        assert result == "data"
+
+    @responses.activate
+    def test_remote_file_loading_200(self, loader_url):
+        loader_url.process_data = lambda _: "processed_data"
+        responses.add(
+            responses.GET,
+            loader_url.file_url,
+            body="processed_data",
+            status=200,
+        )
+
+        result = loader_url.load()
+        assert result == "processed_data"
+
+    @responses.activate
+    def test_remote_file_loading_non_200(self, loader_url):
+        responses.add(
+            responses.GET,
+            loader_url.file_url,
+            status=404,
+        )
+        with pytest.raises(RuntimeError):
+            loader_url.load()

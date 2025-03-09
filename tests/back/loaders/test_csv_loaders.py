@@ -101,9 +101,9 @@ class TestCSVLoader:
         responses.add(responses.GET, url, status=404)
 
         loader = CSVLoader(url)
-        df = loader.load()
 
-        assert df is None
+        with pytest.raises(RuntimeError):
+            loader.load()
 
     def test_load_from_file_comma(self, setup_temp_csv_files):
         """Test loading a comma-delimited CSV from a file."""

@@ -52,12 +52,10 @@ class BaseLoader:
     def load(self, force: bool = True):
         # FIXME: force == True for retro-compatilibity reasons
         if not self.file_url:
-            self.logger.error("Empty file URL provided")
-            return
+            raise RuntimeError("Empty file URL provided")
 
         if not force and not self.can_load_file(self.file_url):
-            self.logger.error(f"File {self.file_url} is not supported by this loader")
-            return
+            raise RuntimeError(f"File {self.file_url} is not supported by this loader")
 
         if not self.is_url:
             return self._load_from_file()
@@ -67,8 +65,7 @@ class BaseLoader:
         if response.status_code == 200:
             return self.process_data(response.content)
 
-        self.logger.error(f"Failed to load data from {self.file_url}")
-        return None
+        raise RuntimeError(f"Failed to load data from {self.file_url}")
 
     def _load_from_file(self):
         parsed_url = urlparse(self.file_url)
@@ -89,13 +86,13 @@ class BaseLoader:
         raise NotImplementedError("This method should be implemented by subclasses.")
 
     @classmethod
-    def loader_factory(cls, file_url: str, **loader_kwargs) -> Self | None:
+    def loader_factory(cls, file_url: str, **loader_kwargs) -> Self:
         # Factory method to create the appropriate loader based on the file URL
 
         loader_class = cls.search_loader_class(file_url)
         if loader_class:
             return loader_class(file_url, **loader_kwargs)
-        return None
+        raise RuntimeError(f"File {file_url} is not supported by any loader")
 
     @staticmethod
     def get_file_is_url(file_url: str) -> bool:
@@ -115,7 +112,7 @@ class BaseLoader:
             if response.status_code == 200:
                 return response.headers.get("content-type", "")
             else:
-                LOGGER.error(f"Failed to load data from {file_url}")
+                raise RuntimeError(f"Failed to load data from {file_url}")
         return ""
 
     @classmethod
@@ -132,7 +129,6 @@ class BaseLoader:
             ):
                 return loader_class
 
-        LOGGER.warning(f"Type de fichier non pris en charge pour : {file_url}")
         return None
 
     @classmethod
