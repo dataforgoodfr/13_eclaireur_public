@@ -1,31 +1,35 @@
 import hashlib
 import json
 import logging
+import ssl
 import urllib
 import urllib.request
 from collections import Counter, defaultdict
 from pathlib import Path
+from urllib.error import HTTPError
 
 import pandas as pd
 import polars as pl
-from scripts.loaders.csv_loader import CSVLoader
-from scripts.loaders.excel_loader import ExcelLoader
-from scripts.loaders.json_loader import JSONLoader
-from scripts.utils.config import get_project_base_path
-from scripts.utils.dataframe_operation import (
-    merge_duplicate_columns,
-    normalize_column_names,
-    normalize_identifiant,
-    normalize_montant,
-    safe_rename,
-)
 from tqdm import tqdm
 
 from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
 )
+from back.scripts.loaders.csv_loader import CSVLoader
+from back.scripts.loaders.excel_loader import ExcelLoader
+from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.loaders.parquet_loader import ParquetLoader
+from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import (
+    merge_duplicate_columns,
+    normalize_column_names,
+    normalize_identifiant,
+    normalize_montant,
+    safe_rename,
+)
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 LOGGER = logging.getLogger(__name__)
 
@@ -176,8 +180,15 @@ class TopicAggregator:
             return
         try:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
+        except HTTPError as error:
+            LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
+            msg = (
+                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
+            )
+            self.errors[msg].append(Path(file_metadata.filename).name)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
+            self.errors[str(e)].append(Path(file_metadata.filename).name)
 
     def dataset_filename(self, file_metadata: tuple, step: str):
         """
@@ -207,6 +218,9 @@ class TopicAggregator:
             return
 
         raw_filename = self.dataset_filename(file_metadata, "raw")
+        if not raw_filename.exists():
+            LOGGER.debug(f"File {raw_filename} does not exist, skipping")
+            return
         opts = {"dtype": str} if file_metadata.format == "csv" else {}
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
         try:
@@ -282,7 +296,7 @@ class TopicAggregator:
 
     def _flag_inversion_siret(self, df: pd.DataFrame, file_metadata: tuple):
         """
-        Flag datasets which have more unique attribuant sire    t than beneficiaire
+        Flag datasets which have more unique attribuant siret than beneficiaire
         """
         if "idAttribuant" not in df.columns or "idBeneficiaire" not in df.columns:
             return
