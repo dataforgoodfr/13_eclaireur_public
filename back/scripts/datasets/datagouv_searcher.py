@@ -263,7 +263,6 @@ class DataGouvSearcher:
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
             .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
-            .pipe(lambda df: df[(df["resource_status"] // 100) < 4])
             .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
