@@ -1,0 +1,122 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    -0.983862,
+                    47.291601
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "geo_point_2d": {
+                    "lon": -0.983862,
+                    "lat": 47.291601
+                },
+                "date_cp": "2008-12-15",
+                "dpt": "49",
+                "libelle_departement": "Maine-et-Loire",
+                "maitre_d_ouvrage": "CC du Canton de Montrevault",
+                "montant_initial_du_projet": 2185000.0,
+                "aide_region_votee_sectorielle": 300000.0,
+                "aide_region_ctu_ncr_cdm": 220000.0,
+                "aide_regionale": 0.24,
+                "etat_d_avancement": "Ouverte",
+                "sites_principaux_des_maisons_de_sante_financees": "MSP de Montrevault - site de Chaudron en Mauges",
+                "sites": "16 avenue du Plessis",
+                "complement": "Chaudron-en-Mauges",
+                "cp": 49110.0,
+                "commune": "Montrevault-sur-Evre",
+                "sites_prin": "Site principal",
+                "mono_site": "Multi sites",
+                "inaugurati": "2013-01-26",
+                "nom_epci": "Mauges Communaut\u00e9",
+                "annee": "2008",
+                "code_insee": 49218.0,
+                "site_perip": null,
+                "sites_asso": "Le Fuilet ; Saint-Pierre-Montlimart",
+                "code_ins_1": 200060010
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    -0.352918,
+                    48.097651
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "geo_point_2d": {
+                    "lon": -0.352918,
+                    "lat": 48.097651
+                },
+                "date_cp": "2007-12-17",
+                "dpt": "53",
+                "libelle_departement": "Mayenne",
+                "maitre_d_ouvrage": "CC Co\u00ebvrons (ex CC Erv\u00e9 et Charnie)",
+                "montant_initial_du_projet": 492974.0,
+                "aide_region_votee_sectorielle": 62500.0,
+                "aide_region_ctu_ncr_cdm": 20851.0,
+                "aide_regionale": 0.17,
+                "etat_d_avancement": "Ouverte",
+                "sites_principaux_des_maisons_de_sante_financees": "MSP de Sainte Suzanne",
+                "sites": "11 bis place Ambroise de Lor\u00e9",
+                "complement": null,
+                "cp": 53270.0,
+                "commune": "Sainte-Suzanne-et-Chammes",
+                "sites_prin": "Site principal",
+                "mono_site": "Mono site",
+                "inaugurati": null,
+                "nom_epci": "Les Co\u00ebvrons",
+                "annee": "2007",
+                "code_insee": 53255.0,
+                "site_perip": null,
+                "sites_asso": null,
+                "code_ins_1": 200033298
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    -1.022451,
+                    46.392186
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "geo_point_2d": {
+                    "lon": -1.022451,
+                    "lat": 46.392186
+                },
+                "date_cp": "2010-10-04",
+                "dpt": "85",
+                "libelle_departement": "Vend\u00e9e",
+                "maitre_d_ouvrage": "CC Isles du Marais Poitevin",
+                "montant_initial_du_projet": 700000.0,
+                "aide_region_votee_sectorielle": 175000.0,
+                "aide_region_ctu_ncr_cdm": 150000.0,
+                "aide_regionale": 0.71,
+                "etat_d_avancement": "Ouverte",
+                "sites_principaux_des_maisons_de_sante_financees": "MSP de Chaill\u00e9-les-Marais",
+                "sites": "Impasse Louis Pasteur",
+                "complement": null,
+                "cp": 85450.0,
+                "commune": "Chaill\u00e9 les Marais",
+                "sites_prin": "Site principal",
+                "mono_site": "Multi sites",
+                "inaugurati": "2011-06-17",
+                "nom_epci": "Sud Vend\u00e9e Littoral",
+                "annee": "2010",
+                "code_insee": 85042.0,
+                "site_perip": null,
+                "sites_asso": "Le Gu\u00e9-de-Velluire",
+                "code_ins_1": 200073260
+            }
+        }
+    ]
+}
