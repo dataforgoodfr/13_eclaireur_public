@@ -185,10 +185,10 @@ class TopicAggregator:
             msg = (
                 f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
             )
-            self.errors[msg].append(Path(file_metadata.filename).name)
+            self.errors[msg].append(file_metadata.url)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
-            self.errors[str(e)].append(Path(file_metadata.filename).name)
+            self.errors[str(e)].append(file_metadata.url)
 
     def dataset_filename(self, file_metadata: tuple, step: str):
         """
