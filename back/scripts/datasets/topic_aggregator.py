@@ -5,7 +5,6 @@ import ssl
 import urllib
 import urllib.request
 from collections import Counter, defaultdict
-from pathlib import Path
 from urllib.error import HTTPError
 
 import pandas as pd
@@ -231,7 +230,7 @@ class TopicAggregator:
             df = df.pipe(self._normalize_frame, file_metadata)
             df.to_parquet(out_filename)
         except Exception as e:
-            self.errors[str(e)].append(Path(file_metadata.filename).name)
+            self.errors[str(e)].append(raw_filename.name)
             return
 
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
