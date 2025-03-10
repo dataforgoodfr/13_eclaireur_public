@@ -35,7 +35,7 @@ class CSVLoader(BaseLoader):
         for encoding in encodings_to_try:
             try:
                 decoded_content = data.decode(encoding)
-                LOGGER.info(f"Successfully decoded using {encoding} encoding")
+                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
                 df = self._process_from_decoded(decoded_content)
                 if isinstance(df, pd.DataFrame):
                     return df

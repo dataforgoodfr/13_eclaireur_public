@@ -35,7 +35,7 @@ class JSONLoader(BaseLoader):
             raise Exception("Unhandled type")
 
         df = self._process_dict(content)
-        self.logger.info(f"JSON Data from {self.file_url} loaded.")
+        self.logger.debug(f"JSON Data from {self.file_url} loaded.")
         return df
 
     def _process_dict(self, json_data: dict | list) -> pd.DataFrame:
