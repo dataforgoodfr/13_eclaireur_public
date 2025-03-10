@@ -109,3 +109,26 @@ class TestExpandJsonColumns:
 
         result_missing = expand_json_columns(df_missing, "extra")
         pd.testing.assert_frame_equal(result_missing, expected_df)
+
+    def test_expand_empty_column_name(self):
+        """Test expand_json_columns with empty column name parameter"""
+        df = pd.DataFrame({"id": [1, 2, 3], "extra": ["value1", "value2", "value3"]})
+        with pytest.raises(ValueError):
+            expand_json_columns(df, "")
+
+    def test_expand_existing_column(self):
+        """Test expand_json_columns when expanded column already exists"""
+        df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "extra": [
+                    '{"field1": "value1"}',
+                    '{"field1": "value2"}',
+                    '{"field1": "value3"}',
+                ],
+                "extra_field1": ["existing1", "existing2", "existing3"],
+            }
+        )
+
+        with pytest.raises(ValueError):
+            expand_json_columns(df, "extra")
