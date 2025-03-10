@@ -13,38 +13,39 @@ import {
 
 const data = [
   {
-    name: 'Page A',
-    uv: 590,
-    pv: 800,
+      "Année": "2018",
+      "Montant": 56702809,
+      "Nombre": 153
   },
   {
-    name: 'Page B',
-    uv: 868,
-    pv: 967,
+      "Année": "2019",
+      "Montant": 239899229,
+      "Nombre": 447
   },
   {
-    name: 'Page C',
-    uv: 1397,
-    pv: 1098,
+      "Année": "2020",
+      "Montant": 290872324,
+      "Nombre": 508
   },
   {
-    name: 'Page D',
-    uv: 1480,
-    pv: 1200,
+      "Année": "2021",
+      "Montant": 507880077,
+      "Nombre": 744
   },
   {
-    name: 'Page E',
-    uv: 1520,
-    pv: 1108,
+      "Année": "2022",
+      "Montant": 405725497,
+      "Nombre": 703
   },
   {
-    name: 'Page F',
-    uv: 1400,
-    pv: 680,
-  },
-];
+      "Année": "2023",
+      "Montant": 499410387,
+      "Nombre": 658
+  }
+]
 
-export default function MarketAndAmount() {
+
+export default function MarketAndAmount({data}:{data: any[]}) {
   return (
     <div className='max-w-screen-lg mx-auto p-4 border rounded-lg shadow my-6'>
       <h2 className='text-lg font-medium text-neutral-600 pb-3'>Évolution des marchés publics au cours du temps</h2>
@@ -61,12 +62,13 @@ export default function MarketAndAmount() {
           }}
         >
           <CartesianGrid stroke="#f5f5f5" />
-          <XAxis dataKey="name" scale="band" />
-          <YAxis />
+          <XAxis dataKey="Année"/>
+          <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+          <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
           <Tooltip />
           <Legend />
-          <Bar dataKey="pv" barSize={20} fill="#413ea0" />
-          <Line type="monotone" dataKey="uv" stroke="#ff7300" />
+          <Bar dataKey="Montant" yAxisId="left" barSize={20} fill="#413ea0" />
+          <Line type="monotone"  yAxisId="right" dataKey="Nombre" stroke="#ff7300" />
         </ComposedChart>
       </ResponsiveContainer>
     </div>

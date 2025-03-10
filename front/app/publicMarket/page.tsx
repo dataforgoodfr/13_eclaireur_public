@@ -7,6 +7,7 @@ import MarketType from "@/components/publicMarket/MarketType";
 import MarketProcess from "@/components/publicMarket/MarketProcess";
 import MarketAndAmount from "@/components/publicMarket/MarketAndAmount";
 import Best10 from "@/components/publicMarket/Best10";
+import MarketByActivities2 from "@/components/publicMarket/MarketByActivities2";
 
 
 export default function PublicMarket() {
@@ -33,27 +34,24 @@ export default function PublicMarket() {
     initialize();
   }, []);
 
-  //useEffect de contrôle
+
+  //useEffect pour analyse des données
   useEffect(() =>{
     console.log(data);
-    const companiesList = data.reduce((acc, company) => acc + (company.titulaires), "");
 
-
-    const reducedCategories = data.reduce((acc, company) => acc + (company.cpv_2_label),"");
-
-    const elements = reducedCategories.match(/\p{Lu}[^\p{Lu}]*/gu) || [];
-    const allCategories = [...new Set(elements)];
-  
-    const totalByCategory = Object.values(
+    const marketProcess = Object.values(
       data.reduce((acc, item) => {
-        if (!acc[item.cpv_2_label]) {
-          acc[item.cpv_2_label] = { name: item.cpv_2_label, size: 0 };
+        if (!acc[item.procedure]) {
+          acc[item.procedure] = { name: item.procedure, value: 0 };
         }
-        acc[item.cpv_2_label].size += parseFloat(item.montant);
+        acc[item.procedure].value += parseFloat(item.montant);
         return acc;
       }, {})
     );
-    console.log(totalByCategory)
+
+    
+    
+    console.log(marketProcess)
     
   },[data]);
 
@@ -66,6 +64,22 @@ export default function PublicMarket() {
     maximumFractionDigits: 2
   }).format(totalSubvention);
 
+  //MarketAndAmount data
+  const contractsByYear = Object.values(
+    data.reduce((acc, item) => {
+      const year = item.datenotification.split("-")[0];
+  
+      if (!acc[year]) {
+        acc[year] = { Année: year, Montant: 0, Nombre: 0 };
+      }
+  
+      acc[year].Montant += parseFloat(item.montant) || 0;
+      acc[year].Nombre += 1;
+  
+      return acc;
+    }, {})
+  );
+
   // MarketByActivities data
   const totalByCategory = Object.values(
     data.reduce((acc, item) => {
@@ -76,9 +90,28 @@ export default function PublicMarket() {
       return acc;
     }, {})
   );
- 
-
-
+  
+  // MarketType data
+  const marketType = Object.values(
+    data.reduce((acc, item) => {
+      if (!acc[item.nature]) {
+        acc[item.nature] = { name: item.nature, value: 0 };
+      }
+      acc[item.nature].value += 1;
+      return acc;
+    }, {})
+  );
+  
+  // MarketProcess data
+  const marketProcess = Object.values(
+    data.reduce((acc, item) => {
+      if (!acc[item.procedure]) {
+        acc[item.procedure] = { name: item.procedure, value: 0 };
+      }
+      acc[item.procedure].value += parseFloat(item.montant);
+      return acc;
+    }, {})
+  );
 
   return (
     <div className="min-h-screen">
@@ -87,12 +120,13 @@ export default function PublicMarket() {
         <div className="w-32 border px-3 py-1 rounded-lg">2022</div>
       </div>
       <Stats marketNumber={data.length} marketAmount={formattedTotalSubvention} />
-      <MarketAndAmount />
+      <MarketAndAmount data={contractsByYear}/>
       <MarketByActivities data={totalByCategory} />
+      <MarketByActivities2 data={totalByCategory} />
       <Best10 />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-screen-lg mx-auto mt-6 mb-20">
-        <MarketType />
-        <MarketProcess />
+        <MarketType data={marketType}/>
+        <MarketProcess data={marketProcess} />
       </div>
     </div>
   )

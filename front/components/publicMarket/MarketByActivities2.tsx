@@ -102,7 +102,7 @@ function generateRandomColors(numColors : number) {
   );
 }
 
-export default function MarketByActivities({data} : {data: any[]}) {
+export default function MarketByActivities2({data} : {data: any[]}) {
   return (
     <div className='max-w-screen-lg mx-auto p-4 border rounded-lg shadow my-6'>
       <h2 className='text-lg font-medium text-neutral-600 pb-3'>Répartition des montants par activités</h2>
