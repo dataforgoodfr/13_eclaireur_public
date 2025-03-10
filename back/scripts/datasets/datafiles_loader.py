@@ -1,12 +1,11 @@
 import logging
+
 import pandas as pd
-
-from scripts.utils.config import get_project_base_path
-
 from scripts.loaders.csv_loader import CSVLoader
 from scripts.loaders.excel_loader import ExcelLoader
 from scripts.loaders.json_loader import JSONLoader
-from scripts.utils.dataframe_operation import merge_duplicate_columns, safe_rename, cast_data
+from scripts.utils.config import get_project_base_path
+from scripts.utils.dataframe_operation import cast_data, merge_duplicate_columns, safe_rename
 
 
 class DatafilesLoader:
@@ -144,12 +143,12 @@ class DatafilesLoader:
         )
 
         for df in self.corpus:
+            df = df.rename(columns=str)
             # Merge columns with the same name
             df = merge_duplicate_columns(df)
             # Rename columns using the schema dictionary
             safe_rename(df, schema_dict)
             # Lower case columns names
-            df.columns = df.columns.astype(str)
             columns_lower = [col.lower() for col in df.columns]
             # Check if the dataframe has at least 1 column in common with the schema
             if len(set(columns_lower).intersection(set(schema_lower))) > 0:

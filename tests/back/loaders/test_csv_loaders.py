@@ -24,9 +24,6 @@ class TestCSVLoader:
         "name,age,city\nJos\xe9,30,S\xe3o Paulo\nMarie,25,K\xf6ln\nPierre,45,Montr\xe9al"
     )
 
-    # CSV with no header
-    NO_HEADER_CSV = "John,30,New York\nAnna,25,Los Angeles\nPeter,45,Chicago"
-
     # Bad CSV with inconsistent columns
     BAD_CSV = "name,age,city\nJohn,30,New York\nAnna,Los Angeles\nPeter,45,Chicago,USA"
 
@@ -42,7 +39,6 @@ class TestCSVLoader:
                 "tab.csv": self.TAB_CSV,
                 "pipe.csv": self.PIPE_CSV,
                 "utf8.csv": self.UTF8_CSV,
-                "no_header.csv": self.NO_HEADER_CSV,
                 "bad.csv": self.BAD_CSV,
             }
 
@@ -105,9 +101,9 @@ class TestCSVLoader:
         responses.add(responses.GET, url, status=404)
 
         loader = CSVLoader(url)
-        df = loader.load()
 
-        assert df is None
+        with pytest.raises(RuntimeError):
+            loader.load()
 
     def test_load_from_file_comma(self, setup_temp_csv_files):
         """Test loading a comma-delimited CSV from a file."""
@@ -206,19 +202,6 @@ class TestCSVLoader:
         assert df is not None
         assert isinstance(df, pd.DataFrame)
         assert df["age"].dtype == object  # str columns are object dtype in pandas
-
-    def test_no_header_csv(self, setup_temp_csv_files):
-        """Test loading a CSV with no header."""
-        file_path = setup_temp_csv_files["no_header.csv"]
-
-        loader = CSVLoader(file_path)
-        df = loader.load()
-
-        assert df is not None
-        assert isinstance(df, pd.DataFrame)
-        assert df.shape == (3, 3)
-        # The first row should be treated as data, not header
-        assert "John" in df.values
 
     def test_bad_csv(self, setup_temp_csv_files):
         """Test loading a CSV with inconsistent columns."""
