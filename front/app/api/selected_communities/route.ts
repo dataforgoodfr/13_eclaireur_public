@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
 
 import db from '@/utils/db';
+import { createSQLQueryParams } from '@/utils/fetchers/communities/createSQLQueryParams';
+import { CommunityType } from '@/utils/types';
 
-import { CommunityType } from './types';
-
-type CommunitiesParamsOptions = {
-  type: CommunityType | undefined;
-  limit: number;
-  siren?: string;
-};
+import { CommunitiesParamsOptions } from './types';
 
 function mapCommunityType(type: string | null) {
   if (type === null) return null;
@@ -21,37 +17,23 @@ function mapCommunityType(type: string | null) {
 }
 
 async function getDataFromPool(options: CommunitiesParamsOptions) {
-  const { type, limit, siren } = options;
   const client = await db.connect();
 
-  let query = 'SELECT * FROM selected_communities';
-  const values: unknown[] = [];
+  const params = createSQLQueryParams(options);
 
-  //Construction des conditions WHERE
-  const whereConditions: string[] = [];
+  const { rows } = await client.query(...params);
 
-  if (type) {
-    whereConditions.push(`type = $${values.length + 1}`);
-    values.push(type);
-  }
-
-  if (siren) {
-    whereConditions.push(`siren = $${values.length + 1}`);
-    values.push(siren);
-  }
-
-  if (whereConditions.length > 0) {
-    query += ' WHERE ' + whereConditions.join(' AND ');
-  }
-
-  //Ajout de la limite
-  query += ' LIMIT $' + (values.length + 1);
-  values.push(limit);
-
-  const { rows } = await client.query(query, values);
   client.release();
 
   return rows;
+}
+
+function isLimitValid(limit: number) {
+  return limit < 1 || limit > 5000;
+}
+
+function isSirenValid(siren?: string) {
+  return siren && !/^\d{9}$/.test(siren);
 }
 
 export async function GET(request: Request) {
@@ -61,13 +43,11 @@ export async function GET(request: Request) {
     const limit = Number(searchParams.get('limit')) ?? undefined;
     const siren = searchParams.get('siren') ?? undefined;
 
-    // Vérification des valeurs
-    if (limit < 1 || limit > 5000) {
+    if (isLimitValid(limit)) {
       return NextResponse.json({ error: 'Limit must be between 1 and 5000' }, { status: 400 });
     }
 
-    // Validation optionnelle du format SIREN
-    if (siren && !/^\d{9}$/.test(siren)) {
+    if (isSirenValid(siren)) {
       return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
     }
 
