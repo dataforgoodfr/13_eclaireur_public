@@ -1,12 +1,15 @@
-import re
-import pandas as pd
+import itertools
+import json
 import logging
-import unidecode
+import re
+import tempfile
+from pathlib import Path
+from urllib.request import urlretrieve
 
-from scripts.utils.json_operation import flatten_json_schema, flatten_data
-from scripts.utils.dataframe_operation import cast_data
-from scripts.loaders.base_loader import BaseLoader
+import pandas as pd
+import unidecode
 from scripts.loaders.json_loader import JSONLoader
+from scripts.utils.dataframe_operation import cast_data
 
 
 class DatafileLoader:
@@ -20,12 +23,11 @@ class DatafileLoader:
     def __init__(self, communities_selector, topic_config):
         self.logger = logging.getLogger(__name__)
 
-        # Load topic schema from URL
-        self.schema = self._load_schema(topic_config["schema"])
-        # Load data from URL
-        self.loaded_data, self.modifications_data = self._load_data(
+        self._load_schema(topic_config["schema"])
+        self.loaded_data = self._load_data(
             topic_config
         )  # TODO : modifications_data seems empty & useless
+        self.modifications_data = pd.DataFrame()
         # Clean data by keeping only columns present in the schema
         self.cleaned_data = self._clean_data()
         # Select data based on communities IDs
@@ -37,32 +39,18 @@ class DatafileLoader:
         # Drop duplicates and cast data to schema types
         self.normalized_data = self._normalize_data()
 
-    # Internal function to load JSON schema from URL
     def _load_schema(self, schema_topic_config):
-        # Load JSON schema from URL
-        json_schema_loader = BaseLoader.loader_factory(schema_topic_config["url"])
-        json_schema = json_schema_loader.load()
-        # Flatten JSON schema to DataFrame
-        schema_name = schema_topic_config["name"]
-        flattened_schema = flatten_json_schema(json_schema, schema_name)
-        # Convert flattened schema to DataFrame
-        schema_df = pd.DataFrame(flattened_schema)
-        # In "type" column, replace NaN values by "string" (default value)
-        schema_df["type"].fillna("string", inplace=True)
-        return schema_df
+        self.official_schema = MarchesPublicsSchemaLoader.load(
+            schema_topic_config["url"], "marche"
+        ).fillna({"type": "string"})
 
-    # Load data from URL and flatten it to DataFrame
     def _load_data(self, topic_config):
-        # Load data from URL
         data_loader = JSONLoader(topic_config["unified_dataset"]["url"])
-        data = data_loader.load()
-        # Flatten JSON data to DataFrame, with main and modifications data (potentially empty)
-        root = topic_config["unified_dataset"]["root"]
-        main_df, modifications_df = flatten_data(data[root])
+        main_df = data_loader.load()
         self.logger.info(
             f"Le fichier au format JSON a été téléchargé avec succès à l'URL : {topic_config['unified_dataset']['url']}"
         )
-        return main_df, modifications_df
+        return main_df
 
     def _clean_data(self):
         # Build a mapping of original column names to cleaned column names
@@ -70,7 +58,7 @@ class DatafileLoader:
             col: self.clean_column_name_for_comparison(col) for col in self.loaded_data.columns
         }
         # Get the set of cleaned column names from the schema
-        schema_columns = set(self.schema["property"])
+        schema_columns = set(self.official_schema["property"])
         # Find columns to keep depending on the schema
         columns_to_keep = set()
         for original_name, cleaned_name in original_to_cleaned_names.items():
@@ -103,7 +91,9 @@ class DatafileLoader:
 
     # Internal function to get schema values for a given property
     def _get_schema_values(self, property_name, column_name):
-        values = self.schema.loc[self.schema["property"] == property_name, column_name].iloc[0]
+        values = self.official_schema.loc[
+            self.official_schema["property"] == property_name, column_name
+        ].iloc[0]
         return (
             [self._clean_value(value) for value in values]
             if isinstance(values, list)
@@ -112,7 +102,9 @@ class DatafileLoader:
 
     # Internal function to get a unique schema value for a given property
     def _get_schema_value(self, property_name, column_name):
-        return self.schema.loc[self.schema["property"] == property_name, column_name].iloc[0]
+        return self.official_schema.loc[
+            self.official_schema["property"] == property_name, column_name
+        ].iloc[0]
 
     # Internal function to clean a value by removing accents, lowercasing and removing some characters
     def _clean_value(self, value):
@@ -171,7 +163,7 @@ class DatafileLoader:
         normalized_data = normalized_data.drop_duplicates()
 
         # Cast data to schema types
-        schema_selected = self.schema.loc[:, ["property", "type"]]
+        schema_selected = self.official_schema.loc[:, ["property", "type"]]
         normalized_data = cast_data(
             normalized_data,
             schema_selected,
@@ -179,3 +171,91 @@ class DatafileLoader:
             clean_column_name_for_comparison=self.clean_column_name_for_comparison,
         )
         return normalized_data
+
+
+class MarchesPublicsSchemaLoader:
+    """
+    Load a specific type of json into a DataFrame.
+    This file has information spread i at least 2 subsections.
+    This class mostly regroup legacy code that need a refactoring.
+    """
+
+    @staticmethod
+    def load(url: str, type_marche: str) -> pd.DataFrame:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            json_filename = Path(tmpdirname) / "schema.json"
+            urlretrieve(url, json_filename)
+
+            with open(json_filename) as f:
+                schema = json.load(f)
+                return MarchesPublicsSchemaLoader._schema_to_frame(schema, type_marche)
+
+    @staticmethod
+    def _schema_to_frame(schema: dict, type_marche: str) -> pd.DataFrame:
+        definitions = schema["definitions"][type_marche]["definitions"]
+        properties = schema["definitions"][type_marche]["properties"]
+
+        content = [
+            MarchesPublicsSchemaLoader._flatten_schema_property(prop, details, definitions)
+            for prop, details in properties.items()
+        ]
+        return pd.DataFrame.from_records(itertools.chain(*content))
+
+    @staticmethod
+    def _flatten_schema_property(prop, details, root_definitions):
+        if "$ref" in details:
+            return MarchesPublicsSchemaLoader._flatten_schema_ref(
+                prop, details, root_definitions
+            )
+        elif details.get("type") == "array":
+            return MarchesPublicsSchemaLoader._flatten_schema_array(
+                prop, details, root_definitions
+            )
+        elif details.get("type") == "object" and "properties" in details:
+            return MarchesPublicsSchemaLoader._flatten_schema_object(
+                prop, details, root_definitions
+            )
+        else:
+            return [{"property": prop, **details}]
+
+    @staticmethod
+    def _flatten_schema_ref(prop, details, root_definitions):
+        ref_path = details["$ref"].split("/")
+        ref_detail = root_definitions
+        # Traverse the reference path to get the details of the reference
+        for part in ref_path[4:]:
+            ref_detail = ref_detail[part]
+
+        # If the reference points to a structure with 'properties', treat it as an object
+        if "properties" in ref_detail:
+            return MarchesPublicsSchemaLoader._flatten_schema_object(
+                prop, ref_detail, root_definitions
+            )
+
+        return MarchesPublicsSchemaLoader._flatten_schema_property(
+            prop, ref_detail, root_definitions
+        )
+
+    @staticmethod
+    def _flatten_schema_array(prop, details, root_definitions):
+        if "items" in details:
+            if "$ref" in details["items"]:
+                return MarchesPublicsSchemaLoader._flatten_schema_ref(
+                    prop, details["items"], root_definitions
+                )
+            elif "properties" in details["items"]:
+                return MarchesPublicsSchemaLoader._flatten_schema_object(
+                    prop, details, root_definitions
+                )  # Abnormal case: If the items are objects, treat them as such
+        return [{"property": prop}]
+
+    @staticmethod
+    def _flatten_schema_object(prop, details, root_definitions):
+        flattened_schema = []
+        for sub_prop, sub_details in details["properties"].items():
+            flattened_schema.extend(
+                MarchesPublicsSchemaLoader._flatten_schema_property(
+                    f"{prop}.{sub_prop}", sub_details, root_definitions
+                )
+            )
+        return flattened_schema

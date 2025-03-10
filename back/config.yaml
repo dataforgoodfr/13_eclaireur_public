@@ -100,6 +100,8 @@ search:
       name: "marche"
 
 datafile_loader:
+  data_folder: 'back/data/datasets/%(topic)s'
+  combined_filename: 'back/data/datasets/%(topic)s.parquet'
   file_info_columns:
     - "siren"
     - "organization"
@@ -132,6 +134,9 @@ declarations_interet:
   
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
+
+warehouse:
+  data_folder: back/data/warehouse
 
 logging:
   version: 1
