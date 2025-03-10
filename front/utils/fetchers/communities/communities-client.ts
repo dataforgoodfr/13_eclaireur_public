@@ -1,11 +1,16 @@
+import { getServerBaseURL } from '@/utils/getHostURL';
 import { CommunitiesParamsOptions } from 'app/api/selected_communities/types';
 
 export type Options = Omit<CommunitiesParamsOptions, 'limit'> & {
   limit?: number;
 };
 
+const DEFAULT_OPTIONS = {
+  limit: 5000,
+};
+
 export async function fetchCommunities(options?: Options) {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseURL = getServerBaseURL();
 
   const limit = options?.limit;
   const type = options?.type;
