@@ -7,7 +7,10 @@ import pandas as pd
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.datafile_loader import DatafileLoader
-from back.scripts.datasets.datagouv_searcher import DataGouvSearcher
+from back.scripts.datasets.datagouv_searcher import (
+    DataGouvSearcher,
+    remove_same_dataset_formats,
+)
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
@@ -21,11 +24,11 @@ from back.scripts.utils.constants import (
     MODIFICATIONS_DATA_FILENAME,
     NORMALIZED_DATA_FILENAME,
 )
-from back.scripts.utils.dataframe_operation import normalize_column_names
-from back.scripts.utils.datagouv_api import (
-    normalize_formats_description,
-    select_implemented_formats,
+from back.scripts.utils.dataframe_operation import (
+    correct_format_from_url,
+    normalize_column_names,
 )
+from back.scripts.utils.datagouv_api import select_implemented_formats
 from back.scripts.utils.files_operation import save_csv
 from back.scripts.utils.psql_connector import PSQLConnector
 
@@ -130,7 +133,8 @@ class WorkflowManager:
                     [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
                     ignore_index=True,
                 )
-                .assign(format=lambda df: normalize_formats_description(df["format"]))
+                .pipe(correct_format_from_url)
+                .pipe(remove_same_dataset_formats)
                 .pipe(select_implemented_formats)
             )
 

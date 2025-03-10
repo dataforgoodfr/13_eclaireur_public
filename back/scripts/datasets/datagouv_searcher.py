@@ -1,9 +1,9 @@
 import logging
 
 import pandas as pd
-from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
+from back.scripts.loaders.csv_loader import CSVLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -274,3 +274,22 @@ class DataGouvSearcher:
         datafiles.to_parquet(final_datasets_filename)
 
         return datafiles
+
+
+def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
+    base_url = [
+        row.url.split(row.format)[0] if row.url and not pd.isna(row.format) else row.url
+        for row in df.itertuples()
+    ]
+    priorities = ["parquet", "csv", "json", "xls", "xlsx", "html", "xml", "zip"]
+    return (
+        df.assign(
+            base_url=base_url,
+            priority=df["format"]
+            .map({n: i for i, n in enumerate(priorities)})
+            .fillna(len(priorities)),
+        )
+        .sort_values(["dataset_id", "base_url", "priority"])
+        .drop_duplicates(subset=["dataset_id", "base_url"], keep="first")
+        .drop(columns=["priority", "base_url"])
+    )

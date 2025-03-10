@@ -1,6 +1,5 @@
 import json
 import logging
-import re
 from itertools import chain
 from pathlib import Path
 from typing import Tuple
@@ -165,22 +164,6 @@ class DataGouvAPI:
             logging.error(f"Error while decoding json from {url} : {e}")
             return [], None
         return data.get("data", data), data.get("next_page")
-
-
-def normalize_formats_description(formats: pd.Series) -> str:
-    """
-    Classify with regex the various description of formats available on data.gouv into a set of fixed categories.
-    See `FORMATS_PATTERNS`for the list of patterns.
-
-    For example : "file:///srv/udata/ftype/csv" will be transformed into "csv".
-    """
-    matching = {
-        source: target
-        for pat, target in FORMATS_PATTERNS.items()
-        for source in formats.dropna().unique()
-        if re.search(pat, source.lower())
-    }
-    return formats.map(matching).fillna(formats)
 
 
 def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
