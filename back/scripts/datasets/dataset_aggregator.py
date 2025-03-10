@@ -113,7 +113,11 @@ class DatasetAggregator:
             return
         df = self._read_parse_file(file_metadata, raw_filename)
         if isinstance(df, pd.DataFrame):
-            df.to_parquet(out_filename)
+            try:
+                df.to_parquet(out_filename)
+            except Exception as e:
+                LOGGER.warning(f"Failed to save file {out_filename}: {e}")
+                self.errors[str(e)].append(raw_filename.name)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()
