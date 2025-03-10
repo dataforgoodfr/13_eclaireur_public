@@ -132,7 +132,7 @@ type MapProps = {
   width: number;
 };
 
-function Map({ topoJson, height, width }: MapProps) {
+export function Map({ topoJson, height, width }: MapProps) {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [level, setLevel] = useState<Level>(Level.Region);
 
