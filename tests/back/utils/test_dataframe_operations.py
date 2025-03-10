@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from back.scripts.utils.dataframe_operation import (
+    correct_format_from_url,
     expand_json_columns,
     normalize_identifiant,
     safe_rename,
@@ -109,3 +110,25 @@ class TestExpandJsonColumns:
 
         result_missing = expand_json_columns(df_missing)
         pd.testing.assert_frame_equal(result_missing, expected_df)
+
+
+class TestCorrectFormatFromUrl:
+    def test_url_takes_precedence(self):
+        df = pd.DataFrame({"url": ["https://example.com/json"], "format": ["parquet"]})
+        out = correct_format_from_url(df)
+        assert out["format"].iloc[0] == "json"
+
+    def test_url_considered_without_format(self):
+        df = pd.DataFrame({"url": ["https://example.com/parquet"], "format": [None]})
+        out = correct_format_from_url(df)
+        assert out["format"].iloc[0] == "parquet"
+
+    def test_format_used_without_url_infos(self):
+        df = pd.DataFrame({"url": ["https://example.com"], "format": ["json"]})
+        out = correct_format_from_url(df)
+        assert out["format"].iloc[0] == "json"
+
+    def test_format_stays_null_if_no_infos(self):
+        df = pd.DataFrame({"url": ["https://example.com"], "format": [None]})
+        out = correct_format_from_url(df)
+        assert out["format"].iloc[0] is None

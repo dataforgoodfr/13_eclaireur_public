@@ -15,6 +15,7 @@ from back.scripts.loaders.excel_loader import ExcelLoader
 from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.loaders.parquet_loader import ParquetLoader
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import correct_format_from_url
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +37,9 @@ class DatasetAggregator:
     def __init__(self, files: pd.DataFrame, config: dict):
         self._config = config
 
-        self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
+        self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256)).pipe(
+            correct_format_from_url
+        )
 
         self.data_folder = get_project_base_path() / (config["data_folder"])
         self.data_folder.mkdir(parents=True, exist_ok=True)
