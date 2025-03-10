@@ -79,7 +79,7 @@ class TestExpandJsonColumns:
             }
         )
 
-        result = expand_json_columns(df)
+        result = expand_json_columns(df, "extra")
         expected_df = pd.DataFrame(
             {
                 "id": [1, 2, 3],
@@ -107,5 +107,5 @@ class TestExpandJsonColumns:
             }
         )
 
-        result_missing = expand_json_columns(df_missing)
+        result_missing = expand_json_columns(df_missing, "extra")
         pd.testing.assert_frame_equal(result_missing, expected_df)
