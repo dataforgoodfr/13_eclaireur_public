@@ -17,7 +17,6 @@ export function createSQLQueryParams(options?: CommunitiesParamsOptions) {
 
   const { type, siren, limit } = options;
 
-  //Construction des conditions WHERE
   const whereConditions: string[] = [];
 
   if (type) {
