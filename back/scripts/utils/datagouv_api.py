@@ -131,7 +131,7 @@ class DataGouvAPI:
             LOGGER.error("Error while downloading file from %s", url)
             return pd.DataFrame(columns=output_columns)
 
-        datasets = pd.DataFrame(list(chain.from_iterable(datasets)), output_columns)
+        datasets = pd.DataFrame(list(chain.from_iterable(datasets)), columns=output_columns)
         if savedir:
             datasets.to_parquet(organisation_datasets_filename)
         return datasets
