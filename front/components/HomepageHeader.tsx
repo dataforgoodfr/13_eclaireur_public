@@ -1,7 +1,5 @@
 import { Community } from '@/utils/types';
 
-import { SearchBar } from './SearchBar';
-
 interface HomepageHeaderProps {
   communities: Community[];
 }
@@ -19,7 +17,7 @@ export default function HomepageHeader({ communities }: HomepageHeaderProps) {
           <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
             Comment les dépense publiques sont-elles réparties autour de chez vous ?
           </h2>
-          <SearchBar communities={communities} />
+          <SearchBar />
         </div>
       </div>
     </div>
