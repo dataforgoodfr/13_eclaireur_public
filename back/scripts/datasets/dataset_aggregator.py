@@ -10,22 +10,10 @@ import pandas as pd
 import polars as pl
 from tqdm import tqdm
 
-from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.loaders.excel_loader import ExcelLoader
-from back.scripts.loaders.json_loader import JSONLoader
-from back.scripts.loaders.parquet_loader import ParquetLoader
+from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.utils.config import get_project_base_path
 
 LOGGER = logging.getLogger(__name__)
-
-LOADER_CLASSES = {
-    "csv": CSVLoader,
-    "xls": ExcelLoader,
-    "xlsx": ExcelLoader,
-    "excel": ExcelLoader,
-    "json": JSONLoader,
-    "parquet": ParquetLoader,
-}
 
 
 def _sha256(s):

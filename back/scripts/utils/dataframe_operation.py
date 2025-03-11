@@ -231,9 +231,15 @@ def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.
     """
+    if not column:
+        raise ValueError("Column name is required.")
     expanded = pd.DataFrame.from_records(
         [_parse_json(x) for x in df[column].tolist()], index=df.index
     ).rename(columns=lambda col: f"{column}_{col}")
+
+    dup_columns = sorted(set(expanded.columns) & set(df.columns))
+    if dup_columns:
+        raise ValueError(f"Duplicate columns while parsing json: {', '.join(dup_columns)}")
     return pd.concat([df, expanded], axis=1)
 
 

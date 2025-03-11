@@ -9,7 +9,8 @@ from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
 )
-from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
+from back.scripts.datasets.dataset_aggregator import DatasetAggregator
+from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (

@@ -142,6 +142,9 @@ financial_accounts:
 outputs_csv:
   path: 'back/tests/data/datasets/%(topic)s/outputs'
 
+warehouse:
+  data_folder: back/tests/data/warehouse
+
 logging:
   version: 1
   formatters:
