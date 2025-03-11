@@ -5,8 +5,6 @@ import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-
 export default async function Home() {
   const communities = await fetchCommunities({ selectors: ['nom', 'siren'] });
 
-  console.log({ communities });
-
   return (
     <>
       <HomepageHeader communities={communities} />
