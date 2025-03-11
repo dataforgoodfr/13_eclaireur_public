@@ -136,6 +136,7 @@ declarations_interet:
 financial_accounts:
   data_folder: back/tests/data/financial_accounts
   files_csv: back/scripts/datasets/static/ci_communities_financial_accounts.csv
+  columns_mapping: back/scripts/datasets/static/normalization_financial_account_columns.csv
   combined_filename: back/tests/data/financial_accounts/financial_accounts.parquet
 
 outputs_csv:
