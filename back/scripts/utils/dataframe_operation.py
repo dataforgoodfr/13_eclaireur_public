@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 
@@ -224,3 +225,28 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         # identifier is actually siret
         return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
+
+
+def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """
+    Add to a dataframe columns from keys of a json column.
+    """
+    if not column:
+        raise ValueError("Column name is required.")
+    expanded = pd.DataFrame.from_records(
+        [_parse_json(x) for x in df[column].tolist()], index=df.index
+    ).rename(columns=lambda col: f"{column}_{col}")
+
+    dup_columns = sorted(set(expanded.columns) & set(df.columns))
+    if dup_columns:
+        raise ValueError(f"Duplicate columns while parsing json: {', '.join(dup_columns)}")
+    return pd.concat([df, expanded], axis=1)
+
+
+def _parse_json(content: str) -> dict:
+    if pd.isna(content):
+        return {}
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        return {}

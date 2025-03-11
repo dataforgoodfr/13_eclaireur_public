@@ -154,6 +154,7 @@ logging:
       level: DEBUG
       formatter: simple
       filename: back/data/logs/log.txt
-  root:
-    level: DEBUG
-    handlers: [console, file]
+  loggers:
+    back:
+      level: INFO
+      handlers: [console, file]
