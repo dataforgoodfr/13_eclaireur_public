@@ -13,12 +13,3 @@ export enum CommunityType {
   /** Etablissement public territorial */
   EPT = 'EPT',
 }
-
-export type Community = {
-  siren: `${number}`;
-  nom: string;
-  type: CommunityType;
-  population: number;
-  longitude: number;
-  latitude: number;
-};

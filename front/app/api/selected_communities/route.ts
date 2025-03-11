@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import db from '@/utils/db';
-import { createSQLQueryParams } from '@/utils/fetchers/communities/createSQLQueryParams';
+import { getQueryFromPool } from '@/utils/db';
+import {
+  CommunitiesOptions,
+  createSQLQueryParams,
+} from '@/utils/fetchers/communities/createSQLQueryParams';
 import { CommunityType } from '@/utils/types';
-
-import { CommunitiesParamsOptions } from './types';
 
 function mapCommunityType(type: string | null) {
   if (type === null) return null;
@@ -16,16 +17,10 @@ function mapCommunityType(type: string | null) {
   throw new Error(`Community type is wrong - ${type}`);
 }
 
-async function getDataFromPool(options: CommunitiesParamsOptions) {
-  const client = await db.connect();
-
+async function getDataFromPool(options: CommunitiesOptions) {
   const params = createSQLQueryParams(options);
 
-  const { rows } = await client.query(...params);
-
-  client.release();
-
-  return rows;
+  return getQueryFromPool(...params);
 }
 
 function isLimitValid(limit: number) {
@@ -51,7 +46,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
     }
 
-    const data = await getDataFromPool({ type, limit, siren });
+    const data = await getDataFromPool({ filters: { type, limit, siren } });
 
     return NextResponse.json(data);
   } catch (error) {

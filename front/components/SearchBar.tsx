@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { Community } from '@/app/models/community';
 import { Input } from '@/components/ui/input';
-import { Community } from '@/utils/types';
 import { debounce } from '@/utils/utils';
 import { CommandEmpty, CommandGroup, CommandItem, CommandList } from 'cmdk';
 import { Command, Search } from 'lucide-react';
