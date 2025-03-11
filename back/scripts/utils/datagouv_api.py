@@ -93,42 +93,45 @@ class DataGouvAPI:
         url = "https://www.data.gouv.fr/api/1/datasets/"
         params = {"organization": organization_id}
         datasets = []
-        while url:
-            orga_datasets, url = __class__._next_page(url, params)
-            datasets.append(
-                [
-                    {
-                        "organization_id": metadata["organization"]["id"],
-                        "organization": metadata["organization"]["name"],
-                        "title": metadata["title"],
-                        "description": metadata["description"],
-                        "dataset_id": metadata["id"],
-                        "frequency": metadata["frequency"],
-                        "created_at": resource["created_at"],
-                    }
-                    | __class__._resource_infos(resource)
-                    for metadata in orga_datasets
-                    for resource in metadata["resources"]
-                ]
-            )
-        datasets = pd.DataFrame(
-            list(chain.from_iterable(datasets)),
-            columns=[
-                "organization_id",
-                "organization",
-                "title",
-                "description",
-                "dataset_id",
-                "frequency",
-                "format",
-                "url",
-                "created_at",
-                "resource_description",
-                "deleted_dataset",
-                "resource_id",
-                "resource_url",
-            ],
-        )
+        output_columns = [
+            "organization_id",
+            "organization",
+            "title",
+            "description",
+            "dataset_id",
+            "frequency",
+            "format",
+            "url",
+            "created_at",
+            "resource_description",
+            "deleted_dataset",
+            "resource_id",
+            "resource_url",
+        ]
+        try:
+            while url:
+                orga_datasets, url = __class__._next_page(url, params)
+                datasets.append(
+                    [
+                        {
+                            "organization_id": metadata["organization"]["id"],
+                            "organization": metadata["organization"]["name"],
+                            "title": metadata["title"],
+                            "description": metadata["description"],
+                            "dataset_id": metadata["id"],
+                            "frequency": metadata["frequency"],
+                            "created_at": resource["created_at"],
+                        }
+                        | __class__._resource_infos(resource)
+                        for metadata in orga_datasets
+                        for resource in metadata["resources"]
+                    ]
+                )
+        except Exception:
+            LOGGER.error("Error while downloading file from %s", url)
+            return pd.DataFrame(columns=output_columns)
+
+        datasets = pd.DataFrame(list(chain.from_iterable(datasets)), output_columns)
         if savedir:
             datasets.to_parquet(organisation_datasets_filename)
         return datasets
