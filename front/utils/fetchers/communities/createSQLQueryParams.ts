@@ -2,33 +2,50 @@ import { Community } from '@/app/models/community';
 
 import { CommunityType } from '../../types';
 
-export type CommunitiesParams = Partial<Pick<Community, 'siren' | 'type'>> & {
-  limit?: number;
+export type CommunitiesOptions = {
+  selectors?: (keyof Community)[];
+  filters?: Partial<Pick<Community, 'siren' | 'type'>> & {
+    limit?: number;
+  };
 };
 
 const TABLE_NAME = 'staging_communities';
+
+function stringifySelectors(options: CommunitiesOptions): string {
+  const { selectors } = options;
+
+  if (selectors == null) {
+    return '*';
+  }
+
+  return selectors.join(', ');
+}
 
 /**
  * Create the sql query for the marches publics
  * @param options
  * @returns
  */
-export function createSQLQueryParams(options?: CommunitiesParams) {
-  let query = `SELECT * FROM ${TABLE_NAME}`;
+export function createSQLQueryParams(options?: CommunitiesOptions) {
   let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {
-    return [query, values] as const;
+    return [`SELECT * FROM ${TABLE_NAME}`, values] as const;
   }
 
-  const { limit, ...restOptions } = options;
+  const selectorsStringified = stringifySelectors(options);
+  let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
+
+  const { filters } = options;
+
+  const { limit, ...restFilters } = filters ?? { limit: undefined };
 
   const whereConditions: string[] = [];
 
-  const keys = Object.keys(restOptions) as unknown as (keyof typeof options)[];
+  const keys = Object.keys(restFilters) as unknown as (keyof typeof filters)[];
 
   keys.forEach((key) => {
-    const option = options[key];
+    const option = filters?.[key];
     if (option == null) {
       console.error(`${key} with value is null or undefined in the query ${query}`);
 

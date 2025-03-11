@@ -1,19 +1,11 @@
 import HomepageHeader from '@/components/HomepageHeader';
 import CtaGroup from '@/components/cta/CtaGroup';
-import db from '@/utils/db';
-
-async function getCommunities() {
-  const client = await db.connect();
-  try {
-    const { rows } = await client.query('SELECT * FROM selected_communities');
-    return rows;
-  } finally {
-    client.release();
-  }
-}
+import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
 export default async function Home() {
-  const communities = await getCommunities();
+  const communities = await fetchCommunities({ selectors: ['nom', 'siren'] });
+
+  console.log({ communities });
 
   return (
     <>

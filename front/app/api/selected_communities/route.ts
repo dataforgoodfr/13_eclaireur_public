@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getQueryFromPool } from '@/utils/db';
 import {
-  CommunitiesParams,
+  CommunitiesOptions,
   createSQLQueryParams,
 } from '@/utils/fetchers/communities/createSQLQueryParams';
 import { CommunityType } from '@/utils/types';
@@ -17,7 +17,7 @@ function mapCommunityType(type: string | null) {
   throw new Error(`Community type is wrong - ${type}`);
 }
 
-async function getDataFromPool(options: CommunitiesParams) {
+async function getDataFromPool(options: CommunitiesOptions) {
   const params = createSQLQueryParams(options);
 
   return getQueryFromPool(...params);
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
     }
 
-    const data = await getDataFromPool({ type, limit, siren });
+    const data = await getDataFromPool({ filters: { type, limit, siren } });
 
     return NextResponse.json(data);
   } catch (error) {

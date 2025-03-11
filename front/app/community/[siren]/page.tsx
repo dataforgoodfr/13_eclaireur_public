@@ -3,7 +3,7 @@ import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
 async function getCommunity(siren: string) {
-  const communitiesResults = await fetchCommunities({ siren });
+  const communitiesResults = await fetchCommunities({ filters: { siren } });
 
   if (communitiesResults.length === 0) {
     throw new Error(`Community doesnt exist with siren ${siren}`);

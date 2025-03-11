@@ -1,6 +1,6 @@
 import { Community } from '@/app/models/community';
 
-import { CommunitiesParams } from './createSQLQueryParams';
+import { CommunitiesOptions } from './createSQLQueryParams';
 
 const API_ROUTE = '/api/selected_communities';
 
@@ -9,11 +9,11 @@ const API_ROUTE = '/api/selected_communities';
  * @param options
  * @returns
  */
-export async function fetchCommunities(options?: CommunitiesParams): Promise<Community[]> {
+export async function fetchCommunities(options?: CommunitiesOptions): Promise<Community[]> {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const limit = options?.limit;
-  const type = options?.type;
+  const limit = options?.filters?.limit;
+  const type = options?.filters?.type;
 
   const url = new URL(API_ROUTE, baseURL);
 
