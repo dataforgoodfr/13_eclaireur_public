@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import db from '@/utils/db';
-import { createSQLQueryParams } from '@/utils/fetchers/communities/createSQLQueryParams';
+import { getQueryFromPool } from '@/utils/db';
+import {
+  CommunitiesParams,
+  createSQLQueryParams,
+} from '@/utils/fetchers/communities/createSQLQueryParams';
 import { CommunityType } from '@/utils/types';
-
-import { CommunitiesParamsOptions } from './types';
 
 function mapCommunityType(type: string | null) {
   if (type === null) return null;
@@ -16,16 +17,10 @@ function mapCommunityType(type: string | null) {
   throw new Error(`Community type is wrong - ${type}`);
 }
 
-async function getDataFromPool(options: CommunitiesParamsOptions) {
-  const client = await db.connect();
-
+async function getDataFromPool(options: CommunitiesParams) {
   const params = createSQLQueryParams(options);
 
-  const { rows } = await client.query(...params);
-
-  client.release();
-
-  return rows;
+  return getQueryFromPool(...params);
 }
 
 function isLimitValid(limit: number) {

@@ -1,19 +1,22 @@
-// Interface pour typer les données de communauté
-import fetchCommunityBySiren from '@/utils/fetchers/fetchCommunityBySiren';
+import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
-interface Community {
-  siren: string;
-  nom: string;
-  type: string;
-  population: number;
-  longitude: number;
-  latitude: number;
+type CommunityPageProps = { params: Promise<{ siren: string }> };
+
+async function getCommunity(siren: string) {
+  const communitiesResults = await fetchCommunities({ siren });
+
+  if (communitiesResults.length === 0) {
+    throw new Error(`Community doesnt exist with siren ${siren}`);
+  }
+
+  return communitiesResults[0];
 }
 
-export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
+export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
-  const community: Community = await fetchCommunityBySiren(siren);
+  const community = await getCommunity(siren);
+
   return (
     <div className='community-page'>
       <h1>{community.nom}</h1>
@@ -27,10 +30,6 @@ export default async function CommunityPage({ params }: { params: Promise<{ sire
         </p>
         <p>
           <strong>Population:</strong> {community.population.toLocaleString()} habitants
-        </p>
-        <p>
-          <strong>Coordonnées géographiques:</strong> {community.latitude.toFixed(6)},{' '}
-          {community.longitude.toFixed(6)}
         </p>
       </div>
     </div>

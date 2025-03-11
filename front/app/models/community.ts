@@ -3,6 +3,7 @@ export type Community = {
   siren: string;
   /** Primary key */
   type: string;
+  nom: string;
   cog: string;
   code_departement: string;
   code_region: string;

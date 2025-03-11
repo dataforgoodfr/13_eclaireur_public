@@ -1,40 +1,52 @@
-import { CommunitiesParamsOptions } from '@/app/api/selected_communities/types';
+import { Community } from '@/app/models/community';
 
 import { CommunityType } from '../../types';
 
+export type CommunitiesParams = Partial<Pick<Community, 'siren' | 'type'>> & {
+  limit?: number;
+};
+
+const TABLE_NAME = 'staging_communities';
+
 /**
- * Create the sql query for the communities
+ * Create the sql query for the marches publics
  * @param options
  * @returns
  */
-export function createSQLQueryParams(options?: CommunitiesParamsOptions) {
-  let query = 'SELECT * FROM selected_communities';
-  let values: (CommunityType | number | string | undefined)[] = [];
+export function createSQLQueryParams(options?: CommunitiesParams) {
+  let query = `SELECT * FROM ${TABLE_NAME}`;
+  let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {
     return [query, values] as const;
   }
 
-  const { type, siren, limit } = options;
+  const { limit, ...restOptions } = options;
 
   const whereConditions: string[] = [];
 
-  if (type) {
-    whereConditions.push(`type = $${values.length + 1}`);
-    values.push(type);
-  }
+  const keys = Object.keys(restOptions) as unknown as (keyof typeof options)[];
 
-  if (siren) {
-    whereConditions.push(`siren = $${values.length + 1}`);
-    values.push(siren);
-  }
+  keys.forEach((key) => {
+    const option = options[key];
+    if (option == null) {
+      console.error(`${key} with value is null or undefined in the query ${query}`);
+
+      return;
+    }
+
+    whereConditions.push(`${key} = $${values.length + 1}`);
+    values.push(option);
+  });
 
   if (whereConditions.length > 0) {
-    query += ' WHERE ' + whereConditions.join(' AND ');
+    query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
-  query += ' LIMIT $' + (values.length + 1);
-  values.push(limit);
+  if (limit) {
+    query += ` LIMIT $${values.length + 1}`;
+    values.push(limit);
+  }
 
   return [query, values] as const;
 }
