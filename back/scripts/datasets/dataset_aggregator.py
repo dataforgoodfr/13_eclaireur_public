@@ -31,10 +31,10 @@ class DatasetAggregator:
         self.combined_filename = get_project_base_path() / (config["combined_filename"])
         self.errors = defaultdict(list)
 
-        self._add_filenames()
+        self._add_normalized_filenames()
 
     def run(self) -> None:
-        for file_infos in tqdm(self._files_to_run()):
+        for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
                 continue
@@ -43,14 +43,14 @@ class DatasetAggregator:
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
 
-            self._treat_file(file_infos)
+            self._process_file(file_infos)
 
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
         return self
 
-    def _treat_file(self, file: tuple) -> None:
+    def _process_file(self, file: tuple) -> None:
         """
         Download and normalize a spécific file.
         """
@@ -61,7 +61,7 @@ class DatasetAggregator:
         """
         Save locally the output of the URL.
         """
-        output_filename = self.dataset_filename(file_metadata, "raw")
+        output_filename = self._dataset_filename(file_metadata, "raw")
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
             return
@@ -77,7 +77,7 @@ class DatasetAggregator:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
             self.errors[str(e)].append(file_metadata.url)
 
-    def dataset_filename(self, file: tuple, step: str):
+    def _dataset_filename(self, file: tuple, step: str):
         """
         Expected path for a given file depending on the step (raw or norm).
         """
@@ -87,12 +87,12 @@ class DatasetAggregator:
         )
 
     def _normalize_file(self, file_metadata: tuple) -> pd.DataFrame:
-        out_filename = self.dataset_filename(file_metadata, "norm")
+        out_filename = self._dataset_filename(file_metadata, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
             return
 
-        raw_filename = self.dataset_filename(file_metadata, "raw")
+        raw_filename = self._dataset_filename(file_metadata, "raw")
         if not raw_filename.exists():
             LOGGER.debug(f"File {raw_filename} does not exist, skipping")
             return
@@ -103,7 +103,7 @@ class DatasetAggregator:
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()
 
-    def _files_to_run(self):
+    def _remaining_to_normalize(self):
         """
         Select among the input files the ones for which we do not have yet the normalized file.
         """
@@ -121,12 +121,12 @@ class DatasetAggregator:
             .itertuples()
         )
 
-    def _add_filenames(self):
+    def _add_normalized_filenames(self):
         """
         Add to the DataFrame of input files the expected name of the normalized file.
         """
         all_files = list(self.files_in_scope.itertuples(index=False))
-        fns = [str(self.dataset_filename(file, "norm")) for file in all_files]
+        fns = [str(self._dataset_filename(file, "norm")) for file in all_files]
         self.files_in_scope = self.files_in_scope.assign(filename=fns)
 
     def _concatenate_files(self):

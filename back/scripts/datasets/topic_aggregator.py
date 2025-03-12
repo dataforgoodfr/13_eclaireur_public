@@ -59,7 +59,7 @@ class TopicAggregator(DatasetAggregator):
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
 
-    def dataset_filename(self, file: tuple, step: str):
+    def _dataset_filename(self, file: tuple, step: str):
         """
         Expected path for a given file depending on the step (raw or norm).
         """
