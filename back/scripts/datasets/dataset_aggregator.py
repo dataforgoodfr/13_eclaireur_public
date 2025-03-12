@@ -20,6 +20,33 @@ def _sha256(s):
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
+class BaseDatasetAggregator:
+    """
+    Base class for multiple dataset aggregation functionality.
+
+    From a list of urls to download, this class implements the stadard logic of :
+    - downloading the raw file into a dedicated folder;
+    - converting the raw file into a normalized parquet file;
+    - concatenating the individual parquet files into a single combined parquet file;
+    - saving the errors.
+
+    This class is designed to be extended by concrete implementations that handle specific
+    dataset formats and normalization logic. Subclasses must implement the required methods to define
+    how files are read and parsed.
+
+    Required methods for subclasses:
+        _read_parse_file(self, file_metadata: tuple) -> pd.DataFrame:
+            From a file metadata, this function must read the raw file and apply the normalization logic.
+            Args:
+                file_metadata: Tuple containing metadata about the file to process
+            Returns:
+                DataFrame containing the normalized data
+
+    Intermediate files directory and final combined filename are defined in the config,
+    respectively as "data_folder" and "combined_filename".
+    """
+
+
 class DatasetAggregator:
     def __init__(self, files: pd.DataFrame, config: dict):
         self._config = config
