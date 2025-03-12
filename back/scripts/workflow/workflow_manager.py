@@ -35,7 +35,7 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
-        
+
         if self.config["workflow"]["save_to_db"]:
             self.connector = PSQLConnector(self.config["workflow"]["replace_tables"])
 
@@ -43,7 +43,6 @@ class WorkflowManager:
         self.source_folder.mkdir(exist_ok=True, parents=True)
 
     def run_workflow(self):
-        
         self.logger.info("Workflow started.")
         FinancialAccounts(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
@@ -103,9 +102,8 @@ class WorkflowManager:
 
         if self.config["workflow"]["save_to_db"]:
             self.connector.upsert_df_to_sql(
-                communities_selector.selected_data,
-                "normalized_selected_communities",
-                ["siren"])
+                communities_selector.selected_data, "normalized_selected_communities", ["siren"]
+            )
 
         self.logger.info("Communities scope initialized.")
         return communities_selector
@@ -120,7 +118,6 @@ class WorkflowManager:
             config["datagouv_api"] = self.config["datagouv_api"]
             datagouv_searcher = DataGouvSearcher(communities_selector, config)
             datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
-
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder(communities_selector)
@@ -137,14 +134,18 @@ class WorkflowManager:
             )
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_files_in_scope, "files_in_scope_" + topic, ["url"])
+                self.connector.upsert_df_to_sql(
+                    topic_files_in_scope, "files_in_scope_" + topic, ["url"]
+                )
 
             topic_agg = TopicAggregator(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             ).run()
-            
+
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_agg.aggregated_dataset, "normalized_" + topic, ["url"])
+                self.connector.upsert_df_to_sql(
+                    topic_agg.aggregated_dataset, "normalized_" + topic, ["url"]
+                )
 
             return topic_files_in_scope, topic_agg.aggregated_dataset
 
@@ -153,8 +154,14 @@ class WorkflowManager:
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
             if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(topic_datafiles.loaded_data, "raw_" + topic, ["acheteur.id", "codeCPV"])
-                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, "normalized_" + topic, ["acheteur.id", "codeCPV"])
+                self.connector.upsert_df_to_sql(
+                    topic_datafiles.loaded_data, "raw_" + topic, ["acheteur.id", "codeCPV"]
+                )
+                self.connector.upsert_df_to_sql(
+                    topic_datafiles.normalized_data,
+                    "normalized_" + topic,
+                    ["acheteur.id", "codeCPV"],
+                )
 
         if self.config["workflow"]["save_to_db"]:
             self.connector.close_connection()
