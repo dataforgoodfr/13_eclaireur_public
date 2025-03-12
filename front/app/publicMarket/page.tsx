@@ -7,7 +7,6 @@ import MarketType from "@/components/publicMarket/MarketType";
 import MarketProcess from "@/components/publicMarket/MarketProcess";
 import MarketAndAmount from "@/components/publicMarket/MarketAndAmount";
 import Best10 from "@/components/publicMarket/Best10";
-import MarketByActivities2 from "@/components/publicMarket/MarketByActivities2";
 
 
 export default function PublicMarket() {
@@ -122,7 +121,6 @@ export default function PublicMarket() {
       <Stats marketNumber={data.length} marketAmount={formattedTotalSubvention} />
       <MarketAndAmount data={contractsByYear}/>
       <MarketByActivities data={totalByCategory} />
-      <MarketByActivities2 data={totalByCategory} />
       <Best10 />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-screen-lg mx-auto mt-6 mb-20">
         <MarketType data={marketType}/>
