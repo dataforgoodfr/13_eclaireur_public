@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { Community } from '@/app/models/community';
 import {
   Command,
   CommandEmpty,
@@ -12,7 +13,6 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
-import { Community } from '@/utils/types';
 import { Search } from 'lucide-react';
 
 interface SearchbarProps {
