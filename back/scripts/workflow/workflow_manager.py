@@ -133,6 +133,7 @@ class WorkflowManager:
                     [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
                     ignore_index=True,
                 )
+                .dropna(subset=["url"])
                 .pipe(correct_format_from_url)
                 .pipe(remove_same_dataset_formats)
                 .pipe(select_implemented_formats)
