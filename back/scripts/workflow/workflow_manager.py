@@ -168,7 +168,7 @@ class WorkflowManager:
 
         self.logger.info(f"Topic {topic} processed.")
 
-        return topic_files_in_scope, topic_datafiles
+        return topic_files_in_scope, topic_datafiles.normalized_data
 
     def save_output_to_csv(
         self,
