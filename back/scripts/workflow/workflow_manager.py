@@ -140,11 +140,14 @@ class WorkflowManager:
 
             if self.config["workflow"]["save_to_db"]:
                 self.connector.upsert_df_to_sql(topic_files_in_scope, "files_in_scope_" + topic, ["url"])
-                self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, "normalized_" + topic, ["url"])
 
             topic_agg = TopicAggregator(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             ).run()
+            
+            if self.config["workflow"]["save_to_db"]:
+                self.connector.upsert_df_to_sql(topic_agg.aggregated_dataset, "normalized_" + topic, ["url"])
+
             return topic_files_in_scope, topic_agg.aggregated_dataset
 
         if topic_config["source"] == "single":
