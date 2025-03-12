@@ -33,7 +33,7 @@ POSTGRESQL_ADDON_USER=
 POSTGRESQL_ADDON_PORT=
 POSTGRESQL_ADDON_PASSWORD=
 POSTGRESQL_ADDON_URI=
-BASE_URL=http://localhost:3000
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 To access the PostgreSQL environment variables send a message to Frédérik VARLET on slack. He will give you access to Vaultwarden where they are stored. 
