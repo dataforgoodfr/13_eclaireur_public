@@ -231,9 +231,15 @@ def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.
     """
+    if not column:
+        raise ValueError("Column name is required.")
     expanded = pd.DataFrame.from_records(
         [_parse_json(x) for x in df[column].tolist()], index=df.index
     ).rename(columns=lambda col: f"{column}_{col}")
+
+    dup_columns = sorted(set(expanded.columns) & set(df.columns))
+    if dup_columns:
+        raise ValueError(f"Duplicate columns while parsing json: {', '.join(dup_columns)}")
     return pd.concat([df, expanded], axis=1)
 
 
@@ -244,15 +250,3 @@ def _parse_json(content: str) -> dict:
         return json.loads(content)
     except json.JSONDecodeError:
         return {}
-
-
-def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Identify the potential format of the file from the content of the url.
-    """
-    pat = r"\b(parquet|csv|xlsx?|json[idl]{0,}|pdf)\b"
-    url_format = df["url"].str.extract(pat)[0]
-    url_format = url_format.where(
-        ~url_format.str.startswith("json").fillna(False), "json"
-    ).fillna(df["format"])
-    return df.assign(format=url_format)

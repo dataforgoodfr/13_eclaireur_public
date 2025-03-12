@@ -2,7 +2,6 @@ import pandas as pd
 import pytest
 
 from back.scripts.utils.dataframe_operation import (
-    correct_format_from_url,
     expand_json_columns,
     normalize_identifiant,
     safe_rename,
@@ -80,7 +79,7 @@ class TestExpandJsonColumns:
             }
         )
 
-        result = expand_json_columns(df)
+        result = expand_json_columns(df, "extra")
         expected_df = pd.DataFrame(
             {
                 "id": [1, 2, 3],
@@ -108,27 +107,28 @@ class TestExpandJsonColumns:
             }
         )
 
-        result_missing = expand_json_columns(df_missing)
+        result_missing = expand_json_columns(df_missing, "extra")
         pd.testing.assert_frame_equal(result_missing, expected_df)
 
+    def test_expand_empty_column_name(self):
+        """Test expand_json_columns with empty column name parameter"""
+        df = pd.DataFrame({"id": [1, 2, 3], "extra": ["value1", "value2", "value3"]})
+        with pytest.raises(ValueError):
+            expand_json_columns(df, "")
 
-class TestCorrectFormatFromUrl:
-    def test_url_takes_precedence(self):
-        df = pd.DataFrame({"url": ["https://example.com/json"], "format": ["parquet"]})
-        out = correct_format_from_url(df)
-        assert out["format"].iloc[0] == "json"
+    def test_expand_existing_column(self):
+        """Test expand_json_columns when expanded column already exists"""
+        df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "extra": [
+                    '{"field1": "value1"}',
+                    '{"field1": "value2"}',
+                    '{"field1": "value3"}',
+                ],
+                "extra_field1": ["existing1", "existing2", "existing3"],
+            }
+        )
 
-    def test_url_considered_without_format(self):
-        df = pd.DataFrame({"url": ["https://example.com/parquet"], "format": [None]})
-        out = correct_format_from_url(df)
-        assert out["format"].iloc[0] == "parquet"
-
-    def test_format_used_without_url_infos(self):
-        df = pd.DataFrame({"url": ["https://example.com"], "format": ["json"]})
-        out = correct_format_from_url(df)
-        assert out["format"].iloc[0] == "json"
-
-    def test_format_stays_null_if_no_infos(self):
-        df = pd.DataFrame({"url": ["https://example.com"], "format": [None]})
-        out = correct_format_from_url(df)
-        assert out["format"].iloc[0] is None
+        with pytest.raises(ValueError):
+            expand_json_columns(df, "extra")

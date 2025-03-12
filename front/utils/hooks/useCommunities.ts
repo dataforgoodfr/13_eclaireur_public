@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { Options, fetchCommunities } from 'utils/fetchers/fetchCommunities';
 
-export function useCommunities(options?: Options) {
-  const queryKey = ['communities', options?.type];
+import { CommunitiesOptions } from '../fetchers/communities/createSQLQueryParams';
+import { fetchCommunities } from '../fetchers/communities/fetchCommunities-client';
+
+export function useCommunities(options?: CommunitiesOptions) {
+  const queryKey = ['communities', options];
 
   const query = useQuery({
     queryKey,

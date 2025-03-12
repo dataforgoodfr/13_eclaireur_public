@@ -1,3 +1,4 @@
+import re
 from io import BytesIO
 
 import pandas as pd
@@ -11,6 +12,9 @@ class ExcelLoader(BaseLoader):
     """
     Loader for Excel files.
     """
+
+    file_extensions = {"xls", "xlsx", "excel"}
+    file_media_type_regex = re.compile(r"(excel|spreadsheet|xls|xlsx)", flags=re.IGNORECASE)
 
     def __init__(self, file_url, dtype=None, columns_to_keep=None, **kwargs):
         super().__init__(file_url, **kwargs)

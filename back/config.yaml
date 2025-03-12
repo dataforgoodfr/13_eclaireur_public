@@ -1,5 +1,5 @@
 workflow:
-  save_to_db: True
+  save_to_db: False
 
 communities:
   processed_data:
@@ -134,11 +134,15 @@ declarations_interet:
 
 financial_accounts:
   data_folder: back/data/financial_accounts
-  files_csv: back/scripts/datasets/static/communities_financial_accounts.csv
+  files_csv: back/scripts/datasets/communities_financial_accounts.csv
+  columns_mapping: back/scripts/datasets/normalization_financial_account_columns.csv
   combined_filename: back/data/financial_accounts/financial_accounts.parquet
 
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
+
+warehouse:
+  data_folder: back/data/warehouse
 
 logging:
   version: 1

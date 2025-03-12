@@ -10,7 +10,8 @@ from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
 )
-from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
+from back.scripts.datasets.dataset_aggregator import DatasetAggregator
+from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (
@@ -58,17 +59,7 @@ class TopicAggregator(DatasetAggregator):
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
-
         self.extra_columns = Counter()
-
-    def dataset_filename(self, file: tuple, step: str):
-        """
-        Expected path for a given file depending on the step (raw or norm).
-        """
-        return (
-            self.data_folder
-            / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
-        )
 
     def _load_schema(self, schema_topic_config):
         """

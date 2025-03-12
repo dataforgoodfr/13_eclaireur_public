@@ -1,4 +1,5 @@
 import json
+import re
 from io import BytesIO
 
 import pandas as pd
@@ -10,6 +11,9 @@ class JSONLoader(BaseLoader):
     """
     Loader for JSON files.
     """
+
+    file_extensions = {"json"}
+    file_media_type_regex = re.compile(r"json", flags=re.IGNORECASE)
 
     def __init__(self, file_url, key=None, **kwargs):
         super().__init__(file_url, **kwargs)
