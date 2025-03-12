@@ -1,22 +1,31 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
-import pandas as pd
 
+import pandas as pd
 from scripts.communities.communities_selector import CommunitiesSelector
+from scripts.datasets.datafile_loader import DatafileLoader
 from scripts.datasets.datagouv_searcher import DataGouvSearcher
 from scripts.datasets.single_urls_builder import SingleUrlsBuilder
-from scripts.datasets.datafiles_loader import DatafilesLoader
-from scripts.datasets.datafile_loader import DatafileLoader
-from scripts.utils.psql_connector import PSQLConnector
-from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
+from scripts.utils.config import get_project_base_path, get_project_data_path
 from scripts.utils.constants import (
-    FILES_IN_SCOPE_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-    DATAFILES_OUT_FILENAME,
     DATACOLUMNS_OUT_FILENAME,
+    DATAFILES_OUT_FILENAME,
+    FILES_IN_SCOPE_FILENAME,
     MODIFICATIONS_DATA_FILENAME,
+    NORMALIZED_DATA_FILENAME,
+)
+from scripts.utils.files_operation import save_csv
+from scripts.utils.psql_connector import PSQLConnector
+
+from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
+from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
+from back.scripts.datasets.sirene import SireneWorkflow
+from back.scripts.datasets.topic_aggregator import TopicAggregator
+from back.scripts.utils.dataframe_operation import normalize_column_names
+from back.scripts.utils.datagouv_api import (
+    normalize_formats_description,
+    select_implemented_formats,
 )
 
 
@@ -29,18 +38,24 @@ class WorkflowManager:
         if self.config["workflow"]["save_to_db"]:
             self.connector = PSQLConnector(self.config["workflow"]["replace_tables"])
 
+        self.source_folder = get_project_data_path()
+        self.source_folder.mkdir(exist_ok=True, parents=True)
+
     def run_workflow(self):
         
         self.logger.info("Workflow started.")
+        ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
+        SireneWorkflow(self.config["sirene"]).run()
+        DeclaInteretWorkflow(self.config["declarations_interet"]).run()
+        self._run_subvention_and_marche()
 
-        # Create blank dict to store dataframes that will be saved to the DB
-        df_to_save_to_db = {}
+        self.logger.info("Workflow completed.")
 
+    def _run_subvention_and_marche(self):
         # If communities files are already generated, check the age
         self.check_file_age(self.config["file_age_to_check"])
 
-        # Build communities scope, and add selected communities to df_to_save
-        communities_selector = self.initialize_communities_scope(df_to_save_to_db)
+        communities_selector = self.initialize_communities_scope()
 
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
         for topic, topic_config in self.config["search"].items():
@@ -49,17 +64,14 @@ class WorkflowManager:
                 communities_selector, topic, topic_config
             )
 
-            # Save the topics outputs to csv
             self.save_output_to_csv(
                 topic,
-                topic_datafiles.normalized_data,
+                topic_datafiles,
                 topic_files_in_scope,
                 getattr(topic_datafiles, "datacolumns_out", None),
                 getattr(topic_datafiles, "datafiles_out", None),
                 getattr(topic_datafiles, "modifications_data", None),
             )
-
-        self.logger.info("Workflow completed.")
 
     def check_file_age(self, config):
         """
@@ -81,14 +93,19 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def initialize_communities_scope(self, df_to_save_to_db):
+    def initialize_communities_scope(self):
         self.logger.info("Initializing communities scope.")
         # Initialize CommunitiesSelector with the config and select communities
-        communities_selector = CommunitiesSelector(self.config["communities"])
+        config = self.config["communities"] | {"sirene": self.config["sirene"]}
+        communities_selector = CommunitiesSelector(config)
 
-        # Add selected communities data to df_to_save
-        if self.config["workflow"]["save_to_db"]:
-            df_to_save_to_db["communities"] = communities_selector.selected_data
+        self.connector.save_df_to_sql_drop_existing(
+            self.config["workflow"]["save_to_db"],
+            communities_selector.selected_data,
+            "selected_communities",
+            index=True,
+            index_label=["siren"],
+        )
 
         self.logger.info("Communities scope initialized.")
         return communities_selector
@@ -99,7 +116,9 @@ class WorkflowManager:
 
         if topic_config["source"] == "multiple":
             # Find multiple datafiles from datagouv
-            datagouv_searcher = DataGouvSearcher(communities_selector, self.config["datagouv"])
+            config = self.config["datagouv"]
+            config["datagouv_api"] = self.config["datagouv_api"]
+            datagouv_searcher = DataGouvSearcher(communities_selector, config)
             datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
 
@@ -108,9 +127,13 @@ class WorkflowManager:
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
 
             # Concatenate both datafiles lists into one
-            topic_files_in_scope = pd.concat(
-                [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
-                ignore_index=True,
+            topic_files_in_scope = (
+                pd.concat(
+                    [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
+                    ignore_index=True,
+                )
+                .assign(format=lambda df: normalize_formats_description(df["format"]))
+                .pipe(select_implemented_formats)
             )
 
             if self.config["workflow"]["save_to_db"]:
@@ -123,7 +146,12 @@ class WorkflowManager:
             if self.config["workflow"]["save_to_db"]:
                 self.connector.upsert_df_to_sql(topic_datafiles.normalized_data, "normalized_" + topic, ["url"])
 
-        elif topic_config["source"] == "single":
+            topic_agg = TopicAggregator(
+                topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
+            ).run()
+            return topic_files_in_scope, topic_agg.aggregated_dataset
+
+        if topic_config["source"] == "single":
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
@@ -147,10 +175,11 @@ class WorkflowManager:
         datafiles_out=None,
         modifications_data=None,
     ):
-        # Define the output folder path
-        output_folder = (
-            Path(get_project_base_path()) / "back" / "data" / "datasets" / topic / "outputs"
+        output_folder = get_project_base_path() / (
+            self.config["outputs_csv"]["path"] % {"topic": topic}
         )
+        output_folder.mkdir(parents=True, exist_ok=True)
+        normalized_data = normalize_column_names(normalized_data)
 
         # Loop through the dataframes (if not None) to save them to the output folder
         if normalized_data is not None:

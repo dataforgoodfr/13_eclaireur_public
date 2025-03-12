@@ -23,18 +23,9 @@ jobs:
               ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
               fetch-depth: 0
-          
-          # Debug Step: Print the environment variables
-          - name: Debug environment variables
-            run: |
-              cd $APP_FOLDER
-              echo "CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}"
-              echo "CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}"
-              echo "ORGA_ID: ${{ secrets.ORGA_ID }}"
-              echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
     
           - name: Create review app
-            uses: CleverCloud/clever-cloud-review-app@v1.1.1
+            uses: CleverCloud/clever-cloud-review-app@v2.0.0
             env:
                 CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
@@ -48,6 +39,13 @@ jobs:
                 GH_HOST: ${{secrets.HOST}}
                 GH_NODE_ENV : ${{secrets.NODE_ENV}}
                 GH_PORT: ${{secrets.PORT}}
+                GH_NEXT_PUBLIC_BASE_URL: https://${{ github.event.pull_request.base.repo.name }}-PR-${{ github.event.number }}.cleverapps.io
+                GH_POSTGRESQL_ADDON_HOST: ${{secrets.POSTGRESQL_ADDON_HOST}}
+                GH_POSTGRESQL_ADDON_DB:  ${{secrets.POSTGRESQL_ADDON_DB}}
+                GH_POSTGRESQL_ADDON_USER:  ${{secrets.POSTGRESQL_ADDON_USER}}
+                GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
+                GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
+                GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
 
             with:
                 type: node

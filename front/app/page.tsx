@@ -1,9 +1,11 @@
-export default function Home() {
+import HomepageHeader from '@/components/HomepageHeader';
+import CtaGroup from '@/components/cta/CtaGroup';
+
+export default async function Home() {
   return (
-    <div className='global-margin flex h-screen flex-col items-center justify-center'>
-      <h1>
-        testing
-      </h1>
-    </div>
+    <>
+      <HomepageHeader />
+      <CtaGroup />
+    </>
   );
 }

@@ -11,13 +11,24 @@ load_dotenv()  # Charge les variables d'environnement à partir du fichier .env
 class PSQLConnector:
     def __init__(self, replace_tables):
         self.logger = logging.getLogger(__name__)
-        self.dbname = os.getenv("DB_NAME")
-        self.user = os.getenv("DB_USER")
-        self.password = os.getenv("DB_PASSWORD")
-        self.host = os.getenv("DB_HOST")
-        self.port = os.getenv("DB_PORT")
+
+        self.dbname = os.getenv("DB_NAME", "eclaireur_public")
+        self.user = os.getenv("DB_USER", "eclaireur_public")
+        self.password = os.getenv("DB_PASSWORD", "secret")
+        self.host = os.getenv("DB_HOST", "localhost")
+        self.port = os.getenv("DB_PORT", "5432")
         self.replace_tables = replace_tables
-        
+        self.engine = None
+
+    def close_connection(self):
+        if self.engine:
+            self.engine.dispose()  # Ferme toutes les connexions ouvertes
+            self.logger.info("Database connection closed.")
+
+    def _connect(self):
+        if self.engine is not None:
+            return
+        self.logger.info(f"Connecting to DB {self.host}:{self.port}/{self.dbname}")
         self.engine = create_engine(
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         )

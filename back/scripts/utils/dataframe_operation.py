@@ -1,5 +1,9 @@
+import json
 import logging
+import re
+
 import pandas as pd
+from unidecode import unidecode
 
 """
 This script contains functions to manipulate DataFrames.
@@ -11,24 +15,46 @@ This script contains functions to manipulate DataFrames.
 """
 
 
-# Function to merge duplicate columns in a DataFrame
-def merge_duplicate_columns(df):
-    df.columns = df.columns.astype(str)
+def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.DataFrame:
+    """
+    Identify columns with the same name and merge their content into a single column.
+    """
     duplicate_columns = df.columns[df.columns.duplicated(keep=False)]
+
     for col in duplicate_columns.unique():
-        cols_to_merge = df.filter(like=col, axis=1)
-        df[col] = cols_to_merge.apply(lambda x: " / ".join(x.dropna().astype(str)), axis=1)
-        df.drop(cols_to_merge.columns[1:], axis=1, inplace=True)
+        first_col_index = df.columns.to_list().index(col)
+        merged_serie = df[col].apply(lambda x: separator.join(x.dropna().astype(str)), axis=1)
+
+        df = df.drop(columns=col)
+        # The original order is retained to avoid any problems
+        df.insert(first_col_index, col, merged_serie)
+
     return df
 
 
-# Function to rename columns in a DataFrame
-def safe_rename(df, schema_dict):
-    schema_dict_copy = schema_dict.copy()
-    for original_name, official_name in schema_dict.items():
-        if official_name in df.columns and original_name != official_name:
-            del schema_dict_copy[original_name]
-    df.rename(columns=schema_dict_copy, inplace=True)
+def safe_rename(df: pd.DataFrame, schema_dict: dict) -> pd.DataFrame:
+    """
+    This function renames columns of a DataFrame based on a dictionary of original column names mapped to new column names.
+
+    If a column does not exist in the DataFrame, it is not raised as an error, but rather ignored.
+
+    :param df: the DataFrame to rename columns in
+    :param schema_dict: the dictionary of original column names mapped to new column names
+    :return: the DataFrame with columns renamed
+    """
+    df = df.rename(columns=lambda col: unidecode(str(col).strip())).rename(
+        columns=lambda col: col.split("/")[-1] if col.startswith("http") else col
+    )
+    lowered = [str.lower(x) for x in df.columns]
+    actual_matching = {
+        k: v
+        for k, v in schema_dict.items()
+        if k in df.columns
+        and k != v
+        # do not create a column that may become a duplicate
+        and v.lower() not in lowered
+    }
+    return df.rename(columns=actual_matching)
 
 
 # Function to cast the data in a DataFrame based on a schema (a DataFrame with two columns: 'name' and 'type')
@@ -142,3 +168,85 @@ def detect_skiprows(df):
 def detect_skipcolumns(df):
     df_transposed = df.transpose().reset_index(drop=True)
     return detect_skiprows(df_transposed)
+
+
+def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
+    return df.rename(
+        columns=lambda col: re.sub(r"_+", "_", re.sub(r"[.-]", "_", col.lower())).strip()
+    )
+
+
+def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Transform the selected columns to be float.
+    """
+    if id_col not in frame.columns:
+        return frame
+
+    if str(frame[id_col].dtype) == "float64":
+        return frame
+    if str(frame[id_col].dtype) == "int64":
+        return frame.assign(**{id_col: frame[id_col].astype("float64")})
+
+    return frame.assign(
+        **{
+            id_col: frame[id_col]
+            .astype(str)
+            .where(frame[id_col].notnull() & (frame[id_col] != ""))
+            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+            .str.replace("euros", "")
+            .str.replace(",", ".")
+            .astype("float")
+        }
+    )
+
+
+def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    """
+    Ensure that the selected column can be interpreted as a string siret.
+    """
+    if id_col not in frame.columns:
+        return frame
+    frame = frame.assign(
+        **{
+            id_col: frame[id_col]
+            .astype(str)
+            .where(frame[id_col].notnull())
+            .str.strip()
+            .str.replace(".0", "")
+            .str.replace(r"[\xa0 ]", "", regex=True)
+        }
+    )
+    median_length = frame[id_col].str.len().median()
+    if median_length == 9:
+        # identifier is actually siren
+        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(14, "0")})
+    elif median_length == 14:
+        # identifier is actually siret
+        return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
+    raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
+
+
+def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """
+    Add to a dataframe columns from keys of a json column.
+    """
+    if not column:
+        raise ValueError("Column name is required.")
+    expanded = pd.DataFrame.from_records(
+        [_parse_json(x) for x in df[column].tolist()], index=df.index
+    ).rename(columns=lambda col: f"{column}_{col}")
+
+    dup_columns = sorted(set(expanded.columns) & set(df.columns))
+    if dup_columns:
+        raise ValueError(f"Duplicate columns while parsing json: {', '.join(dup_columns)}")
+    return pd.concat([df, expanded], axis=1)
+
+
+def _parse_json(content: str) -> dict:
+    if pd.isna(content):
+        return {}
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        return {}

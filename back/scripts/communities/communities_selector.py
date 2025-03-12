@@ -1,11 +1,10 @@
 import logging
 import re
+from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from scripts.communities.loaders.odf import OdfLoader
 from scripts.communities.loaders.ofgl import OfglLoader
-from scripts.communities.loaders.sirene import SireneLoader
 from scripts.utils.config import get_project_base_path
 from scripts.utils.geolocator import GeoLocator
 
@@ -44,8 +43,12 @@ class CommunitiesSelector:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        data_folder = get_project_base_path() / "back" / "data" / "communities" / "processed_data"
-        all_communities_filename = data_folder / "all_communities_data.parquet"
+        data_folder = get_project_base_path() / self.config["processed_data"]["path"]
+        data_folder.mkdir(parents=True, exist_ok=True)
+
+        all_communities_filename = (
+            data_folder / self.config["processed_data"]["all_communities_file"]
+        )
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
         else:
@@ -53,7 +56,9 @@ class CommunitiesSelector:
             self.all_data.to_parquet(all_communities_filename)
             self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
 
-        selected_communities_filename = data_folder / "selected_communities_data.parquet"
+        selected_communities_filename = (
+            data_folder / self.config["processed_data"]["selected_communities_file"]
+        )
         if selected_communities_filename.exists():
             self.selected_data = pd.read_parquet(selected_communities_filename)
         else:
@@ -69,7 +74,7 @@ class CommunitiesSelector:
         # Load data from OFGL, ODF, and Sirene datasets
         ofgl = OfglLoader(self.config["ofgl"])
         odf = OdfLoader(self.config["odf"])
-        sirene = SireneLoader(self.config["sirene"])
+        sirene = pd.read_parquet(Path(self.config["sirene"]["data_folder"]) / "sirene.parquet")
         ofgl_data = ofgl.get()
         odf_data = odf.get()
 
@@ -77,10 +82,6 @@ class CommunitiesSelector:
         # TODO : If you cast to Int, it breaks
         # TODO : casting seems redundant, check if it's necessary
         # TODO Manage columns outside of classes (configs ?)
-        ofgl_data["siren"] = pd.to_numeric(ofgl_data["siren"], errors="coerce")
-        ofgl_data["siren"] = ofgl_data["siren"].fillna(0).astype(int)
-        odf_data["siren"] = pd.to_numeric(odf_data["siren"], errors="coerce")
-        odf_data["siren"] = odf_data["siren"].fillna(0).astype(int)
         all_data = ofgl_data.merge(
             odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
             on="siren",
@@ -106,26 +107,10 @@ class CommunitiesSelector:
             ]
         ]
 
-        # Merge Sirene data on 'siren' column
-        all_data["siren"] = pd.to_numeric(all_data["siren"], errors="coerce")
-        all_data["siren"] = all_data["siren"].fillna(0).astype(int)
-        all_data = all_data.merge(sirene.get(), on="siren", how="left")
-
-        # Conversion of the 'trancheEffectifsUniteLegale' and 'population' columns to numeric type
-        all_data["trancheEffectifsUniteLegale"] = pd.to_numeric(
-            all_data["trancheEffectifsUniteLegale"].astype(str), errors="coerce"
+        self.all_data = all_data.merge(sirene, on="siren", how="left").assign(
+            population=lambda df: pd.to_numeric(df["population"].astype(str), errors="coerce"),
+            effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
         )
-        all_data["population"] = pd.to_numeric(
-            all_data["population"].astype(str), errors="coerce"
-        )
-
-        # Add the variable EffectifsSup50, default legal filter for open data application (50 FTE employees)
-        all_data["EffectifsSup50"] = np.where(
-            all_data["trancheEffectifsUniteLegale"] > 15, True, False
-        )
-
-        # Save all communities data to instance
-        self.all_data = all_data.astype({"code_region": str})
 
     def load_selected_communities(self):
         selected_data = self.all_data.copy()
@@ -134,16 +119,15 @@ class CommunitiesSelector:
             | (
                 (self.all_data["type"] == "COM")
                 & (self.all_data["population"] >= 3500)
-                & self.all_data["EffectifsSup50"]
+                & self.all_data["effectifs_sup_50"]
             )
         ]
 
         # Add geocoordinates to selected data
         geolocator = GeoLocator(self.config["geolocator"])
-        selected_data = geolocator.add_geocoordinates(selected_data)
-        selected_data.columns = [
-            re.sub(r"[.-]", "_", col.lower()) for col in selected_data.columns
-        ]  # to adjust column for SQL format and ensure consistency
+        selected_data = geolocator.add_geocoordinates(selected_data).rename(
+            columns=lambda col: re.sub(r"[.-]", "_", col.lower())
+        )
         self.selected_data = selected_data
 
     def get_datagouv_ids_to_siren(self):

@@ -1,83 +1,81 @@
 import csv
-import pandas as pd
+import logging
+import re
 from io import StringIO
+
+import pandas as pd
 
 from .base_loader import BaseLoader
 
+LOGGER = logging.getLogger(__name__)
+
 
 class CSVLoader(BaseLoader):
-    """
-    Loader for CSV files.
-    """
+    file_extensions = {"csv"}
+    file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
 
-    def __init__(self, file_url, dtype=None, columns_to_keep=None, **kwargs):
+    def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
+        """
+        Initialize the CSV loader for either URL or local file.
+
+        Args:
+            source (str): URL or file path to the CSV file
+            columns_to_keep (list, optional): List of column names to keep
+            dtype (dict, optional): Dictionary of column data types
+            logger (logging.Logger, optional): Logger object for logging
+        """
         super().__init__(file_url, **kwargs)
-        self.dtype = dtype
         self.columns_to_keep = columns_to_keep
+        self.dtype = dtype
 
-    def process_data(self, data):
-        # Manage the encoding of the CSV file
-        encodings_to_try = ["utf-8", "windows-1252", "latin1"]
-        decoded_content = None
+    def process_data(self, data) -> pd.DataFrame | None:
+        # Try different encodings for the data
+        encodings_to_try = ["utf-8-sig", "windows-1252", "latin1", "utf-16"]
 
         for encoding in encodings_to_try:
             try:
                 decoded_content = data.decode(encoding)
-                break
-            except Exception:
-                pass
+                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
+                df = self._process_from_decoded(decoded_content)
+                if isinstance(df, pd.DataFrame):
+                    return df
 
-        if decoded_content is None:
-            self.logger.error(
-                f"Impossible de décoder le contenu du fichier CSV à l'URL : {self.file_url}"
-            )
-            return None
+            except UnicodeDecodeError:
+                # Try the next encoding
+                continue
 
-        # Detect the delimiter used in the CSV file
-        delimiter = self.detect_delimiter(decoded_content)
-        # Load only the columns specified in columns_to_keep, and skip bad lines
-        if self.columns_to_keep is not None:
-            df = pd.read_csv(
-                StringIO(decoded_content),
-                delimiter=delimiter,
-                dtype=self.dtype,
-                usecols=lambda c: c in self.columns_to_keep,
-                on_bad_lines="skip",
-                quoting=csv.QUOTE_MINIMAL,
-                low_memory=False,
-            )
-        else:
-            df = pd.read_csv(
-                StringIO(decoded_content),
-                delimiter=delimiter,
-                dtype=self.dtype,
-                on_bad_lines="skip",
-                quoting=csv.QUOTE_MINIMAL,
-                low_memory=False,
-            )
+        LOGGER.error(f"Unable to process CSV content from: {self.file_url}")
+        return None
 
-        self.logger.info(f"CSV Data from {self.file_url} loaded.")
-        return df
-
-    @staticmethod
-    def detect_delimiter(text, num_lines=5):
-        delimiters = [",", ";", "\t", "|"]
-        # This function detects the delimiter used in a CSV file
-        # It reads the first num_lines of the file and counts the occurrences of each delimiter
-        counts = {delimiter: 0 for delimiter in delimiters}
-        line_counts = {delimiter: 0 for delimiter in delimiters}
-
-        for line_number, line in enumerate(StringIO(text)):
-            if line_number >= num_lines:
-                break
-            for delimiter in delimiters:
-                if delimiter in line:
-                    counts[delimiter] += line.count(delimiter)
-                    line_counts[delimiter] += 1
-
-        averages = {
-            delimiter: counts[delimiter] / line_counts[delimiter]
-            for delimiter in delimiters
-            if line_counts[delimiter] > 0
+    def _process_from_decoded(self, decoded_content):
+        sniffer = csv.Sniffer()
+        sample = decoded_content[: min(4096, len(decoded_content))]
+        csv_params = {
+            "delimiter": ",",
+            "on_bad_lines": "skip",
+            "low_memory": False,
         }
-        return max(averages, key=averages.get)
+        if self.dtype is not None:
+            csv_params["dtype"] = self.dtype
+
+        if self.columns_to_keep is not None:
+            csv_params["usecols"] = lambda c: c in self.columns_to_keep
+
+        try:
+            dialect = sniffer.sniff(sample)
+            csv_params["delimiter"] = dialect.delimiter
+            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
+
+        except csv.Error as e:
+            LOGGER.warning(f"CSV Sniffer error with encoding: {str(e)}")
+            # If sniffer fails, try with default delimiter
+
+        try:
+            df = pd.read_csv(StringIO(decoded_content), **csv_params)
+            LOGGER.debug(
+                f"CSV Data from {self.file_url} loaded successfully. Shape: {df.shape}"
+            )
+            return df
+        except Exception:
+            # Continue to next encoding
+            return
