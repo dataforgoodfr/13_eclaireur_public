@@ -59,15 +59,6 @@ class TopicAggregator(DatasetAggregator):
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
 
-    def _dataset_filename(self, file: tuple, step: str):
-        """
-        Expected path for a given file depending on the step (raw or norm).
-        """
-        return (
-            self.data_folder
-            / f"{self.topic}_{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
-        )
-
     def _load_schema(self, schema_topic_config):
         """
         Load a Dataframe in memory containing official columns conventions.

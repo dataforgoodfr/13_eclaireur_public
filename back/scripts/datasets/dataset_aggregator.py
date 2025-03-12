@@ -31,8 +31,6 @@ class DatasetAggregator:
         self.combined_filename = get_project_base_path() / (config["combined_filename"])
         self.errors = defaultdict(list)
 
-        self._add_normalized_filenames()
-
     def run(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
@@ -65,6 +63,7 @@ class DatasetAggregator:
         if output_filename.exists():
             LOGGER.debug(f"File {output_filename} already exists, skipping")
             return
+        output_filename.parent.mkdir(exist_ok=True, parents=True)
         try:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
         except HTTPError as error:
@@ -77,13 +76,14 @@ class DatasetAggregator:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
             self.errors[str(e)].append(file_metadata.url)
 
-    def _dataset_filename(self, file: tuple, step: str):
+    def _dataset_filename(self, file_metadata: tuple, step: str):
         """
         Expected path for a given file depending on the step (raw or norm).
         """
         return (
             self.data_folder
-            / f"{file.url_hash}_{step}.{file.format if step == 'raw' else 'parquet'}"
+            / file_metadata.url_hash
+            / f"{step}.{file_metadata.format if step == 'raw' else 'parquet'}"
         )
 
     def _normalize_file(self, file_metadata: tuple) -> pd.DataFrame:
@@ -108,13 +108,18 @@ class DatasetAggregator:
         Select among the input files the ones for which we do not have yet the normalized file.
         """
         current = pd.DataFrame(
-            {"filename": [str(x) for x in self.data_folder.glob("*_norm.parquet")], "exists": 1}
+            {
+                "url_hash": [
+                    str(x.parent.name) for x in self.data_folder.glob("*/norm.parquet")
+                ],
+                "exists": 1,
+            }
         )
         return list(
             self.files_in_scope.merge(
                 current,
                 how="left",
-                on="filename",
+                on="url_hash",
             )
             .pipe(lambda df: df[df["exists"].isnull()])
             .drop(columns="exists")
