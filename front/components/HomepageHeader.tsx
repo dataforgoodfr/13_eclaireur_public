@@ -1,4 +1,4 @@
-import { Community } from '@/utils/types';
+import { Community } from '@/app/models/community';
 
 import { SearchBar } from './SearchBar';
 
