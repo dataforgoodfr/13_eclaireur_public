@@ -1,10 +1,6 @@
-import { Community } from '@/app/models/community';
+import SearchBar from './SearchBar/SearchBar';
 
-interface HomepageHeaderProps {
-  communities: Community[];
-}
-
-export default function HomepageHeader({ communities }: HomepageHeaderProps) {
+export default function HomepageHeader() {
   return (
     <div className='h-[600px] bg-homepage-header bg-cover object-cover'>
       <div className='global-margin flex h-full flex-col items-center justify-center gap-y-12'>
