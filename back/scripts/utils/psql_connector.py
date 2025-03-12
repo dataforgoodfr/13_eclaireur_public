@@ -19,6 +19,7 @@ class PSQLConnector:
         self.port = os.getenv("DB_PORT", "5432")
         self.replace_tables = replace_tables
         self.engine = None
+        self._connect()
 
     def close_connection(self):
         if self.engine:
