@@ -34,11 +34,6 @@ class PSQLConnector:
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         )
 
-    def close_connection(self):
-        if self.engine:
-            self.engine.dispose()  # Ferme toutes les connexions ouvertes
-            self.logger.info("Database connection closed.")
-
     def drop_table_if_exists(self, table_name):
         try:
             with self.engine.connect() as conn:
