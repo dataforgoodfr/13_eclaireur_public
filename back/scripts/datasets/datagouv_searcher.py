@@ -277,6 +277,9 @@ class DataGouvSearcher:
 
 
 def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Identify from url different formats of the same dataset and only select the most useful format.
+    """
     base_url = [
         row.url.split(row.format)[0] if row.url and not pd.isna(row.format) else row.url
         for row in df.itertuples()
