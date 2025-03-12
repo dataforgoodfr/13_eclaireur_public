@@ -101,13 +101,11 @@ class WorkflowManager:
         config = self.config["communities"] | {"sirene": self.config["sirene"]}
         communities_selector = CommunitiesSelector(config)
 
-        self.connector.save_df_to_sql_drop_existing(
-            self.config["workflow"]["save_to_db"],
-            communities_selector.selected_data,
-            "selected_communities",
-            index=True,
-            index_label=["siren"],
-        )
+        if self.config["workflow"]["save_to_db"]:
+            self.connector.upsert_df_to_sql(
+                communities_selector.selected_data,
+                "normalized_selected_communities",
+                ["siren"])
 
         self.logger.info("Communities scope initialized.")
         return communities_selector
