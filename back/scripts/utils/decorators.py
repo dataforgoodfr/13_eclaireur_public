@@ -1,10 +1,6 @@
 import functools
 import logging
 import time
-from functools import wraps
-
-import pandas as pd
-import polars as pl
 
 
 def tracker(
@@ -43,29 +39,3 @@ def tracker(
         return decorator_tracker
     else:
         return decorator_tracker(_func)
-
-
-def migrate_polars(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        new_args = []
-        for arg in args:
-            if isinstance(arg, pd.DataFrame):
-                new_args.append(pl.DataFrame(arg))
-            else:
-                new_args.append(arg)
-
-        new_kwargs = {}
-        for k, v in kwargs.items():
-            if isinstance(v, pd.DataFrame):
-                new_kwargs[k] = pl.DataFrame(v)
-            else:
-                new_kwargs[k] = v
-
-        result = func(*new_args, **new_kwargs)
-
-        if isinstance(result, pl.DataFrame):
-            return result.to_pandas()
-        return result
-
-    return wrapper
