@@ -16,15 +16,6 @@ export enum CommunityType {
   EPT = 'EPT',
 }
 
-export type Community = {
-  siren: `${number}`;
-  nom: string;
-  type: CommunityType;
-  population: number;
-  longitude: number;
-  latitude: number;
-};
-
 export type CommunityGeoJSONProperties = {
   codgeo: string;
   dep: string;

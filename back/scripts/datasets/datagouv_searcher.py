@@ -4,6 +4,7 @@ import pandas as pd
 from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
+
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI

@@ -1,41 +1,69 @@
-import { CommunitiesParamsOptions } from '@/app/api/selected_communities/types';
+import { Community } from '@/app/models/community';
 
 import { CommunityType } from '../../types';
 
+export type CommunitiesOptions = {
+  selectors?: (keyof Community)[];
+  filters?: Partial<Pick<Community, 'siren' | 'type'>> & {
+    limit?: number;
+  };
+};
+
+const TABLE_NAME = 'staging_communities';
+
+function stringifySelectors(options: CommunitiesOptions): string {
+  const { selectors } = options;
+
+  if (selectors == null) {
+    return '*';
+  }
+
+  return selectors.join(', ');
+}
+
 /**
- * Create the sql query for the communities
+ * Create the sql query for the marches publics
  * @param options
  * @returns
  */
-export function createSQLQueryParams(options?: CommunitiesParamsOptions) {
-  let query = 'SELECT * FROM selected_communities';
-  let values: (CommunityType | number | string | undefined)[] = [];
+export function createSQLQueryParams(options?: CommunitiesOptions) {
+  let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {
-    return [query, values] as const;
+    return [`SELECT * FROM ${TABLE_NAME}`, values] as const;
   }
 
-  const { type, siren, limit } = options;
+  const selectorsStringified = stringifySelectors(options);
+  let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
 
-  //Construction des conditions WHERE
+  const { filters } = options;
+
+  const { limit, ...restFilters } = filters ?? { limit: undefined };
+
   const whereConditions: string[] = [];
 
-  if (type) {
-    whereConditions.push(`type = $${values.length + 1}`);
-    values.push(type);
-  }
+  const keys = Object.keys(restFilters) as unknown as (keyof typeof filters)[];
 
-  if (siren) {
-    whereConditions.push(`siren = $${values.length + 1}`);
-    values.push(siren);
-  }
+  keys.forEach((key) => {
+    const option = filters?.[key];
+    if (option == null) {
+      console.error(`${key} with value is null or undefined in the query ${query}`);
+
+      return;
+    }
+
+    whereConditions.push(`${key} = $${values.length + 1}`);
+    values.push(option);
+  });
 
   if (whereConditions.length > 0) {
-    query += ' WHERE ' + whereConditions.join(' AND ');
+    query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
-  query += ' LIMIT $' + (values.length + 1);
-  values.push(limit);
+  if (limit) {
+    query += ` LIMIT $${values.length + 1}`;
+    values.push(limit);
+  }
 
   return [query, values] as const;
 }
