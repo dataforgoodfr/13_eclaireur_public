@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ class DatasetAggregator:
         self.combined_filename = get_project_base_path() / (config["combined_filename"])
         self.errors = defaultdict(list)
 
+    @tracker(log_start=True)
     def run(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
