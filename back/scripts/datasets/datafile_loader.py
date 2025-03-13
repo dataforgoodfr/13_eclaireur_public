@@ -11,6 +11,10 @@ import unidecode
 from scripts.loaders.json_loader import JSONLoader
 from scripts.utils.dataframe_operation import cast_data
 
+from back.scripts.utils.decorators import tracker
+
+LOGGER = logging.getLogger(__name__)
+
 
 class DatafileLoader:
     """
@@ -44,6 +48,7 @@ class DatafileLoader:
             schema_topic_config["url"], "marche"
         ).fillna({"type": "string"})
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def _load_data(self, topic_config):
         data_loader = JSONLoader(topic_config["unified_dataset"]["url"])
         main_df = data_loader.load()
@@ -180,6 +185,7 @@ class MarchesPublicsSchemaLoader:
     This class mostly regroup legacy code that need a refactoring.
     """
 
+    @tracker(ulogger=LOGGER, log_start=True)
     @staticmethod
     def load(url: str, type_marche: str) -> pd.DataFrame:
         with tempfile.TemporaryDirectory() as tmpdirname:

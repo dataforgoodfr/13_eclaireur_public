@@ -1,3 +1,4 @@
+import logging
 import tempfile
 import urllib.request
 import zipfile
@@ -6,6 +7,9 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.utils.decorators import tracker
+
+LOGGER = logging.getLogger(__name__)
 
 # Source : http://freturb.laet.science/tables/Sirextra.htm
 EFFECTIF_CODE_TO_EMPLOYEES = {
@@ -38,6 +42,7 @@ class SireneWorkflow:
         self.filename = self.data_folder / "sirene.parquet"
         self.zip_filename = self.data_folder / "sirene.zip"
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def run(self):
         self._fetch_zip()
         self._format_to_parquet()

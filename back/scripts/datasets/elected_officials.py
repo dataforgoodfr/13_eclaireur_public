@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -5,6 +6,9 @@ from tqdm import tqdm
 
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import DataGouvAPI
+from back.scripts.utils.decorators import tracker
+
+LOGGER = logging.getLogger(__name__)
 
 RENAME_COMMON_COLUMNS = {
     "Nom de l'élu": "nom",
@@ -46,6 +50,7 @@ class ElectedOfficialsWorkflow:
         self.data_folder = Path(source_folder)
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def run(self):
         combined_filename = self.data_folder / "elected_officials.parquet"
         if combined_filename.exists():
