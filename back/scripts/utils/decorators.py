@@ -22,14 +22,14 @@ def tracker(
                     extra["args_" + str(i)] = v
 
             if log_start:
-                getattr(ulogger, level)("start", **extra)
+                _log(ulogger, level, "start", extra)
             start_time = time.time()
             value = func(*args, **kwargs)
             end_time = time.time()
             extra["duration_"] = round((end_time - start_time), 3)
             if outputs:
                 extra["return_"] = value
-            getattr(ulogger, level)("tracker", **extra)
+            _log(ulogger, level, "tracker", extra)
 
             return value
 
@@ -39,3 +39,11 @@ def tracker(
         return decorator_tracker
     else:
         return decorator_tracker(_func)
+
+
+def _log(ulogger, level: str, msg: str, extra: dict):
+    if isinstance(ulogger, logging.Logger):
+        msg = msg + " : " + "; ".join([f"{k}={v}" for k, v in extra.items()])
+        getattr(ulogger, level)(msg)
+    else:
+        getattr(ulogger, level)(msg, **extra)
