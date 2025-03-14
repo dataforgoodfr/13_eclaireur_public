@@ -145,7 +145,8 @@ class WorkflowManager:
 
             topic_agg = TopicAggregator(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
-            ).run()
+            )
+            topic_agg.run()
 
             if self.config["workflow"]["save_to_db"]:
                 self.connector.upsert_df_to_sql(

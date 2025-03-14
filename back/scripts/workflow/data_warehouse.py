@@ -12,7 +12,7 @@ class DataWarehouseWorkflow:
 
         self.send_to_db = []
 
-    def run(self):
+    def run(self) -> None:
         sirene = pl.read_parquet(
             Path(self._config["sirene"]["data_folder"]) / "sirene.parquet"
         ).drop("raison_sociale_prenom")
