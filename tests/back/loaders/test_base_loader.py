@@ -147,6 +147,11 @@ class TestBaseLoader:
         can_load = BaseLoaderFakeNoCsv.can_load_file(url)
         assert can_load is False
 
+    def test_valid_extensions(self):
+        extensions = BaseLoader.valid_extensions()
+        exp = sorted(["csv", "excel", "json", "xls", "xlsx", "parquet"])
+        assert extensions == exp
+
 
 class TestBaseLoaderLoad:
     @pytest.fixture

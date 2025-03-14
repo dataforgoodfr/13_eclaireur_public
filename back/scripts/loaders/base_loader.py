@@ -1,3 +1,4 @@
+import itertools
 import logging
 import os
 import re
@@ -128,6 +129,16 @@ class BaseLoader:
                 return loader_class
 
         return None
+
+    @classmethod
+    def valid_extensions(cls):
+        return sorted(
+            set(
+                itertools.chain.from_iterable(
+                    [s.file_extensions or [] for s in BaseLoader.__subclasses__()]
+                )
+            )
+        )
 
     @classmethod
     def can_load_file(
