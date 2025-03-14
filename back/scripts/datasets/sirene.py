@@ -43,7 +43,7 @@ class SireneWorkflow:
         self.zip_filename = self.data_folder / "sirene.zip"
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def run(self):
+    def run(self) -> None:
         self._fetch_zip()
         self._format_to_parquet()
 

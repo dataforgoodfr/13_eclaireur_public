@@ -75,7 +75,6 @@ class DatasetAggregator:
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
-        return self
 
     def _process_file(self, file: tuple) -> None:
         """

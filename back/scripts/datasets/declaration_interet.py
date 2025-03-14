@@ -54,7 +54,7 @@ class DeclaInteretWorkflow:
         self.filename = self.data_folder / "declarations.parquet"
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def run(self):
+    def run(self) -> None:
         self._fetch_xml()
         self._format_to_parquet()
 
