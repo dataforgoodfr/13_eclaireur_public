@@ -91,14 +91,11 @@ search:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
     single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
     schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
-  marches_publics:
-    source: "single"
-    unified_dataset:
-      url: "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
-      root: "marches"
-    schema:
-      url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
-      name: "marche"
+
+marches_publics:
+  schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
+  data_folder: back/data/marches_publics
+  combined_filename: back/data/marches_publics/marches_publics.parquet
 
 datafile_loader:
   data_folder: 'back/data/datasets/%(topic)s'
