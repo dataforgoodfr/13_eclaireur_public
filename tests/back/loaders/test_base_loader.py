@@ -152,24 +152,12 @@ class TestBaseLoader:
         exp = sorted(["csv", "excel", "json", "xls", "xlsx", "parquet"])
         assert extensions == exp
 
-
-class TestBaseLoaderLoad:
-    @pytest.fixture
-    def loader_file(self):
-        yield BaseLoader("file_url", num_retries=3, delay_between_retries=5)
-
-    @pytest.fixture
-    def loader_url(self):
-        yield BaseLoader("https://example.com/file.csv", num_retries=3, delay_between_retries=5)
-
-    def test_empty_file_url(self, loader_file):
-        loader_file.file_url = ""
-        with pytest.raises(RuntimeError):
-            loader_file.load()
-
     @responses.activate
-    def test_unsupported_file_url_force(self, loader_url):
+    def test_unsupported_file_url_force(self):
         # TODO: install pytest-mock
+        loader_url = BaseLoader(
+            "https://example.com/file.csv", num_retries=3, delay_between_retries=5
+        )
         expected_data = "its working"
         loader_url.can_load_file = lambda _: False
         loader_url.process_data = lambda _: expected_data
@@ -180,10 +168,16 @@ class TestBaseLoaderLoad:
             loader_url.load(force=False)
         assert loader_url.load(force=True) == expected_data
 
-    def test_local_file_loading(self, loader_file):
-        loader_file._load_from_file = lambda: "data"
-        result = loader_file.load()
-        assert result == "data"
+    def test_empty_file_url(self):
+        loader_file = BaseLoader("")
+        with pytest.raises(RuntimeError):
+            loader_file.load()
+
+
+class TestBaseLoaderLoadUrl:
+    @pytest.fixture
+    def loader_url(self):
+        yield BaseLoader("https://example.com/file.csv", num_retries=3, delay_between_retries=5)
 
     @responses.activate
     def test_remote_file_loading_200(self, loader_url):
@@ -195,7 +189,7 @@ class TestBaseLoaderLoad:
             status=200,
         )
 
-        result = loader_url.load()
+        result = loader_url._load_from_url()
         assert result == "processed_data"
 
     @responses.activate
@@ -206,4 +200,27 @@ class TestBaseLoaderLoad:
             status=404,
         )
         with pytest.raises(RuntimeError):
-            loader_url.load()
+            loader_url._load_from_url()
+
+
+class TestBaseLoaderLoadFile:
+    @pytest.fixture
+    def loader_file(self):
+        yield BaseLoader("file_url")
+
+    def test_wrong_file_url(self, loader_file):
+        loader_file.file_url = "null/test"
+        assert loader_file._load_from_file() is None
+
+    def test_file_loading(self, loader_file):
+        loader_file._load_from_file = lambda: "data"
+        result = loader_file._load_from_file()
+        assert result == "data"
+
+    def test_local_file_loading(self):
+        class BaseLoaderLocalFile(BaseLoader):
+            def process_data(self, data):
+                return data.decode("utf-8")
+
+        loader_file = BaseLoaderLocalFile("./tests/back/loaders/fixtures/test_loader_file.txt")
+        assert loader_file._load_from_file() == "testsucceded"

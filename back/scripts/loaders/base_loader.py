@@ -56,9 +56,12 @@ class BaseLoader:
         if not force and not self.can_load_file(self.file_url):
             raise RuntimeError(f"File {self.file_url} is not supported by this loader")
 
-        if not self.is_url:
+        if self.is_url:
+            return self._load_from_url()
+        else:
             return self._load_from_file()
 
+    def _load_from_url(self):
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(self.file_url)
         if response.status_code == 200:
