@@ -1,3 +1,5 @@
+import { GeometryObject, Topology } from 'topojson-specification';
+
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
@@ -13,3 +15,17 @@ export enum CommunityType {
   /** Etablissement public territorial */
   EPT = 'EPT',
 }
+
+export type CommunityGeoJSONProperties = {
+  codgeo: string;
+  dep: string;
+  reg: string;
+  libgeo: string;
+  type: CommunityType;
+};
+
+export type CommunityTopoJSON = Topology<{
+  communes: GeometryObject<CommunityGeoJSONProperties>;
+  departements: GeometryObject<CommunityGeoJSONProperties>;
+  regions: GeometryObject<CommunityGeoJSONProperties>;
+}>;
