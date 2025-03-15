@@ -25,7 +25,7 @@ class DataGouvCatalog:
         if self.filename.exists():
             return
 
-        url = self.config.get("catalog_url", self._catalog_url())
+        url = self.config.get("catalog_url") or self._catalog_url()
 
         df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
