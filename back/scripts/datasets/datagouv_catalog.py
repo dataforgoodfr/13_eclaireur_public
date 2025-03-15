@@ -18,12 +18,12 @@ class DataGouvCatalog(DatasetsMixin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.filename = Path(self.config["combined_filename"])
-        self.filename.parent.mkdir(exist_ok=True, parents=True)
+        self.combined_filename = Path(self.config["combined_filename"])
+        self.combined_filename.parent.mkdir(exist_ok=True, parents=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
-        if self.filename.exists():
+        if self.combined_filename.exists():
             return
 
         url = self.config.get("catalog_url") or self._catalog_url()
@@ -31,7 +31,7 @@ class DataGouvCatalog(DatasetsMixin):
         df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
-        df.to_parquet(self.filename)
+        df.to_parquet(self.combined_filename)
 
     def _catalog_url(self):
         """
