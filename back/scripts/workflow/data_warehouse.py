@@ -1,9 +1,8 @@
-from pathlib import Path
-
 import polars as pl
 from polars import col
 
 from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.config import project_config
 
 
@@ -15,9 +14,9 @@ class DataWarehouseWorkflow(WorkflowMixin):
         self.send_to_db = []
 
     def run(self) -> None:
-        sirene = pl.read_parquet(
-            Path(project_config["sirene"]["data_folder"]) / "sirene.parquet"
-        ).drop("raison_sociale_prenom")
+        sirene = pl.read_parquet(SireneWorkflow().parquet_filename).drop(
+            "raison_sociale_prenom"
+        )
 
         self._enrich_subventions(sirene)
 
