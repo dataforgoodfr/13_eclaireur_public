@@ -1,0 +1,85 @@
+{
+  "marches": [
+    {
+      "procedure": "Appel d'offres ouvert",
+      "modifications": [],
+      "nature": "ACCORD-CADRE",
+      "codeCPV": "30192000",
+      "dureeMois": "48",
+      "datePublicationDonnees": "2020-08-06",
+      "titulaires": [
+        {
+          "typeIdentifiant": "SIRET",
+          "id": "57172266900264",
+          "denominationSociale": "LYRECO"
+        }
+      ],
+      "id": "20202020F1234900",
+      "formePrix": "Révisable",
+      "dateNotification": "2020-08-06",
+      "objet": "Achat et livraison de fournitures, petits matériels de bureau et papeterie personnalisée. - Fournitures et petits matériels de bureau",
+      "montant": 4102920.24,
+      "acheteur.id": "13000548100010",
+      "source": "data.gouv.fr_aife",
+      "lieuExecution": {
+        "code": "22",
+        "typeCode": "CODE DEPARTEMENT",
+        "nom": "(22) Côtes-d'Armor"
+      }
+    },
+    {
+      "procedure": "Procédure adaptée",
+      "modifications": [],
+      "nature": "MARCHE",
+      "codeCPV": "71300000",
+      "dureeMois": "18",
+      "datePublicationDonnees": "2020-02-10",
+      "titulaires": [
+        {
+          "typeIdentifiant": "SIRET",
+          "id": "39436007700025",
+          "denominationSociale": "G. REICHARDT   G. FERREUX ARCHITECTES"
+        }
+      ],
+      "id": "2020150980004500",
+      "formePrix": "Ferme et actualisable",
+      "dateNotification": "2020-02-10",
+      "objet": "RESTRUCTURATION MA LONS LE SAUNIER PROJET ILOT DE LA CHEVALERIE (lot unique)",
+      "montant": 95280.0,
+      "acheteur.id": "17210120600016",
+      "source": "data.gouv.fr_aife",
+      "lieuExecution": {
+        "code": "39",
+        "typeCode": "CODE DEPARTEMENT",
+        "nom": "(39) Jura"
+      }
+    },
+    {
+      "procedure": "Appel d'offres ouvert",
+      "modifications": [],
+      "nature": "ACCORD-CADRE",
+      "codeCPV": "90513000",
+      "dureeMois": "36",
+      "datePublicationDonnees": "2019-01-08",
+      "titulaires": [
+        {
+          "typeIdentifiant": "SIRET",
+          "id": "30259089800326",
+          "denominationSociale": "ONYX AUVERGNE RHONE ALPES"
+        }
+      ],
+      "id": "20192019S2228100",
+      "formePrix": "Ferme et actualisable",
+      "dateNotification": "2019-01-08",
+      "objet": "DAL-DAH2018-34 Prestation de collecte, enlèvement, transport et traitement des déchets des établissements du GHT LOIRE",
+      "montant": 37539.0,
+      "acheteur.id": "26420030400014",
+      "source": "data.gouv.fr_aife",
+      "lieuExecution": {
+        "code": "42",
+        "typeCode": "CODE DEPARTEMENT",
+        "nom": "(42) Loire"
+      }
+    }
+  ]
+}
