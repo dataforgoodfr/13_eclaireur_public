@@ -100,6 +100,10 @@ search:
       url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
       name: "marche"
 
+datagouv_catalog:
+  data_folder: back/data/datagouv_catalog
+  combined_filename: back/data/datagouv_catalog/catalog.parquet
+  
 datafile_loader:
   data_folder: 'back/data/datasets/%(topic)s'
   combined_filename: 'back/data/datasets/%(topic)s.parquet'
