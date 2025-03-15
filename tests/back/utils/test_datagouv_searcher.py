@@ -57,3 +57,14 @@ class TestRemoveSameDatasetFormats:
         )
         out = remove_same_dataset_formats(df).reset_index(drop=True)
         pd.testing.assert_frame_equal(out, df)
+
+    def test_with_none_format(self):
+        df = pd.DataFrame(
+            {
+                "url": ["https://example.csv", "https://example2"],
+                "format": ["zip", None],
+                "dataset_id": 1,
+            }
+        )
+        out = remove_same_dataset_formats(df).reset_index(drop=True)
+        pd.testing.assert_frame_equal(out, df)
