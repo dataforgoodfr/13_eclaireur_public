@@ -155,9 +155,7 @@ class WorkflowManager:
                     topic_files_in_scope, "files_in_scope_" + topic, ["url"]
                 )
 
-            topic_agg = TopicAggregator(
-                topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
-            )
+            topic_agg = TopicAggregator(topic_files_in_scope, topic, topic_config)
             topic_agg.run()
 
             if self.save_to_db:

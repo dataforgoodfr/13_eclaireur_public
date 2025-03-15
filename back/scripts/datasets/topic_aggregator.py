@@ -37,16 +37,11 @@ class TopicAggregator(DatasetAggregator):
     A given step on a given file must not be run if the output file already exists on disk.
     """
 
+    config_key_name = "datafile_loader"
+
     def __init__(
-        self,
-        files_in_scope: pd.DataFrame,
-        topic: str,
-        topic_config: dict,
-        datafile_loader_config: dict,
-        *args,
-        **kwargs,
+        self, files_in_scope: pd.DataFrame, topic: str, topic_config: dict, *args, **kwargs
     ):
-        self.datafile_loader_config = copy.deepcopy(datafile_loader_config)
         self.topic = topic
         self.topic_config = topic_config
 
@@ -58,12 +53,10 @@ class TopicAggregator(DatasetAggregator):
 
     @cached_property
     def config(self):
-        config = dict()
+        config = copy.deepcopy(super().config)
         formatting = {"topic": self.topic}
-        config["data_folder"] = self.datafile_loader_config["data_folder"] % formatting
-        config["combined_filename"] = (
-            self.datafile_loader_config["combined_filename"] % formatting
-        )
+        config["data_folder"] = config["data_folder"] % formatting
+        config["combined_filename"] = config["combined_filename"] % formatting
         return config
 
     def _load_schema(self, schema_topic_config):
