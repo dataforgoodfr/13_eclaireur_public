@@ -3,18 +3,20 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.utils.config import project_config
 
-class DataWarehouseWorkflow:
-    def __init__(self, config: dict):
-        self._config = config
-        self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
-        self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
+class DataWarehouseWorkflow(WorkflowMixin):
+    config_key_name: str = "warehouse"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.send_to_db = []
 
     def run(self) -> None:
         sirene = pl.read_parquet(
-            Path(self._config["sirene"]["data_folder"]) / "sirene.parquet"
+            Path(project_config["sirene"]["data_folder"]) / "sirene.parquet"
         ).drop("raison_sociale_prenom")
 
         self._enrich_subventions(sirene)
@@ -25,7 +27,8 @@ class DataWarehouseWorkflow:
         """
         subventions = (
             pl.read_parquet(
-                self._config["datafile_loader"]["combined_filename"] % {"topic": "subventions"}
+                project_config["datafile_loader"]["combined_filename"]
+                % {"topic": "subventions"}
             )
             .with_columns(
                 # Transform idAttribuant from siret to siren.
@@ -62,6 +65,6 @@ class DataWarehouseWorkflow:
             .drop("raison_sociale_beneficiaire")
         )
 
-        out_filename = self.warehouse_folder / "subventions.parquet"
+        out_filename = self.data_folder / "subventions.parquet"
         subventions.write_parquet(out_filename)
         self.send_to_db.append(out_filename)

@@ -2,13 +2,13 @@ import logging
 import urllib.request
 from datetime import datetime
 from itertools import chain
-from pathlib import Path
 
 import pandas as pd
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from tqdm import tqdm
 
+from back.scripts.datasets.common import WorkflowMixin
 from back.scripts.utils.beautifulsoup_utils import (
     get_tag_bool,
     get_tag_datetime,
@@ -42,14 +42,13 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
     return get_tag_bool(tag, exclude=exclude)
 
 
-class DeclaInteretWorkflow:
+class DeclaInteretWorkflow(WorkflowMixin):
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
+    config_key_name: str = "declarations_interet"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.xml_filename = self.data_folder / "declarations.xml"
         self.filename = self.data_folder / "declarations.parquet"
 
@@ -61,7 +60,7 @@ class DeclaInteretWorkflow:
     def _fetch_xml(self):
         if self.xml_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.xml_filename)
+        urllib.request.urlretrieve(self.url, self.xml_filename)
 
     def _format_to_parquet(self):
         if self.filename.exists():

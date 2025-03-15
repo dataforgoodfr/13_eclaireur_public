@@ -7,6 +7,7 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.datasets.common import WorkflowMixin
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -29,17 +30,16 @@ EFFECTIF_CODE_TO_EMPLOYEES = {
 }
 
 
-class SireneWorkflow:
+class SireneWorkflow(WorkflowMixin):
     """
     https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
     """
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(self._config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
+    config_key_name: str = "sirene"
 
-        self.filename = self.data_folder / "sirene.parquet"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parquet_filename = self.data_folder / "sirene.parquet"
         self.zip_filename = self.data_folder / "sirene.zip"
 
     @tracker(ulogger=LOGGER, log_start=True)
@@ -50,10 +50,10 @@ class SireneWorkflow:
     def _fetch_zip(self):
         if self.zip_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.zip_filename)
+        urllib.request.urlretrieve(self.url, self.zip_filename)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.parquet_filename.exists():
             return
 
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -79,4 +79,4 @@ class SireneWorkflow:
                     .replace_strict(EFFECTIF_CODE_TO_EMPLOYEES, default=None)
                     .cast(pl.Int32)
                     .alias("tranche_effectif"),
-                ).collect().write_parquet(self.filename)
+                ).collect().write_parquet(self.parquet_filename)

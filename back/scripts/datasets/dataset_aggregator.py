@@ -10,6 +10,7 @@ import pandas as pd
 import polars as pl
 from tqdm import tqdm
 
+from back.scripts.datasets.common import WorkflowMixin
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
@@ -48,15 +49,12 @@ class BaseDatasetAggregator:
     """
 
 
-class DatasetAggregator:
-    def __init__(self, files: pd.DataFrame, config: dict):
-        self._config = config
-
+class DatasetAggregator(WorkflowMixin):
+    def __init__(self, files: pd.DataFrame, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
 
-        self.data_folder = get_project_base_path() / (config["data_folder"])
-        self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.combined_filename = get_project_base_path() / (config["combined_filename"])
+        self.combined_filename = get_project_base_path() / self.config["combined_filename"]
         self.errors = defaultdict(list)
 
     @tracker(ulogger=LOGGER, log_start=True)

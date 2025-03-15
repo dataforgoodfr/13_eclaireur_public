@@ -1,9 +1,9 @@
 import logging
-from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
 
+from back.scripts.datasets.common import WorkflowMixin
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
@@ -43,12 +43,9 @@ RENAME_COMMON_COLUMNS = {
 }
 
 
-class ElectedOfficialsWorkflow:
+class ElectedOfficialsWorkflow(WorkflowMixin):
     DATASET_ID = "5c34c4d1634f4173183a64f1"
-
-    def __init__(self, source_folder: Path | str):
-        self.data_folder = Path(source_folder)
-        self.data_folder.mkdir(exist_ok=True, parents=True)
+    config_key_name: str = "elected_officials"
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:

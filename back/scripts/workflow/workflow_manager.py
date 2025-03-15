@@ -16,7 +16,11 @@ from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
-from back.scripts.utils.config import get_project_base_path, get_project_data_path
+from back.scripts.utils.config import (
+    get_project_base_path,
+    get_project_data_path,
+    project_config,
+)
 from back.scripts.utils.constants import (
     DATACOLUMNS_OUT_FILENAME,
     DATAFILES_OUT_FILENAME,
@@ -31,28 +35,38 @@ from back.scripts.utils.dataframe_operation import (
 from back.scripts.utils.datagouv_api import select_implemented_formats
 from back.scripts.utils.files_operation import save_csv
 from back.scripts.utils.psql_connector import PSQLConnector
+from back.scripts.workflow.data_warehouse import DataWarehouseWorkflow
 
 
 class WorkflowManager:
-    def __init__(self, args, config):
+    def __init__(self, args):
         self.args = args
-        self.config = config
+        self.config = project_config
         self.logger = logging.getLogger(__name__)
 
-        if self.config["workflow"]["save_to_db"]:
+        if self.save_to_db:
             self.connector = PSQLConnector(self.config["workflow"]["replace_tables"])
 
         self.source_folder = get_project_data_path()
         self.source_folder.mkdir(exist_ok=True, parents=True)
 
-    def run_workflow(self):
+    @property
+    def save_to_db(self) -> bool:
+        return self.config["workflow"]["save_to_db"]
+
+    def run_workflow(self) -> None:
         self.logger.info("Workflow started.")
-        FinancialAccounts(self.config["financial_accounts"]).run()
-        ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
-        SireneWorkflow(self.config["sirene"]).run()
-        DeclaInteretWorkflow(self.config["declarations_interet"]).run()
+        for workflow in (
+            FinancialAccounts,
+            ElectedOfficialsWorkflow,
+            SireneWorkflow,
+            DeclaInteretWorkflow,
+        ):
+            workflow().run()
         self._run_subvention_and_marche()
 
+        # TODO: Order matters, need to be able to configure it properly
+        DataWarehouseWorkflow().run()
         self.logger.info("Workflow completed.")
 
     def _run_subvention_and_marche(self):
@@ -103,7 +117,7 @@ class WorkflowManager:
         config = self.config["communities"] | {"sirene": self.config["sirene"]}
         communities_selector = CommunitiesSelector(config)
 
-        if self.config["workflow"]["save_to_db"]:
+        if self.save_to_db:
             self.connector.upsert_df_to_sql(
                 communities_selector.selected_data, "normalized_selected_communities", ["siren"]
             )
@@ -138,7 +152,7 @@ class WorkflowManager:
                 .pipe(select_implemented_formats)
             )
 
-            if self.config["workflow"]["save_to_db"]:
+            if self.save_to_db:
                 self.connector.upsert_df_to_sql(
                     topic_files_in_scope, "files_in_scope_" + topic, ["url"]
                 )
@@ -148,7 +162,7 @@ class WorkflowManager:
             )
             topic_agg.run()
 
-            if self.config["workflow"]["save_to_db"]:
+            if self.save_to_db:
                 self.connector.upsert_df_to_sql(
                     topic_agg.aggregated_dataset, "normalized_" + topic, ["url"]
                 )
@@ -159,7 +173,7 @@ class WorkflowManager:
             # Process the single datafile: download & normalize
             topic_datafiles = DatafileLoader(communities_selector, topic_config)
 
-            if self.config["workflow"]["save_to_db"]:
+            if self.save_to_db:
                 self.connector.upsert_df_to_sql(
                     topic_datafiles.loaded_data, "raw_" + topic, ["acheteur.id", "codeCPV"]
                 )
@@ -169,7 +183,7 @@ class WorkflowManager:
                     ["acheteur.id", "codeCPV"],
                 )
 
-        if self.config["workflow"]["save_to_db"]:
+        if self.save_to_db:
             self.connector.close_connection()
 
         self.logger.info(f"Topic {topic} processed.")

@@ -2,6 +2,7 @@ import copy
 import logging
 import ssl
 from collections import Counter
+from functools import cached_property
 from pathlib import Path
 
 import pandas as pd
@@ -42,24 +43,28 @@ class TopicAggregator(DatasetAggregator):
         topic: str,
         topic_config: dict,
         datafile_loader_config: dict,
+        *args,
+        **kwargs,
     ):
-        datafile_loader_config = copy.deepcopy(datafile_loader_config)
-        formatting = {"topic": topic}
-        datafile_loader_config["data_folder"] = (
-            datafile_loader_config["data_folder"] % formatting
-        )
-        datafile_loader_config["combined_filename"] = (
-            datafile_loader_config["combined_filename"] % formatting
-        )
-
+        self.datafile_loader_config = copy.deepcopy(datafile_loader_config)
         self.topic = topic
         self.topic_config = topic_config
 
-        super().__init__(files_in_scope, datafile_loader_config)
+        super().__init__(files_in_scope, *args, **kwargs)
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
         self.extra_columns = Counter()
+
+    @cached_property
+    def config(self):
+        config = dict()
+        formatting = {"topic": self.topic}
+        config["data_folder"] = self.datafile_loader_config["data_folder"] % formatting
+        config["combined_filename"] = (
+            self.datafile_loader_config["combined_filename"] % formatting
+        )
+        return config
 
     def _load_schema(self, schema_topic_config):
         """
