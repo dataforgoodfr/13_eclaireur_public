@@ -286,7 +286,9 @@ def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
     - https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/subventions-aux-associations-votees-copie1/exports/(json|csv?use_labels=true)
     - https://data.grandpoitiers.fr/explore/dataset/citoyennete-subventions-directes-attribuees-aux-associations-2017-ville-de-poiti/download?format=<FORMAT>
     """
-    fetch_base_url = {f: re.compile(r"^(.*)\b" + f + r"\b") for f in df["format"].unique()}
+    fetch_base_url = {
+        f: re.compile(r"^(.*)\b" + f + r"\b") for f in df["format"].dropna().unique()
+    }
     base_url = [
         (fetch_base_url[row.format].match(row.url), row.url)
         if row.url and not pd.isna(row.format)
