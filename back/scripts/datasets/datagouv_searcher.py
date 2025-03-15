@@ -1,32 +1,32 @@
-import logging
 import re
 
 import pandas as pd
 from tqdm import tqdm
 
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import project_config
 from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
 
-class DataGouvSearcher:
+class DataGouvSearcher(DatasetsMixin):
     """
     This class is responsible for searching datafiles on the data.gouv.fr API and datasets catalog.
     It initializes from a CommunitiesSelector object and a datagouv_config dictionary, to load the datasets and datafiles catalogs.
     It provides one public method get_datafiles(search_config, method) to build a list of datafiles based on title and description filters and column names filters.
     """
 
-    def __init__(self, communities_selector, datagouv_config):
-        self.logger = logging.getLogger(__name__)
+    config_key_name = "datagouv"
 
-        self._config = datagouv_config
+    def __init__(self, communities_selector, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.scope = communities_selector
-        self.data_folder = get_project_base_path() / self._config["paths"]["root"]
         self.organization_data_folder = (
-            self.data_folder / self._config["paths"]["organization_datasets"]
+            self.data_folder / self.config["paths"]["organization_datasets"]
         )
 
         self.organization_data_folder.mkdir(parents=True, exist_ok=True)
@@ -36,14 +36,14 @@ class DataGouvSearcher:
         Load or create the data.gouv dataset catalog and metadata catalog.
         """
 
-        catalog_filename = self.data_folder / self._config["files"]["catalog"]
+        catalog_filename = self.data_folder / self.config["files"]["catalog"]
         if catalog_filename.exists():
             return pd.read_parquet(catalog_filename)
 
         datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
         dataset_catalog_loader = CSVLoader(
-            self._config["datasets"]["url"],
-            columns_to_keep=self._config["datasets"]["columns"],
+            self.config["datasets"]["url"],
+            columns_to_keep=self.config["datasets"]["columns"],
         )
         datasets_catalog = (
             dataset_catalog_loader.load()
@@ -59,12 +59,12 @@ class DataGouvSearcher:
         return datasets_catalog
 
     def initialize_catalog_metadata(self):
-        catalog_metadata_filename = self.data_folder / self._config["files"]["catalog_metadata"]
+        catalog_metadata_filename = self.data_folder / self.config["files"]["catalog_metadata"]
         if catalog_metadata_filename.exists():
             return pd.read_parquet(catalog_metadata_filename)
 
         datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
-        datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
+        datafile_catalog_loader = CSVLoader(self.config["datafiles"]["url"])
         datasets_metadata = (
             datafile_catalog_loader.load()
             .rename(columns={"dataset.organization_id": "organization_id", "id": "metadata_id"})
@@ -154,7 +154,7 @@ class DataGouvSearcher:
             pd.concat(
                 [
                     DataGouvAPI.organisation_datasets(
-                        orga, self._config["datagouv_api"]["organization_folder"]
+                        orga, project_config["datagouv_api"]["organization_folder"]
                     )
                     for orga in tqdm(datagouv_ids_list)
                 ],
@@ -228,7 +228,7 @@ class DataGouvSearcher:
                 f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
             )
 
-        final_datasets_filename = self.data_folder / self._config["files"]["datasets"]
+        final_datasets_filename = self.data_folder / self.config["files"]["datasets"]
         if final_datasets_filename.exists():
             return pd.read_parquet(final_datasets_filename)
 

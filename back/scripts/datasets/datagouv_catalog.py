@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
@@ -10,18 +11,18 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 
-class DataGouvCatalog:
+class DataGouvCatalog(DatasetsMixin):
     DATASET_ID = "5d13a8b6634f41070a43dff3"
+    # TODO
+    config_key_name = ""
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-        self.filename = Path(config["combined_filename"])
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filename = Path(self.config["combined_filename"])
         self.filename.parent.mkdir(exist_ok=True, parents=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def run(self):
+    def run(self) -> None:
         if self.filename.exists():
             return
 

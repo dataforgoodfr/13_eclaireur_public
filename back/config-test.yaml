@@ -57,8 +57,8 @@ datagouv:
       - "frequency"
   datafiles:
     url: "file:./back/tests/inputs/datagouv-datafiles-10000.csv"
+  data_folder: back/data/datagouv_search
   paths:
-    root: back/tests/data/datagouv_search
     organization_datasets: organization_datasets
   files:
     catalog: datagouv_catalog.parquet
