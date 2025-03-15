@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from back.scripts.loaders.csv_loader import CSVLoader
+from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -27,7 +27,7 @@ class DataGouvCatalog:
 
         url = self.config.get("catalog_url", self._catalog_url())
 
-        df = CSVLoader(url).load()
+        df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
         df.to_parquet(self.filename)
