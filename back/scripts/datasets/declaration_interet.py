@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from tqdm import tqdm
 
-from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.utils.beautifulsoup_utils import (
     get_tag_bool,
     get_tag_datetime,
@@ -42,7 +42,7 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
     return get_tag_bool(tag, exclude=exclude)
 
 
-class DeclaInteretWorkflow(WorkflowMixin):
+class DeclaInteretWorkflow(DatasetsMixin):
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
     config_key_name: str = "declarations_interet"

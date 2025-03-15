@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 
-from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
@@ -43,7 +43,7 @@ RENAME_COMMON_COLUMNS = {
 }
 
 
-class ElectedOfficialsWorkflow(WorkflowMixin):
+class ElectedOfficialsWorkflow(DatasetsMixin):
     DATASET_ID = "5c34c4d1634f4173183a64f1"
     config_key_name: str = "elected_officials"
 

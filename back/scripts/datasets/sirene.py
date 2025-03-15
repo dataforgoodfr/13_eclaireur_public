@@ -7,7 +7,7 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
-from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ EFFECTIF_CODE_TO_EMPLOYEES = {
 }
 
 
-class SireneWorkflow(WorkflowMixin):
+class SireneWorkflow(DatasetsMixin):
     """
     https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
     """

@@ -1,12 +1,12 @@
 import polars as pl
 from polars import col
 
-from back.scripts.datasets.common import WorkflowMixin
+from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.config import project_config
 
 
-class DataWarehouseWorkflow(WorkflowMixin):
+class DataWarehouseWorkflow(DatasetsMixin):
     config_key_name: str = "warehouse"
 
     def __init__(self, *args, **kwargs):

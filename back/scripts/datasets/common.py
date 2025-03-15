@@ -5,7 +5,7 @@ from pathlib import Path
 from back.scripts.utils.config import project_config
 
 
-class WorkflowMixin:
+class DatasetsMixin:
     config_key_name: str = ""
 
     def __init__(self, *args, config=None, **kwargs):
