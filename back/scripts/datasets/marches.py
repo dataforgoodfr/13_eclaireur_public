@@ -12,6 +12,7 @@ import ijson
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
+from back.scripts.utils.config import project_config
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -29,15 +30,13 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         and files containing only a month.
         We only select the monthly files if the year is not available on a yearly file.
         """
-        if config["marches_publics"]["test_urls"]:
+        if config["test_urls"]:
             return cls(
-                pd.DataFrame.from_records(
-                    [reduce(lambda x, y: x | y, config["marches_publics"]["test_urls"])]
-                ),
-                config["marches_publics"],
+                pd.DataFrame.from_records([reduce(lambda x, y: x | y, config["test_urls"])]),
+                config,
             )
 
-        catalog = pd.read_parquet(config["datagouv_catalog"]["combined_filename"]).pipe(
+        catalog = pd.read_parquet(project_config["datagouv_catalog"]["combined_filename"]).pipe(
             lambda df: df[df["dataset.id"] == DATASET_ID]
         )
         complete_years = catalog.assign(
@@ -213,4 +212,5 @@ class MarchesPublicsSchemaLoader:
                     f"{prop}.{sub_prop}", sub_details, root_definitions
                 )
             )
+        return flattened_schema
         return flattened_schema

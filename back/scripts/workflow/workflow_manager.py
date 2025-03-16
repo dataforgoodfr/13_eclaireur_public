@@ -49,7 +49,7 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
         DataGouvCatalog(self.config["datagouv_catalog"]).run()
-        MarchesPublicsWorkflow.from_config(self.config).run()
+        MarchesPublicsWorkflow.from_config(self.config["marches_publics"]).run()
         FinancialAccounts(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.config["sirene"]).run()
