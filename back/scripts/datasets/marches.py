@@ -49,7 +49,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         ).pipe(lambda df: df[df["year"].notna() & ~df["year"].isin(all_years)])
 
         files = pd.concat([complete_years, monthly])
-        return cls(files, config["marches_publics"])
+        return cls(files, config)
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)
