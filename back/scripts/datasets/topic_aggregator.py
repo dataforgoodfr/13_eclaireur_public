@@ -17,6 +17,7 @@ from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
     normalize_column_names,
+    normalize_date,
     normalize_identifiant,
     normalize_montant,
     safe_rename,
@@ -155,6 +156,7 @@ class TopicAggregator(DatasetAggregator):
             df.pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
             .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "dateConvention")
         )
         self._flag_inversion_siret(df, file_metadata)
         self._flag_extra_columns(df, file_metadata)

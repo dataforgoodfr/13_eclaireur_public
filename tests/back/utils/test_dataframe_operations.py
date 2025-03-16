@@ -1,8 +1,11 @@
+from datetime import datetime
+
 import pandas as pd
 import pytest
 
 from back.scripts.utils.dataframe_operation import (
     expand_json_columns,
+    normalize_date,
     normalize_identifiant,
     safe_rename,
 )
@@ -132,3 +135,21 @@ class TestExpandJsonColumns:
 
         with pytest.raises(ValueError):
             expand_json_columns(df, "extra")
+
+
+@pytest.mark.parametrize(
+    "input_value,expected_output",
+    [
+        (datetime(2020, 1, 1), datetime(2020, 1, 1)),
+        ("2020-01-01", datetime(2020, 1, 1)),
+        ("06/07/2019", datetime(2019, 7, 6)),
+        (None, None),
+        ("", None),
+    ],
+)
+def test_normalize_date(input_value, expected_output):
+    df = pd.DataFrame({"date": [input_value]})
+    if expected_output is not None:
+        assert normalize_date(df, "date")["date"].iloc[0] == expected_output
+    else:
+        assert pd.isna(normalize_date(df, "date")["date"].iloc[0])

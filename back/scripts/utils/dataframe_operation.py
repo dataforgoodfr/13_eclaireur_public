@@ -227,6 +227,14 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
 
 
+def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    if id_col not in frame.columns:
+        return frame
+    if str(frame[id_col].dtype) == "datetime64[ns]":
+        return frame
+    return frame.assign(**{id_col: pd.to_datetime(frame[id_col], dayfirst=True)})
+
+
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.
