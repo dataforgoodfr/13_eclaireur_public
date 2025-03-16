@@ -50,7 +50,7 @@ class DeclaInteretWorkflow(DatasetsMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.xml_filename = self.data_folder / "declarations.xml"
-        self.filename = self.data_folder / "declarations.parquet"
+        self.parquet_filename = self.data_folder / "declarations.parquet"
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
@@ -63,7 +63,7 @@ class DeclaInteretWorkflow(DatasetsMixin):
         urllib.request.urlretrieve(self.url, self.xml_filename)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.parquet_filename.exists():
             return
         with self.xml_filename.open() as f:
             soup = BeautifulSoup(f.read(), features="xml")
@@ -72,7 +72,7 @@ class DeclaInteretWorkflow(DatasetsMixin):
         df = pd.DataFrame.from_records(
             chain(*[self._parse_declaration(declaration) for declaration in tqdm(declarations)])
         )
-        df.to_parquet(self.filename)
+        df.to_parquet(self.parquet_filename)
 
     @staticmethod
     def _parse_declaration(declaration: BeautifulSoup) -> list[dict]:
