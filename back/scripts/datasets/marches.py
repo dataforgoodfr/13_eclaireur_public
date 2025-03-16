@@ -15,24 +15,37 @@ from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
 
+DATASET_ID = "5cd57bf68b4c4179299eb0e9"
+
 
 class MarchePubliqueWorkflow(DatasetAggregator):
     @classmethod
-    def from_config(cls, config):
-        files = pd.DataFrame(
-            {
-                "url": [
-                    "https://www.data.gouv.fr/fr/datasets/r/16962018-5c31-4296-9454-5998585496d2"
-                ],
-                "format": ["json"],
-            }
+    def from_config(cls, config: dict):
+        """
+        Fetch all aggregated datasets regardin public orders.
+
+        The data.gouv page is a combination of files containing a full year of contracts,
+        and files containing only a month.
+        We only select the monthly files if the year is not available on a yearly file.
+        """
+        catalog = pd.read_parquet(config["datagouv_catalog"]["combined_filename"]).pipe(
+            lambda df: df[df["dataset.id"] == DATASET_ID]
         )
-        return cls(files, config)
+        complete_years = catalog.assign(
+            year=catalog["url"].str.extract(r"decp-(\d{4}).json")
+        ).pipe(lambda df: df[df["year"].notna()])
+        all_years = complete_years["year"].dropna().unique()
+
+        monthly = catalog.assign(
+            year=catalog["url"].str.extract(r"decp-(\d{4})-\d{2}.json")
+        ).pipe(lambda df: df[df["year"].notna() & ~df["year"].isin(all_years)])
+
+        files = pd.concat([complete_years, monthly])
+        return cls(files, config["marches_publics"])
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)
         self._load_schema(config["schema"])
-        print(self.official_schema.head().T)
 
     def _load_schema(self, url):
         schema_filename = self.data_folder / "official_schema.parquet"
@@ -55,7 +68,7 @@ class MarchePubliqueWorkflow(DatasetAggregator):
             return None
         out = pd.read_json(interim_fn)
         object_columns = out.dtypes.pipe(lambda s: s[s == "object"]).index
-        corrected = {out[c].astype("string").where(out[c].notnull()) for c in object_columns}
+        corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
 
     @tracker(ulogger=LOGGER, log_start=True)
@@ -84,6 +97,8 @@ class MarchePubliqueWorkflow(DatasetAggregator):
         local_decla = copy.copy(declaration)
         minimal_titulaire = [{"id": None}]
         titulaires = local_decla.pop("titulaires", minimal_titulaire) or minimal_titulaire
+        if isinstance(titulaires, dict):
+            titulaires = [titulaires]
 
         unnested = {}
         for k, v in local_decla.items():
