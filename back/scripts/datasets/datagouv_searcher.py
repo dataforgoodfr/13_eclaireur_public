@@ -296,7 +296,7 @@ def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
         for row in df.itertuples()
     ]
     base_url = [m.group(1) if m else url for m, url in base_url]
-    priorities = ["parquet", "csv", "json", "xls", "xlsx", "html", "xml", "zip"]
+    priorities = ["parquet", "xls", "xlsx", "json", "csv", "html", "xml", "zip"]
     return (
         df.assign(
             base_url=base_url,

@@ -117,7 +117,7 @@ class TopicAggregator(DatasetAggregator):
                 raise RuntimeError("Unable to load file into a DataFrame")
             return df.pipe(self._normalize_frame, file_metadata)
         except Exception as e:
-            self.errors[str(e)].append(raw_filename.name)
+            self.errors[str(e)].append(raw_filename.parent.name)
 
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """
