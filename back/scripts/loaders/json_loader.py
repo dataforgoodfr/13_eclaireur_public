@@ -67,7 +67,9 @@ class JSONLoader(BaseLoader):
                 new_key = f"{prefix}__{key}" if prefix else key
 
                 # Recursively flatten nested dictionaries or lists
-                if isinstance(value, (dict, list)):
+                if key == "geometry":
+                    flattened.update({key: json.dumps(value)})
+                elif isinstance(value, (dict, list)):
                     flattened.update(JSONLoader._flatten_json(value, new_key))
                 else:
                     flattened[new_key] = value

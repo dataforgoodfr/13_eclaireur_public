@@ -2,6 +2,7 @@ import json
 import logging
 import re
 
+import numpy as np
 import pandas as pd
 from unidecode import unidecode
 
@@ -187,18 +188,21 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
     if str(frame[id_col].dtype) == "int64":
         return frame.assign(**{id_col: frame[id_col].astype("float64")})
-
-    return frame.assign(
-        **{
-            id_col: frame[id_col]
-            .astype(str)
-            .where(frame[id_col].notnull() & (frame[id_col] != ""))
-            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
-            .str.replace("euros", "")
-            .str.replace(",", ".")
-            .astype("float")
-        }
+    montant = (
+        frame[id_col]
+        .astype(str)
+        .where(frame[id_col].notnull() & (frame[id_col] != ""))
+        .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+        .str.replace("euros", "")
+        .str.strip()
     )
+    with_double_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
+    with_single_digits = montant.str.match(r".*[.,]\d{1}$").fillna(False)
+    montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
+    montant = np.where(
+        with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
+    )
+    return frame.assign(**{id_col: montant})
 
 
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
@@ -225,6 +229,20 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         # identifier is actually siret
         return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
+
+
+def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    if id_col not in frame.columns:
+        return frame
+    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
+        return frame
+
+    if str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col]
+    else:
+        dt = pd.to_datetime(frame[id_col], dayfirst=True)
+    dt = dt.dt.tz_localize("UTC")
+    return frame.assign(**{id_col: dt})
 
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
