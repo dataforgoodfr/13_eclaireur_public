@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
@@ -141,9 +141,10 @@ class TestExpandJsonColumns:
 @pytest.mark.parametrize(
     "input_value,expected_output",
     [
-        (datetime(2020, 1, 1), datetime(2020, 1, 1)),
-        ("2020-01-01", datetime(2020, 1, 1)),
-        ("06/07/2019", datetime(2019, 7, 6)),
+        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
         (None, None),
         ("", None),
     ],
@@ -151,7 +152,8 @@ class TestExpandJsonColumns:
 def test_normalize_date(input_value, expected_output):
     df = pd.DataFrame({"date": [input_value]})
     if expected_output is not None:
-        assert normalize_date(df, "date")["date"].iloc[0] == expected_output
+        out = normalize_date(df, "date")
+        assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
 
@@ -183,4 +185,5 @@ class TestNormalizeMontant:
         df = pd.DataFrame({"amount": ["1,500 €", None, ""]})
         expected = pd.DataFrame({"amount": [1500.0, None, None]})
         result = normalize_montant(df, "amount")
+        pd.testing.assert_frame_equal(result, expected)
         pd.testing.assert_frame_equal(result, expected)

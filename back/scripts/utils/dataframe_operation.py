@@ -230,9 +230,15 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
 def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
-    if str(frame[id_col].dtype) == "datetime64[ns]":
+    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
         return frame
-    return frame.assign(**{id_col: pd.to_datetime(frame[id_col], dayfirst=True)})
+
+    if str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col]
+    else:
+        dt = pd.to_datetime(frame[id_col], dayfirst=True)
+    dt = dt.dt.tz_localize("UTC")
+    return frame.assign(**{id_col: dt})
 
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
