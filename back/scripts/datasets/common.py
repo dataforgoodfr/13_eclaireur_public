@@ -1,4 +1,3 @@
-import logging
 from copy import deepcopy
 from functools import cached_property
 from pathlib import Path
@@ -16,7 +15,6 @@ class DatasetsMixin:
     config_key_name: str = ""
 
     def __init__(self, *args, config=None, **kwargs):
-        self.logger = logging.getLogger(__name__)
         if config is not None:
             self.config = config
         self.data_folder.mkdir(exist_ok=True, parents=True)

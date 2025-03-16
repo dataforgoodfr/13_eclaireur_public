@@ -1,3 +1,4 @@
+import logging
 import re
 
 import pandas as pd
@@ -24,6 +25,7 @@ class DataGouvSearcher(DatasetsMixin):
     def __init__(self, communities_selector, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.logger = logging.getLogger(__name__)
         self.scope = communities_selector
         self.organization_data_folder = (
             self.data_folder / self.config["paths"]["organization_datasets"]
