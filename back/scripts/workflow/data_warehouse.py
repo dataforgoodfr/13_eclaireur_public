@@ -8,9 +8,8 @@ from back.scripts.utils.config import project_config
 
 
 class DataWarehouseWorkflow:
-    def __init__(self, config: dict):
-        self._config = config
-        self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
+    def __init__(self):
+        self.warehouse_folder = Path(project_config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
         self.send_to_db = []
 
