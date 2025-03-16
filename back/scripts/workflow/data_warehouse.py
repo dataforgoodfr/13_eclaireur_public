@@ -1,16 +1,17 @@
+from pathlib import Path
+
 import polars as pl
 from polars import col
 
-from back.scripts.datasets.common import DatasetsMixin
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.utils.config import project_config
 
 
-class DataWarehouseWorkflow(DatasetsMixin):
-    config_key_name: str = "warehouse"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class DataWarehouseWorkflow:
+    def __init__(self, config: dict):
+        self._config = config
+        self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
+        self.warehouse_folder.mkdir(exist_ok=True, parents=True)
         self.send_to_db = []
 
     def run(self) -> None:
@@ -64,6 +65,6 @@ class DataWarehouseWorkflow(DatasetsMixin):
             .drop("raison_sociale_beneficiaire")
         )
 
-        out_filename = self.data_folder / "subventions.parquet"
+        out_filename = self.warehouse_folder / "subventions.parquet"
         subventions.write_parquet(out_filename)
         self.send_to_db.append(out_filename)

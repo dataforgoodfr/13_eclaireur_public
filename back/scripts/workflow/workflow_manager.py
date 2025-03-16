@@ -35,7 +35,6 @@ from back.scripts.utils.dataframe_operation import (
 from back.scripts.utils.datagouv_api import select_implemented_formats
 from back.scripts.utils.files_operation import save_csv
 from back.scripts.utils.psql_connector import PSQLConnector
-from back.scripts.workflow.data_warehouse import DataWarehouseWorkflow
 
 
 class WorkflowManager:
@@ -65,8 +64,6 @@ class WorkflowManager:
             workflow().run()
         self._run_subvention_and_marche()
 
-        # TODO: Order matters, need to be able to configure it properly
-        DataWarehouseWorkflow().run()
         self.logger.info("Workflow completed.")
 
     def _run_subvention_and_marche(self):
