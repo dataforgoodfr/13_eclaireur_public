@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 DATASET_ID = "5cd57bf68b4c4179299eb0e9"
 
 
-class MarchePubliqueWorkflow(DatasetAggregator):
+class MarchesPublicsWorkflow(DatasetAggregator):
     @classmethod
     def from_config(cls, config: dict):
         """

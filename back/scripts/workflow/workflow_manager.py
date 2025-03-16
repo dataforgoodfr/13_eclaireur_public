@@ -13,7 +13,7 @@ from back.scripts.datasets.datagouv_searcher import (
 )
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
-from back.scripts.datasets.marches import MarchePubliqueWorkflow
+from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
@@ -49,7 +49,7 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
         DataGouvCatalog(self.config["datagouv_catalog"]).run()
-        MarchePubliqueWorkflow.from_config(self.config).run()
+        MarchesPublicsWorkflow.from_config(self.config).run()
         FinancialAccounts(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.config["sirene"]).run()
