@@ -82,13 +82,18 @@ class MarchePubliqueWorkflow(DatasetAggregator):
 
     @tracker(ulogger=LOGGER, log_start=True)
     def _read_parse_interim(self, raw_filename: Path) -> None:
+        """
+        Create an intermediate JSON file with cleaned conventions,
+        so that pandas can read it properly.
+        """
         interim_fn = raw_filename.parent / "interim.json"
         if interim_fn.exists():
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
             with open(interim_fn, "w") as interim:
-                # Extract from the json individual declarations
+                # Ijson identifies each declaration individually
+                # within the marches field.
                 array_declas = ijson.items(raw, "marches.item", use_float=True)
                 interim.write("[\n")
 
@@ -103,6 +108,9 @@ class MarchePubliqueWorkflow(DatasetAggregator):
 
     @staticmethod
     def unnest_marche(declaration: dict):
+        """
+        Create one declaration line per titulaire.
+        """
         local_decla = copy.copy(declaration)
         minimal_titulaire = [{"id": None}]
         titulaires = local_decla.pop("titulaires", minimal_titulaire) or minimal_titulaire
