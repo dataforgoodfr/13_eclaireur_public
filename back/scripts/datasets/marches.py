@@ -4,6 +4,7 @@ import itertools
 import json
 import logging
 import tempfile
+from functools import reduce
 from pathlib import Path
 from urllib.request import urlretrieve
 
@@ -28,6 +29,14 @@ class MarchePubliqueWorkflow(DatasetAggregator):
         and files containing only a month.
         We only select the monthly files if the year is not available on a yearly file.
         """
+        if config["marches_publics"]["test_urls"]:
+            return cls(
+                pd.DataFrame.from_records(
+                    [reduce(lambda x, y: x | y, config["marches_publics"]["test_urls"])]
+                ),
+                config["marches_publics"],
+            )
+
         catalog = pd.read_parquet(config["datagouv_catalog"]["combined_filename"]).pipe(
             lambda df: df[df["dataset.id"] == DATASET_ID]
         )

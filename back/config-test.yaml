@@ -104,9 +104,12 @@ search:
 
 
 marches_publics:
-  schema: back/tests/inputs/ci_raw_marches.json
+  schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
   data_folder: back/tests/data/marches_publics
   combined_filename: back/tests/data/marches_publics/marches_publics.parquet
+  test_urls: 
+    - url: file:./tests/back/loaders/fixtures/reduced_decp_2019.json 
+    - format: json
 
 datagouv_catalog:
   data_folder: back/data/datagouv_catalog

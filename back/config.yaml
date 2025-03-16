@@ -96,6 +96,7 @@ marches_publics:
   schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
   data_folder: back/data/marches_publics
   combined_filename: back/data/marches_publics/marches_publics.parquet
+  test_urls: null
 
 datagouv_catalog:
   data_folder: back/data/datagouv_catalog
