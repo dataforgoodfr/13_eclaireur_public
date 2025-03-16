@@ -6,6 +6,7 @@ import pandas as pd
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.datagouv_searcher import (
     DataGouvSearcher,
     remove_same_dataset_formats,
@@ -47,7 +48,8 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
-        MarchePubliqueWorkflow.from_config(self.config["marches_publics"]).run()
+        DataGouvCatalog(self.config["datagouv_catalog"]).run()
+        MarchePubliqueWorkflow.from_config(self.config).run()
         FinancialAccounts(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.config["sirene"]).run()
