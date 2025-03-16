@@ -50,9 +50,11 @@ class BaseDatasetAggregator:
 
 
 class DatasetAggregator(DatasetsMixin):
-    def __init__(self, files: pd.DataFrame, *args, **kwargs):
+    def __init__(self, files_in_scope: pd.DataFrame, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
+        self.files_in_scope = files_in_scope.assign(
+            url_hash=lambda df: df["url"].apply(_sha256)
+        )
 
         self.combined_filename = get_project_base_path() / self.config["combined_filename"]
         self.errors = defaultdict(list)

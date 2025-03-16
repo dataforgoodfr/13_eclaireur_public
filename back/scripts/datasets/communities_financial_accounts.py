@@ -13,8 +13,8 @@ class FinancialAccounts(DatasetAggregator):
     config_key_name: str = "financial_accounts"
 
     def __init__(self, *args, **kwargs):
-        files = pd.read_csv(self.config["files_csv"], sep=";")
-        super().__init__(files, *args, **kwargs)
+        files_in_scope = pd.read_csv(self.config["files_csv"], sep=";")
+        super().__init__(files_in_scope, *args, **kwargs)
         self.columns = Counter()
         self.columns_mapping = pd.read_csv(self.config["columns_mapping"], sep=";").set_index(
             "name"
