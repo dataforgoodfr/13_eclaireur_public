@@ -57,6 +57,7 @@ class DatasetAggregator:
         self.data_folder = get_project_base_path() / (config["data_folder"])
         self.data_folder.mkdir(parents=True, exist_ok=True)
         self.combined_filename = get_project_base_path() / (config["combined_filename"])
+        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
 
     @tracker(ulogger=LOGGER, log_start=True)
