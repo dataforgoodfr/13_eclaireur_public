@@ -1,4 +1,3 @@
-import copy
 import logging
 import ssl
 from collections import Counter
@@ -53,7 +52,7 @@ class TopicAggregator(DatasetAggregator):
 
     @cached_property
     def config(self):
-        config = copy.deepcopy(super().config)
+        config = super().config
         formatting = {"topic": self.topic}
         config["data_folder"] = config["data_folder"] % formatting
         config["combined_filename"] = config["combined_filename"] % formatting
