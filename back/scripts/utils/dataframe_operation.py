@@ -187,18 +187,18 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
     if str(frame[id_col].dtype) == "int64":
         return frame.assign(**{id_col: frame[id_col].astype("float64")})
-
-    return frame.assign(
-        **{
-            id_col: frame[id_col]
-            .astype(str)
-            .where(frame[id_col].notnull() & (frame[id_col] != ""))
-            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
-            .str.replace("euros", "")
-            .str.replace(",", ".")
-            .astype("float")
-        }
+    montant = (
+        frame[id_col]
+        .astype(str)
+        .where(frame[id_col].notnull() & (frame[id_col] != ""))
+        .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+        .str.replace("euros", "")
+        .str.strip()
     )
+    with_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
+    montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
+    montant = montant.where(~with_digits, montant / 100)
+    return frame.assign(**{id_col: montant})
 
 
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
