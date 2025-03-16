@@ -108,6 +108,10 @@ marches_publics:
   data_folder: back/tests/data/marches_publics
   combined_filename: back/tests/data/marches_publics/marches_publics.parquet
 
+datagouv_catalog:
+  data_folder: back/data/datagouv_catalog
+  combined_filename: back/data/datagouv_catalog/catalog.parquet
+  catalog_url: file:./back/tests/inputs/datagouv_catalog.csv
 
 datafile_loader:
   data_folder: 'back/tests/data/datasets/%(topic)s'

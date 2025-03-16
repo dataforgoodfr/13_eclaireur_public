@@ -1,3 +1,4 @@
+import itertools
 import logging
 import os
 import re
@@ -55,9 +56,12 @@ class BaseLoader:
         if not force and not self.can_load_file(self.file_url):
             raise RuntimeError(f"File {self.file_url} is not supported by this loader")
 
-        if not self.is_url:
+        if self.is_url:
+            return self._load_from_url()
+        else:
             return self._load_from_file()
 
+    def _load_from_url(self):
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(self.file_url)
         if response.status_code == 200:
@@ -128,6 +132,16 @@ class BaseLoader:
                 return loader_class
 
         return None
+
+    @classmethod
+    def valid_extensions(cls):
+        return sorted(
+            set(
+                itertools.chain.from_iterable(
+                    [s.file_extensions or [] for s in BaseLoader.__subclasses__()]
+                )
+            )
+        )
 
     @classmethod
     def can_load_file(

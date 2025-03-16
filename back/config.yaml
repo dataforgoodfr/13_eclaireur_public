@@ -97,6 +97,11 @@ marches_publics:
   data_folder: back/data/marches_publics
   combined_filename: back/data/marches_publics/marches_publics.parquet
 
+datagouv_catalog:
+  data_folder: back/data/datagouv_catalog
+  combined_filename: back/data/datagouv_catalog/catalog.parquet
+  catalog_url: null
+  
 datafile_loader:
   data_folder: 'back/data/datasets/%(topic)s'
   combined_filename: 'back/data/datasets/%(topic)s.parquet'

@@ -1,10 +1,10 @@
 import logging
+import re
 
 import pandas as pd
-from scripts.loaders.csv_loader import CSVLoader
 from tqdm import tqdm
 
-
+from back.scripts.loaders.csv_loader import CSVLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import expand_json_columns
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -275,3 +275,36 @@ class DataGouvSearcher:
         datafiles.to_parquet(final_datasets_filename)
 
         return datafiles
+
+
+def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Identify from url different formats of the same dataset and only select the most useful format.
+
+    Examples :
+    - http://www.data.rennes-metropole.fr/fileadmin/user_upload/data/vdr_budget_v3/CA_2011_Open_DATA_Subventions_d_equipement.<FORMAT>
+    - https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/subventions-aux-associations-votees-copie1/exports/(json|csv?use_labels=true)
+    - https://data.grandpoitiers.fr/explore/dataset/citoyennete-subventions-directes-attribuees-aux-associations-2017-ville-de-poiti/download?format=<FORMAT>
+    """
+    fetch_base_url = {
+        f: re.compile(r"^(.*)\b" + f + r"\b") for f in df["format"].dropna().unique()
+    }
+    base_url = [
+        (fetch_base_url[row.format].match(row.url), row.url)
+        if row.url and not pd.isna(row.format)
+        else (None, row.url)
+        for row in df.itertuples()
+    ]
+    base_url = [m.group(1) if m else url for m, url in base_url]
+    priorities = ["parquet", "csv", "json", "xls", "xlsx", "html", "xml", "zip"]
+    return (
+        df.assign(
+            base_url=base_url,
+            priority=df["format"]
+            .map({n: i for i, n in enumerate(priorities)})
+            .fillna(len(priorities)),
+        )
+        .sort_values(["dataset_id", "base_url", "priority"])
+        .drop_duplicates(subset=["dataset_id", "base_url"], keep="first")
+        .drop(columns=["priority", "base_url"])
+    )

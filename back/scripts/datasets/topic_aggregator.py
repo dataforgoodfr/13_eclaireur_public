@@ -1,6 +1,7 @@
 import copy
 import logging
 import ssl
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
@@ -58,6 +59,7 @@ class TopicAggregator(DatasetAggregator):
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
+        self.extra_columns = Counter()
 
     def _load_schema(self, schema_topic_config):
         """
@@ -147,7 +149,10 @@ class TopicAggregator(DatasetAggregator):
                 columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
             )
             .pipe(self._flag_columns_by_keyword)
-            .pipe(normalize_identifiant, "idBeneficiaire")
+        )
+        self._flag_duplicate_columns(df, file_metadata)
+        df = (
+            df.pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
             .pipe(normalize_montant, "montant")
         )
@@ -169,6 +174,12 @@ class TopicAggregator(DatasetAggregator):
             **optional_features,
         )
 
+    @staticmethod
+    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: tuple):
+        if len(df.columns) != len(set(df.columns)):
+            LOGGER.error(f"Data with duplicate columns : {file_metadata.filename}")
+            raise RuntimeError("Data with duplicate columns")
+
     def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
         Select from the dataframe the columns that are in the official schema.
@@ -176,7 +187,8 @@ class TopicAggregator(DatasetAggregator):
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
 
-    def _flag_inversion_siret(self, df: pd.DataFrame, file_metadata: tuple):
+    @staticmethod
+    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: tuple):
         """
         Flag datasets which have more unique attribuant siret than beneficiaire
         """
