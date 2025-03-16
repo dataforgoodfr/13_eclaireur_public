@@ -25,12 +25,12 @@ class TestRemoveSameDatasetFormats:
         expected = pd.DataFrame(
             {
                 "url": [
-                    "http://www.data.rennes-metropole.fr/fileadmin/user_upload/data/vdr_budget_v3/CA_2011_Open_DATA_Subventions_d_equipement.csv",
-                    "https://data.grandpoitiers.fr/explore/dataset/citoyennete-subventions-directes-attribuees-aux-associations-2017-ville-de-poiti/download?format=csv",
-                    "https://example.com/csv",
-                    "https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/subventions-aux-associations-votees-copie1/exports/csv?use_labels=true",
+                    "http://www.data.rennes-metropole.fr/fileadmin/user_upload/data/vdr_budget_v3/CA_2011_Open_DATA_Subventions_d_equipement.xls",
+                    "https://data.grandpoitiers.fr/explore/dataset/citoyennete-subventions-directes-attribuees-aux-associations-2017-ville-de-poiti/download?format=json",
+                    "https://example.com/json",
+                    "https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/subventions-aux-associations-votees-copie1/exports/json",
                 ],
-                "format": "csv",
+                "format": ["xls", "json", "json", "json"],
                 "dataset_id": 1,
             }
         ).reset_index(drop=True)
