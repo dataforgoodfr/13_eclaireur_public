@@ -66,8 +66,6 @@ class WorkflowManager:
 
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
         for topic, topic_config in self.config["search"].items():
-            if topic != "marches_publics":
-                continue
             # Process each topic to get files in scope and datafiles
             topic_files_in_scope, topic_datafiles = self.process_topic(
                 communities_selector, topic, topic_config
