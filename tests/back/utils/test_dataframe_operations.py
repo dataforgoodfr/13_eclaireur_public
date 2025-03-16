@@ -1,9 +1,13 @@
+from datetime import datetime, timezone
+
 import pandas as pd
 import pytest
 
 from back.scripts.utils.dataframe_operation import (
     expand_json_columns,
+    normalize_date,
     normalize_identifiant,
+    normalize_montant,
     safe_rename,
 )
 
@@ -132,3 +136,54 @@ class TestExpandJsonColumns:
 
         with pytest.raises(ValueError):
             expand_json_columns(df, "extra")
+
+
+@pytest.mark.parametrize(
+    "input_value,expected_output",
+    [
+        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
+        (None, None),
+        ("", None),
+    ],
+)
+def test_normalize_date(input_value, expected_output):
+    df = pd.DataFrame({"date": [input_value]})
+    if expected_output is not None:
+        out = normalize_date(df, "date")
+        assert out["date"].iloc[0] == expected_output
+    else:
+        assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+
+
+class TestNormalizeMontant:
+    def test_column_not_present(self):
+        df = pd.DataFrame({"other_col": [1, 2, 3]})
+        result = normalize_montant(df, "missing_col")
+        pd.testing.assert_frame_equal(result, df)
+
+    def test_already_float_column(self):
+        df = pd.DataFrame({"amount": [1.0, 2.0, 3.0]})
+        result = normalize_montant(df, "amount")
+        pd.testing.assert_frame_equal(result, df)
+
+    def test_int_column_is_cast_to_float(self):
+        df = pd.DataFrame({"amount": [1, 2, 3]})
+        expected = pd.DataFrame({"amount": [1.0, 2.0, 3.0]})
+        result = normalize_montant(df, "amount")
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_string_with_special_characters(self):
+        df = pd.DataFrame({"amount": ["1,500 €", "2 500 euros", "3,500.00", "125.3"]})
+        expected = pd.DataFrame({"amount": [1500.0, 2500.0, 3500.0, 125.3]})
+        result = normalize_montant(df, "amount")
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_null_values(self):
+        df = pd.DataFrame({"amount": ["1,500 €", None, ""]})
+        expected = pd.DataFrame({"amount": [1500.0, None, None]})
+        result = normalize_montant(df, "amount")
+        pd.testing.assert_frame_equal(result, expected)
+        pd.testing.assert_frame_equal(result, expected)
