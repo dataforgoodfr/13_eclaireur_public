@@ -2,6 +2,7 @@ import json
 import logging
 import re
 
+import numpy as np
 import pandas as pd
 from unidecode import unidecode
 
@@ -195,9 +196,12 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         .str.replace("euros", "")
         .str.strip()
     )
-    with_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
+    with_double_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
+    with_single_digits = montant.str.match(r".*[.,]\d{1}$").fillna(False)
     montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
-    montant = montant.where(~with_digits, montant / 100)
+    montant = np.where(
+        with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
+    )
     return frame.assign(**{id_col: montant})
 
 

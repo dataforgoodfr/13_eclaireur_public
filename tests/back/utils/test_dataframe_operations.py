@@ -176,8 +176,8 @@ class TestNormalizeMontant:
         pd.testing.assert_frame_equal(result, expected)
 
     def test_string_with_special_characters(self):
-        df = pd.DataFrame({"amount": ["1,500 €", "2 500 euros", "3,500.00"]})
-        expected = pd.DataFrame({"amount": [1500.0, 2500.0, 3500.0]})
+        df = pd.DataFrame({"amount": ["1,500 €", "2 500 euros", "3,500.00", "125.3"]})
+        expected = pd.DataFrame({"amount": [1500.0, 2500.0, 3500.0, 125.3]})
         result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)
 
