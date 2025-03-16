@@ -14,10 +14,13 @@ class DatasetsMixin:
 
     config_key_name: str = ""
 
-    def __init__(self, *args, config=None, **kwargs):
+    def __init__(
+        self, *args, config: dict | None = None, create_data_folder: bool = True, **kwargs
+    ):
         if config is not None:
             self.config = config
-        self.data_folder.mkdir(exist_ok=True, parents=True)
+        if create_data_folder and "data_folder" in self.config:
+            self.data_folder.mkdir(exist_ok=True, parents=True)
 
     @cached_property
     def config(self):
