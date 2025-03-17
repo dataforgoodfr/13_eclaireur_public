@@ -3,7 +3,8 @@ name: test-run
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: 
+      - dev
     paths-ignore:
       - "data-analyst/**"
       - "front/**"
@@ -16,14 +17,18 @@ jobs:
   test-run:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-    - name: Install poetry and dependencies
-      run: |
-        python -m pip install poetry
-        poetry install
+    - uses: actions/checkout@v4
+    - name: Install poetry
+      run: pipx install poetry
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install
+    - name: Run tests
+      run: poetry run tox -vv
     - name: Docker compose (start postgres)
       run: docker compose -f docker-compose.yaml up -d
     - name: Run pipeline
-      run: |
-        poetry run python back/main.py -f back/config-test.yaml
+      run: poetry run python back/main.py -f back/config-test.yaml
