@@ -1,6 +1,7 @@
 workflow:
   save_to_db: True
   replace_tables: False
+  love_make_tests_fail: True
 
 communities:
   processed_data:
