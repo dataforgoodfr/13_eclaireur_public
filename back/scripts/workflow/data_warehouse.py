@@ -35,7 +35,12 @@ class DataWarehouseWorkflow:
                 df = pl.read_parquet(filename)
 
                 if if_table_exists == "append":
-                    conn.execute(text(f"TRUNCATE {table_name}"))
+                    table_exists_query = text(
+                        f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name= '{table_name}')"
+                    )
+                    table_exists = conn.execute(table_exists_query).scalar()
+                    if table_exists:
+                        conn.execute(text(f"TRUNCATE {table_name}"))
 
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
 
