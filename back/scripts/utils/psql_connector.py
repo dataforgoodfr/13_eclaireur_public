@@ -11,7 +11,7 @@ load_dotenv()  # Charge les variables d'environnement à partir du fichier .env
 
 
 class PSQLConnector:
-    def __init__(self, replace_tables):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
 
         self.dbname = os.getenv("DB_NAME", "eclaireur_public")
@@ -19,7 +19,6 @@ class PSQLConnector:
         self.password = os.getenv("DB_PASSWORD", "secret")
         self.host = os.getenv("DB_HOST", "localhost")
         self.port = os.getenv("DB_PORT", "5432")
-        self.replace_tables = replace_tables
         self.engine = None
         self._connect()
 
