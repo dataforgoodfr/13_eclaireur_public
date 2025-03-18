@@ -179,7 +179,7 @@ class TopicAggregator(DatasetAggregator):
     @staticmethod
     def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: tuple):
         if len(df.columns) != len(set(df.columns)):
-            LOGGER.error(f"Data with duplicate columns : {file_metadata.filename}")
+            LOGGER.error(f"Data with duplicate columns : {file_metadata.url_hash}")
             raise RuntimeError("Data with duplicate columns")
 
     def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
