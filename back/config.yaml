@@ -20,7 +20,7 @@ communities:
       Code Insee 2023 Commune: str
     processed_data:
       path: back/data/communities/processed_data
-      filename: ofgl_data.csv
+      filename: ofgl_data.parquet
 
     epci:
       file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
@@ -34,7 +34,7 @@ communities:
       siren: str
     processed_data:
       path: back/data/communities/processed_data
-      filename: odf_data.csv
+      filename: odf_data.parquet
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv

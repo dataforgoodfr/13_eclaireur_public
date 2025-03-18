@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 
 import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
@@ -13,20 +12,20 @@ class OfglLoader:
         self._config = config
         self._logger = logging.getLogger(__name__)
 
+        self.data_folder = get_project_base_path() / self._config["processed_data"]["path"]
+        self.data_folder.mkdir(parents=True, exist_ok=True)
+
     def get(self):
-        base_path = get_project_base_path()
-        data_folder = base_path / self._config["processed_data"]["path"]
-        data_folder.mkdir(parents=True, exist_ok=True)
-        data_file = data_folder / self._config["processed_data"]["filename"]
+        data_file = self.data_folder / self._config["processed_data"]["filename"]
 
         # Load data from OFGL dataset if it was already processed
         if data_file.exists():
             self._logger.info("Found OFGL data on disk, loading it.")
-            return pd.read_csv(data_file, sep=";", dtype={"siren": "str"})
+            return pd.read_parquet(data_file)
 
         self._logger.info("Downloading and processing OFGL data.")
         # Load the mapping between EPCI and communes, downloaded from the OFGL website
-        epci_communes_path = base_path / self._config["epci"]["file"]
+        epci_communes_path = get_project_base_path() / self._config["epci"]["file"]
         epci_communes_mapping = pd.read_excel(
             epci_communes_path, dtype=self._config["epci"]["dtype"]
         )
@@ -61,17 +60,10 @@ class OfglLoader:
                 .where(df["code_region"].notna()),
             )
             .dropna(subset=["nom"])
+            .pipe(normalize_column_names)
         )
 
-        # Save the processed data to the instance & a CSV file
-        data = normalize_column_names(data)
-        data.to_parquet(
-            (
-                Path(self._config["processed_data"]["path"])
-                / self._config["processed_data"]["filename"]
-            ).with_suffix(".parquet"),
-            index=False,
-        )
+        data.to_parquet(data_file, index=False)
         return data
 
     def _process_regions(self, df):
