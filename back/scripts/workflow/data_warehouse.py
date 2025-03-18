@@ -2,6 +2,7 @@ from pathlib import Path
 
 import polars as pl
 from polars import col
+from sqlalchemy import text
 
 from back.scripts.utils.psql_connector import PSQLConnector
 
@@ -34,7 +35,7 @@ class DataWarehouseWorkflow:
                 df = pl.read_parquet(filename)
 
                 if if_table_exists == "append":
-                    conn.execute(f"DELETE FROM {table_name}")
+                    conn.execute(text(f"TRUNCATE {table_name}"))
 
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
 
