@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
 
 from back.scripts.utils.dataframe_operation import normalize_column_names
 
@@ -40,11 +39,10 @@ class OdfLoader:
             .assign(siren=lambda df: df["siren"].astype(str).str.zfill(9))
             .pipe(normalize_column_names)
         )
-        save_csv(
-            data,
-            Path(processed_data_config["path"]),
-            processed_data_config["filename"],
-            sep=";",
-            index=True,
+        data.to_parquet(
+            (
+                Path(processed_data_config["path"]) / processed_data_config["filename"]
+            ).with_suffix(".parquet"),
+            index=False,
         )
         return data

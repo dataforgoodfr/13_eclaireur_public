@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 from scripts.loaders.base_loader import BaseLoader
 from scripts.utils.config import get_project_base_path
-from scripts.utils.files_operation import save_csv
 
 from back.scripts.utils.dataframe_operation import normalize_column_names
 
@@ -66,12 +65,12 @@ class OfglLoader:
 
         # Save the processed data to the instance & a CSV file
         data = normalize_column_names(data)
-        save_csv(
-            data,
-            Path(self._config["processed_data"]["path"]),
-            self._config["processed_data"]["filename"],
-            sep=";",
-            index=True,
+        data.to_parquet(
+            (
+                Path(self._config["processed_data"]["path"])
+                / self._config["processed_data"]["filename"]
+            ).with_suffix(".parquet"),
+            index=False,
         )
         return data
 
