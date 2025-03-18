@@ -1,5 +1,0 @@
-FILES_IN_SCOPE_FILENAME = "files_in_scope.csv"
-NORMALIZED_DATA_FILENAME = "normalized_data.csv"
-DATAFILES_OUT_FILENAME = "datafiles_out.csv"
-DATACOLUMNS_OUT_FILENAME = "datacolumns_out.csv"
-MODIFICATIONS_DATA_FILENAME = "modifications_data.csv"

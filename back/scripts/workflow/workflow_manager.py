@@ -17,20 +17,9 @@ from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
-from back.scripts.utils.config import get_project_base_path, get_project_data_path
-from back.scripts.utils.constants import (
-    DATACOLUMNS_OUT_FILENAME,
-    DATAFILES_OUT_FILENAME,
-    FILES_IN_SCOPE_FILENAME,
-    MODIFICATIONS_DATA_FILENAME,
-    NORMALIZED_DATA_FILENAME,
-)
-from back.scripts.utils.dataframe_operation import (
-    correct_format_from_url,
-    normalize_column_names,
-)
+from back.scripts.utils.config import get_project_data_path
+from back.scripts.utils.dataframe_operation import correct_format_from_url
 from back.scripts.utils.datagouv_api import select_implemented_formats
-from back.scripts.utils.files_operation import save_csv
 
 
 class WorkflowManager:
@@ -63,18 +52,7 @@ class WorkflowManager:
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
         for topic, topic_config in self.config["search"].items():
             # Process each topic to get files in scope and datafiles
-            topic_files_in_scope, topic_datafiles = self.process_topic(
-                communities_selector, topic, topic_config
-            )
-
-            self.save_output_to_csv(
-                topic,
-                topic_datafiles,
-                topic_files_in_scope,
-                getattr(topic_datafiles, "datacolumns_out", None),
-                getattr(topic_datafiles, "datafiles_out", None),
-                getattr(topic_datafiles, "modifications_data", None),
-            )
+            self.process_topic(communities_selector, topic, topic_config)
 
     def check_file_age(self, config):
         """
@@ -101,11 +79,6 @@ class WorkflowManager:
         # Initialize CommunitiesSelector with the config and select communities
         config = self.config["communities"] | {"sirene": self.config["sirene"]}
         communities_selector = CommunitiesSelector(config)
-
-        if self.config["workflow"]["save_to_db"]:
-            self.connector.upsert_df_to_sql(
-                communities_selector.selected_data, "normalized_selected_communities", ["siren"]
-            )
 
         self.logger.info("Communities scope initialized.")
         return communities_selector
@@ -137,46 +110,9 @@ class WorkflowManager:
                 .pipe(select_implemented_formats)
             )
 
-            if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(
-                    topic_files_in_scope, "files_in_scope_" + topic, ["url"]
-                )
-
             topic_agg = TopicAggregator(
                 topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
             )
             topic_agg.run()
 
-            if self.config["workflow"]["save_to_db"]:
-                self.connector.upsert_df_to_sql(
-                    topic_agg.aggregated_dataset, "normalized_" + topic, ["url"]
-                )
-
             return topic_files_in_scope, topic_agg.aggregated_dataset
-
-    def save_output_to_csv(
-        self,
-        topic,
-        normalized_data,
-        topic_files_in_scope=None,
-        datacolumns_out=None,
-        datafiles_out=None,
-        modifications_data=None,
-    ):
-        output_folder = get_project_base_path() / (
-            self.config["outputs_csv"]["path"] % {"topic": topic}
-        )
-        output_folder.mkdir(parents=True, exist_ok=True)
-        normalized_data = normalize_column_names(normalized_data)
-
-        # Loop through the dataframes (if not None) to save them to the output folder
-        if normalized_data is not None:
-            save_csv(normalized_data, output_folder, NORMALIZED_DATA_FILENAME, sep=";")
-        if topic_files_in_scope is not None:
-            save_csv(topic_files_in_scope, output_folder, FILES_IN_SCOPE_FILENAME, sep=";")
-        if datacolumns_out is not None:
-            save_csv(datacolumns_out, output_folder, DATACOLUMNS_OUT_FILENAME, sep=";")
-        if datafiles_out is not None:
-            save_csv(datafiles_out, output_folder, DATAFILES_OUT_FILENAME, sep=";")
-        if modifications_data is not None:
-            save_csv(modifications_data, output_folder, MODIFICATIONS_DATA_FILENAME, sep=";")
