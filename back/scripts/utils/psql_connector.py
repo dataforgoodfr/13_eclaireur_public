@@ -1,10 +1,11 @@
 import hashlib
 import logging
-import numpy as np
-from sqlalchemy import create_engine, text
 import os
-from dotenv import load_dotenv
+
+import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
 
 load_dotenv()  # Charge les variables d'environnement à partir du fichier .env
 
@@ -34,6 +35,13 @@ class PSQLConnector:
         self.engine = create_engine(
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         )
+
+
+class Historisateur:
+    """
+    This class is currently dead code but the logic will be used
+    for source historisation.
+    """
 
     def drop_table_if_exists(self, table_name):
         try:
@@ -240,4 +248,5 @@ class PSQLConnector:
                 WHERE {where_clause}
             """)
             conn.execute(sql, soft_delete_rows.to_dict(orient="records"))
+            self.logger.info(f"{len(soft_delete_rows)} rows soft deleted in {table_name}.")
             self.logger.info(f"{len(soft_delete_rows)} rows soft deleted in {table_name}.")

@@ -31,7 +31,6 @@ from back.scripts.utils.dataframe_operation import (
 )
 from back.scripts.utils.datagouv_api import select_implemented_formats
 from back.scripts.utils.files_operation import save_csv
-from back.scripts.utils.psql_connector import PSQLConnector
 
 
 class WorkflowManager:
@@ -39,9 +38,6 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
-
-        if self.config["workflow"]["save_to_db"]:
-            self.connector = PSQLConnector(self.config["workflow"]["replace_tables"])
 
         self.source_folder = get_project_data_path()
         self.source_folder.mkdir(exist_ok=True, parents=True)
