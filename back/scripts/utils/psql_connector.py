@@ -248,4 +248,3 @@ class Historisateur:
             """)
             conn.execute(sql, soft_delete_rows.to_dict(orient="records"))
             self.logger.info(f"{len(soft_delete_rows)} rows soft deleted in {table_name}.")
-            self.logger.info(f"{len(soft_delete_rows)} rows soft deleted in {table_name}.")
