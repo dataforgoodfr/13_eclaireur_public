@@ -19,6 +19,13 @@ export default function MapPage() {
   return (
     <div className='flex flex-row'>
       <div>
+        <a
+          href={process.env.NEXT_PUBLIC_BASE_URL + 'api/csv'}
+          download='CSV download'
+          target='_blank'
+        >
+          <button style={{ background: 'pink' }}>CSV download</button>
+        </a>
         <SelectCommunityType onChange={setCommunityType} />
         {isLoading && 'Chargement...'}
       </div>
