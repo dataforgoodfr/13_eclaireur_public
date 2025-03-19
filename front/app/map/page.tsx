@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import FranceMap from '@/components/FranceMap';
 import SelectCommunityType from '@/components/SelectCommunityType';
+import DownloadingButton from '@/components/ui/DownloadingButton';
 import { DataTable } from '@/utils/fetchers/constants';
 import { useCommunities } from '@/utils/hooks/useCommunities';
 import { CommunityType } from '@/utils/types';
@@ -20,16 +21,16 @@ export default function MapPage() {
   return (
     <div className='flex flex-row'>
       <div>
-        <a
-          href={
-            process.env.NEXT_PUBLIC_BASE_URL +
-            `api/csv-stream?limit=10&table=${DataTable.Communities}&columns=type`
-          }
-          download='CSV download stream'
-          target='_blank'
+        <DownloadingButton
+          params={{
+            table: DataTable.Communities,
+            columns: ['type', 'nom'],
+            limit: 1000,
+            fileName: 'collectivites.csv',
+          }}
         >
-          <button style={{ background: 'pink' }}>CSV download</button>
-        </a>
+          Telecharger CSV
+        </DownloadingButton>
         <SelectCommunityType onChange={setCommunityType} />
         {isLoading && 'Chargement...'}
       </div>

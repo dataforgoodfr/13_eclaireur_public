@@ -5,7 +5,7 @@ import { DataTable } from '@/utils/fetchers/constants';
 import { nodeStreamToStream } from '@/utils/nodeStreamToStream';
 import { to } from 'pg-copy-streams';
 
-const DEFAULT_FILENAME = 'default_filename.csv';
+const DEFAULT_FILE_NAME = 'default_file_name.csv';
 
 type CSVParams<T extends Record<string, any>> = {
   table: DataTable;
@@ -86,7 +86,7 @@ async function getCSV<T extends Record<string, any>>(params: CSVParams<T>) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const filename = searchParams.get('filename') ?? DEFAULT_FILENAME;
+    const fileName = searchParams.get('fileName') ?? DEFAULT_FILE_NAME;
     const table = searchParams.get('table');
     const columns = searchParams.getAll('columns');
     const filters = searchParams.getAll('filters');
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
     const readableStream: ReadableStream = nodeStreamToStream(stream);
 
     const headers = new Headers({
-      'Content-Disposition': `attachment; filename=${filename}`,
+      'Content-Disposition': `attachment; filename=${fileName}`,
       'Content-Type': 'text/csv',
     });
 
