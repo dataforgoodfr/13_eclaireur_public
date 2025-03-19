@@ -67,7 +67,6 @@ class ZipLoader(BaseLoader):
                     else:
                         raise RuntimeError(f"Too many files to load from {self.file_url}.")
 
-            # FIXME: have to extract it to be able to read…
             zip_ref.extract(filename, tmpdir)
             self.output_file_path = Path(tmpdir) / filename
             return self.process_data()
