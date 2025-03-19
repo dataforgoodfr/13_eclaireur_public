@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { MarchePublic } from '@/app/models/marche_public';
-import { getQueryFromPool } from '@/utils/db';
+import db from '@/utils/db';
 import { DataTable } from '@/utils/fetchers/constants';
-import { CommunityType } from '@/utils/types';
+import { nodeStreamToStream } from '@/utils/nodeStreamToStream';
+import { to } from 'pg-copy-streams';
 
 const DEFAULT_FILENAME = 'default_filename.csv';
 
@@ -13,13 +13,6 @@ type CSVParams<T extends Record<string, any>> = {
   filters?: Partial<Pick<T, keyof T>>;
   limit?: number;
 };
-
-function convertJSONToCSV(jsonData: any[], delimiter = '|'): string {
-  const headers = Object.keys(jsonData[0]).join(delimiter);
-  const rows = jsonData.map((obj) => Object.values(obj).join(delimiter).replace('\n', ' '));
-
-  return `${headers}\n${rows.join('\n')}`;
-}
 
 function stringifyColumns(columns?: (string | number | symbol)[]): string {
   if (columns == null) {
@@ -49,7 +42,7 @@ function createSQLQueryParams<T extends Record<string, any>>(params: CSVParams<T
       return;
     }
 
-    whereConditions.push(`${key} = $${values.length + 1}`);
+    whereConditions.push(`${key} = '${value}'`);
     values.push(value);
   });
 
@@ -60,50 +53,64 @@ function createSQLQueryParams<T extends Record<string, any>>(params: CSVParams<T
   const { limit } = params;
 
   if (limit !== undefined) {
-    query += ` LIMIT $${values.length + 1}`;
+    query += ` LIMIT ${limit}`;
     values.push(limit);
   }
 
   return [query, values] as const;
 }
 
+async function getQueryCopyFromPool(queryText: string) {
+  const client = await db.connect();
+  try {
+    const stream = client.query(to(queryText));
+    return stream;
+  } finally {
+    client.release();
+  }
+}
+
 /**
- * Download CSV from db
+ * Get copy of table from db
  * @param params
  * @returns
  */
 async function getCSV<T extends Record<string, any>>(params: CSVParams<T>) {
-  const queryParams = createSQLQueryParams(params);
+  const [tableQuery] = createSQLQueryParams(params);
 
-  const rows = await getQueryFromPool(...queryParams);
+  const query = `COPY (${tableQuery}) TO STDOUT`;
 
-  if (rows === undefined) {
-    throw new Error('No rows found in query');
-  }
-
-  const outputCSV = convertJSONToCSV(rows);
-
-  return outputCSV;
+  return await getQueryCopyFromPool(query);
 }
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename') ?? DEFAULT_FILENAME;
+    const table = searchParams.get('table');
+    const columns = searchParams.getAll('columns');
+    const filters = searchParams.getAll('filters');
+    const limit = Number(searchParams.get('limit')) ?? undefined;
 
-    const data = await getCSV<MarchePublic>({
-      table: DataTable.MarchesPublics,
-      columns: ['acheteur_siren', 'objet', 'acheteur_type'],
-      filters: { acheteur_type: CommunityType.Commune },
-      limit: 10,
+    if (!table || !Object.values(DataTable).includes(table as DataTable)) {
+      throw new Error('The table chosen does not exist - ' + table);
+    }
+
+    const stream = await getCSV<Record<string, any>>({
+      table: table as DataTable,
+      columns,
+      filters,
+      limit,
     });
+
+    const readableStream: ReadableStream = nodeStreamToStream(stream);
 
     const headers = new Headers({
       'Content-Disposition': `attachment; filename=${filename}`,
       'Content-Type': 'text/csv',
     });
 
-    return new NextResponse(data, {
+    return new NextResponse(readableStream, {
       status: 200,
       headers,
     });
