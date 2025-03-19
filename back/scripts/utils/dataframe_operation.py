@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from unidecode import unidecode
 
+from back.scripts.datasets.constants import FORMAT_PRIORITIES
+
 """
 This script contains functions to manipulate DataFrames.
 1 - Merging duplicate columns
@@ -172,9 +174,14 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(
-        columns=lambda col: re.sub(r"_+", "_", re.sub(r"[.-]", "_", col.lower())).strip()
-    )
+    return df.rename(columns=_normalise_column_name)
+
+
+def _normalise_column_name(name: str) -> str:
+    name = re.sub(r"[_\n.-]+", "_", name.lower())
+    name = re.sub("^(fields|properties)_", "", name)
+    name = re.sub("_?@value$", "", name)
+    return name.strip()
 
 
 def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
@@ -280,3 +287,14 @@ def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
         ~url_format.str.startswith("json").fillna(False), "json"
     ).fillna(df["format"])
     return df.assign(format=url_format)
+
+
+def sort_by_format_priorities(df: pd.DataFrame, keep: bool = False) -> pd.DataFrame:
+    out = df.assign(
+        priority=df["format"]
+        .map({n: i for i, n in enumerate(FORMAT_PRIORITIES)})
+        .fillna(len(FORMAT_PRIORITIES)),
+    ).sort_values(["priority"])
+    if not keep:
+        out = out.drop(columns=["priority"])
+    return out
