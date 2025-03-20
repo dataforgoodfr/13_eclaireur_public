@@ -1,19 +1,230 @@
-import { Share2 } from 'lucide-react';
 import Link from 'next/link';
+import React from "react";
+import { Menu } from 'lucide-react';
+
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+
+const visualiserMenus: { title: string; href: string; description: string }[] = [
+  {
+    title: "Cartographie",
+    href: "/map",
+    description:
+      "Quelles sont les collectivités les plus transparentes ?",
+  },
+  {
+    title: "Recherche avancée",
+    href: "/",
+    description:
+      "Quelles sont les dépenses publiques dans ma collectivité ?",
+  },
+  {
+    title: "Interpeller",
+    href: "/",
+    description:
+      "Comment inciter mes élus à plus de transparence ?",
+  },
+  {
+    title: "Perspectives",
+    href: "/",
+    description:
+      "Quelles sont les grandes tendances en matière de transparence des dépenses ?",
+  }
+]
+
+const comprendreMenus: { title: string; href: string; description: string }[] = [
+  {
+    title: "Contexte",
+    href: "/",
+    description:
+      "Quels sont les enjeux de la transparence des dépenses publiques ?",
+  },
+  {
+    title: "Méthodologie",
+    href: "/methodology",
+    description:
+      "Comment sont évalués les scores de transparence et tendance de mes collectivités",
+  },
+  {
+    title: "Cadre réglementaire",
+    href: "/",
+    description:
+      "Quelles sont les obligations des collectivités ? ",
+  }
+]
+
+const partagereMenus: { title: string; href: string; description: string }[] = [
+  {
+    title: "Linkedin",
+    href: "/",
+    description: "",
+  },
+  {
+    title: "Facebook",
+    href: "/",
+    description: "",
+  },
+  {
+    title: "Bluesky",
+    href: "/",
+    description: "",
+  }
+]
+
+const aProposMenus: { title: string; href: string; description: string }[] = [
+  {
+    title: "Le projet",
+    href: "/",
+    description:
+      "Qui sommes-nous ?",
+  },
+  {
+    title: "Aide aux élus",
+    href: "/",
+    description:
+      "Comment améliorer la transparence dans ma collectivité ?",
+  },
+  {
+    title: "Foire aux questions",
+    href: "/faq",
+    description: "",
+  },
+  {
+    title: "Contact",
+    href: "/",
+    description: "",
+  }
+]
 
 export default function Navbar() {
   return (
-    <div className='container mx-auto flex items-center px-6 py-2 h-16'>
-      <h1 className='text-lg font-bold'>Eclaireur Public</h1>
-      <div className='grow'>
-        <div className='flex items-center justify-end gap-2 md:gap-8 uppercase'>
-          <Link href='/'>Visualiser</Link>
-          <Link href='/'>Comprendre</Link>
-          <Link href='/'>Télécharger</Link>
-          <Link className='border-l pl-2 md:pl-8 border-gray-500' href='/'>À propos</Link>
-          <Share2 />
-        </div>
+    <NavigationMenu className='container mx-auto flex items-center px-6 py-2 h-16'>
+      <Link className='mr-6' href="/"><h1 className='text-lg font-bold'>Éclaireur Public</h1></Link>
+
+      {/* Desktop */}
+      <NavigationMenuList className='max-md:hidden'>
+        {NavigationMenuGroup('Visualiser', visualiserMenus)}
+        {NavigationMenuGroup('Comprendre', comprendreMenus)}
+        <NavigationMenuItem>
+          <Link href="/" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Télécharger
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        {NavigationMenuGroup('À propos', aProposMenus)}
+        {NavigationMenuGroup('Partager', partagereMenus)}
+      </NavigationMenuList>
+
+      {/* Mobile */}
+      <div className='md:hidden'>
+        <Sheet>
+          <SheetTrigger>
+            <Menu />
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Éclaireur Public</SheetTitle>
+            </SheetHeader>
+            <Accordion type="single" collapsible className="w-full">
+              {AccordionMenu('Visualiser', visualiserMenus)}
+              {AccordionMenu('Comprendre', comprendreMenus)}
+              <Link href='/'>
+                <p className='py-4 text-left text-lg font-bold hover:underline border-b'>Télécharger</p>
+              </Link>
+              {AccordionMenu('À propos', aProposMenus)}
+              {AccordionMenu('Partager', partagereMenus)}
+            </Accordion>
+          </SheetContent>
+        </Sheet>
       </div>
-    </div>
+    </NavigationMenu>
+  )
+}
+
+const ListItem = React.forwardRef<
+  React.ComponentRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={`${className} block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground`}
+          {...props}
+        >
+          <div className="text-sm font-bold leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"
+
+function NavigationMenuGroup(headMenuTitle: string, menus: { title: string; href: string; description: string }[]) {
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>{headMenuTitle}</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+          {menus.map((menu) => (
+            <ListItem
+              key={menu.title}
+              title={menu.title}
+              href={menu.href}
+            >
+              {menu.description}
+            </ListItem>
+          ))}
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  );
+}
+
+function AccordionMenu(headMenuTitle: string, menus: { title: string; href: string; description: string }[]) {
+  return (
+    <AccordionItem value={headMenuTitle}>
+      <AccordionTrigger className='font-bold'>{headMenuTitle}</AccordionTrigger>
+      <AccordionContent className='pl-3'>
+        <ul className='divide-y divide-gray-200 space-y-3 '>
+          {menus.map((menu) => (
+            <li key={menu.title}>
+              <Link href={menu.href}>
+                <p className='font-semibold'>{menu.title}</p>
+                <p className='font-light text-sm text-gray-500'>{menu.description}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
