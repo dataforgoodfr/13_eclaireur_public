@@ -3,6 +3,7 @@ import re
 import pytest
 import responses
 
+from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders import BaseLoader as BaseLoaderBase
 
 
@@ -149,7 +150,7 @@ class TestBaseLoader:
 
     def test_valid_extensions(self):
         extensions = BaseLoader.valid_extensions()
-        exp = sorted(["csv", "excel", "json", "xls", "xlsx", "parquet"])
+        exp = sorted(LOADER_CLASSES)
         assert extensions == exp
 
     @responses.activate

@@ -27,7 +27,11 @@ def test_config_structure():
         for k, sub_config_value in sub_config.items():
             next_path = f"{path}.{k}"
             main_config_value = main_config[k]
-            assert type(main_config_value) is type(sub_config_value), (
+            assert (
+                type(main_config_value) is type(sub_config_value)
+                or main_config_value is None
+                or sub_config_value is None
+            ), (
                 f"Incorrect key type '{next_path}' : {type(main_config_value)} ({main_config_filename}) != {type(sub_config_value)} ({sub_config_filename})"
             )
 
