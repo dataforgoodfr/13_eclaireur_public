@@ -1,5 +1,5 @@
+import MapWithCityMarkers from '@/app/community/[siren]/components/NeighboursMap/MapWithCityMarkers';
 import { Community } from '@/app/models/community';
-import MapWithCityMarkers from '@/components/Map/MapWithCityMarkers';
 import { fetchCommunitiesByRadius } from '@/utils/fetchers/communities/fetchCommunitiesByRadius-server';
 
 type CommunityPageProps = { community: Community };
