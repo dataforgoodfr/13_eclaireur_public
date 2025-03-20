@@ -1,4 +1,8 @@
+import { Suspense } from 'react';
+
+import NeighboursMap from '@/components/Map/NeighboursMap';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+import { Loader } from 'lucide-react';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
@@ -32,6 +36,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           <strong>Population:</strong> {community.population.toLocaleString()} habitants
         </p>
       </div>
+      <Suspense fallback={<Loader />}>
+        <NeighboursMap community={community} />
+      </Suspense>
     </div>
   );
 }
