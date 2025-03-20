@@ -66,7 +66,7 @@ class DeclaInteretWorkflow:
     def _format_to_parquet(self):
         if self.filename.exists():
             return
-        with self.xml_filename.open() as f:
+        with self.xml_filename.open(encoding="utf-8") as f:
             soup = BeautifulSoup(f.read(), features="xml")
 
         declarations = soup.find_all("declaration")
