@@ -1,26 +1,12 @@
 import json
 import logging
-import re
 from itertools import chain
 from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import retry_session
-
-FORMATS_PATTERNS = {
-    r"\bcsv\b": "csv",
-    r"\bjson\b": "json",
-    r"\bxml\b": "xml",
-    r"\bhtml\b": "html",
-    r"\bzip\b": "zip",
-    r"\bexcel\b": "excel",
-    r"\bxlsx\b": "excel",
-    r"\bxls\b": "excel",
-    r"\bparquet\b": "parquet",
-}
-IMPLEMENTED_FORMATS = sorted(set(FORMATS_PATTERNS.values()))
+from back.scripts.loaders.base_loader import BaseLoader, retry_session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -170,28 +156,12 @@ class DataGouvAPI:
         return data.get("data", data), data.get("next_page")
 
 
-def normalize_formats_description(formats: pd.Series) -> str:
-    """
-    Classify with regex the various description of formats available on data.gouv into a set of fixed categories.
-    See `FORMATS_PATTERNS`for the list of patterns.
-
-    For example : "file:///srv/udata/ftype/csv" will be transformed into "csv".
-    """
-    matching = {
-        source: target
-        for pat, target in FORMATS_PATTERNS.items()
-        for source in formats.dropna().unique()
-        if re.search(pat, source.lower())
-    }
-    return formats.map(matching).fillna(formats)
-
-
 def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
     """
     Select datasets for which we implemented a reader for their formats.
     Log formats to be added.
     """
-    valid_formats = df["format"].isin(IMPLEMENTED_FORMATS)
+    valid_formats = df["format"].isin(BaseLoader.valid_extensions())
     incorrects = df.loc[~valid_formats, "format"].dropna().value_counts().to_dict()
     LOGGER.info("Non implemented file formats: %s", incorrects)
     return df[valid_formats]

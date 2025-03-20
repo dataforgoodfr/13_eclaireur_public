@@ -1,6 +1,7 @@
 import copy
 import logging
 import ssl
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
@@ -8,6 +9,7 @@ import pandas as pd
 from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
+    TOPIC_IGNORE_EXTRA_REGEX,
 )
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.loaders import LOADER_CLASSES
@@ -16,6 +18,7 @@ from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
     normalize_column_names,
+    normalize_date,
     normalize_identifiant,
     normalize_montant,
     safe_rename,
@@ -58,6 +61,13 @@ class TopicAggregator(DatasetAggregator):
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
+        self.extra_columns = Counter()
+
+    def run(self):
+        super().run()
+        pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
+            self.data_folder / "extra_columns.csv"
+        )
 
     def _load_schema(self, schema_topic_config):
         """
@@ -114,7 +124,7 @@ class TopicAggregator(DatasetAggregator):
                 raise RuntimeError("Unable to load file into a DataFrame")
             return df.pipe(self._normalize_frame, file_metadata)
         except Exception as e:
-            self.errors[str(e)].append(raw_filename.name)
+            self.errors[str(e)].append(raw_filename.parent.name)
 
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """
@@ -123,10 +133,13 @@ class TopicAggregator(DatasetAggregator):
         If such columns exists, the normalization process must fail for this file
         and those columns are logged to allow further analysis.
         """
+        regex_ignore = [
+            c for c in df.columns if any([pat.match(c) for pat in TOPIC_IGNORE_EXTRA_REGEX])
+        ]
         extra_columns = (
             set(df.columns)
             - set(self.official_topic_schema["name"])
-            - set(TOPIC_IGNORE_EXTRA_COLUMNS)
+            - set(TOPIC_IGNORE_EXTRA_COLUMNS + regex_ignore)
         )
         if not extra_columns:
             return
@@ -147,9 +160,13 @@ class TopicAggregator(DatasetAggregator):
                 columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
             )
             .pipe(self._flag_columns_by_keyword)
-            .pipe(normalize_identifiant, "idBeneficiaire")
+        )
+        self._flag_duplicate_columns(df, file_metadata)
+        df = (
+            df.pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
             .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "dateConvention")
         )
         self._flag_inversion_siret(df, file_metadata)
         self._flag_extra_columns(df, file_metadata)
@@ -169,6 +186,12 @@ class TopicAggregator(DatasetAggregator):
             **optional_features,
         )
 
+    @staticmethod
+    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: tuple):
+        if len(df.columns) != len(set(df.columns)):
+            LOGGER.error(f"Data with duplicate columns : {file_metadata.url_hash}")
+            raise RuntimeError("Data with duplicate columns")
+
     def _select_official_columns(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
         Select from the dataframe the columns that are in the official schema.
@@ -176,7 +199,8 @@ class TopicAggregator(DatasetAggregator):
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
 
-    def _flag_inversion_siret(self, df: pd.DataFrame, file_metadata: tuple):
+    @staticmethod
+    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: tuple):
         """
         Flag datasets which have more unique attribuant siret than beneficiaire
         """

@@ -51,14 +51,13 @@ class ElectedOfficialsWorkflow:
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def run(self):
+    def run(self) -> None:
         combined_filename = self.data_folder / "elected_officials.parquet"
         if combined_filename.exists():
             return
         self._fetch_raw_datasets()
         self._combine_datasets()
         self.elected_officials.to_parquet(combined_filename)
-        return self
 
     def _fetch_raw_datasets(self):
         """

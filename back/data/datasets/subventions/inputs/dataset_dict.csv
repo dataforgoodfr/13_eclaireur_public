@@ -1,6 +1,7 @@
 ﻿original_name;official_name
 Conditions de versement;conditionsVersement
 conditionVersement;conditionsVersement
+datedecision;dateConvention
 Date de la convention;dateConvention
 datedeconvention;dateConvention
 Date de signature de la convention;dateConvention
@@ -36,7 +37,6 @@ Numero unique de referencement au RAE;idRAE
 Nom de l'attribuant;nomAttribuant
 nom_de_l_attribuant;nomAttribuant
 Nom de l’attributaire;nomAttribuant
-Nom de l'association;nomBeneficiaire
 NOM COLLECTIVITe;nomAttribuant
 nom_attribuant;nomAttribuant
 NOM Beneficiaire;nomBeneficiaire
@@ -76,3 +76,44 @@ acte_date;dateConvention
 acte_ref;referenceDecision
 rae_num;idRAE
 subv_versement;conditionsVersement
+nom_structure;nomBeneficiaire
+exercice;dateConvention
+type;categoryUsage
+annee_subv;dateConvention
+pourentagesubvention;pourcentageSubvention
+identification irae de l'aide attribuee;idRAE
+liborgabenef;nomBeneficiaire
+mtsubv;montant
+codarticle;referenceDecision
+montant des avantages en nature;montant
+gestion;nomAttribuant
+identifiant_unique;referenceDecision
+libelle tiers;nomBeneficiaire
+objet;nature
+libelle cdpaie;datesPeriodeVersement
+date de signature de la convention;dateConvention
+identification de l'attributaire (siret);idAttribuant
+pourcentage du montant de la subvention attribuee au beneficiaire;pourcentageSubvention
+type de subvention;categoryUsage
+anne;dateConvention
+type de subvention;categoryUsage
+type d avantage;nature
+decision_ref;referenceDecision
+attribuant_id;idAttribuant
+beneficiaires_id;idBeneficiaire
+date de la convention de subvention;dateConvention
+datevote;dateConvention
+beneficiaires;nomBeneficiaire
+attribution_nouvelles 2019;montant
+dates_versement;datePeriodeVersement
+date de deliberation;dateConvention
+idattribuant_0;idAttribuant
+referenceconvention_0;referenceDecision
+idbeneficiaire_0;idBeneficiaire
+dateconvention_0;dateConvention
+notificationue_0;notificationUE
+nomattribuant_0;nomAttribuant
+nombeneficiaire_0;nomBeneficiaire
+section_nature;categoryUsage
+date_de_la_convention_de_subvention;dateConvention
+nature_de_la_subvention;nature

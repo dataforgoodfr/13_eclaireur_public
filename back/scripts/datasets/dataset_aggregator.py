@@ -57,6 +57,7 @@ class DatasetAggregator:
         self.data_folder = get_project_base_path() / (config["data_folder"])
         self.data_folder.mkdir(parents=True, exist_ok=True)
         self.combined_filename = get_project_base_path() / (config["combined_filename"])
+        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
 
     @tracker(ulogger=LOGGER, log_start=True)
@@ -70,12 +71,15 @@ class DatasetAggregator:
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
 
-            self._process_file(file_infos)
+            try:
+                self._process_file(file_infos)
+            except Exception as e:
+                LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
+                self.errors[str(e)].append(file_infos.url)
 
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
-        return self
 
     def _process_file(self, file: tuple) -> None:
         """

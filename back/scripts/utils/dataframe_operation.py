@@ -2,8 +2,11 @@ import json
 import logging
 import re
 
+import numpy as np
 import pandas as pd
 from unidecode import unidecode
+
+from back.scripts.datasets.constants import FORMAT_PRIORITIES
 
 """
 This script contains functions to manipulate DataFrames.
@@ -171,9 +174,14 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(
-        columns=lambda col: re.sub(r"_+", "_", re.sub(r"[.-]", "_", col.lower())).strip()
-    )
+    return df.rename(columns=_normalise_column_name)
+
+
+def _normalise_column_name(name: str) -> str:
+    name = re.sub(r"[_\n.-]+", "_", name.lower())
+    name = re.sub("^(fields|properties)_", "", name)
+    name = re.sub("_?@value$", "", name)
+    return name.strip()
 
 
 def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
@@ -187,18 +195,21 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
     if str(frame[id_col].dtype) == "int64":
         return frame.assign(**{id_col: frame[id_col].astype("float64")})
-
-    return frame.assign(
-        **{
-            id_col: frame[id_col]
-            .astype(str)
-            .where(frame[id_col].notnull() & (frame[id_col] != ""))
-            .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
-            .str.replace("euros", "")
-            .str.replace(",", ".")
-            .astype("float")
-        }
+    montant = (
+        frame[id_col]
+        .astype(str)
+        .where(frame[id_col].notnull() & (frame[id_col] != ""))
+        .str.replace(r"[\u20ac\xa0 ]", "", regex=True)
+        .str.replace("euros", "")
+        .str.strip()
     )
+    with_double_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
+    with_single_digits = montant.str.match(r".*[.,]\d{1}$").fillna(False)
+    montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
+    montant = np.where(
+        with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
+    )
+    return frame.assign(**{id_col: montant})
 
 
 def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
@@ -227,6 +238,20 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
 
 
+def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+    if id_col not in frame.columns:
+        return frame
+    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
+        return frame
+
+    if str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col]
+    else:
+        dt = pd.to_datetime(frame[id_col], dayfirst=True)
+    dt = dt.dt.tz_localize("UTC")
+    return frame.assign(**{id_col: dt})
+
+
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.
@@ -250,3 +275,26 @@ def _parse_json(content: str) -> dict:
         return json.loads(content)
     except json.JSONDecodeError:
         return {}
+
+
+def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Identify the potential format of the file from the content of the url.
+    """
+    pat = r"\b(parquet|csv|xlsx?|json[idl]{0,}|pdf)\b"
+    url_format = df["url"].str.extract(pat)[0]
+    url_format = url_format.where(
+        ~url_format.str.startswith("json").fillna(False), "json"
+    ).fillna(df["format"])
+    return df.assign(format=url_format)
+
+
+def sort_by_format_priorities(df: pd.DataFrame, keep: bool = False) -> pd.DataFrame:
+    out = df.assign(
+        priority=df["format"]
+        .map({n: i for i, n in enumerate(FORMAT_PRIORITIES)})
+        .fillna(len(FORMAT_PRIORITIES)),
+    ).sort_values(["priority"])
+    if not keep:
+        out = out.drop(columns=["priority"])
+    return out
