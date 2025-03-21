@@ -13,7 +13,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import Pin from './Pin';
 
-const MAP_STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+const MAP_STYLE_URL = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
 const initialViewState: MapPropsReactMapLibre['initialViewState'] = {
   zoom: 10,
