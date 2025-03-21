@@ -50,8 +50,8 @@ class DeclaInteretWorkflow:
         self.data_folder = Path(config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.xml_filename = self.data_folder / "declarations.xml"
-        self.filename = self.data_folder / "declarations.parquet"
+        self.input_filename = self.data_folder / "declarations.xml"
+        self.output_filename = self.data_folder / "declarations.parquet"
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
@@ -59,21 +59,21 @@ class DeclaInteretWorkflow:
         self._format_to_parquet()
 
     def _fetch_xml(self):
-        if self.xml_filename.exists():
+        if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.xml_filename)
+        urllib.request.urlretrieve(self._config["url"], self.input_filename)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.output_filename.exists():
             return
-        with self.xml_filename.open(encoding="utf-8") as f:
+        with self.input_filename.open(encoding="utf-8") as f:
             soup = BeautifulSoup(f.read(), features="xml")
 
         declarations = soup.find_all("declaration")
         df = pd.DataFrame.from_records(
             chain(*[self._parse_declaration(declaration) for declaration in tqdm(declarations)])
         )
-        df.to_parquet(self.filename)
+        df.to_parquet(self.output_filename)
 
     @staticmethod
     def _parse_declaration(declaration: BeautifulSoup) -> list[dict]:
