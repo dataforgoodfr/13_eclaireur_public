@@ -17,7 +17,7 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const querySQL = `
     SELECT nom, siren, type 
     FROM ${TABLE_NAME} 
-    WHERE unaccent(nom) ILIKE unaccent($1) 
+    WHERE nom_unaccented ILIKE $1
       OR siren ILIKE $2 
     LIMIT $3
 `;
