@@ -1,7 +1,7 @@
 import logging
 
 import pandas as pd
-from scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path
 
 
 class SingleUrlsBuilder:

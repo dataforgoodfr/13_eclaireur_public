@@ -1,7 +1,7 @@
-from scripts.utils.argument_parser import ArgumentParser
-from scripts.utils.config_manager import ConfigManager
-from scripts.utils.logger_manager import LoggerManager
-from scripts.workflow.workflow_manager import WorkflowManager
+from back.scripts.utils.argument_parser import ArgumentParser
+from back.scripts.utils.config_manager import ConfigManager
+from back.scripts.utils.logger_manager import LoggerManager
+from back.scripts.workflow.workflow_manager import WorkflowManager
 
 from back.scripts.utils.config import project_config
 from back.scripts.workflow.data_warehouse import DataWarehouseWorkflow
