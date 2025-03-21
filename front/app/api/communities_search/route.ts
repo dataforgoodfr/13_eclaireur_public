@@ -6,8 +6,6 @@ import { createSQLQueryParams } from '@/utils/fetchers/communities/fetchCommunit
 async function getDataFromPool(query: string, page: number) {
   const params = createSQLQueryParams(query, page);
 
-  console.log({ params });
-
   return getQueryFromPool(...params);
 }
 
@@ -18,8 +16,6 @@ export async function GET(request: Request) {
     const page = Number(searchParams.get('page')) ?? undefined;
 
     const data = await getDataFromPool(query, page);
-
-    console.log({ data });
 
     return NextResponse.json(data);
   } catch (error) {

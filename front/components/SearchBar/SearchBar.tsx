@@ -2,13 +2,18 @@
 
 import { ChangeEvent, useState } from 'react';
 
+import { Community } from '@/app/models/community';
 import { debounce } from '@/utils/utils';
 import { Search } from 'lucide-react';
 
 import { Input } from '../ui/input';
 import Suggestions from './SearchSuggestions';
 
-export default function SearchBar() {
+type SearchBarProps = {
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+};
+
+export default function SearchBar({ onSelect }: SearchBarProps) {
   const [query, setQuery] = useState('');
 
   const handleInputChange = debounce(
@@ -26,7 +31,7 @@ export default function SearchBar() {
           onChange={handleInputChange}
         />
       </div>
-      {query.length > 0 && <Suggestions query={query} />}
+      {query.length > 0 && <Suggestions query={query} onSelect={onSelect} />}
     </div>
   );
 }
