@@ -12,8 +12,8 @@ export default function Suggestions({ query }: SuggestionsProps) {
   const router = useRouter();
   const { data: suggestions, isPending, isError } = useCommunitiesBySearch(query);
 
-  if (isPending) return 'Chargement...';
-  if (isError) return 'Erreur';
+  // if (isPending) return 'Chargement...';
+  // if (isError) return 'Erreur';
 
   function navigateToCommunityPage(siren: string) {
     router.push(`/community/${siren}`);
@@ -25,9 +25,13 @@ export default function Suggestions({ query }: SuggestionsProps) {
     <div className='absolute mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md'>
       <Command>
         <CommandList>
-          <CommandEmpty>Aucun resultat trouve pour '{query}'</CommandEmpty>
+          <CommandEmpty>
+            {isPending && <span>Chargement...</span>}
+            {isError && <span>Erreur</span>}
+            {!isError && !isPending && <span>Aucun resultat trouve pour '{query}'</span>}
+            </CommandEmpty>
           <CommandGroup>
-            {suggestions.map(({ nom, siren, type }) => (
+            {suggestions?.map(({ nom, siren, type }) => (
               <CommandItem key={siren} onSelect={() => navigateToCommunityPage(siren)}>
                 {nom} - {type}
               </CommandItem>
