@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
-from scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path
 
 
 class GeoLocator:

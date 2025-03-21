@@ -18,7 +18,10 @@ from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.config import get_project_data_path
-from back.scripts.utils.dataframe_operation import correct_format_from_url
+from back.scripts.utils.dataframe_operation import (
+    correct_format_from_url,
+    sort_by_format_priorities,
+)
 from back.scripts.utils.datagouv_api import select_implemented_formats
 
 
@@ -106,6 +109,8 @@ class WorkflowManager:
                 )
                 .dropna(subset=["url"])
                 .pipe(correct_format_from_url)
+                .pipe(sort_by_format_priorities)
+                .drop_duplicates(subset=["url"], keep="first")
                 .pipe(remove_same_dataset_formats)
                 .pipe(select_implemented_formats)
             )

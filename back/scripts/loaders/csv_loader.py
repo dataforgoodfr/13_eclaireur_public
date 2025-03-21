@@ -63,6 +63,7 @@ class CSVLoader(BaseLoader):
 
         try:
             dialect = sniffer.sniff(sample)
+            csv_params["header"] = 0 if sniffer.has_header(sample) else None
             csv_params["delimiter"] = dialect.delimiter
             LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
 

@@ -6,7 +6,10 @@ from tqdm import tqdm
 
 from back.scripts.loaders.csv_loader import CSVLoader
 from back.scripts.utils.config import get_project_base_path
-from back.scripts.utils.dataframe_operation import expand_json_columns
+from back.scripts.utils.dataframe_operation import (
+    expand_json_columns,
+    sort_by_format_priorities,
+)
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
@@ -296,14 +299,10 @@ def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
         for row in df.itertuples()
     ]
     base_url = [m.group(1) if m else url for m, url in base_url]
-    priorities = ["parquet", "xls", "xlsx", "json", "csv", "html", "xml", "zip"]
+
     return (
-        df.assign(
-            base_url=base_url,
-            priority=df["format"]
-            .map({n: i for i, n in enumerate(priorities)})
-            .fillna(len(priorities)),
-        )
+        df.assign(base_url=base_url)
+        .pipe(sort_by_format_priorities, keep=True)
         .sort_values(["dataset_id", "base_url", "priority"])
         .drop_duplicates(subset=["dataset_id", "base_url"], keep="first")
         .drop(columns=["priority", "base_url"])

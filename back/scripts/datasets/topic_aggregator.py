@@ -9,6 +9,7 @@ import pandas as pd
 from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
     TOPIC_IGNORE_EXTRA_COLUMNS,
+    TOPIC_IGNORE_EXTRA_REGEX,
 )
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.loaders import LOADER_CLASSES
@@ -61,6 +62,12 @@ class TopicAggregator(DatasetAggregator):
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
         self.extra_columns = Counter()
+
+    def run(self):
+        super().run()
+        pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
+            self.data_folder / "extra_columns.csv"
+        )
 
     def _load_schema(self, schema_topic_config):
         """
@@ -126,10 +133,13 @@ class TopicAggregator(DatasetAggregator):
         If such columns exists, the normalization process must fail for this file
         and those columns are logged to allow further analysis.
         """
+        regex_ignore = [
+            c for c in df.columns if any([pat.match(c) for pat in TOPIC_IGNORE_EXTRA_REGEX])
+        ]
         extra_columns = (
             set(df.columns)
             - set(self.official_topic_schema["name"])
-            - set(TOPIC_IGNORE_EXTRA_COLUMNS)
+            - set(TOPIC_IGNORE_EXTRA_COLUMNS + regex_ignore)
         )
         if not extra_columns:
             return

@@ -1,7 +1,7 @@
 import logging
 
 import pandas as pd
-from scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
 
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import normalize_column_names
