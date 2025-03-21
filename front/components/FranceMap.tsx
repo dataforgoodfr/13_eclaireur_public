@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
+import { useCommunities } from '@/utils/hooks/useCommunities';
 //import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import {
@@ -151,6 +154,16 @@ type MapProps = {
 function Map({ topoJson, height, width }: MapProps) {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [level, setLevel] = useState<Level>(Level.Region);
+  const router = useRouter();
+
+  const handleRegionClick = (siren: string) => {
+    // Navigate to the community page with the given siren
+    router.push(`/community/${siren}`);
+  };
+
+  const { isLoading, data } = useCommunities({
+    filters: { type: 'REG', limit: 100, siren: undefined },
+  });
 
   const geojsonCom = useMemo(
     () =>
@@ -168,14 +181,32 @@ function Map({ topoJson, height, width }: MapProps) {
       >,
     [topoJson],
   );
-  const geojsonReg = useMemo(
-    () =>
-      feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
-        Geometry,
-        GeoJsonProperties
-      >,
-    [topoJson],
-  );
+  const geojsonReg = useMemo(() => {
+    if (!topoJson || !data) return []; // Return empty if no data or topoJson
+
+    // Extract regions from topoJson
+    const geoJson = feature(topoJson, topoJson.objects.a_reg2022) as FeatureCollection<
+      Geometry,
+      GeoJsonProperties
+    >;
+
+    // Merge community data into geojson features
+    const mergedGeoJson = geoJson.features.map((geometry) => {
+      const regionInfo = data.find((region) => region.cog === geometry.properties.reg); // Match by `reg` and `cog`
+      return {
+        ...geometry,
+        properties: {
+          ...geometry.properties,
+          ...regionInfo, // Merge region info from `data` into the geometry's properties
+        },
+      };
+    });
+
+    return {
+      ...geoJson,
+      features: mergedGeoJson, // Use merged features
+    };
+  }, [topoJson, data]);
 
   function getObjectBoundingBox(
     object: GeoPermissibleObjects,
@@ -227,7 +258,14 @@ function Map({ topoJson, height, width }: MapProps) {
     createRegionsLayer({
       data: geojsonReg.features,
       filled: level === Level.Region,
-      onClick: zoomToShape,
+      onClick: (info) => {
+        // Access the `siren` property from the clicked region
+        const siren = info.object.properties.siren;
+        if (siren) {
+          // Call the handleRegionClick function to navigate to the community page
+          handleRegionClick(siren);
+        }
+      },
     }),
   ];
 
@@ -249,12 +287,21 @@ function Map({ topoJson, height, width }: MapProps) {
     setViewState(viewState);
   };
 
-  const getTooltip = useCallback(
-    ({ object }: PickingInfo<Feature<Geometry, GeoJsonProperties>>) => {
-      return object ? object.properties.libgeo : null;
-    },
-    [],
-  );
+  function getTooltip({ object }: PickingInfo<Feature<Geometry, GeoJsonProperties>>) {
+    if (object) {
+      const regionName = object.properties.libgeo; // Display the region name (libgeo)
+      const siren = object.properties.siren; // Example additional info (can be any field from the merged data)
+      return (
+        <div className='max-w-xs rounded bg-black p-4 font-sans text-white shadow-lg'>
+          <h3 className='mb-2 text-lg font-semibold'>{regionName}</h3>
+          <p>
+            <span className='font-medium'>SIREN:</span> {siren}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
     <div className='border-2 border-solid' style={{ position: 'relative', width, height }}>
