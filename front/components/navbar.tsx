@@ -104,51 +104,52 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
 
 export default function Navbar() {
   return (
-    <NavigationMenu className='container mx-auto flex h-16 items-center px-6 py-2'>
+    <div className='mx-10 flex flex-row items-center justify-between'>
       <Link className='mr-6' href='/'>
         <h1 className='text-lg font-bold'>Éclaireur Public</h1>
       </Link>
+      <NavigationMenu className='flex h-16 items-center py-2'>
+        {/* Desktop */}
+        <NavigationMenuList className='max-md:hidden'>
+          {NavigationMenuGroup('Visualiser', visualiserMenus)}
+          {NavigationMenuGroup('Comprendre', comprendreMenus)}
+          <NavigationMenuItem>
+            <Link href='/' legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Télécharger
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          {NavigationMenuGroup('À propos', aProposMenus)}
+          {NavigationMenuGroup('Partager', partagereMenus)}
+        </NavigationMenuList>
 
-      {/* Desktop */}
-      <NavigationMenuList className='max-md:hidden'>
-        {NavigationMenuGroup('Visualiser', visualiserMenus)}
-        {NavigationMenuGroup('Comprendre', comprendreMenus)}
-        <NavigationMenuItem>
-          <Link href='/' legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Télécharger
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        {NavigationMenuGroup('À propos', aProposMenus)}
-        {NavigationMenuGroup('Partager', partagereMenus)}
-      </NavigationMenuList>
-
-      {/* Mobile */}
-      <div className='md:hidden'>
-        <Sheet>
-          <SheetTrigger>
-            <Menu />
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Éclaireur Public</SheetTitle>
-            </SheetHeader>
-            <Accordion type='single' collapsible className='w-full'>
-              {AccordionMenu('Visualiser', visualiserMenus)}
-              {AccordionMenu('Comprendre', comprendreMenus)}
-              <Link href='/'>
-                <p className='border-b py-4 text-left text-lg font-bold hover:underline'>
-                  Télécharger
-                </p>
-              </Link>
-              {AccordionMenu('À propos', aProposMenus)}
-              {AccordionMenu('Partager', partagereMenus)}
-            </Accordion>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </NavigationMenu>
+        {/* Mobile */}
+        <div className='md:hidden'>
+          <Sheet>
+            <SheetTrigger>
+              <Menu />
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Éclaireur Public</SheetTitle>
+              </SheetHeader>
+              <Accordion type='single' collapsible className='w-full'>
+                {AccordionMenu('Visualiser', visualiserMenus)}
+                {AccordionMenu('Comprendre', comprendreMenus)}
+                <Link href='/'>
+                  <p className='border-b py-4 text-left text-lg font-bold hover:underline'>
+                    Télécharger
+                  </p>
+                </Link>
+                {AccordionMenu('À propos', aProposMenus)}
+                {AccordionMenu('Partager', partagereMenus)}
+              </Accordion>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </NavigationMenu>
+    </div>
   );
 }
 
