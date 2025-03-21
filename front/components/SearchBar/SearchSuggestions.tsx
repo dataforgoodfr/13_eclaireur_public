@@ -29,11 +29,11 @@ export default function Suggestions({ query }: SuggestionsProps) {
             {isPending && <span>Chargement...</span>}
             {isError && <span>Erreur</span>}
             {!isError && !isPending && <span>Aucun resultat trouve pour '{query}'</span>}
-            </CommandEmpty>
+          </CommandEmpty>
           <CommandGroup>
             {suggestions?.map(({ nom, siren, type }) => (
               <CommandItem key={siren} onSelect={() => navigateToCommunityPage(siren)}>
-                {nom} - {type}
+                {nom} - {type} - {siren}
               </CommandItem>
             ))}
           </CommandGroup>
