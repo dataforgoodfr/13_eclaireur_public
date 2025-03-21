@@ -14,7 +14,7 @@ const ROWS_PER_PAGE = 100;
 export function createSQLQueryParams(query: string, page = 1): [string, (string | number)[]] {
   const limit = page * ROWS_PER_PAGE;
   const values = [limit];
-  const querySQL = `SELECT nom, siren, type FROM ${TABLE_NAME} WHERE nom LIKE '%${query}%' LIMIT $1`;
+  const querySQL = `SELECT nom, siren, type FROM ${TABLE_NAME} WHERE unaccent(nom) ILIKE '%${query}%' LIMIT $1`;
 
   return [querySQL, values];
 }
