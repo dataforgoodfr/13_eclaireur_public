@@ -17,17 +17,11 @@ class ParquetLoader(BaseLoader):
         super().__init__(file_url, **kwargs)
         self.columns_to_keep = columns_to_keep
 
-    def load(self):
-        try:
-            if self.is_url:
-                return self._load_url()
-            else:
-                return pd.read_parquet(self.file_url, columns=self.columns_to_keep)
-        except Exception as e:
-            LOGGER.warning(f"Failed to download file {self.file_url}: {e}")
-
-    def _load_url(self):
+    def _load_from_url(self):
         with tempfile.TemporaryDirectory() as tempdir:
             filename = Path(tempdir) / "test.parquet"
             urllib.request.urlretrieve(self.file_url, filename)
             return pd.read_parquet(filename, columns=self.columns_to_keep)
+
+    def _load_from_file(self):
+        return pd.read_parquet(self.file_url, columns=self.columns_to_keep)

@@ -16,7 +16,9 @@ from back.scripts.utils.beautifulsoup_utils import (
     get_tag_int,
     get_tag_text,
 )
+from back.scripts.utils.decorators import tracker
 
+LOGGER = logging.getLogger(__name__)
 PARSED_SECTIONS = ["mandatElectifDto"]
 GENERAL_TAGS = [
     "dateDepot",
@@ -51,7 +53,8 @@ class DeclaInteretWorkflow:
         self.xml_filename = self.data_folder / "declarations.xml"
         self.filename = self.data_folder / "declarations.parquet"
 
-    def run(self):
+    @tracker(ulogger=LOGGER, log_start=True)
+    def run(self) -> None:
         self._fetch_xml()
         self._format_to_parquet()
 
@@ -63,7 +66,7 @@ class DeclaInteretWorkflow:
     def _format_to_parquet(self):
         if self.filename.exists():
             return
-        with self.xml_filename.open() as f:
+        with self.xml_filename.open(encoding="utf-8") as f:
             soup = BeautifulSoup(f.read(), features="xml")
 
         declarations = soup.find_all("declaration")
