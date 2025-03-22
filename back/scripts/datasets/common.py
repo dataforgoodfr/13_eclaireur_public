@@ -1,5 +1,8 @@
+from functools import cached_property
 from pathlib import Path
 from typing import Type
+
+from back.scripts.loaders import BaseLoader
 
 
 class ProcessorMixin:
@@ -51,6 +54,10 @@ class CleanerMixin(ProcessorMixin):
     @property
     def input_filename(self):
         return self.workflow.fetcher.output_filename
+
+    @cached_property
+    def initial_data(self):
+        return BaseLoader.loader_factory(self.input_filename).load()
 
 
 class CleanerBase(CleanerMixin):
@@ -111,6 +118,10 @@ class WorkflowMixin:
         self.fetcher = None
         self.cleaner = None
         self.updater = None
+
+    @property
+    def config(self) -> dict:
+        return self._config
 
     def run(self) -> None:
         self.fetcher = self.fetcher_class(self)
