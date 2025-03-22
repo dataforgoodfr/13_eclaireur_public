@@ -29,7 +29,7 @@ export interface GeoJSONData {
 
 // In-memory cache for server-side
 const CACHE = new Map<string, { data: GeoJSONData; timestamp: number }>()
-const CACHE_TTL = 60 * 60 * 1000 // 1 hour in milliseconds
+const CACHE_TTL = 1000 // 1 hour in milliseconds
 
 export async function fetchCommunitiesGeoJSON(type: CommunityType): Promise<GeoJSONData> {
   try {
@@ -45,18 +45,18 @@ export async function fetchCommunitiesGeoJSON(type: CommunityType): Promise<GeoJ
     // Define the join condition based on the community type
     let joinCondition = ""
     let additionalFilter = ""
-
+    
     if (type === CommunityType.Region) {
       joinCondition = `
         LEFT JOIN staging_communities sc ON 
-        g.type = sc.type AND g.dep = sc.code_departement
+        g.type = sc.type AND g.reg = sc.cog 
       `
       // Ensure we're only getting actual regions
       additionalFilter = "AND g.type = 'REG'"
     } else if (type === CommunityType.Department) {
       joinCondition = `
         LEFT JOIN staging_communities sc ON 
-        g.type = sc.type AND g.reg = sc.code_region
+        g.type = sc.type AND g.dep = sc.cog
       `
       // Ensure we're only getting actual departments
       additionalFilter = "AND g.type = 'DEP'"
