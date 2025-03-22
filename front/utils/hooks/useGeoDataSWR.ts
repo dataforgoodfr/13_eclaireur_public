@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import useSWR from "swr"
 import type { Feature, FeatureCollection, Geometry, GeoJsonProperties } from "geojson"
 
@@ -50,19 +49,19 @@ export function useGeoDataSWR(): UseGeoDataResult {
   const { data: regionsData, error: regionsError } = useSWR<GeoJSONData | null>("/api/geo/regions", fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60 * 1000,
-    fallbackData: JSON.parse(localStorage.getItem("geo_regions") || "null"), // LocalStorage fallback
+    // fallbackData: JSON.parse(localStorage.getItem("geo_regions") || "null"), // LocalStorage fallback
   })
 
   const { data: departmentsData, error: departmentsError } = useSWR<GeoJSONData | null>("/api/geo/departments", fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60 * 1000,
-    fallbackData: JSON.parse(localStorage.getItem("geo_departments") || "null"),
+    // fallbackData: JSON.parse(localStorage.getItem("geo_departments") || "null"),
   })
 
   const { data: communesData, error: communesError } = useSWR<GeoJSONData | null>("/api/geo/communes", fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60 * 1000,
-    fallbackData: JSON.parse(localStorage.getItem("geo_communes") || "null"),
+    // fallbackData: JSON.parse(localStorage.getItem("geo_communes") || "null"),
   })
 
   // Handle errors
