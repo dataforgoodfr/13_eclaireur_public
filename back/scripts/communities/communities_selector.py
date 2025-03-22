@@ -3,10 +3,10 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from scripts.communities.loaders.odf import OdfLoader
-from scripts.communities.loaders.ofgl import OfglLoader
-from scripts.utils.config import get_project_base_path
-from scripts.utils.geolocator import GeoLocator
+from back.scripts.communities.loaders.odf import OdfLoader
+from back.scripts.communities.loaders.ofgl import OfglLoader
+from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.geolocator import GeoLocator
 
 
 class CommunitiesSelector:

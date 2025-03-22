@@ -10,11 +10,22 @@ import Suggestions from './SearchSuggestions';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+
+  function handleOnFocus() {
+    setIsFocused(true);
+  }
+
+  function handleOnBlur() {
+    setIsFocused(false);
+  }
 
   const handleInputChange = debounce(
     (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value),
     400,
   );
+
+  const showSuggestions = query.length > 0 && isFocused;
 
   return (
     <div className='relative w-4/5'>
@@ -24,9 +35,11 @@ export default function SearchBar() {
           className='pl-8 pr-4'
           placeholder='Entrez une collectivité territoriale'
           onChange={handleInputChange}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
         />
       </div>
-      {query.length > 0 && <Suggestions query={query} />}
+      {showSuggestions && <Suggestions query={query} />}
     </div>
   );
 }
