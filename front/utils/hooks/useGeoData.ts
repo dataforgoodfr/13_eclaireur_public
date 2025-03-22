@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import type { Feature, FeatureCollection, Geometry, GeoJsonProperties } from "geojson"
 
-// Define types for our GeoJSON data
-export interface GeoJSONFeature {
-  type: string
-  geometry: any
+// Define types for our GeoJSON data that are compatible with deck.gl
+export interface GeoJSONFeature extends Feature<Geometry, GeoJsonProperties> {
   properties: {
     type: string
     libgeo: string
@@ -19,8 +18,8 @@ export interface GeoJSONFeature {
   }
 }
 
-export interface GeoJSONData {
-  type: string
+// Make GeoJSONData extend FeatureCollection to be compatible with deck.gl
+export interface GeoJSONData extends FeatureCollection<Geometry, GeoJsonProperties> {
   features: GeoJSONFeature[]
 }
 
