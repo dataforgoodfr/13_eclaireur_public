@@ -1,6 +1,7 @@
 import { Community } from '@/app/models/community';
 
 import { CommunityType } from '../../types';
+import { DataTable } from '../constants';
 
 export type CommunitiesOptions = {
   selectors?: (keyof Community)[];
@@ -9,7 +10,7 @@ export type CommunitiesOptions = {
   };
 };
 
-const TABLE_NAME = 'staging_communities';
+const TABLE_NAME = DataTable.Communities;
 
 function stringifySelectors(options: CommunitiesOptions): string {
   const { selectors } = options;

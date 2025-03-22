@@ -1,9 +1,11 @@
+import { CommunityType } from '@/utils/types';
+
 export type MarchePublic = {
   id_postgre: number;
   /** Primary key [char9] */
   acheteur_siren: string;
   /** Primary key */
-  acheteur_type: string;
+  acheteur_type: CommunityType;
   acheteur_nom: string;
   acheteur_sirene: string;
   titulaires_liste_noms: string[];

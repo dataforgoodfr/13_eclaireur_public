@@ -1,6 +1,7 @@
 import { Subvention } from '@/app/models/subvention';
 
 import { CommunityType } from '../../types';
+import { DataTable } from '../constants';
 
 export type SubventionsParams = Partial<
   Pick<Subvention, 'attribuant_siren' | 'attribuant_type'>
@@ -8,15 +9,13 @@ export type SubventionsParams = Partial<
   limit?: number;
 };
 
-const TABLE_NAME = 'subventions_normalized_data';
-
 /**
  * Create the sql query for the subventions
  * @param options
  * @returns
  */
 export function createSQLQueryParams(options?: SubventionsParams) {
-  let query = `SELECT * FROM ${TABLE_NAME}`;
+  let query = `SELECT * FROM ${DataTable.Subventions}`;
   let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {

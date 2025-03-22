@@ -1,6 +1,7 @@
 import { MarchePublic } from '@/app/models/marche_public';
 
 import { CommunityType } from '../../types';
+import { DataTable } from '../constants';
 
 export type MarchesPublicsParams = Partial<
   Pick<MarchePublic, 'acheteur_siren' | 'acheteur_type'>
@@ -8,15 +9,13 @@ export type MarchesPublicsParams = Partial<
   limit?: number;
 };
 
-const TABLE_NAME = 'staging_marches_public';
-
 /**
  * Create the sql query for the marches publics
  * @param options
  * @returns
  */
 export function createSQLQueryParams(options?: MarchesPublicsParams) {
-  let query = `SELECT * FROM ${TABLE_NAME}`;
+  let query = `SELECT * FROM ${DataTable.MarchesPublics}`;
   let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {
