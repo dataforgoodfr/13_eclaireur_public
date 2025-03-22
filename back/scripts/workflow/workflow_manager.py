@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.datasets.communities_financial_accounts import FinancialAccountsWorkflow
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.datagouv_searcher import (
     DataGouvSearcher,
@@ -38,7 +38,7 @@ class WorkflowManager:
         self.logger.info("Workflow started.")
         DataGouvCatalog(self.config["datagouv_catalog"]).run()
         MarchesPublicsWorkflow.from_config(self.config["marches_publics"]).run()
-        FinancialAccounts(self.config["financial_accounts"]).run()
+        FinancialAccountsWorkflow(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]["data_folder"]).run()
         SireneWorkflow(self.config["sirene"]).run()
         DeclaInteretWorkflow(self.config["declarations_interet"]).run()

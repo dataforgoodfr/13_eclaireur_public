@@ -14,6 +14,8 @@ from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
+from .common import FetcherBase
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -48,16 +50,13 @@ class BaseDatasetAggregator:
     """
 
 
-class DatasetAggregator:
-    def __init__(self, files: pd.DataFrame, config: dict):
-        self._config = config
-
+class DatasetAggregator(FetcherBase):
+    def __init__(self, files: pd.DataFrame, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
 
-        self.data_folder = get_project_base_path() / (config["data_folder"])
-        self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.combined_filename = get_project_base_path() / (config["combined_filename"])
-        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
+        self.output_filename = get_project_base_path() / self.config["combined_filename"]
+        self.output_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
 
     @tracker(ulogger=LOGGER, log_start=True)
@@ -176,13 +175,13 @@ class DatasetAggregator:
         LOGGER.info(f"Concatenating {len(all_files)} files for {str(self)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
-        df.sink_parquet(self.combined_filename)
+        df.sink_parquet(self.output_filename)
 
     @property
     def aggregated_dataset(self):
         """
         Property to return the aggregated dataset.
         """
-        if not self.combined_filename.exists():
+        if not self.output_filename.exists():
             raise RuntimeError("Combined file does not exists. You must run .load() first.")
-        return pd.read_parquet(self.combined_filename)
+        return pd.read_parquet(self.output_filename)
