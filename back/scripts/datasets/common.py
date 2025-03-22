@@ -131,4 +131,11 @@ class WorkflowMixin:
         if self.updater_class is not None:
             self.updater = self.updater_class(self)
             self.updater.run()
+            data = self.updater.updated_data
+        else:
+            data = self.cleaner_class.cleaned_data
+        self._send_to_db(data)
+
+    def _send_to_db(self, data) -> None:
         # TODO: save dans un fichier ou push to db en fonction de la config
+        pass
