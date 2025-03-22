@@ -4,7 +4,7 @@ workflow:
 
 ofgl:
   data_folder: back/tests/data/ofgl
-  urls_csv: back/scripts/datasets/ofgl_urls_ci.csv
+  urls_csv: back/tests/inputs/ofgl_urls_ci.csv
   combined_filename: back/tests/data/ofgl/ofgl.parquet
 
 communities:
