@@ -13,6 +13,7 @@ import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.utils.config import project_config
+from back.scripts.utils.json_na_fixer import JsonNaNFixer
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -90,10 +91,12 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
+            json_structure = check_json_structure(raw_filename)
+            
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
                 # within the marches field.
-                array_declas = ijson.items(raw, "marches.item", use_float=True)
+                array_declas = ijson.items(raw, "marches.item" if json_structure == 'direct' else "marches.marche.item", use_float=True)
                 interim.write("[\n")
 
                 # Iterate over the JSON array items
@@ -214,3 +217,45 @@ class MarchesPublicsSchemaLoader:
             )
         return flattened_schema
         return flattened_schema
+
+
+# Utils for handling distinct structure in Marchés .json
+
+def check_json_structure(file_path):
+    """
+    Check if the JSON file has the structure ['marches'] or ['marches']['marche']
+    without loading the entire file.
+    
+    Returns:
+    - 'direct': if data is in json_data['marches'] (list)
+    - 'nested': if data is in json_data['marches']['marche'] (list)
+    - 'unknown': if neither structure is found
+    """
+    
+    with open(file_path, 'rb') as f:
+        try:
+            prefix_events = ijson.parse(f)
+            
+            marches_type = None
+            for prefix, event, value in prefix_events:
+                if prefix == '' and event == 'map_key' and value == 'marches':
+                    prefix, event, value = next(prefix_events)
+                    marches_type = event
+                    break
+            
+            f.seek(0)
+            if marches_type == 'start_array':
+                return 'direct'
+            elif marches_type == 'start_map':
+                for prefix, event, value in ijson.parse(f):
+                    if prefix == 'marches' and event == 'map_key' and value == 'marche':
+                        prefix, event, value = next(prefix_events)
+                        prefix, event, value = next(prefix_events)
+                        if event == 'start_array':
+                            return 'nested'
+                        break
+            
+            return 'unknown'
+                
+        except (StopIteration, ijson.JSONError):
+            return 'unknown'
