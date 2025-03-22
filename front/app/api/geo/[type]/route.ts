@@ -1,11 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { newFetchGeoData } from '@/utils/fetchers/communities/fetchGeoData';
-import { CommunityType } from '@/utils/types';
+import { CommunityType } from '@/utils/fetchers/communities/fetchGeoData';
 
-export async function GET(request: NextRequest, { params }: { params: { type: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
+
   try {
-    const type = params.type;
+    const paramsObj = await params;
+    const type = paramsObj.type;
     let communityType: CommunityType;
 
     // Map the route parameter to the correct enum value
@@ -27,11 +29,11 @@ export async function GET(request: NextRequest, { params }: { params: { type: st
 
     try {
       // Fetch the data on the server side
-      const data = await newFetchGeoData(communityType);
+      const data = await newFetchGeoData(communityType as CommunityType);
 
       // Return the GeoJSON data
       return NextResponse.json(data);
-    } catch (fetchError) {
+    } catch (fetchError: any) {
       console.error(`Error fetching ${type} data:`, fetchError);
       return NextResponse.json(
         { error: `Failed to fetch ${type} data: ${fetchError.message}` },

@@ -2,7 +2,7 @@ import db from "@/utils/db"
 
 export enum CommunityType {
   Region = "REG",
-  Department = "DEP",
+  Departement = "DEP",
   Commune = "COM",
 }
 
@@ -53,7 +53,7 @@ export async function newFetchGeoData(type: CommunityType): Promise<GeoJSONData>
       `
       // Ensure we're only getting actual regions
       additionalFilter = "AND g.type = 'REG'"
-    } else if (type === CommunityType.Department) {
+    } else if (type === CommunityType.Departement) {
       joinCondition = `
         LEFT JOIN staging_communities sc ON 
         g.type = sc.type AND g.dep = sc.cog
@@ -97,8 +97,6 @@ export async function newFetchGeoData(type: CommunityType): Promise<GeoJSONData>
     `
 
     console.log("Executing query for type:", type)
-    console.log(querySQL, 'sql being passewd')
-
     // Use parameterized query to prevent SQL injection
     const result = await db.query(querySQL, [type])
 
