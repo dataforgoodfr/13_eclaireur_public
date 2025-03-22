@@ -71,16 +71,6 @@ export function useGeoDataSWR(): UseGeoDataResult {
   const isLoadingDepartments = !departmentsData && !departmentsError
   const isLoadingCommunes = !communesData && !communesError
 
-  // Store fetched data in localStorage and cache
-  useEffect(() => {
-    if (regionsData) {
-      localStorage.setItem("geo_regions", JSON.stringify({ data: regionsData, timestamp: Date.now() }))
-    }
-    if (departmentsData) {
-      localStorage.setItem("geo_departments", JSON.stringify({ data: departmentsData, timestamp: Date.now() }))
-    }
-  }, [regionsData, departmentsData, communesData])
-
   return {
     regionsData: regionsData ?? null,
     departmentsData: departmentsData ?? null,
