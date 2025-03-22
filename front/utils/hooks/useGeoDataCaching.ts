@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import type { Feature, FeatureCollection, Geometry, GeoJsonProperties } from "geojson"
 
 // Define types for our GeoJSON data that are compatible with deck.gl
@@ -44,7 +43,7 @@ interface CacheEntry {
 const CLIENT_CACHE = new Map<string, CacheEntry>()
 const CLIENT_CACHE_TTL = 30 * 60 * 1000 // 30 minutes in milliseconds
 
-export function useGeoData(): UseGeoDataResult {
+export function useGeoDataCaching(): UseGeoDataResult {
   const [regionsData, setRegionsData] = useState<GeoJSONData | null>(null)
   const [departmentsData, setDepartmentsData] = useState<GeoJSONData | null>(null)
   const [communesData, setCommunesData] = useState<GeoJSONData | null>(null)
@@ -52,7 +51,6 @@ export function useGeoData(): UseGeoDataResult {
   const [isLoadingDepartments, setIsLoadingDepartments] = useState(true)
   const [isLoadingCommunes, setIsLoadingCommunes] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   // Check if we have data in localStorage on initial load
   useEffect(() => {

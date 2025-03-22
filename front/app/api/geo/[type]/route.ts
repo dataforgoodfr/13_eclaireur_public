@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { newFetchGeoData } from '@/utils/fetchers/communities/fetchGeoData';
-import { CommunityType } from '@/utils/fetchers/communities/fetchGeoData';
+import { newFetchGeoData, CommunityType } from '@/utils/fetchers/communities/fetchGeoData';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
 

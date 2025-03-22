@@ -5,7 +5,7 @@ import { useState } from 'react';
 import DeckGLMapComponent from '@/components/DeckGLMapComponent';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useGeoData } from '@/utils/hooks/useGeoData';
+import { useGeoDataCaching } from '@/utils/hooks/useGeoDataCaching';
 import { Loader2 } from 'lucide-react';
 
 export default function MapPage() {
@@ -23,7 +23,7 @@ export default function MapPage() {
     isLoadingDepartments,
     isLoadingCommunes,
     error,
-  } = useGeoData();
+  } = useGeoDataCaching();
 
   // Determine if we're in the initial loading state
   const isLoadingBasic = isLoadingRegions || isLoadingDepartments;
@@ -69,9 +69,9 @@ export default function MapPage() {
         )}
 
         <div className='ml-auto text-sm text-muted-foreground'>
-          {regionsData && `Regions: ${regionsData.features.length}`} |
-          {departmentsData && ` Departments: ${departmentsData.features.length}`} |
-          {communesData && ` Communes: ${communesData.features.length}`}
+          {regionsData && `Regions: ${regionsData.features?.length}`} |
+          {departmentsData && ` Departments: ${departmentsData.features?.length}`} |
+          {communesData && ` Communes: ${communesData.features?.length}`}
         </div>
       </div>
 

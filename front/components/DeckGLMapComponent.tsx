@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import type { GeoJSONData, GeoJSONFeature } from '@/utils/hooks/useGeoData';
+import type { GeoJSONData, GeoJSONFeature } from '@/utils/hooks/useGeoDataSWR';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import DeckGL from '@deck.gl/react';
 import { ViewStateChangeParameters } from '@deck.gl/core';
