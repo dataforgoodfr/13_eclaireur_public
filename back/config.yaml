@@ -2,25 +2,17 @@ workflow:
   save_to_db: False
   replace_tables: False
 
+ofgl:
+  data_folder: back/data/ofgl
+  urls_csv: back/scripts/datasets/ofgl_urls.csv
+  combined_filename: back/data/ofgl/ofgl.parquet
+
 communities:
   processed_data:
     path: back/data/communities/processed_data
     all_communities_file: all_communities_data.parquet
     selected_communities_file: selected_communities_data.parquet
 
-  ofgl:
-    url:
-      regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      communes: https://data.ofgl.fr/explore/dataset/ofgl-base-communes-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_name=true&disjunctive.epci_name=true&disjunctive.tranche_population=true&disjunctive.tranche_revenu_imposable_par_habitant=true&disjunctive.com_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-    dtype:
-      Code Insee 2023 Région: str
-      Code Insee 2023 Département: str
-      Code Insee 2023 Commune: str
-    processed_data:
-      path: back/data/communities/processed_data
-      filename: ofgl_data.parquet
 
     epci:
       file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx

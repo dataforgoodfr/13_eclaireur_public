@@ -1,11 +1,10 @@
-import logging
 import re
 from pathlib import Path
 
 import pandas as pd
+
 from back.scripts.communities.loaders.odf import OdfLoader
-from back.scripts.communities.loaders.ofgl import OfglLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.geolocator import GeoLocator
 
 
@@ -41,7 +40,6 @@ class CommunitiesSelector:
         if self._init_done:
             return
         self.config = config
-        self.logger = logging.getLogger(__name__)
 
         data_folder = get_project_base_path() / self.config["processed_data"]["path"]
         data_folder.mkdir(parents=True, exist_ok=True)
@@ -72,10 +70,9 @@ class CommunitiesSelector:
 
     def load_all_communities(self):
         # Load data from OFGL, ODF, and Sirene datasets
-        ofgl = OfglLoader(self.config["ofgl"])
+        ofgl_data = pd.read_parquet(project_config["ofgl"]["combined_filename"])
         odf = OdfLoader(self.config["odf"])
         sirene = pd.read_parquet(Path(self.config["sirene"]["data_folder"]) / "sirene.parquet")
-        ofgl_data = ofgl.get()
         odf_data = odf.get()
 
         # Prepare & Merge OFGL and ODF data on 'siren' column
@@ -107,21 +104,23 @@ class CommunitiesSelector:
             ]
         ]
 
-        self.all_data = all_data.merge(sirene, on="siren", how="left").assign(
-            population=lambda df: pd.to_numeric(df["population"].astype(str), errors="coerce"),
-            effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
+        self.all_data = (
+            all_data.merge(sirene, on="siren", how="left")
+            .assign(
+                population=lambda df: pd.to_numeric(
+                    df["population"].astype(str), errors="coerce"
+                ),
+                effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
+            )
+            .assign(
+                should_publish=lambda df: (df["type"] != "COM")
+                | (df["type"] == "COM" & df["population"] >= 3500 & df["effectifs_sup_50"])
+            )
         )
 
     def load_selected_communities(self):
         selected_data = self.all_data.copy()
-        selected_data = selected_data.loc[
-            (self.all_data["type"] != "COM")
-            | (
-                (self.all_data["type"] == "COM")
-                & (self.all_data["population"] >= 3500)
-                & self.all_data["effectifs_sup_50"]
-            )
-        ]
+        selected_data = selected_data.loc[selected_data["should_publish"]]
 
         # Add geocoordinates to selected data
         geolocator = GeoLocator(self.config["geolocator"])

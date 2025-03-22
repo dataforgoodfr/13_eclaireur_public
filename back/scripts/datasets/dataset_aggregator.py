@@ -173,7 +173,7 @@ class DatasetAggregator:
         This step is made in polars as the sum of all dataset by be heavy on memory.
         """
         all_files = list(self.data_folder.glob("*/norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self)}")
+        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self.combined_filename)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.combined_filename)
