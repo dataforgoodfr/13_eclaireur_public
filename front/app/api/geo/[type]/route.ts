@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { fetchCommunitiesGeoJSON } from '@/utils/fetchers/communities/fetchCommunitiesTopoJSON-server';
+import { newFetchGeoData } from '@/utils/fetchers/communities/fetchGeoData';
 import { CommunityType } from '@/utils/types';
 
 export async function GET(request: NextRequest, { params }: { params: { type: string } }) {
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: { type: st
 
     try {
       // Fetch the data on the server side
-      const data = await fetchCommunitiesGeoJSON(communityType);
+      const data = await newFetchGeoData(communityType);
 
       // Return the GeoJSON data
       return NextResponse.json(data);

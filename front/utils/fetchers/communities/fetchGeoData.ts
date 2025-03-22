@@ -31,7 +31,7 @@ export interface GeoJSONData {
 const CACHE = new Map<string, { data: GeoJSONData; timestamp: number }>()
 const CACHE_TTL = 1000 // 1 hour in milliseconds
 
-export async function fetchCommunitiesGeoJSON(type: CommunityType): Promise<GeoJSONData> {
+export async function newFetchGeoData(type: CommunityType): Promise<GeoJSONData> {
   try {
     // Check server-side cache first
     const cacheKey = `geo_${type}`
@@ -97,6 +97,7 @@ export async function fetchCommunitiesGeoJSON(type: CommunityType): Promise<GeoJ
     `
 
     console.log("Executing query for type:", type)
+    console.log(querySQL, 'sql being passewd')
 
     // Use parameterized query to prevent SQL injection
     const result = await db.query(querySQL, [type])
