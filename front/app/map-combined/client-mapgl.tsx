@@ -2,13 +2,18 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import DeckGLMapComponent from '@/components/DeckGLMapComponent';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useGeoDataSWR, GeoJSONData } from '@/utils/hooks/useGeoDataSWR';
 import { useGeoDataCaching } from '@/utils/hooks/useGeoDataCaching';
+import { GeoJSONData, useGeoDataSWR } from '@/utils/hooks/useGeoDataSWR';
+import { Loader2 } from 'lucide-react';
+
+// app/mappage/client.tsx
+
+// app/mappage/client.tsx
 
 interface MapPageClientProps {
   regionsData: GeoJSONData | null;
@@ -24,12 +29,8 @@ export function MapPageClient({ regionsData, departmentsData }: MapPageClientPro
   const [showCommunes, setShowCommunes] = useState(true);
 
   // Use the custom hook for fetching and caching geo data for communes
-  const {
-    communesData,
-    isLoadingCommunes,
-    error,
-  } = useGeoDataCaching();
- 
+  const { communesData, isLoadingCommunes, error } = useGeoDataCaching();
+
   useEffect(() => {
     if (isLoadingCommunes) {
       // Start timing when fetching begins
@@ -41,7 +42,7 @@ export function MapPageClient({ regionsData, departmentsData }: MapPageClientPro
         console.log(`Data fetched in ${endTime - startTime}ms`);
       };
     }
-  }, [isLoadingCommunes]); 
+  }, [isLoadingCommunes]);
 
   // Determine if we're in the initial loading state
   const isLoadingBasic = !regionsData || !departmentsData;

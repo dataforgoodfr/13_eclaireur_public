@@ -5,9 +5,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { GeoJSONData, GeoJSONFeature } from '@/utils/hooks/useGeoDataSWR';
+import { ViewStateChangeParameters } from '@deck.gl/core';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import DeckGL from '@deck.gl/react';
-import { ViewStateChangeParameters } from '@deck.gl/core';
 
 interface DeckGLMapProps {
   regionsData: GeoJSONData | null;
@@ -63,10 +63,10 @@ export default function DeckGLMapComponent({
   const [layers, setLayers] = useState<any[]>([]);
   const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(null);
 
-const onViewStateChange = useCallback((params: ViewStateChangeParameters<any>) => {
-  const { viewState } = params;
-  setCurrentZoom(viewState.zoom);
-}, []);
+  const onViewStateChange = useCallback((params: ViewStateChangeParameters<any>) => {
+    const { viewState } = params;
+    setCurrentZoom(viewState.zoom);
+  }, []);
 
   // Handle click on a feature
   const onClick = useCallback(

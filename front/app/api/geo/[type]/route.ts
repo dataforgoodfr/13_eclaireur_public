@@ -1,9 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { newFetchGeoData, CommunityType } from '@/utils/fetchers/communities/fetchGeoData';
+import { CommunityType, newFetchGeoData } from '@/utils/fetchers/communities/fetchGeoData';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
-
   try {
     const paramsObj = await params;
     const type = paramsObj.type;
