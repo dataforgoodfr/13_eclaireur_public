@@ -18,6 +18,8 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 DATASET_ID = "5cd57bf68b4c4179299eb0e9"
+KEYS_DATASET_BEFORE_2024 = "marches.item"  
+KEYS_DATASET_AFTER_2024 = "marches.marche.item"
 
 
 class MarchesPublicsWorkflow(DatasetAggregator):
@@ -67,7 +69,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         self.official_schema.to_parquet(schema_filename)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
-        self._read_parse_interim(raw_filename)
+        items_key = KEYS_DATASET_AFTER_2024 if int(file_metadata[30])>2022 else KEYS_DATASET_BEFORE_2024
+        self._read_parse_interim(raw_filename, items_key)
         return self._read_parse_final(raw_filename)
 
     def _read_parse_final(self, raw_filename: Path) -> pd.DataFrame | None:
@@ -80,7 +83,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         return out.assign(**corrected)
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def _read_parse_interim(self, raw_filename: Path) -> None:
+    def _read_parse_interim(self, raw_filename: Path, items_key: str) -> None:
         """
         Create an intermediate JSON file with cleaned conventions,
         so that pandas can read it properly.
@@ -88,12 +91,12 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if interim_fn.exists():
             return
-
+        
         with open(raw_filename, "r", encoding="utf-8") as raw:
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
                 # within the marches field.
-                array_declas = ijson.items(raw, "marches.item", use_float=True)
+                array_declas = ijson.items(raw, items_key, use_float=True)
                 interim.write("[\n")
 
                 # Iterate over the JSON array items
