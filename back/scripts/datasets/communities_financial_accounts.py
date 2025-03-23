@@ -6,7 +6,7 @@ import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
 
-from .common import CleanerBase, UpdaterBase, WorkflowMixin
+from .common import CleanerBase, WorkflowMixin
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,14 +39,6 @@ class FinancialAccountsCleaner(CleanerBase):
         self.cleaned_data = data
 
 
-class FinancialAccountsUpdater(UpdaterBase):
-    def run(self, *args, **kwargs):
-        data = self.cleaned_data
-        # TODO
-        self.updated_data = data
-
-
 class FinancialAccountsWorkflow(WorkflowMixin):
     fetcher_class = FinancialAccounts
     cleaner_class = FinancialAccountsCleaner
-    updater_class = FinancialAccountsUpdater

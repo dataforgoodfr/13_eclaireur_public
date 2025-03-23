@@ -1,4 +1,3 @@
-from functools import cached_property
 from pathlib import Path
 from typing import Type
 
@@ -7,7 +6,10 @@ from back.scripts.loaders import BaseLoader
 
 class ProcessorMixin:
     def __init__(self, workflow, *args, **kwargs):
+        # transmettre le workflow est overkill mais dans un premier temps on ne sait pas trop quelles informations seront réellement nécessaires, autant donner accès à toutes les infos, refactorisable plus tard grâce à `Workflow.get_fetcher_kwargs` et `Workflow.get_cleaner_kwargs`
         self.workflow = workflow
+        self.args = args
+        self.kwargs = kwargs
 
     def run(self, *args, **kwargs) -> None:
         raise NotImplementedError("This method should be implemented by subclasses.")
@@ -42,58 +44,32 @@ class FetcherBase(FetcherMixin):
 class CleanerMixin(ProcessorMixin):
     """
     Lit le `Fetcher.output_filename` (accessible via `self.input_filename`).
-    Nettoie les données, retire les lignes inutilisables, en doublon etc
-    Les données clean sont sauvegardées dans `self.cleaned_data`
+    Les données clean sont disponibles dans `self.cleaned_data`
     Géré par l'équipe DA
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial_data = BaseLoader.loader_factory(self.input_filename).load()
         self.cleaned_data = None
 
     @property
     def input_filename(self):
-        return self.workflow.fetcher.output_filename
+        return self.fetcher.output_filename
 
-    @cached_property
-    def initial_data(self):
-        return BaseLoader.loader_factory(self.input_filename).load()
+    @property
+    def fetcher(self):
+        return self.workflow.fetcher
 
 
 class CleanerBase(CleanerMixin):
     pass
 
 
-class UpdaterMixin(ProcessorMixin):
-    """
-    Depuis le `Cleaner.cleaned_data` (accessible via self.cleaned_data)
-    Formate la structure du fichier
-    Les données formatée sont sauvegardées dans `self.updated_data`
-    Géré par l'équipe DA
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.updated_data = None
-
-    @property
-    def cleaner(self):
-        return self.workflow.cleaner
-
-    @property
-    def cleaned_data(self):
-        return self.workflow.cleaner.cleaned_data
-
-
-class UpdaterBase(UpdaterMixin):
-    pass
-
-
 """
-Appelé par le WorkflowManager, le WorkflowMixin est un sous-manager qui gère 3 sous-rôles :
+Appelé par le WorkflowManager, le WorkflowMixin est un sous-manager qui gère 2 sous-rôles :
 1. Récupération des données (Fetcher) → actuellement ce sont les classes Workflow (qui devront être renommées), formatage, sauvegarde
 2. Nettoyage des données (Cleaner) → nettoie les données, retire les lignes inutilisables
-3. Mise à jour de la structure des données (Updater) → merge/split des colonnes
 
 Les differents rôles doivent pouvoir être facilement identifiables et contiennent leur propre logique sans interférer avec celle des autres
 L'objectif est de pouvoir intégrer le travail des DA sans avoir à remodeler le travail des DE et inversement
@@ -109,7 +85,6 @@ Chaque rôle s'active grâce à sa méthode run()
 class WorkflowMixin:
     fetcher_class: Type = FetcherBase
     cleaner_class: Type = CleanerBase
-    updater_class: Type | None = UpdaterBase
 
     def __init__(self, config: dict, *args, **kwargs):
         self._config = config
@@ -117,25 +92,26 @@ class WorkflowMixin:
         self.data_folder.mkdir(exist_ok=True, parents=True)
         self.fetcher = None
         self.cleaner = None
-        self.updater = None
 
     @property
     def config(self) -> dict:
         return self._config
 
+    def get_fetcher_kwargs(self) -> dict:
+        return dict()
+
+    def get_cleaner_kwargs(self) -> dict:
+        return dict()
+
     def run(self) -> None:
-        self.fetcher = self.fetcher_class(self)
+        self.fetcher = self.fetcher_class(self, **self.get_fetcher_kwargs())
         self.fetcher.run()
-        self.cleaner = self.cleaner_class(self)
+        self.cleaner = self.cleaner_class(self, **self.get_cleaner_kwargs())
         self.cleaner.run()
-        if self.updater_class is not None:
-            self.updater = self.updater_class(self)
-            self.updater.run()
-            data = self.updater.updated_data
-        else:
-            data = self.cleaner_class.cleaned_data
+        data = self.cleaner.cleaned_data
         self._send_to_db(data)
 
     def _send_to_db(self, data) -> None:
         # TODO: save dans un fichier ou push to db en fonction de la config
+        # Ajouter une classe Pusher dans le workflow pour gérer cette partie ?
         pass
