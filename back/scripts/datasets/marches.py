@@ -112,7 +112,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 interim.write("]\n")
 
     @staticmethod
-    def check_json_structure(file_path):
+    def check_json_structure(file_path: Path) -> str:
         """
         Check if the JSON file has the structure ['marches'] or ['marches']['marche']
         without loading the entire file.
@@ -126,27 +126,10 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         with open(file_path, "rb") as f:
             try:
                 prefix_events = ijson.parse(f)
-
-                marches_type = None
-                for prefix, event, value in prefix_events:
-                    if prefix == "" and event == "map_key" and value == "marches":
-                        prefix, event, value = next(prefix_events)
-                        marches_type = event
+                for _prefix, event, _value in prefix_events:
+                    if event == "start_array":
                         break
-
-                f.seek(0)
-                if marches_type == "start_array":
-                    return "direct"
-                elif marches_type == "start_map":
-                    for prefix, event, value in ijson.parse(f):
-                        if prefix == "marches" and event == "map_key" and value == "marche":
-                            prefix, event, value = next(prefix_events)
-                            prefix, event, value = next(prefix_events)
-                            if event == "start_array":
-                                return "nested"
-                            break
-
-                return "unknown"
+                return "nested" if "." in _prefix else "direct"
 
             except (StopIteration, ijson.JSONError):
                 return "unknown"
