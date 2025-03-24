@@ -90,7 +90,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
-            json_structure = check_json_structure(raw_filename)
+            json_structure = self.check_json_structure(raw_filename)
 
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
@@ -110,6 +110,46 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                     interim.write(",\n".join(unnested))
 
                 interim.write("]\n")
+
+    @staticmethod
+    def check_json_structure(file_path):
+        """
+        Check if the JSON file has the structure ['marches'] or ['marches']['marche']
+        without loading the entire file.
+
+        Returns:
+        - 'direct': if data is in json_data['marches'] (list)
+        - 'nested': if data is in json_data['marches']['marche'] (list)
+        - 'unknown': if neither structure is found
+        """
+
+        with open(file_path, "rb") as f:
+            try:
+                prefix_events = ijson.parse(f)
+
+                marches_type = None
+                for prefix, event, value in prefix_events:
+                    if prefix == "" and event == "map_key" and value == "marches":
+                        prefix, event, value = next(prefix_events)
+                        marches_type = event
+                        break
+
+                f.seek(0)
+                if marches_type == "start_array":
+                    return "direct"
+                elif marches_type == "start_map":
+                    for prefix, event, value in ijson.parse(f):
+                        if prefix == "marches" and event == "map_key" and value == "marche":
+                            prefix, event, value = next(prefix_events)
+                            prefix, event, value = next(prefix_events)
+                            if event == "start_array":
+                                return "nested"
+                            break
+
+                return "unknown"
+
+            except (StopIteration, ijson.JSONError):
+                return "unknown"
 
     @staticmethod
     def unnest_marche(declaration: dict):
@@ -219,47 +259,3 @@ class MarchesPublicsSchemaLoader:
                 )
             )
         return flattened_schema
-        return flattened_schema
-
-
-# Utils for handling distinct structure in Marchés .json
-
-
-def check_json_structure(file_path):
-    """
-    Check if the JSON file has the structure ['marches'] or ['marches']['marche']
-    without loading the entire file.
-
-    Returns:
-    - 'direct': if data is in json_data['marches'] (list)
-    - 'nested': if data is in json_data['marches']['marche'] (list)
-    - 'unknown': if neither structure is found
-    """
-
-    with open(file_path, "rb") as f:
-        try:
-            prefix_events = ijson.parse(f)
-
-            marches_type = None
-            for prefix, event, value in prefix_events:
-                if prefix == "" and event == "map_key" and value == "marches":
-                    prefix, event, value = next(prefix_events)
-                    marches_type = event
-                    break
-
-            f.seek(0)
-            if marches_type == "start_array":
-                return "direct"
-            elif marches_type == "start_map":
-                for prefix, event, value in ijson.parse(f):
-                    if prefix == "marches" and event == "map_key" and value == "marche":
-                        prefix, event, value = next(prefix_events)
-                        prefix, event, value = next(prefix_events)
-                        if event == "start_array":
-                            return "nested"
-                        break
-
-            return "unknown"
-
-        except (StopIteration, ijson.JSONError):
-            return "unknown"
