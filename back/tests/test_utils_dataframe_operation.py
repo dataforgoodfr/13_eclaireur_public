@@ -25,6 +25,9 @@ class TestMergeDuplicateColumns:
 
         pd.testing.assert_frame_equal(result, expected_df)
 
+    def test_ci(self):
+        assert False
+
     def test_duplicate_columns_with_separator(self):
         df = pd.DataFrame([[1, 2], [3, 4], [5, 6]], columns=["A", "A"])
         result = merge_duplicate_columns(df, separator="|")
