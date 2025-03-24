@@ -41,7 +41,9 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
           placeholder='Entrez une collectivité territoriale'
           onChange={handleInputChange}
           onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
+          onBlur={(e) => {
+            if (e.relatedTarget === null) handleOnBlur();
+          }}
         />
       </div>
       {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
