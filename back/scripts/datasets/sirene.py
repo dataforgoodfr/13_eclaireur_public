@@ -39,8 +39,8 @@ class SireneWorkflow:
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.filename = self.data_folder / "sirene.parquet"
-        self.zip_filename = self.data_folder / "sirene.zip"
+        self.input_filename = self.data_folder / "sirene.zip"
+        self.output_filename = self.data_folder / "sirene.parquet"
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
@@ -48,16 +48,16 @@ class SireneWorkflow:
         self._format_to_parquet()
 
     def _fetch_zip(self):
-        if self.zip_filename.exists():
+        if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.zip_filename)
+        urllib.request.urlretrieve(self._config["url"], self.input_filename)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.output_filename.exists():
             return
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with zipfile.ZipFile(self.zip_filename) as zip_ref:
+            with zipfile.ZipFile(self.input_filename) as zip_ref:
                 zip_ref.extractall(tmpdirname)
                 csv_fn = Path(tmpdirname) / "StockUniteLegale_utf8.csv"
                 pl.scan_csv(
@@ -79,4 +79,4 @@ class SireneWorkflow:
                     .replace_strict(EFFECTIF_CODE_TO_EMPLOYEES, default=None)
                     .cast(pl.Int32)
                     .alias("tranche_effectif"),
-                ).collect().write_parquet(self.filename)
+                ).collect().write_parquet(self.output_filename)
