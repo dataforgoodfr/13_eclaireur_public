@@ -11,18 +11,19 @@ type SuggestionsProps = {
 export default function Suggestions({ query, onSelect }: SuggestionsProps) {
   const { data: suggestions, isPending, isError } = useCommunitiesBySearch(query);
 
-  if (isPending) return 'Chargement...';
-  if (isError) return 'Erreur';
-
   return (
     <div className='absolute mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md'>
       <Command>
         <CommandList>
-          <CommandEmpty>Aucun resultat trouve pour '{query}'</CommandEmpty>
+          <CommandEmpty>
+            {isPending && <span>Chargement...</span>}
+            {isError && <span>Erreur</span>}
+            {suggestions?.length === 0 && <span>Aucun resultat trouve pour '{query}'</span>}
+          </CommandEmpty>
           <CommandGroup>
-            {suggestions.map((suggestion) => (
+            {suggestions?.map((suggestion) => (
               <CommandItem key={suggestion.siren} onSelect={(e) => onSelect(suggestion)}>
-                {suggestion.nom} - {suggestion.type}
+                {suggestion.nom} - {suggestion.type} - {suggestion.siren}
               </CommandItem>
             ))}
           </CommandGroup>

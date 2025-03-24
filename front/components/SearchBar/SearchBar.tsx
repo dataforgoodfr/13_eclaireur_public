@@ -20,16 +20,14 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
   function handleOnFocus() {
     setIsFocused(true);
   }
-
   function handleOnBlur() {
-    setIsFocused(false);
+    setTimeout(() => setIsFocused(false), 200);
   }
 
   const handleInputChange = debounce(
     (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value),
     400,
   );
-
   const showSuggestions = query.length > 0 && isFocused;
 
   return (

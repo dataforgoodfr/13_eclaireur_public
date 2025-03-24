@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"(components|app)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
+    "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
   },
   "dependencies": {
     "@deck.gl/core": "^9.0.40",
@@ -28,6 +28,7 @@
     "lucide-react": "^0.475.0",
     "maplibre-gl": "^5.2.0",
     "next": "15.1.6",
+    "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -43,6 +44,7 @@
     "@types/d3": "^7.4.3",
     "@types/node": "^20",
     "@types/pg": "^8.11.11",
+    "@types/nodemailer": "^6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/topojson-client": "^3.1.5",
