@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useCommunities } from '@/utils/hooks/useCommunities';
 import maplibregl from 'maplibre-gl';
 import type { MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -34,7 +35,7 @@ interface Commune {
   region?: { code: string; nom: string };
 }
 
-const apiKey = 'uEXtHebzVY83WqwkLhBd';
+const apiKey = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 
 const FranceMap = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);

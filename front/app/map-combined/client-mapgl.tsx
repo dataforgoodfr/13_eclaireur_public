@@ -15,6 +15,8 @@ import { Loader2 } from 'lucide-react';
 
 // app/mappage/client.tsx
 
+// app/mappage/client.tsx
+
 interface MapPageClientProps {
   regionsData: GeoJSONData | null;
   departmentsData: GeoJSONData | null;
