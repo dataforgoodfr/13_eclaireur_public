@@ -4,10 +4,10 @@ Ce projet vise à analyser la transparence des collectivités locales concernée
 
 ## Structure du projet
 
-- `back/` : Consolidation et préparation des données
-- `front/` : Développement du site web interactif
+- `back/` : Consolidation et préparation des données [README](back/README.md)
+- `front/` : Développement du site web interactif [README](front/README.md)
 
-## Nomencloture des PR
+## Nomenclature des PR
 
 
 Front
