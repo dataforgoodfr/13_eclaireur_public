@@ -135,7 +135,7 @@ class DatasetAggregator:
             return
         df = self._read_parse_file(file_metadata, raw_filename)
         if isinstance(df, pd.DataFrame):
-            df.to_parquet(out_filename)
+            df.to_parquet(out_filename, index=False)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()

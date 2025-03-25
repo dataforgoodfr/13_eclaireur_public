@@ -1,120 +1,77 @@
+import logging
 import re
 from pathlib import Path
 
 import pandas as pd
 
-from back.scripts.communities.loaders.odf import OdfLoader
+from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_project_base_path, project_config
+from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
-    It merges, cleans, and enriches datasets with geographic coordinates
-    while applying selection criteria (e.g., population, effectifs)
-    for open data law compliance and project-specific usage.
-
-    Steps:
-    1. Load data from OFGL, ODF, and Sirene datasets
-    2. Merge OFGL and ODF data on 'siren' column
-    3. Merge Sirene data on 'siren' column
-    4. Filter data based on legal requirements
-    5. Add geocoordinates to selected data
-    6. Save all and selected data to CSV
+    It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
-    _instance = None
-    _init_done = False
-
-    # Singleton pattern
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(CommunitiesSelector, cls).__new__(cls)
-        return cls._instance
-
-    # Constructor TODO: Refactor, too many responsibilities
     def __init__(self, config):
-        # Singleton pattern
-        if self._init_done:
-            return
         self.config = config
 
-        data_folder = get_project_base_path() / self.config["processed_data"]["path"]
-        data_folder.mkdir(parents=True, exist_ok=True)
+        self.data_folder = get_project_base_path() / config["data_folder"]
+        self.data_folder.mkdir(parents=True, exist_ok=True)
 
-        all_communities_filename = (
-            data_folder / self.config["processed_data"]["all_communities_file"]
+        self.combined_filename = Path(self.config["combined_filename"])
+        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def run(self):
+        if self.combined_filename.exists():
+            return
+        communities = (
+            pd.read_parquet(project_config["ofgl"]["combined_filename"])
+            .drop_duplicates(subset=["siren"], keep="first")
+            .fillna({"population": 0})
+            .pipe(self.add_collectivite_platforms)
+            .pipe(self.add_sirene_infos)
         )
-        if all_communities_filename.exists():
-            self.all_data = pd.read_parquet(all_communities_filename)
-        else:
-            self.load_all_communities()
-            self.all_data.to_parquet(all_communities_filename)
-            self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
+        # epci_mapping = BaseLoader.loader_factory(self._config["epci_url"]).load()
 
-        selected_communities_filename = (
-            data_folder / self.config["processed_data"]["selected_communities_file"]
-        )
-        if selected_communities_filename.exists():
-            self.selected_data = pd.read_parquet(selected_communities_filename)
-        else:
-            self.load_selected_communities()
-            self.selected_data.to_parquet(selected_communities_filename)
-            self.selected_data.to_csv(
-                selected_communities_filename.with_suffix(".csv"), sep=";"
-            )
+        communities.to_parquet(self.combined_filename, index=False)
 
-        self._init_done = True
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_collectivite_platforms(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        ODF dataset comes from a 2019 study about how collectivities contributed to the open data movement.
+        It is not updated since then and is not representative of the current landscape.
+        As a result, it is directly integrated as a CSV in the project to allow updates when needed.
+        URL : https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
+        """
+        odf = BaseLoader.loader_factory(self.config["odf_url"]).load()
+        import pdb
 
-    def load_all_communities(self):
-        # Load data from OFGL, ODF, and Sirene datasets
-        ofgl_data = pd.read_parquet(project_config["ofgl"]["combined_filename"])
-        odf = OdfLoader(self.config["odf"])
-        sirene = pd.read_parquet(Path(self.config["sirene"]["data_folder"]) / "sirene.parquet")
-        odf_data = odf.get()
+        pdb.set_trace()
+        return frame.merge(odf, on="siren", how="left")
 
-        # Prepare & Merge OFGL and ODF data on 'siren' column
-        # TODO : If you cast to Int, it breaks
-        # TODO : casting seems redundant, check if it's necessary
-        # TODO Manage columns outside of classes (configs ?)
-        all_data = ofgl_data.merge(
-            odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
-            on="siren",
-            how="left",
-        )
-        all_data = all_data[
-            [
-                "nom",
-                "siren",
-                "type",
-                "cog",
-                "cog_3digits",
-                "code_departement",
-                "code_departement_3digits",
-                "code_region",
-                "population",
-                "epci",
-                "url_ptf",
-                "url_datagouv",
-                "id_datagouv",
-                "merge",
-                "ptf",
-            ]
-        ]
-
-        self.all_data = (
-            all_data.merge(sirene, on="siren", how="left")
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_sirene_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
+        sirene = pd.read_parquet(
+            project_config["sirene"]["combined_filename"],
+            columns=["siren", "naf8", "tranche_effectif"],
+        ).pipe(lambda df: df[df["naf8"].isin(["8411Z", "8413Z", "8710C", "3700Z"])])
+        return (
+            frame.merge(sirene, on="siren", how="left")
+            .fillna({"tranche_effectif": 0})
             .assign(
-                population=lambda df: pd.to_numeric(
-                    df["population"].astype(str), errors="coerce"
-                ),
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
             )
             .assign(
                 should_publish=lambda df: (df["type"] != "COM")
-                | (df["type"] == "COM" & df["population"] >= 3500 & df["effectifs_sup_50"])
+                | ((df["type"] == "COM") & (df["population"] >= 3500) & df["effectifs_sup_50"])
             )
         )
 

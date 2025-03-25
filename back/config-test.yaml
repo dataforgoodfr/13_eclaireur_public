@@ -19,14 +19,6 @@ communities:
         siren: str
         siren_membre: str
 
-  odf:
-    url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
-    dtype:
-      siren: str
-    processed_data:
-      path: back/tests/data/odf/
-      filename: odf_data.parquet
-
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
     reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
