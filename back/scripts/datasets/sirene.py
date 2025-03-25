@@ -39,11 +39,13 @@ class SireneWorkflow:
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.filename = self.data_folder / "sirene.parquet"
+        self.combined_filename = self._config["combined_filename"]
         self.zip_filename = self.data_folder / "sirene.zip"
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.combined_filename.exists():
+            return
         self._fetch_zip()
         self._format_to_parquet()
 

@@ -62,6 +62,14 @@ class DatasetAggregator:
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.combined_filename.exists():
+            return
+        self._process_files()
+        self._concatenate_files()
+        with open(self.data_folder / "errors.json", "w") as f:
+            json.dump(self.errors, f)
+
+    def _process_files(self):
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -76,10 +84,6 @@ class DatasetAggregator:
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
-
-        self._concatenate_files()
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
 
     def _process_file(self, file: tuple) -> None:
         """
