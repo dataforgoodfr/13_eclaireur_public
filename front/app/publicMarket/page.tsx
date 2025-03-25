@@ -15,7 +15,7 @@ export default function PublicMarket() {
   const [data, setData] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
 
-  const fetchDataMarseille = async () => {
+  const fetchDataLyon = async () => {
     try {
       const response = await fetch("/api/lyon");
       const data = await response.json();
@@ -28,7 +28,7 @@ export default function PublicMarket() {
   
   useEffect(() => {
     const initialize = async () => {
-      await fetchDataMarseille();
+      await fetchDataLyon();
     };
     initialize();
   }, []);
