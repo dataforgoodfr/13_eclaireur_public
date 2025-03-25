@@ -7,7 +7,7 @@ from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_project_base_path
-from back.scripts.utils.dataframe_operation import normalize_column_names
+from back.scripts.utils.dataframe_operation import normalize_column_names, normalize_identifiant
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -53,6 +53,7 @@ class OfglLoader(DatasetAggregator):
             )
             .sort_values("exercice", ascending=False)
             .drop_duplicates(subset=["siren"], keep="first")
+            .pipe(normalize_identifiant, id_col="siren")
         )
 
         self.columns = pd.concat(
