@@ -119,6 +119,7 @@ elected_officials:
 
 sirene:
   data_folder: back/data/sirene
+  combined_filename:  back/data/sirene/sirene.parquet
   url: https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip
 
 datagouv_api:
