@@ -90,14 +90,14 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
-            json_structure = self.check_json_structure(raw_filename)
+            array_location = self.check_json_structure(raw_filename)
 
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
                 # within the marches field.
                 array_declas = ijson.items(
                     raw,
-                    "marches.item" if json_structure == "direct" else "marches.marche.item",
+                    array_location,
                     use_float=True,
                 )
                 interim.write("[\n")
@@ -126,10 +126,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         with open(file_path, "rb") as f:
             try:
                 prefix_events = ijson.parse(f)
-                for _prefix, event, _value in prefix_events:
+                for prefix, event, _value in prefix_events:
                     if event == "start_array":
-                        break
-                return "nested" if "." in _prefix else "direct"
+                        return prefix
 
             except (StopIteration, ijson.JSONError):
                 return "unknown"
