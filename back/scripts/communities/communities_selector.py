@@ -6,6 +6,7 @@ import pandas as pd
 
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_project_base_path, project_config
+from back.scripts.utils.dataframe_operation import normalize_identifiant
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
 
@@ -35,11 +36,12 @@ class CommunitiesSelector:
         communities = (
             pd.read_parquet(project_config["ofgl"]["combined_filename"])
             .drop_duplicates(subset=["siren"], keep="first")
+            .drop(columns=["exercice"])
             .fillna({"population": 0})
             .pipe(self.add_collectivite_platforms)
+            .pipe(self.add_epci_infos)
             .pipe(self.add_sirene_infos)
         )
-        # epci_mapping = BaseLoader.loader_factory(self._config["epci_url"]).load()
 
         communities.to_parquet(self.combined_filename, index=False)
 
@@ -52,28 +54,45 @@ class CommunitiesSelector:
         URL : https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
         """
         odf = BaseLoader.loader_factory(self.config["odf_url"]).load()
-        import pdb
-
-        pdb.set_trace()
         return frame.merge(odf, on="siren", how="left")
 
     @tracker(ulogger=LOGGER, log_start=True)
     def add_sirene_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         sirene = pd.read_parquet(
             project_config["sirene"]["combined_filename"],
-            columns=["siren", "naf8", "tranche_effectif"],
-        ).pipe(lambda df: df[df["naf8"].isin(["8411Z", "8413Z", "8710C", "3700Z"])])
+            columns=["siren", "naf8", "tranche_effectif", "raison_sociale"],
+        )
         return (
             frame.merge(sirene, on="siren", how="left")
             .fillna({"tranche_effectif": 0})
             .assign(
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
+                nom=lambda df: df["raison_sociale"],
             )
             .assign(
                 should_publish=lambda df: (df["type"] != "COM")
                 | ((df["type"] == "COM") & (df["population"] >= 3500) & df["effectifs_sup_50"])
             )
+            .drop(columns=["raison_sociale"])
+            .merge(
+                sirene[["siren", "raison_sociale"]].rename(columns={"siren": "siren_epci"}),
+                on="siren_epci",
+                how="left",
+            )
+            .rename(columns={"raison_sociale": "nom_epci"})
         )
+
+    def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
+        epci_mapping = (
+            BaseLoader.loader_factory(
+                self.config["epci_url"], columns=["siren", "siren_membre"]
+            )
+            .load()
+            .rename(columns={"siren": "siren_epci", "siren_membre": "siren"})
+            .pipe(normalize_identifiant, id_col="siren_epci", format="siren")
+            .pipe(normalize_identifiant, id_col="siren", format="siren")
+        )
+        return frame.merge(epci_mapping, on="siren", how="left")
 
     def load_selected_communities(self):
         selected_data = self.all_data.copy()

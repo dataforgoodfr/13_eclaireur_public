@@ -38,6 +38,7 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
         OfglLoader.from_config(self.config["ofgl"]).run()
+        CommunitiesSelector(self.config["communities"]).run()
         DataGouvCatalog(self.config["datagouv_catalog"]).run()
         MarchesPublicsWorkflow.from_config(self.config["marches_publics"]).run()
         FinancialAccounts(self.config["financial_accounts"]).run()

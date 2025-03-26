@@ -212,10 +212,15 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     return frame.assign(**{id_col: montant})
 
 
-def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+def normalize_identifiant(
+    frame: pd.DataFrame, id_col: str, format: str = "siret"
+) -> pd.DataFrame:
     """
     Ensure that the selected column can be interpreted as a string siret.
     """
+    if format not in ("siren", "siret"):
+        raise RuntimeError(f"Format must be either siren or siret. Provided : {format}")
+
     if id_col not in frame.columns:
         return frame
     frame = frame.assign(
@@ -228,13 +233,15 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
             .str.replace(r"[\xa0 ]", "", regex=True)
         }
     )
+
+    filling = 14 if format == "siret" else 9
     median_length = frame[id_col].str.len().median()
     if median_length == 9:
         # identifier is actually siren
-        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(14, "0")})
+        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(filling, "0")})
     elif median_length == 14:
         # identifier is actually siret
-        return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
+        return frame.assign(**{id_col: frame[id_col].str.zfill(14).str[:filling]})
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
 
 
