@@ -60,11 +60,12 @@ class CommunitiesSelector:
     def add_sirene_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         sirene = pd.read_parquet(
             project_config["sirene"]["combined_filename"],
-            columns=["siren", "naf8", "tranche_effectif", "raison_sociale"],
+            columns=["siren", "naf8", "tranche_effectif", "raison_sociale", "is_active"],
         ).pipe(lambda df: df[df["naf8"].isin(["8411Z", "8710C", "3700Z", "8413Z"])])
 
         return (
             frame.merge(sirene, on="siren", how="left")
+            .pipe(lambda df: df[df["is_active"]])
             .fillna({"tranche_effectif": 0})
             .assign(
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
@@ -74,7 +75,7 @@ class CommunitiesSelector:
                 should_publish=lambda df: (df["type"] != "COM")
                 | ((df["type"] == "COM") & (df["population"] >= 3500) & df["effectifs_sup_50"])
             )
-            .drop(columns=["raison_sociale"])
+            .drop(columns=["raison_sociale", "is_active"])
             .merge(
                 sirene[["siren", "raison_sociale"]].rename(columns={"siren": "siren_epci"}),
                 on="siren_epci",

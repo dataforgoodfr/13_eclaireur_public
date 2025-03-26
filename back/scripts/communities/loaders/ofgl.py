@@ -59,7 +59,7 @@ class OfglLoader(DatasetAggregator):
             )
             .sort_values("exercice", ascending=False)
             .drop_duplicates(subset=["siren"], keep="first")
-            .pipe(normalize_identifiant, id_col="siren")
+            .pipe(normalize_identifiant, id_col="siren", format="siren")
         )
 
         self.columns = pd.concat(
