@@ -98,13 +98,13 @@ marches_publics:
   schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
   data_folder: back/tests/data/marches_publics
   combined_filename: back/tests/data/marches_publics/marches_publics.parquet
-  test_urls: 
-    - url: file:./tests/back/loaders/fixtures/reduced_decp_2019.json 
+  test_urls:
+    - url: file:./tests/back/loaders/fixtures/reduced_decp_2019.json
     - format: json
 
 datagouv_catalog:
-  data_folder: back/data/datagouv_catalog
-  combined_filename: back/data/datagouv_catalog/catalog.parquet
+  data_folder: back/tests/data/datagouv_catalog
+  combined_filename: back/tests/data/datagouv_catalog/catalog.parquet
   catalog_url: file:./back/tests/inputs/datagouv_catalog.csv
 
 datafile_loader:
@@ -166,7 +166,7 @@ logging:
       class: logging.FileHandler
       level: DEBUG
       formatter: simple
-      filename: back/data/logs/log.txt
+      filename: back/tests/data/logs/log.txt
   loggers:
     back:
       level: INFO

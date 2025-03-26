@@ -90,10 +90,16 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
+            array_location = self.check_json_structure(raw_filename) + ".item"
+
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
                 # within the marches field.
-                array_declas = ijson.items(raw, "marches.item", use_float=True)
+                array_declas = ijson.items(
+                    raw,
+                    array_location,
+                    use_float=True,
+                )
                 interim.write("[\n")
 
                 # Iterate over the JSON array items
@@ -104,6 +110,27 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                     interim.write(",\n".join(unnested))
 
                 interim.write("]\n")
+
+    @staticmethod
+    def check_json_structure(file_path: Path) -> str:
+        """
+        Check if the JSON file has the structure ['marches'] or ['marches']['marche']
+        without loading the entire file.
+
+        Returns:
+        - parent path of the first list found (corresponding to the list of marches)
+        - 'unknown': if neither structure is found
+        """
+
+        with open(file_path, "rb") as f:
+            try:
+                prefix_events = ijson.parse(f)
+                for prefix, event, _value in prefix_events:
+                    if event == "start_array":
+                        return prefix
+
+            except (StopIteration, ijson.JSONError):
+                return "unknown"
 
     @staticmethod
     def unnest_marche(declaration: dict):
@@ -212,5 +239,4 @@ class MarchesPublicsSchemaLoader:
                     f"{prop}.{sub_prop}", sub_details, root_definitions
                 )
             )
-        return flattened_schema
         return flattened_schema
