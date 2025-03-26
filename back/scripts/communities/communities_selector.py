@@ -26,12 +26,12 @@ class CommunitiesSelector:
         self.data_folder = get_project_base_path() / config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
 
-        self.combined_filename = Path(self.config["combined_filename"])
-        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
+        self.output_filename = Path(self.config["combined_filename"])
+        self.output_filename.parent.mkdir(parents=True, exist_ok=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self):
-        if self.combined_filename.exists():
+        if self.output_filename.exists():
             return
         communities = (
             pd.read_parquet(project_config["ofgl"]["combined_filename"])
@@ -43,7 +43,7 @@ class CommunitiesSelector:
             .pipe(self.add_sirene_infos)
         )
 
-        communities.to_parquet(self.combined_filename, index=False)
+        communities.to_parquet(self.output_filename, index=False)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def add_collectivite_platforms(self, frame: pd.DataFrame) -> pd.DataFrame:

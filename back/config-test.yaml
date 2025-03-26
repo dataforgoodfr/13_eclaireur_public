@@ -9,15 +9,10 @@ ofgl:
 
 communities:
   processed_data:
-    path: back/tests/data/communities/
-    all_communities_file: all_communities_data.parquet
-    selected_communities_file: selected_communities_data.parquet
-
-    epci:
-      file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
-      dtype:
-        siren: str
-        siren_membre: str
+    data_folder: back/tests/data/communities/
+    combined_filename: back/tests/data/communities/communities.parquet
+    epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+    odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv

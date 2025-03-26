@@ -60,7 +60,7 @@ class DatasetAggregator:
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
-        if self.combined_filename.exists():
+        if self.output_filename.exists():
             return
         self._process_files()
         self._concatenate_files()
@@ -176,7 +176,7 @@ class DatasetAggregator:
         This step is made in polars as the sum of all dataset by be heavy on memory.
         """
         all_files = list(self.data_folder.glob("*/norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self.combined_filename)}")
+        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self.output_filename)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.output_filename)
