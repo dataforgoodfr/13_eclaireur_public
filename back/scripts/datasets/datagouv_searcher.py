@@ -27,8 +27,9 @@ class DataGouvSearcher:
 
         self._config = datagouv_config
         self.scope = pd.read_parquet(
-            get_project_base_path / project_config["communities"]["combined_filename"]
+            get_project_base_path() / project_config["communities"]["combined_filename"]
         )
+        print(sorted(self.scope.columns))
         self.data_folder = get_project_base_path() / self._config["paths"]["root"]
         self.organization_data_folder = (
             self.data_folder / self._config["paths"]["organization_datasets"]
@@ -45,7 +46,7 @@ class DataGouvSearcher:
         if catalog_filename.exists():
             return pd.read_parquet(catalog_filename)
 
-        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
+        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
         dataset_catalog_loader = CSVLoader(
             self._config["datasets"]["url"],
             columns_to_keep=self._config["datasets"]["columns"],
@@ -54,7 +55,7 @@ class DataGouvSearcher:
             dataset_catalog_loader.load()
             .rename(columns={"id": "dataset_id"})
             .merge(
-                datagouv_ids_to_siren,
+                id_datagouvs_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
             )
@@ -68,13 +69,13 @@ class DataGouvSearcher:
         if catalog_metadata_filename.exists():
             return pd.read_parquet(catalog_metadata_filename)
 
-        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
+        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
         datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
         datasets_metadata = (
             datafile_catalog_loader.load()
             .rename(columns={"dataset.organization_id": "organization_id", "id": "metadata_id"})
             .merge(
-                datagouv_ids_to_siren,
+                id_datagouvs_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
             )
@@ -146,9 +147,9 @@ class DataGouvSearcher:
         """
         Select datasets based on metadata fetched from data.gouv organisation page.
         """
-        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
-        datagouv_ids_list = (
-            sorted(datagouv_ids_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
+        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
+        id_datagouvs_list = (
+            sorted(id_datagouvs_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
         )
 
         pattern_title = "|".join([x.lower() for x in title_filter])
@@ -161,7 +162,7 @@ class DataGouvSearcher:
                     DataGouvAPI.organisation_datasets(
                         orga, self._config["datagouv_api"]["organization_folder"]
                     )
-                    for orga in tqdm(datagouv_ids_list)
+                    for orga in tqdm(id_datagouvs_list)
                 ],
                 ignore_index=True,
             )
@@ -197,7 +198,7 @@ class DataGouvSearcher:
                 on="dataset_id",
             )
             .merge(
-                datagouv_ids_to_siren,
+                id_datagouvs_to_siren,
                 left_on="organization_id",
                 right_on="id_datagouv",
             )

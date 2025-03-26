@@ -65,7 +65,7 @@ class CommunitiesSelector:
 
         return (
             frame.merge(sirene, on="siren", how="left")
-            .pipe(lambda df: df[df["is_active"]])
+            .pipe(lambda df: df[df["is_active"].fillna(True)])
             .fillna({"tranche_effectif": 0})
             .assign(
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,

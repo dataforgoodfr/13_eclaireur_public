@@ -8,11 +8,10 @@ ofgl:
   combined_filename: back/tests/data/ofgl/ofgl.parquet
 
 communities:
-  processed_data:
-    data_folder: back/tests/data/communities/
-    combined_filename: back/tests/data/communities/communities.parquet
-    epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
-    odf_url: file:./back/scripts/datasets/odf.csv
+  data_folder: back/tests/data/communities/
+  combined_filename: back/tests/data/communities/communities.parquet
+  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
@@ -108,6 +107,7 @@ elected_officials:
 
 sirene:
   data_folder: back/tests/data/sirene
+  combined_filename: back/tests/data/sirene/sirene.parquet
   url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
 
 datagouv_api:

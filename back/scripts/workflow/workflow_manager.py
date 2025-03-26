@@ -37,13 +37,13 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        SireneWorkflow(self.config["sirene"]).run()
         OfglLoader.from_config(self.config["ofgl"]).run()
         CommunitiesSelector(self.config["communities"]).run()
         DataGouvCatalog(self.config["datagouv_catalog"]).run()
         MarchesPublicsWorkflow.from_config(self.config["marches_publics"]).run()
         FinancialAccounts(self.config["financial_accounts"]).run()
         ElectedOfficialsWorkflow(self.config["elected_officials"]).run()
-        SireneWorkflow(self.config["sirene"]).run()
         DeclaInteretWorkflow(self.config["declarations_interet"]).run()
         self._run_subvention_and_marche()
 

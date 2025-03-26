@@ -14,7 +14,7 @@ class SingleUrlsBuilder:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.scope = pd.read_parquet(
-            get_project_base_path() / project_config["communities_selector_file"]
+            get_project_base_path() / project_config["communities"]["combined_filename"]
         )
 
     def get_datafiles(self, search_config):
