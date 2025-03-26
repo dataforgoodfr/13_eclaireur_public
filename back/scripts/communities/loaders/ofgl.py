@@ -15,6 +15,8 @@ LOGGER = logging.getLogger(__name__)
 COM_CSV_DTYPES = {
     "Code Siren Collectivité": str,
     "Code Insee Collectivité": str,
+    "Code Insee 2023 Département": str,
+    "Code Insee 2023 Région": str,
 }
 READ_COLUMNS = {
     "Exercice": None,
@@ -23,6 +25,8 @@ READ_COLUMNS = {
     "Population totale": "population",
     "Code Insee Collectivité": "code_insee",
     "Code Siren Collectivité": "siren",
+    "Code Insee 2023 Département": "code_insee_dept",
+    "Code Insee 2023 Région": "code_insee_region",
 }
 
 
@@ -43,6 +47,7 @@ class OfglLoader(DatasetAggregator):
         opts = {"columns": READ_COLUMNS.keys(), "dtype": COM_CSV_DTYPES}
 
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
+
         df = (
             loader.load()
             .rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
@@ -50,6 +55,7 @@ class OfglLoader(DatasetAggregator):
             .assign(
                 type=file_metadata.code,
                 outre_mer=lambda df: (df["outre_mer"] == "Oui").fillna(False),
+                code_insee=lambda df: df[self.insee_column(file_metadata.code)],
             )
             .sort_values("exercice", ascending=False)
             .drop_duplicates(subset=["siren"], keep="first")
@@ -61,6 +67,14 @@ class OfglLoader(DatasetAggregator):
         )
         self.columns.to_csv(self.data_folder / "columns.csv")
         return df
+
+    def insee_column(self, code: str) -> str:
+        if code == "DEP":
+            return "code_insee_dept"
+        elif code == "REG":
+            return "code_insee_region"
+        else:
+            return "code_insee"
 
     def get(self):
         data_file = self.data_folder / self._config["processed_data"]["filename"]
