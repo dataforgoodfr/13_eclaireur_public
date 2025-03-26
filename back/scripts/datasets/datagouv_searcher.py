@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.dataframe_operation import (
     expand_json_columns,
     sort_by_format_priorities,
@@ -22,11 +22,13 @@ class DataGouvSearcher:
     It provides one public method get_datafiles(search_config, method) to build a list of datafiles based on title and description filters and column names filters.
     """
 
-    def __init__(self, communities_selector, datagouv_config):
+    def __init__(self, datagouv_config):
         self.logger = logging.getLogger(__name__)
 
         self._config = datagouv_config
-        self.scope = communities_selector
+        self.scope = pd.read_parquet(
+            get_project_base_path / project_config["communities"]["combined_filename"]
+        )
         self.data_folder = get_project_base_path() / self._config["paths"]["root"]
         self.organization_data_folder = (
             self.data_folder / self._config["paths"]["organization_datasets"]
@@ -43,7 +45,7 @@ class DataGouvSearcher:
         if catalog_filename.exists():
             return pd.read_parquet(catalog_filename)
 
-        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
         dataset_catalog_loader = CSVLoader(
             self._config["datasets"]["url"],
             columns_to_keep=self._config["datasets"]["columns"],
@@ -66,7 +68,7 @@ class DataGouvSearcher:
         if catalog_metadata_filename.exists():
             return pd.read_parquet(catalog_metadata_filename)
 
-        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
         datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
         datasets_metadata = (
             datafile_catalog_loader.load()
@@ -144,7 +146,7 @@ class DataGouvSearcher:
         """
         Select datasets based on metadata fetched from data.gouv organisation page.
         """
-        datagouv_ids_to_siren = self.scope.get_datagouv_ids_to_siren()
+        datagouv_ids_to_siren = self.scope[["siren", "datagouv_id"]]
         datagouv_ids_list = (
             sorted(datagouv_ids_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
         )
@@ -269,7 +271,7 @@ class DataGouvSearcher:
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
             .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
-            .merge(self.scope.selected_data[["siren", "nom", "type"]], on="siren", how="left")
+            .merge(self.scope[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
         )

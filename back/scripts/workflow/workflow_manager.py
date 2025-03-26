@@ -50,15 +50,10 @@ class WorkflowManager:
         self.logger.info("Workflow completed.")
 
     def _run_subvention_and_marche(self):
-        # If communities files are already generated, check the age
-        self.check_file_age(self.config["file_age_to_check"])
-
-        communities_selector = self.initialize_communities_scope()
-
         # Loop through the topics defined in the config, e.g. marches publics or subventions.
         for topic, topic_config in self.config["search"].items():
             # Process each topic to get files in scope and datafiles
-            self.process_topic(communities_selector, topic, topic_config)
+            self.process_topic(topic, topic_config)
 
     def check_file_age(self, config):
         """
@@ -80,16 +75,7 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def initialize_communities_scope(self):
-        self.logger.info("Initializing communities scope.")
-        # Initialize CommunitiesSelector with the config and select communities
-        config = self.config["communities"] | {"sirene": self.config["sirene"]}
-        communities_selector = CommunitiesSelector(config)
-
-        self.logger.info("Communities scope initialized.")
-        return communities_selector
-
-    def process_topic(self, communities_selector, topic, topic_config):
+    def process_topic(self, topic, topic_config):
         self.logger.info(f"Processing topic {topic}.")
         topic_files_in_scope = None
 
@@ -97,11 +83,11 @@ class WorkflowManager:
             # Find multiple datafiles from datagouv
             config = self.config["datagouv"]
             config["datagouv_api"] = self.config["datagouv_api"]
-            datagouv_searcher = DataGouvSearcher(communities_selector, config)
+            datagouv_searcher = DataGouvSearcher(config)
             datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
-            single_urls_builder = SingleUrlsBuilder(communities_selector)
+            single_urls_builder = SingleUrlsBuilder()
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
 
             # Concatenate both datafiles lists into one
