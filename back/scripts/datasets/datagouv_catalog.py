@@ -17,12 +17,12 @@ class DataGouvCatalog:
         self._config = config
         self.data_folder = Path(config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
-        self.filename = Path(config["combined_filename"])
-        self.filename.parent.mkdir(exist_ok=True, parents=True)
+        self.output_filename = Path(config["combined_filename"])
+        self.output_filename.parent.mkdir(exist_ok=True, parents=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self):
-        if self.filename.exists():
+        if self.output_filename.exists():
             return
 
         url = self._config.get("catalog_url") or self._catalog_url()
@@ -30,7 +30,7 @@ class DataGouvCatalog:
         df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
-        df.to_parquet(self.filename)
+        df.to_parquet(self.output_filename)
 
     def _catalog_url(self):
         """
