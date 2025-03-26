@@ -90,7 +90,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             return
 
         with open(raw_filename, "r", encoding="utf-8") as raw:
-            array_location = self.check_json_structure(raw_filename)
+            array_location = self.check_json_structure(raw_filename) + ".item"
 
             with open(interim_fn, "w") as interim:
                 # Ijson identifies each declaration individually
@@ -118,8 +118,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         without loading the entire file.
 
         Returns:
-        - 'direct': if data is in json_data['marches'] (list)
-        - 'nested': if data is in json_data['marches']['marche'] (list)
+        - parent path of the first list found (corresponding to the list of marches)
         - 'unknown': if neither structure is found
         """
 
