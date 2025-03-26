@@ -61,7 +61,8 @@ class CommunitiesSelector:
         sirene = pd.read_parquet(
             project_config["sirene"]["combined_filename"],
             columns=["siren", "naf8", "tranche_effectif", "raison_sociale"],
-        )
+        ).pipe(lambda df: df[df["naf8"].isin(["8411Z", "8710C", "3700Z", "8413Z"])])
+
         return (
             frame.merge(sirene, on="siren", how="left")
             .fillna({"tranche_effectif": 0})
