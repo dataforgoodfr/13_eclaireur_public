@@ -13,6 +13,7 @@ import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.utils.config import project_config
+from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -49,6 +50,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         ).pipe(lambda df: df[df["year"].notna() & ~df["year"].isin(all_years)])
 
         files = pd.concat([complete_years, monthly])
+        files = files.rename({"url": "dynamic_url"}).assign(
+            url=files["id"].apply(DataGouvAPI.get_stable_file_url)
+        )
         return cls(files, config)
 
     def __init__(self, files: pd.DataFrame, config: dict):
