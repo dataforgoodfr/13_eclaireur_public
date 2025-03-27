@@ -29,6 +29,23 @@ class CommunitiesSelector:
     _instance = None
     _init_done = False
 
+    @classmethod
+    def get_config_key() -> str:
+        return "communities"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        CommunitiesSelector._get_output_path_from_subconfig(main_config[cls.get_config_key()])
+
+    @staticmethod
+    def _get_output_path_from_subconfig(config: dict) -> Path:
+        processed_data = config["processed_data"]
+        return (
+            get_project_base_path()
+            / processed_data["path"]
+            / processed_data["all_communities_file"]
+        )
+
     # Singleton pattern
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -46,9 +63,7 @@ class CommunitiesSelector:
         data_folder = get_project_base_path() / self.config["processed_data"]["path"]
         data_folder.mkdir(parents=True, exist_ok=True)
 
-        all_communities_filename = (
-            data_folder / self.config["processed_data"]["all_communities_file"]
-        )
+        all_communities_filename = self._get_output_path_from_subconfig(config)
         if all_communities_filename.exists():
             self.all_data = pd.read_parquet(all_communities_filename)
         else:

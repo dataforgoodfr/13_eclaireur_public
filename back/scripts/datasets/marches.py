@@ -23,7 +23,11 @@ DATASET_ID = "5cd57bf68b4c4179299eb0e9"
 
 class MarchesPublicsWorkflow(DatasetAggregator):
     @classmethod
-    def from_config(cls, config: dict):
+    def get_config_key(cls) -> str:
+        return "marches_publics"
+
+    @classmethod
+    def from_config(cls, main_config: dict):
         """
         Fetch all aggregated datasets regardin public orders.
 
@@ -31,6 +35,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         and files containing only a month.
         We only select the monthly files if the year is not available on a yearly file.
         """
+        config = main_config[cls.get_config_key()]
         if config["test_urls"]:
             return cls(
                 pd.DataFrame.from_records([reduce(lambda x, y: x | y, config["test_urls"])]),
@@ -53,7 +58,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         files = files.rename({"url": "dynamic_url"}).assign(
             url=files["id"].apply(DataGouvAPI.get_stable_file_url)
         )
-        return cls(files, config)
+        return cls(files, main_config)
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)

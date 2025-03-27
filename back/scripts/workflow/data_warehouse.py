@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import polars as pl
-from polars import col
 from sqlalchemy import text
 
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
@@ -22,13 +21,21 @@ class DataWarehouseWorkflow:
         ).drop("raison_sociale_prenom")
 
         SubventionsEnricher.enrich_subventions(self._config, sirene)
-        self.send_to_db = {"subventions": self.warehouse_folder / "subventions.parquet"}  # temp hack
+        self.send_to_db = {
+            "subventions": self.warehouse_folder / "subventions.parquet"
+        }  # temp hack
         self._send_to_postgres()
 
     def _send_to_postgres(self):
         if not self._config["workflow"]["save_to_db"]:
             return
         connector = PSQLConnector()
+
+        step = "bla"
+        if step == "subventions_enricher":
+            producer = SubventionsEnricher
+        producer.get_output_path(self._config)
+
         # replace_tables determines wether we should clean
         # the table and reinsert with new schema
         # or keep the same schema.
@@ -47,4 +54,3 @@ class DataWarehouseWorkflow:
                         conn.execute(text(f"TRUNCATE {table_name}"))
 
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
-

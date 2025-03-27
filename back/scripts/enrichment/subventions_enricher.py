@@ -1,10 +1,20 @@
 import polars as pl
 from polars import col
 
-class SubventionsEnricher:
+from back.scripts.utils.config import get_project_base_path
 
+
+class SubventionsEnricher:
     def __init__(self):
         raise Exception("Utility class.")
+
+    @staticmethod
+    def get_output_path(main_config: dict) -> str:
+        return (
+            get_project_base_path()
+            / main_config["warehouse"]["data_folder"]
+            / "subventions.parquet"
+        )
 
     @staticmethod
     def enrich_subventions(config, sirene: pl.DataFrame):
@@ -50,5 +60,5 @@ class SubventionsEnricher:
             .drop("raison_sociale_beneficiaire")
         )
 
-        out_filename = config["warehouse"]["data_folder"] / "subventions.parquet"
+        out_filename = SubventionsEnricher.get_output_path(config)
         subventions.write_parquet(out_filename)

@@ -16,6 +16,7 @@ from back.scripts.utils.beautifulsoup_utils import (
     get_tag_int,
     get_tag_text,
 )
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -45,13 +46,25 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
 class DeclaInteretWorkflow:
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(config["data_folder"])
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "declarations_interet"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "elected_officials.parquet"
+        )
+
+    def __init__(self, main_config: dict):
+        self._config = main_config[self.get_config_key()]
+        self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
         self.input_filename = self.data_folder / "declarations.xml"
-        self.output_filename = self.data_folder / "declarations.parquet"
+        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:

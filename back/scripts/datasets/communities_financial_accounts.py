@@ -10,9 +10,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FinancialAccounts(DatasetAggregator):
-    def __init__(self, config: dict):
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "financial_accounts"
+
+    def __init__(self, main_config: dict):
+        config = main_config[self.get_config_key()]
         files = pd.read_csv(config["files_csv"], sep=";")
-        super().__init__(files, config)
+        super().__init__(files, main_config)
         self.columns = Counter()
         self.columns_mapping = pd.read_csv(config["columns_mapping"], sep=";").set_index("name")
 
