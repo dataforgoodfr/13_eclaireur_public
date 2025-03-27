@@ -8,7 +8,6 @@ ofgl:
   combined_filename: back/data/ofgl/ofgl.parquet
 
 communities:
-  data_folder: back/data/communities
   combined_filename: back/data/communities/communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
   odf_url: file:./back/scripts/datasets/odf.csv
@@ -125,6 +124,17 @@ outputs_csv:
 
 warehouse:
   data_folder: back/data/warehouse
+
+
+psql_export:
+  ignore_missing_files: false
+  steps:
+    - all_communities
+    - elected_officials
+    - declarations_interet
+    - financial_accounts
+    - subventions
+    - marches_publics
 
 logging:
   version: 1

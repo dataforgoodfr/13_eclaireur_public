@@ -36,12 +36,16 @@ READ_COLUMNS = {
 
 class OfglLoader(DatasetAggregator):
     @classmethod
-    def from_config(cls, config):
-        files = pd.read_csv(config["urls_csv"], sep=";")
-        return cls(files, config)
+    def get_config_key(cls):
+        return "ofgl"
 
-    def __init__(self, files: pd.DataFrame, config: dict):
-        super().__init__(files, config)
+    @classmethod
+    def from_config(cls, main_config):
+        files = pd.read_csv(main_config[cls.get_config_key()]["urls_csv"], sep=";")
+        return cls(files, main_config)
+
+    def __init__(self, files: pd.DataFrame, main_config: dict):
+        super().__init__(files, main_config)
         self.columns = pd.DataFrame()
 
     @tracker(ulogger=LOGGER, inputs=True)
