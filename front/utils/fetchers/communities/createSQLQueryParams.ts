@@ -9,7 +9,7 @@ export type CommunitiesOptions = {
   };
 };
 
-const TABLE_NAME = 'staging_communities';
+const TABLE_NAME = 'selected_communitiestest_indices';
 
 function stringifySelectors(options: CommunitiesOptions): string {
   const { selectors } = options;
