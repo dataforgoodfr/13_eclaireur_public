@@ -66,7 +66,7 @@ const FranceMap = () => {
           glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${apiKey}`,
         },
         center: [2.2137, 46.2276],
-        zoom: 4,
+        zoom: 5,
         maxZoom: 14,
       });
 
@@ -228,7 +228,7 @@ const FranceMap = () => {
     });
   }, []);
 
-  return <div ref={mapContainerRef} className='h-[600px] w-[600px] rounded-lg shadow-md' />;
+  return <div ref={mapContainerRef} className='h-[800px] w-[800px] rounded-lg shadow-md' />;
 };
 
 export default FranceMap;
