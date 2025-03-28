@@ -45,6 +45,21 @@ class TopicAggregator(DatasetAggregator):
         topic_config: dict,
         datafile_loader_config: dict,
     ):
+        self.topic = topic
+        self.topic_config = topic_config
+
+        super().__init__(files_in_scope, self.substitute_config(topic, datafile_loader_config))
+
+        self._load_schema(topic_config["schema"])
+        self._load_manual_column_rename()
+        self.extra_columns = Counter()
+
+    @classmethod
+    def get_config_key(cls):
+        return "topic_aggregator"
+
+    @classmethod
+    def substitute_config(cls, topic: str, datafile_loader_config: dict) -> dict:
         datafile_loader_config = copy.deepcopy(datafile_loader_config)
         formatting = {"topic": topic}
         datafile_loader_config["data_folder"] = (
@@ -53,15 +68,12 @@ class TopicAggregator(DatasetAggregator):
         datafile_loader_config["combined_filename"] = (
             datafile_loader_config["combined_filename"] % formatting
         )
+        return {cls.get_config_key(): datafile_loader_config}
 
-        self.topic = topic
-        self.topic_config = topic_config
-
-        super().__init__(files_in_scope, datafile_loader_config)
-
-        self._load_schema(topic_config["schema"])
-        self._load_manual_column_rename()
-        self.extra_columns = Counter()
+    @classmethod
+    # default value is a hack until we rename and simplify topic aggregator, as it's always processing subventions
+    def get_output_path(cls, main_config: dict, topic: str = "subventions") -> Path:
+        return Path(main_config[cls.get_config_key()]["combined_filename"] % {"topic": topic})
 
     def run(self):
         super().run()

@@ -7,6 +7,7 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -34,13 +35,25 @@ class SireneWorkflow:
     https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
     """
 
-    def __init__(self, config: dict):
-        self._config = config
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "sirene"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "sirene.parquet"
+        )
+
+    def __init__(self, main_config: dict):
+        self._config = main_config[self.get_config_key()]
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
         self.input_filename = self.data_folder / "sirene.zip"
-        self.output_filename = self.data_folder / "sirene.parquet"
+        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:

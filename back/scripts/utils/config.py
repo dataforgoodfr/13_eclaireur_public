@@ -7,6 +7,10 @@ def get_project_base_path():
     return current_directory
 
 
+def get_combined_filename(main_config: dict, config_key: str) -> Path:
+    return get_project_base_path() / main_config[config_key]["combined_filename"]
+
+
 def get_project_data_path():
     return get_project_base_path() / "back" / "data"
 

@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.utils.config import get_combined_filename
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -13,11 +14,19 @@ LOGGER = logging.getLogger(__name__)
 class DataGouvCatalog:
     DATASET_ID = "5d13a8b6634f41070a43dff3"
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(config["data_folder"])
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "datagouv_catalog"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return get_combined_filename(main_config, cls.get_config_key())
+
+    def __init__(self, main_config: dict):
+        self._config = main_config["datagouv_catalog"]
+        self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
-        self.output_filename = Path(config["combined_filename"])
+        self.output_filename = DataGouvCatalog.get_output_path(main_config)
         self.output_filename.parent.mkdir(exist_ok=True, parents=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
