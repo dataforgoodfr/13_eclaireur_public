@@ -1,7 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Map, { Layer, MapLayerMouseEvent, MapRef, Source, type ViewState } from 'react-map-gl/maplibre';
+import Map, {
+  Layer,
+  type MapLayerMouseEvent,
+  type MapRef,
+  Source,
+  type ViewState,
+} from 'react-map-gl/maplibre';
 
 import { useRouter } from 'next/navigation';
 
@@ -16,14 +22,26 @@ type AdminType = 'region' | 'departement' | 'commune';
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 
-const fetchAndMergeCommunityData = async () => {
+// Replace the fetchCommunesByCode function with this POST-based version
+const fetchCommunesByCode = async (communeCodes: string[]) => {
   try {
-    const res = await fetch('/api/adminData');
+    if (!communeCodes.length) return [];
+
+    // Use POST request with codes in the request body
+    const res = await fetch('/api/map_communes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ codes: communeCodes }),
+    });
+
     const data = await res.json();
-    return data;
+    console.log('Fetched communes data:', data.communes);
+    return data.communes || [];
   } catch (err) {
-    console.error('Failed to fetch admin data', err);
-    return null;
+    console.error('Failed to fetch communes data', err);
+    return [];
   }
 };
 
@@ -47,7 +65,12 @@ const mergeFeatureData = (
   } else if (feature.properties.level === 3) {
     featureId = feature.properties.code;
     const communeData = communes.find((c) => c.code === featureId);
-    if (communeData) mergedData = { ...feature.properties, ...communeData };
+    if (communeData) {
+      // console.log(`Merging commune data for ${featureId}:`, communeData)
+      mergedData = { ...feature.properties, ...communeData };
+    } else {
+      console.log(`No commune data found for code ${featureId}`);
+    }
   }
 
   feature.properties = { ...feature.properties, ...mergedData };
@@ -61,7 +84,25 @@ const FranceMap = () => {
   const departementsRef = useRef<Community[]>([]);
   const communesRef = useRef<Community[]>([]);
   const router = useRouter();
-  
+  // Track which commune codes we've already fetched
+  const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
+  const [mapReady, setMapReady] = useState(false);
+  console.log(mapReady);
+
+  useEffect(() => {
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    const onIdle = () => {
+      combineDatasets(mapInstance);
+    };
+
+    mapInstance.on('idle', onIdle);
+
+    return () => {
+      mapInstance.off('idle', onIdle);
+    };
+  }, [mapReady]);
 
   const [viewState, setViewState] = useState<Partial<ViewState>>({
     longitude: 2.2137,
@@ -77,37 +118,32 @@ const FranceMap = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { data: regionsData } = useCommunities({ filters: { type: 'REG', limit: 100 } });
-  const { data: departementsData } = useCommunities({ filters: { type: 'DEP', limit: 500 } });  
+  const { data: regionsData, isLoading: isLoadingRegions } = useCommunities({
+    filters: { type: 'REG', limit: 100 },
+  });
+  const { data: departementsData, isLoading: isLoadingDepartments } = useCommunities({
+    filters: { type: 'DEP', limit: 500 },
+  });
+
+  // UseMemo to persist the data
+  const memoizedRegions = useMemo(() => regionsData || [], [regionsData]);
+  const memoizedDepartements = useMemo(() => departementsData || [], [departementsData]);
+
+  // Manage loading state directly based on data loading states
 
   useEffect(() => {
-    if (regionsData) regionsRef.current = regionsData;
-    if (departementsData) departementsRef.current = departementsData;
-  }, [regionsData, departementsData]);
-
-  const [adminData, setAdminData] = useState<{
-    regions: Community[];
-    departements: Community[];
-    communes: Community[];
-  } | null>(null);
+    if (isLoadingRegions || isLoadingDepartments) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false); // Only set to false when both regions and departments are loaded
+    }
+  }, [isLoadingRegions, isLoadingDepartments]); // Trigger when either loading state changes
 
   useEffect(() => {
-    const loadAdminData = async () => {
-      const data = await fetchAndMergeCommunityData();
-      if (data) {
-        setAdminData(data);
-        regionsRef.current = [...(regionsRef.current || []), ...(data.regions || [])];
-        departementsRef.current = [
-          ...(departementsRef.current || []),
-          ...(data.departements || []),
-        ];
-        communesRef.current = [...(communesRef.current || []), ...(data.communes || [])];
-        setIsLoading(false);
-      }
-    };
-
-    loadAdminData();
-  }, []);
+    // Update refs only if the memoized data has changed
+    if (memoizedRegions.length > 0) regionsRef.current = memoizedRegions;
+    if (memoizedDepartements.length > 0) departementsRef.current = memoizedDepartements;
+  }, [memoizedRegions, memoizedDepartements]);
 
   const minimalistStyle = useMemo(
     () => ({
@@ -125,7 +161,8 @@ const FranceMap = () => {
     [MAPTILER_API_KEY],
   );
 
-  const checkTileStructure = (mapInstance: maplibregl.Map) => {
+  // This function now handles all data merging and fetching communes on demand
+  const combineDatasets = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
 
     const features = mapInstance.querySourceFeatures('statesData', {
@@ -133,19 +170,99 @@ const FranceMap = () => {
       filter: ['==', 'iso_a2', 'FR'],
     });
 
-    features.forEach((feature) => {
-      mergeFeatureData(feature, regionsRef.current, departementsRef.current, communesRef.current);
-      const population = parseInt(feature.properties.population) || 0;
-      mapInstance.setFeatureState(
-        { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-        { population },
-      );
-    });
+    const communesInViewport = features.length;
+
+    // Log the number of communes in viewport for debugging (optional)
+    console.log(`Found ${communesInViewport} features in viewport`);
+
+    // Only fetch communes if there are less than 5000 in the viewport
+    if (communesInViewport < 5000) {
+      // Collect commune codes that need to be fetched
+      const communeCodesToFetch: string[] = [];
+
+      features.forEach((feature) => {
+        // For regions and departments, use the existing data
+        if (feature.properties.level === 1 || feature.properties.level === 2) {
+          mergeFeatureData(
+            feature,
+            regionsRef.current,
+            departementsRef.current,
+            communesRef.current,
+          );
+          const population = Number.parseInt(feature.properties.population) || 0;
+          mapInstance.setFeatureState(
+            { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
+            { population },
+          );
+        }
+        // For communes, collect codes to fetch
+        else if (feature.properties.level === 3) {
+          const featureId = feature.properties.code;
+          // Check if we already have this commune in our cache or if we've already fetched it
+          const existingCommune = communesRef.current.find((c) => c.code === featureId);
+          if (!existingCommune && featureId && !fetchedCommuneCodes.has(featureId)) {
+            communeCodesToFetch.push(featureId);
+          }
+        }
+      });
+
+      console.log(`Need to fetch ${communeCodesToFetch.length} new communes`);
+
+      if (communeCodesToFetch.length > 0) {
+        setIsLoading(true);
+        const newCommunes = await fetchCommunesByCode(communeCodesToFetch);
+        console.log(`Received ${newCommunes.length} communes from API`);
+
+        // Add the new communes to our cache
+        if (newCommunes.length > 0) {
+          const processedCommunes = newCommunes.map((commune) => ({
+            ...commune,
+            code: commune.cog.toString(),
+          }));
+
+          communesRef.current = [...communesRef.current, ...processedCommunes];
+
+          // Update our set of fetched codes
+          setFetchedCommuneCodes((prev) => {
+            const newSet = new Set(prev);
+            communeCodesToFetch.forEach((code) => newSet.add(code));
+            return newSet;
+          });
+        } else {
+          setFetchedCommuneCodes((prev) => {
+            const newSet = new Set(prev);
+            communeCodesToFetch.forEach((code) => newSet.add(code));
+            return newSet;
+          });
+        }
+
+        // Now process all features again with the updated commune data
+        features.forEach((feature) => {
+          if (feature.properties.level === 3) {
+            mergeFeatureData(
+              feature,
+              regionsRef.current,
+              departementsRef.current,
+              communesRef.current,
+            );
+            const population = Number.parseInt(feature.properties.population) || 0;
+            mapInstance.setFeatureState(
+              { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
+              { population },
+            );
+          }
+        });
+
+        setIsLoading(false);
+      }
+    } else {
+      console.log('Too many communes in the viewport, skipping fetch.');
+    }
   };
 
   const debouncedQuery = useCallback(
     debounce((mapInstance: maplibregl.Map) => {
-      checkTileStructure(mapInstance);
+      combineDatasets(mapInstance);
     }, 300),
     [],
   );
@@ -271,10 +388,15 @@ const FranceMap = () => {
         attributionControl={false}
         onLoad={() => {
           const mapInstance = mapRef.current?.getMap();
-          if (mapInstance) {
-            checkTileStructure(mapInstance);
-            setIsLoading(false);
-          }
+          if (!mapInstance) return;
+
+          // Flag map as ready
+          setMapReady(true);
+
+          // Listen for idle to trigger merging
+          mapInstance.on('idle', () => {
+            combineDatasets(mapInstance);
+          });
         }}
       >
         <Source
