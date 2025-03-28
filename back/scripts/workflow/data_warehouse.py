@@ -16,9 +16,9 @@ class DataWarehouseWorkflow:
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
         self.send_to_db = {
-            "all_commnunities": CommunitiesEnricher.get_output_path(),
-            "marches_publics": MarchesPublicsEnricher.get_output_path(),
-            "subventions": SubventionsEnricher.get_output_path(),
+            "all_commnunities": CommunitiesEnricher.get_output_path(config),
+            "marches_publics": MarchesPublicsEnricher.get_output_path(config),
+            "subventions": SubventionsEnricher.get_output_path(config),
         }
 
     def run(self) -> None:
@@ -31,11 +31,6 @@ class DataWarehouseWorkflow:
         if not self._config["workflow"]["save_to_db"]:
             return
         connector = PSQLConnector()
-
-        step = "bla"
-        if step == "subventions_enricher":
-            producer = SubventionsEnricher
-        producer.get_output_path(self._config)
 
         # replace_tables determines wether we should clean
         # the table and reinsert with new schema

@@ -7,13 +7,18 @@ from back.scripts.enrichment.base_enricher import BaseEnricher
 
 class SubventionsEnricher(BaseEnricher):
     @classmethod
-    def get_dataset_name() -> str:
+    def get_dataset_name(cls) -> str:
         return "subventions"
 
     @classmethod
     def get_input_paths(cls, main_config: dict):
         return [
-            TopicAggregator.get_output_path(main_config, cls.get_dataset_name()),
+            TopicAggregator.get_output_path(
+                TopicAggregator.substitute_config(
+                    "subventions", main_config["datafile_loader"]
+                ),
+                cls.get_dataset_name(),
+            ),
             SireneWorkflow.get_output_path(main_config),
         ]
 
@@ -21,7 +26,7 @@ class SubventionsEnricher(BaseEnricher):
         raise Exception("Utility class.")
 
     @classmethod
-    def _clean_and_enrich(cls, config, inputs):
+    def _clean_and_enrich(cls, inputs):
         """
         Enrich the raw subvention dataset
         """
@@ -61,6 +66,4 @@ class SubventionsEnricher(BaseEnricher):
             )
             .drop("raison_sociale_beneficiaire")
         )
-
-        out_filename = cls.get_output_path(config)
-        subventions.write_parquet(out_filename)
+        return subventions

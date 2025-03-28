@@ -30,12 +30,12 @@ class CommunitiesSelector:
     _init_done = False
 
     @classmethod
-    def get_config_key() -> str:
+    def get_config_key(cls) -> str:
         return "communities"
 
     @classmethod
     def get_output_path(cls, main_config: dict) -> Path:
-        CommunitiesSelector._get_output_path_from_subconfig(main_config[cls.get_config_key()])
+        return cls._get_output_path_from_subconfig(main_config[cls.get_config_key()])
 
     @staticmethod
     def _get_output_path_from_subconfig(config: dict) -> Path:
