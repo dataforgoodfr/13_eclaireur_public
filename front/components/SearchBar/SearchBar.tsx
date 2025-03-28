@@ -2,13 +2,18 @@
 
 import { ChangeEvent, useState } from 'react';
 
+import { Community } from '@/app/models/community';
 import { debounce } from '@/utils/utils';
 import { Search } from 'lucide-react';
 
 import { Input } from '../ui/input';
 import Suggestions from './SearchSuggestions';
 
-export default function SearchBar() {
+type SearchBarProps = {
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+};
+
+export default function SearchBar({ onSelect }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
@@ -34,10 +39,12 @@ export default function SearchBar() {
           placeholder='Entrez une collectivité territoriale'
           onChange={handleInputChange}
           onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
+          onBlur={(e) => {
+            if (e.relatedTarget === null) handleOnBlur();
+          }}
         />
       </div>
-      {showSuggestions && <Suggestions query={query} />}
+      {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
     </div>
   );
 }

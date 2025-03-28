@@ -1,4 +1,10 @@
+import { Suspense } from 'react';
+
+import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+
+import { FicheHeader } from './components/FicheHeader/FicheHeader';
+import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
@@ -18,20 +24,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const community = await getCommunity(siren);
 
   return (
-    <div className='community-page'>
-      <h1>{community.nom}</h1>
-
-      <div className='community-details'>
-        <p>
-          <strong>SIREN:</strong> {community.siren}
-        </p>
-        <p>
-          <strong>Type:</strong> {community.type}
-        </p>
-        <p>
-          <strong>Population:</strong> {community.population.toLocaleString()} habitants
-        </p>
-      </div>
-    </div>
+    <Suspense key={community.siren} fallback={<Loading />}>
+      <FicheHeader community={community} />
+      <FicheIdentite community={community} />
+    </Suspense>
   );
 }

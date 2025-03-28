@@ -16,6 +16,10 @@ class DataGouvAPI:
         raise Exception("Utility class.")
 
     @staticmethod
+    def get_stable_file_url(file_id: str) -> str:
+        return f"https://www.data.gouv.fr/fr/datasets/r/{file_id}"
+
+    @staticmethod
     def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
         """
         Fetch information about all resources of a given dataset.
