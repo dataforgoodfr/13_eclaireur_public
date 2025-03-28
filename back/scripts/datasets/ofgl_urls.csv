@@ -1,0 +1,5 @@
+type;url;format;code
+regions;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-regions-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B;csv;REG
+departements;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-departements-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B;csv;DEP
+groupements_fiscalite_propre;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-gfp-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B;csv;MET
+communes;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-communes-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B;csv;COM  

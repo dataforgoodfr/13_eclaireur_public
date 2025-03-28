@@ -7,8 +7,8 @@ import pytest
 import responses
 
 from back.scripts.loaders.csv_loader import (
-    CSVLoader,
-)  # Assuming the class is in a file named csv_loader.py
+    CSVLoader,  # Assuming the class is in a file named csv_loader.py
+)
 
 
 class TestCSVLoader:
@@ -183,7 +183,7 @@ class TestCSVLoader:
         """Test loading only specific columns."""
         file_path = setup_temp_csv_files["comma.csv"]
 
-        loader = CSVLoader(file_path, columns_to_keep=["name", "city"])
+        loader = CSVLoader(file_path, columns=["name", "city"])
         df = loader.load()
 
         assert df is not None
