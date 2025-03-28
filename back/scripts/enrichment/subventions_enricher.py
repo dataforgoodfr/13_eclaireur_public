@@ -1,31 +1,33 @@
-import polars as pl
 from polars import col
 
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.datasets.sirene import SireneWorkflow
+from back.scripts.datasets.topic_aggregator import TopicAggregator
+from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
-class SubventionsEnricher:
+class SubventionsEnricher(BaseEnricher):
+    @classmethod
+    def get_dataset_name() -> str:
+        return "subventions"
+
+    @classmethod
+    def get_input_paths(cls, main_config: dict):
+        return [
+            TopicAggregator.get_output_path(main_config, cls.get_dataset_name()),
+            SireneWorkflow.get_output_path(main_config),
+        ]
+
     def __init__(self):
         raise Exception("Utility class.")
 
-    @staticmethod
-    def get_output_path(main_config: dict) -> str:
-        return (
-            get_project_base_path()
-            / main_config["warehouse"]["data_folder"]
-            / "subventions.parquet"
-        )
-
-    @staticmethod
-    def enrich_subventions(config, sirene: pl.DataFrame):
+    @classmethod
+    def _clean_and_enrich(cls, config, inputs):
         """
         Enrich the raw subvention dataset
         """
+        subventions, sirene = inputs
         subventions = (
-            pl.read_parquet(
-                config["datafile_loader"]["combined_filename"] % {"topic": "subventions"}
-            )
-            .with_columns(
+            subventions.with_columns(
                 # Transform idAttribuant from siret to siren.
                 # Data should already be normalized to 15 caracters.
                 col("idAttribuant").str.slice(0, 9).alias("idAttribuant"),
@@ -60,5 +62,5 @@ class SubventionsEnricher:
             .drop("raison_sociale_beneficiaire")
         )
 
-        out_filename = SubventionsEnricher.get_output_path(config)
+        out_filename = cls.get_output_path(config)
         subventions.write_parquet(out_filename)

@@ -63,6 +63,10 @@ class TopicAggregator(DatasetAggregator):
         self._load_manual_column_rename()
         self.extra_columns = Counter()
 
+    @classmethod
+    def get_output_path(cls, main_config: dict, topic: str) -> Path:
+        return main_config["datafile_loader"]["combined_filename"] % {"topic": str}
+
     def run(self):
         super().run()
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
