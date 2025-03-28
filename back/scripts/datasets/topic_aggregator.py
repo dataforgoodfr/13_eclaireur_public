@@ -14,7 +14,7 @@ from back.scripts.datasets.constants import (
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
     normalize_column_names,
@@ -42,7 +42,6 @@ class TopicAggregator(DatasetAggregator):
         self,
         files_in_scope: pd.DataFrame,
         topic: str,
-        topic_config: dict,
         datafile_loader_config: dict,
     ):
         datafile_loader_config = copy.deepcopy(datafile_loader_config)
@@ -55,18 +54,24 @@ class TopicAggregator(DatasetAggregator):
         )
 
         self.topic = topic
-        self.topic_config = topic_config
+        self.topic_config = project_config["search"][topic]
 
         super().__init__(files_in_scope, datafile_loader_config)
 
-        self._load_schema(topic_config["schema"])
+        self._load_schema(self.topic_config["schema"])
         self._load_manual_column_rename()
         self.extra_columns = Counter()
+        self.missing_data = []
 
     def run(self):
         super().run()
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
             self.data_folder / "extra_columns.csv"
+        )
+
+    def _post_process(self):
+        pd.DataFrame.from_records(self.missing_data).to_parquet(
+            self.data_folder / "missing_data.parquet"
         )
 
     def _load_schema(self, schema_topic_config):
