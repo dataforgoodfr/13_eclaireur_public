@@ -6,13 +6,12 @@ from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class MarchesPublicsEnricher(BaseEnricher):
-
     def __init__(self):
         raise Exception("Utility class.")
 
     @classmethod
     def get_dataset_name() -> str:
-       return "marches_publics"
+        return "marches_publics"
 
     @classmethod
     def get_input_paths(cls, main_config: dict):

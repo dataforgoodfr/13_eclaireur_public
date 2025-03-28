@@ -3,6 +3,8 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
+from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
+from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.utils.psql_connector import PSQLConnector
 
@@ -13,17 +15,16 @@ class DataWarehouseWorkflow:
         self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
-        self.send_to_db = {}
+        self.send_to_db = {
+            "all_commnunities": CommunitiesEnricher.get_output_path(),
+            "marches_publics": MarchesPublicsEnricher.get_output_path(),
+            "subventions": SubventionsEnricher.get_output_path(),
+        }
 
     def run(self) -> None:
-        sirene = pl.read_parquet(
-            Path(self._config["sirene"]["data_folder"]) / "sirene.parquet"
-        ).drop("raison_sociale_prenom")
-
-        SubventionsEnricher.enrich_subventions(self._config, sirene)
-        self.send_to_db = {
-            "subventions": self.warehouse_folder / "subventions.parquet"
-        }  # temp hack
+        CommunitiesEnricher.enrich(self._config)
+        SubventionsEnricher.enrich(self._config)
+        MarchesPublicsEnricher.enrich(self._config)
         self._send_to_postgres()
 
     def _send_to_postgres(self):
