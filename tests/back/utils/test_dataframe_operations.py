@@ -49,6 +49,13 @@ class TestNormalizeBeneficiaireIdentifiant:
         )
         pd.testing.assert_frame_equal(expected_df, normalize_identifiant(df, "idBeneficiaire"))
 
+    def test_siren_format(self):
+        df = pd.DataFrame({"idBeneficiaire": ["123456789", "123456789", "12345678"]})
+        expected_df = pd.DataFrame({"idBeneficiaire": ["123456789", "123456789", "012345678"]})
+        pd.testing.assert_frame_equal(
+            expected_df, normalize_identifiant(df, "idBeneficiaire", format="siren")
+        )
+
     def test_siret(self):
         df = pd.DataFrame(
             {"idBeneficiaire": ["01234567890001", "01234567890001", "1234567890001"]}
@@ -67,6 +74,11 @@ class TestNormalizeBeneficiaireIdentifiant:
         )
         expected_df = pd.DataFrame({"idBeneficiaire": ["01234567890001"] * 3})
         pd.testing.assert_frame_equal(expected_df, normalize_identifiant(df, "idBeneficiaire"))
+
+    def test_invalid_format(self):
+        df = pd.DataFrame({"idBeneficiaire": ["123456789"]})
+        with pytest.raises(RuntimeError, match="Format must be either siren or siret"):
+            normalize_identifiant(df, "idBeneficiaire", format="invalid")
 
 
 class TestExpandJsonColumns:
