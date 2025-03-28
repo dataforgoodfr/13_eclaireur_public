@@ -6,7 +6,7 @@ import pandas as pd
 
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_project_base_path, project_config
-from back.scripts.utils.dataframe_operation import normalize_identifiant
+from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
 
@@ -91,8 +91,8 @@ class CommunitiesSelector:
             )
             .load()
             .rename(columns={"siren": "siren_epci", "siren_membre": "siren"})
-            .pipe(normalize_identifiant, id_col="siren_epci", format="siren")
-            .pipe(normalize_identifiant, id_col="siren", format="siren")
+            .pipe(normalize_identifiant, id_col="siren_epci", format=IdentifierFormat.SIREN)
+            .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         )
         return frame.merge(epci_mapping, on="siren", how="left")
 
