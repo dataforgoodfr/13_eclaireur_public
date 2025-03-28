@@ -21,7 +21,7 @@ def _sha256(s):
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
-class BaseDatasetAggregator:
+class DatasetAggregator:
     """
     Base class for multiple dataset aggregation functionality.
 
@@ -47,8 +47,6 @@ class BaseDatasetAggregator:
     respectively as "data_folder" and "combined_filename".
     """
 
-
-class DatasetAggregator:
     def __init__(self, files: pd.DataFrame, config: dict):
         self._config = config
 
@@ -108,6 +106,7 @@ class DatasetAggregator:
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
             self.errors[str(e)].append(file_metadata.url)
+        LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
     def _dataset_filename(self, file_metadata: tuple, step: str):
         """
