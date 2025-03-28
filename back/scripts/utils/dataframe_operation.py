@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from enum import Enum
 
 import numpy as np
 import pandas as pd
@@ -16,6 +17,11 @@ This script contains functions to manipulate DataFrames.
 4 - Detecting the first row index where the data starts
 5 - Detecting the first column index where the data starts
 """
+
+
+class IdentifierFormat(Enum):
+    SIREN = "siren"
+    SIRET = "siret"
 
 
 def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.DataFrame:
@@ -213,13 +219,26 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
 
 
 def normalize_identifiant(
-    frame: pd.DataFrame, id_col: str, format: str = "siret"
+    frame: pd.DataFrame, id_col: str, format: IdentifierFormat = IdentifierFormat.SIRET
 ) -> pd.DataFrame:
     """
-    Ensure that the selected column can be interpreted as a string siret.
+    Normalize identifier values in the specified column to either SIREN (9 digits) or SIRET (14 digits) format.
+
+    Args:
+        frame: Input DataFrame containing the identifier column
+        id_col: Name of the column containing identifiers
+        format: Target format for normalization (SIREN or SIRET)
+
+    Returns:
+        DataFrame with normalized identifiers
+
+    Raises:
+        RuntimeError: If the median length of identifiers is neither 9 (SIREN) nor 14 (SIRET)
     """
-    if format not in ("siren", "siret"):
-        raise RuntimeError(f"Format must be either siren or siret. Provided : {format}")
+    if not isinstance(format, IdentifierFormat):
+        raise RuntimeError(
+            f"Format must be an IdentifierFormat enum value. Got: {type(format)}"
+        )
 
     if id_col not in frame.columns:
         return frame
@@ -234,7 +253,7 @@ def normalize_identifiant(
         }
     )
 
-    filling = 14 if format == "siret" else 9
+    filling = 14 if format == IdentifierFormat.SIRET else 9
     median_length = frame[id_col].str.len().median()
     if median_length == 9:
         # identifier is actually siren
