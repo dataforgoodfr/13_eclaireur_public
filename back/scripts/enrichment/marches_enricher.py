@@ -10,7 +10,7 @@ class MarchesPublicsEnricher(BaseEnricher):
         raise Exception("Utility class.")
 
     @classmethod
-    def get_dataset_name() -> str:
+    def get_dataset_name(cls) -> str:
         return "marches_publics"
 
     @classmethod

@@ -22,12 +22,12 @@ class CommunitiesSelector:
     """
 
     @classmethod
-    def get_config_key() -> str:
+    def get_config_key(cls) -> str:
         return "communities"
 
     @classmethod
     def get_output_path(cls, main_config: dict) -> Path:
-        get_combined_filename(main_config[cls.get_config_key()])
+        return get_combined_filename(main_config, cls.get_config_key())
 
     def __init__(self, main_config):
         self.main_config = main_config

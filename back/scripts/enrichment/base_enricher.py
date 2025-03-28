@@ -1,7 +1,7 @@
 from pathlib import Path
 import typing
 
-import pandas as pd
+import polars as pl
 from back.scripts.utils.config import get_project_base_path
 
 
@@ -9,7 +9,7 @@ class BaseEnricher:
     """Designed to be subclassed, subclasses must override get_dataset_name and get_input_paths and _clean_and_enrich."""
 
     @classmethod
-    def get_dataset_name() -> str:
+    def get_dataset_name(cls) -> str:
         raise NotImplementedError("Method must be overriden")
 
     @classmethod
@@ -30,6 +30,6 @@ class BaseEnricher:
 
     @classmethod
     def enrich(cls, main_config: dict) -> None:
-        inputs = map(pd.read_parquet, cls.get_input_paths())
+        inputs = map(pl.read_parquet, cls.get_input_paths(main_config))
         output = cls._clean_and_enrich(inputs)
-        output.to_parque(cls.get_output_path(main_config))
+        output.write_parquet(cls.get_output_path(main_config))
