@@ -1,4 +1,4 @@
-import FranceMap from "@/components/open-tiles";
+import FranceMap from '@/components/Map/open-tiles';
 
 export default function Home() {
   return (

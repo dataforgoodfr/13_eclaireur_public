@@ -16,5 +16,5 @@ export type Community = {
   nom_elu: string;
   region?: { code: string; nom: string };
   departement?: { code: string; nom: string };
-  code: string
+  code: string;
 };
