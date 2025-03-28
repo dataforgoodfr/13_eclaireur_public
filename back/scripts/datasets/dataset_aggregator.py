@@ -55,14 +55,14 @@ class DatasetAggregator:
     def get_output_path(cls, main_config: dict) -> Path:
         return get_combined_filename(main_config, cls.get_config_key())
 
-    def __init__(self, files: pd.DataFrame, main_config: dict, config_key: str):
-        self._config = main_config[config_key]
+    def __init__(self, files: pd.DataFrame, main_config: dict):
+        self._config = main_config[self.get_config_key()]
 
         self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
 
         self.data_folder = get_project_base_path() / self._config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.output_filename = DatasetAggregator.get_output_path(main_config, config_key)
+        self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
 

@@ -57,15 +57,25 @@ class TopicAggregator(DatasetAggregator):
         self.topic = topic
         self.topic_config = topic_config
 
-        super().__init__(files_in_scope, datafile_loader_config)
+        super().__init__(files_in_scope, {"datafile_loader": datafile_loader_config})
 
         self._load_schema(topic_config["schema"])
         self._load_manual_column_rename()
         self.extra_columns = Counter()
 
     @classmethod
+    def get_config_key(cls):
+        return "topic_aggregator"
+
+    @classmethod
     def get_output_path(cls, main_config: dict, topic: str) -> Path:
-        return main_config["datafile_loader"]["combined_filename"] % {"topic": str}
+        # hack until we rename and simplify topic aggregator, as it's always processing subventions
+        return main_config["datafile_loader"]["combined_filename"] % {"topic": topic}
+
+    @classmethod
+    # hack until we rename and simplify topic aggregator, as it's always processing subventions
+    def get_output_path(cls, main_config: dict, topic: str="subventions") -> Path:
+        return main_config["datafile_loader"]["combined_filename"] % {"topic": topic}
 
     def run(self):
         super().run()
