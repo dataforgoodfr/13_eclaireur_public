@@ -23,7 +23,7 @@ class DataGouvCatalog:
         return get_combined_filename(main_config, cls.get_config_key())
 
     def __init__(self, main_config: dict):
-        self._config = main_config[""]
+        self._config = main_config["datagouv_catalog"]
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
         self.output_filename = DataGouvCatalog.get_output_path(main_config)

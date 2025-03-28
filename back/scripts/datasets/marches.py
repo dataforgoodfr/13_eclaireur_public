@@ -39,7 +39,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if config["test_urls"]:
             return cls(
                 pd.DataFrame.from_records([reduce(lambda x, y: x | y, config["test_urls"])]),
-                config,
+                main_config,
             )
 
         catalog = pd.read_parquet(project_config["datagouv_catalog"]["combined_filename"]).pipe(
@@ -62,7 +62,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)
-        self._load_schema(config["schema"])
+        self._load_schema(config[self.get_config_key()]["schema"])
 
     def _load_schema(self, url):
         schema_filename = self.data_folder / "official_schema.parquet"
