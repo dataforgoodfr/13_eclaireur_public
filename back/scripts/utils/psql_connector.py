@@ -18,7 +18,7 @@ class PSQLConnector:
         self.user = os.getenv("DB_USER", "eclaireur_public")
         self.password = os.getenv("DB_PASSWORD", "secret")
         self.host = os.getenv("DB_HOST", "localhost")
-        self.port = os.getenv("DB_PORT", "5432")
+        self.port = os.getenv("DB_PORT", "5436")
         self.engine = None
         self._connect()
 
