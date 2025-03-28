@@ -1,13 +1,11 @@
 export async function GET() {
   try {
-    const [regions, departements, communes] = await Promise.all([
-      fetch('https://geo.api.gouv.fr/regions').then((res) => res.json()),
-      fetch('https://geo.api.gouv.fr/departements').then((res) => res.json()),
+    const [communes] = await Promise.all([
       fetch(
         'https://geo.api.gouv.fr/communes?fields=nom,code,population,departement,region,siren',
       ).then((res) => res.json()),
     ]);
-    return new Response(JSON.stringify({ regions, departements, communes }), {
+    return new Response(JSON.stringify({ communes }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
