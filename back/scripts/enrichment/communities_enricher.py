@@ -7,13 +7,12 @@ from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class CommunitiesEnricher(BaseEnricher):
-
     def __init__(self):
         raise Exception("Utility class.")
 
     @classmethod
     def get_dataset_name() -> str:
-       return "communities"
+        return "communities"
 
     @classmethod
     def get_input_paths(cls, main_config: dict):

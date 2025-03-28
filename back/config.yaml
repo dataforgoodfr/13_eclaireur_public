@@ -125,17 +125,6 @@ outputs_csv:
 warehouse:
   data_folder: back/data/warehouse
 
-
-psql_export:
-  ignore_missing_files: false
-  steps:
-    - all_communities
-    - elected_officials
-    - declarations_interet
-    - financial_accounts
-    - subventions
-    - marches_publics
-
 logging:
   version: 1
   formatters:
