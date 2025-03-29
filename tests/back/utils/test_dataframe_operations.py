@@ -141,9 +141,9 @@ class TestExpandJsonColumns:
 @pytest.mark.parametrize(
     "input_value,expected_output",
     [
-        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
         ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
         (None, None),
         ("", None),
