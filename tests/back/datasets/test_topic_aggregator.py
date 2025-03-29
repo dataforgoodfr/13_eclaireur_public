@@ -33,6 +33,55 @@ class TestTopicAggregator:
     def teardown_method(self):
         self.path.cleanup()
 
+    def test_perfect_file(self):
+        inp = pd.DataFrame(
+            {
+                "nomAttribuant": "Métropole de Lyon (Budget principal)",
+                "idAttribuant": "20004697700019",
+                "dateConvention": "2023-11-09",
+                "nomBeneficiaire": ["124 SERVICES", "WHATEVER"],
+                "idBeneficiaire": ["47785695900010", "47787695900010"],
+                "objet": "124 SERVICES_GSUP 2022_LYON_SOLDE_SM",
+                "montant": [4500, 120],
+                "nature": "aide en numéraire",
+                "conditionsVersement": "unique",
+                "datesPeriodeVersement": "2023-11-09",
+                "idRAE": None,
+                "notificationUE": "non",
+                "pourcentageSubvention": 1,
+            }
+        )
+        inp.to_csv(self.raw_filename, index=False)
+        aggregator = TopicAggregator(
+            files_in_scope=self.files_in_scope,
+            topic="test_topic",
+            topic_config=self.topic_config,
+            datafile_loader_config=self.config,
+        )
+        aggregator.run()
+        out = pd.read_parquet(self.config["combined_filename"])
+        expected = pd.DataFrame(
+            {
+                "nomAttribuant": "Métropole de Lyon (Budget principal)",
+                "idAttribuant": "20004697700019",
+                "dateConvention": pd.to_datetime("2023-11-09", utc=True),
+                "nomBeneficiaire": "124 SERVICES",
+                "idBeneficiaire": ["47785695900010", "47785695900010"],
+                "objet": "124 SERVICES_GSUP 2022_LYON_SOLDE_SM",
+                "montant": [4500, 120],
+                "nature": "aide en numéraire",
+                "conditionsVersement": "unique",
+                "datesPeriodeVersement": "2023-11-09",
+                "idRAE": None,
+                "notificationUE": "non",
+                "pourcentageSubvention": 1,
+                "topic": "test_topic",
+                "url": "file:" + str(self.raw_filename),
+                "coll_type": "COM",
+            }
+        )
+        pd.testing.assert_frame_equal(out, expected)
+
     def test_minimal_benef_only(
         self,
     ):
@@ -54,7 +103,6 @@ class TestTopicAggregator:
         aggregator.run()
 
         out = pd.read_parquet(self.config["combined_filename"])
-        print(out)
         expected = pd.DataFrame(
             {
                 "nomBeneficiaire": ["A", "B"],
