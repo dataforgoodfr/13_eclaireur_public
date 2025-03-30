@@ -20,6 +20,7 @@ class TestCSVLoader:
     EMPTY_FIRST_LINE_CSV = (
         "\nname,age,city\n,30,New York\nJohn,25,Los Angeles\nPeter,45,Chicago"
     )
+    WINDOWS_NEW_LINES = "name;age;city\r;30;New York\r\nJohn;25;Los Angeles\r\nPeter;45;Chicago"
 
     # CSV with different encoding
     UTF8_CSV = "name,age,city\nJosé,30,São Paulo\nMarie,25,Köln\nPierre,45,Montréal"
@@ -44,6 +45,7 @@ class TestCSVLoader:
                 "utf8.csv": self.UTF8_CSV,
                 "bad.csv": self.BAD_CSV,
                 "empty_first_line.csv": self.EMPTY_FIRST_LINE_CSV,
+                "windows_newlines.csv": self.WINDOWS_NEW_LINES,
             }
 
             for filename, data in files_data.items():
@@ -209,6 +211,20 @@ class TestCSVLoader:
 
     def test_open_csv_with_empty_first_line(self, setup_temp_csv_files):
         file_path = setup_temp_csv_files["empty_first_line.csv"]
+
+        loader = CSVLoader(file_path, dtype={"age": str})
+        df = loader.load()
+        expected = pd.DataFrame(
+            {
+                "name": [None, "John", "Peter"],
+                "age": ["30", "25", "45"],
+                "city": ["New York", "Los Angeles", "Chicago"],
+            }
+        )
+        pd.testing.assert_frame_equal(df, expected)
+
+    def test_windows_newlines(self, setup_temp_csv_files):
+        file_path = setup_temp_csv_files["windows_newlines.csv"]
 
         loader = CSVLoader(file_path, dtype={"age": str})
         df = loader.load()
