@@ -17,6 +17,9 @@ class TestCSVLoader:
     SEMICOLON_CSV = "name;age;city\nJohn;30;New York\nAnna;25;Los Angeles\nPeter;45;Chicago"
     TAB_CSV = "name\tage\tcity\nJohn\t30\tNew York\nAnna\t25\tLos Angeles\nPeter\t45\tChicago"
     PIPE_CSV = "name|age|city\nJohn|30|New York\nAnna|25|Los Angeles\nPeter|45|Chicago"
+    EMPTY_FIRST_LINE_CSV = (
+        "\nname,age,city\n,30,New York\nJohn,25,Los Angeles\nPeter,45,Chicago"
+    )
 
     # CSV with different encoding
     UTF8_CSV = "name,age,city\nJosé,30,São Paulo\nMarie,25,Köln\nPierre,45,Montréal"
@@ -40,6 +43,7 @@ class TestCSVLoader:
                 "pipe.csv": self.PIPE_CSV,
                 "utf8.csv": self.UTF8_CSV,
                 "bad.csv": self.BAD_CSV,
+                "empty_first_line.csv": self.EMPTY_FIRST_LINE_CSV,
             }
 
             for filename, data in files_data.items():
@@ -202,6 +206,20 @@ class TestCSVLoader:
         assert df is not None
         assert isinstance(df, pd.DataFrame)
         assert df["age"].dtype == object  # str columns are object dtype in pandas
+
+    def test_open_csv_with_empty_first_line(self, setup_temp_csv_files):
+        file_path = setup_temp_csv_files["empty_first_line.csv"]
+
+        loader = CSVLoader(file_path, dtype={"age": str})
+        df = loader.load()
+        expected = pd.DataFrame(
+            {
+                "name": [None, "John", "Peter"],
+                "age": ["30", "25", "45"],
+                "city": ["New York", "Los Angeles", "Chicago"],
+            }
+        )
+        pd.testing.assert_frame_equal(df, expected)
 
     def test_bad_csv(self, setup_temp_csv_files):
         """Test loading a CSV with inconsistent columns."""
