@@ -87,22 +87,10 @@ const FranceMap = () => {
   // Track which commune codes we've already fetched
   const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
   const [mapReady, setMapReady] = useState(false);
-  console.log(mapReady);
-
-  useEffect(() => {
-    const mapInstance = mapRef.current?.getMap();
-    if (!mapInstance) return;
-
-    const onIdle = () => {
-      combineDatasets(mapInstance);
-    };
-
-    mapInstance.on('idle', onIdle);
-
-    return () => {
-      mapInstance.off('idle', onIdle);
-    };
-  }, [mapReady]);
+  
+  // Track if we've already processed regions and departments
+  const [regionsProcessed, setRegionsProcessed] = useState(false);
+  const [departementsProcessed, setDepartementsProcessed] = useState(false);
 
   const [viewState, setViewState] = useState<Partial<ViewState>>({
     longitude: 2.2137,
@@ -130,7 +118,7 @@ const FranceMap = () => {
   const memoizedDepartements = useMemo(() => departementsData || [], [departementsData]);
 
   // Manage loading state directly based on data loading states
-
+  
   useEffect(() => {
     if (isLoadingRegions || isLoadingDepartments) {
       setIsLoading(true);
@@ -144,6 +132,80 @@ const FranceMap = () => {
     if (memoizedRegions.length > 0) regionsRef.current = memoizedRegions;
     if (memoizedDepartements.length > 0) departementsRef.current = memoizedDepartements;
   }, [memoizedRegions, memoizedDepartements]);
+
+  useEffect(() => {
+    // Update refs only if the memoized data has changed
+    if (memoizedRegions.length > 0) regionsRef.current = memoizedRegions;
+    if (memoizedDepartements.length > 0) departementsRef.current = memoizedDepartements;
+  }, [memoizedRegions, memoizedDepartements]);
+
+  // Process regions and departments when the map is ready and data is loaded
+  useEffect(() => {
+    if (!mapReady || isLoadingRegions || isLoadingDepartments) return;
+
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    // Process regions if not already processed
+    if (!regionsProcessed && regionsRef.current.length > 0) {
+      processRegions(mapInstance);
+    }
+
+    // Process departments if not already processed
+    if (!departementsProcessed && departementsRef.current.length > 0) {
+      processDepartments(mapInstance);
+    }
+  }, [mapReady, isLoadingRegions, isLoadingDepartments, regionsProcessed, departementsProcessed]);
+
+  const processRegions = (mapInstance: maplibregl.Map) => {
+    console.log('Processing regions...');
+    const regionFeatures = mapInstance.querySourceFeatures('statesData', {
+      sourceLayer: 'administrative',
+      filter: ['all', ['==', 'level', 1], ['==', 'level_0', 'FR']],
+    });
+
+    if (regionFeatures.length === 0) {
+      // If no features found, try again later
+      setTimeout(() => processRegions(mapInstance), 500);
+      return;
+    }
+
+    regionFeatures.forEach((feature) => {
+      mergeFeatureData(feature, regionsRef.current, [], []);
+      const population = Number.parseInt(feature.properties.population) || 0;
+      mapInstance.setFeatureState(
+        { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
+        { population },
+      );
+    });
+
+    setRegionsProcessed(true);
+    console.log('Regions processed successfully');
+  };
+
+  const processDepartments = (mapInstance: maplibregl.Map) => {
+    console.log('Processing departments...');
+    const departmentFeatures = mapInstance.querySourceFeatures('statesData', {
+      sourceLayer: 'administrative',
+      filter: ['all', ['==', 'level', 2], ['==', 'level_0', 'FR']],
+    });
+    if (departmentFeatures.length === 0) {
+      // If no features found, try again later
+      setTimeout(() => processDepartments(mapInstance), 500);
+      return;
+    }
+    departmentFeatures.forEach((feature) => {
+      mergeFeatureData(feature, [], departementsRef.current, []);
+      const population = Number.parseInt(feature.properties.population) || 0;
+      mapInstance.setFeatureState(
+        { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
+        { population },
+      );
+    });
+
+    setDepartementsProcessed(true);
+    console.log('Departments processed successfully');
+  };
 
   const minimalistStyle = useMemo(
     () => ({
@@ -215,7 +277,7 @@ const FranceMap = () => {
 
         // Add the new communes to our cache
         if (newCommunes.length > 0) {
-          const processedCommunes = newCommunes.map((commune) => ({
+          const processedCommunes = newCommunes.map((commune: Community) => ({
             ...commune,
             code: commune.cog.toString(),
           }));
@@ -325,14 +387,17 @@ const FranceMap = () => {
   const renderTooltip = () => {
     if (!hoverInfo) return null;
 
-    const { feature, type, x, y } = hoverInfo;
+    const { feature, type, x,  y } = hoverInfo;
+    console.log(feature)
     const props = feature.properties;
-    const code = props.code?.toString() || props.insee || props.code_commune;
+    const code = props.code?.toString()
     let data;
-
     if (type === 'commune') data = communesRef.current.find((c) => c.code === code);
     else if (type === 'departement')
-      data = departementsRef.current.find((d) => d.code === code || d.nom === props.name);
+
+    data = departementsRef.current.find((d) => d.cog === code || d.nom === props.name);
+    // check code bah rhin is alsace 
+    // haut rhin is alsace
     else data = regionsRef.current.find((r) => r.code === code || r.nom === props.name);
 
     if (!data) {
@@ -387,16 +452,11 @@ const FranceMap = () => {
         onClick={onClick}
         attributionControl={false}
         onLoad={() => {
-          const mapInstance = mapRef.current?.getMap();
-          if (!mapInstance) return;
-
-          // Flag map as ready
           setMapReady(true);
 
-          // Listen for idle to trigger merging
-          mapInstance.on('idle', () => {
-            combineDatasets(mapInstance);
-          });
+          // Reset processed flags when navigating back to the page
+          setRegionsProcessed(false);
+          setDepartementsProcessed(false);
         }}
       >
         <Source
@@ -413,24 +473,24 @@ const FranceMap = () => {
             maxzoom={6}
             filter={['all', ['==', 'level', 1], ['==', 'level_0', 'FR']]}
             paint={{
-              "fill-color": [
-                "case",
-                ["==", ["feature-state", "population"], null],
-                "#f2f0f7", // Default to red when population is null/not loaded
+              'fill-color': [
+                'case',
+                ['==', ['feature-state', 'population'], null],
+                '#f2f0f7', // Default to red when population is null/not loaded
                 [
-                  "interpolate",
-                  ["linear"],
-                  ["feature-state", "population"], // Use population from feature state
+                  'interpolate',
+                  ['linear'],
+                  ['feature-state', 'population'], // Use population from feature state
                   0,
-                  "#f2f0f7", // Low population color
+                  '#f2f0f7', // Low population color
                   1000000,
-                  "#9e9ac8",
+                  '#9e9ac8',
                   10000000,
-                  "#6a51a3", // High population color
+                  '#6a51a3', // High population color
                 ],
               ],
-              "fill-opacity": 0.85,
-              "fill-outline-color": "#000",
+              'fill-opacity': 0.85,
+              'fill-outline-color': '#000',
             }}
           />
 
