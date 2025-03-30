@@ -87,7 +87,7 @@ const FranceMap = () => {
   // Track which commune codes we've already fetched
   const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
   const [mapReady, setMapReady] = useState(false);
-  
+
   // Track if we've already processed regions and departments
   const [regionsProcessed, setRegionsProcessed] = useState(false);
   const [departementsProcessed, setDepartementsProcessed] = useState(false);
@@ -118,7 +118,7 @@ const FranceMap = () => {
   const memoizedDepartements = useMemo(() => departementsData || [], [departementsData]);
 
   // Manage loading state directly based on data loading states
-  
+
   useEffect(() => {
     if (isLoadingRegions || isLoadingDepartments) {
       setIsLoading(true);
@@ -387,17 +387,17 @@ const FranceMap = () => {
   const renderTooltip = () => {
     if (!hoverInfo) return null;
 
-    const { feature, type, x,  y } = hoverInfo;
-    console.log(feature)
+    const { feature, type, x, y } = hoverInfo;
+    console.log(feature);
     const props = feature.properties;
-    const code = props.code?.toString()
+    const code = props.code?.toString();
     let data;
     if (type === 'commune') data = communesRef.current.find((c) => c.code === code);
     else if (type === 'departement')
-
-    data = departementsRef.current.find((d) => d.cog === code || d.nom === props.name);
-    // check code bah rhin is alsace 
+      data = departementsRef.current.find((d) => d.cog === code || d.nom === props.name);
+    // check code bah rhin is alsace
     // haut rhin is alsace
+    // corsica is not working
     else data = regionsRef.current.find((r) => r.code === code || r.nom === props.name);
 
     if (!data) {
@@ -475,7 +475,7 @@ const FranceMap = () => {
             paint={{
               'fill-color': [
                 'case',
-                ['==', ['feature-state', 'population'], null],
+                ['==', ['feature-state', 'population'], null], 
                 '#f2f0f7', // Default to red when population is null/not loaded
                 [
                   'interpolate',
@@ -527,17 +527,22 @@ const FranceMap = () => {
             minzoom={8}
             maxzoom={14}
             filter={['==', 'level', 3]}
-            paint={{
+         paint={{
               'fill-color': [
-                'interpolate',
-                ['linear'],
-                ['feature-state', 'population'], // Use population from feature state
-                0,
-                '#f2f0f7', // Low population color
-                500,
-                '#9e9ac8',
-                1000,
-                '#6a51a3', // High population color
+                'case',
+                ['==', ['feature-state', 'population'], null], 
+                '#f2f0f7', // Default to red when population is null/not loaded
+                [
+                  'interpolate',
+                  ['linear'],
+                  ['feature-state', 'population'], // Use population from feature state
+                  0,
+                  '#f2f0f7', // Low population color
+                  500,
+                  '#9e9ac8',
+                  1000,
+                  '#6a51a3', // High population color
+                ],
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
