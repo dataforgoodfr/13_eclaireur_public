@@ -37,6 +37,7 @@
     "@eslint/eslintrc": "^3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
+    "@types/lodash": "^4.17.16",
     "@types/node": "^20",
     "@types/nodemailer": "^6",
     "@types/pg": "^8.11.11",
