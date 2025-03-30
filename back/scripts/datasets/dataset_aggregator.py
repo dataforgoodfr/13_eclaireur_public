@@ -60,6 +60,14 @@ class DatasetAggregator:
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.output_filename.exists():
+            return
+        self._process_files()
+        self._concatenate_files()
+        with open(self.data_folder / "errors.json", "w") as f:
+            json.dump(self.errors, f)
+
+    def _process_files(self):
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -74,10 +82,6 @@ class DatasetAggregator:
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
-
-        self._concatenate_files()
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
 
     def _process_file(self, file: tuple) -> None:
         """
@@ -130,7 +134,7 @@ class DatasetAggregator:
             return
         df = self._read_parse_file(file_metadata, raw_filename)
         if isinstance(df, pd.DataFrame):
-            df.to_parquet(out_filename)
+            df.to_parquet(out_filename, index=False)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()
@@ -172,7 +176,7 @@ class DatasetAggregator:
         This step is made in polars as the sum of all dataset by be heavy on memory.
         """
         all_files = list(self.data_folder.glob("*/norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self)}")
+        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self.output_filename)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.output_filename)

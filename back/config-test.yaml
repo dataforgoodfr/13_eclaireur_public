@@ -2,39 +2,16 @@ workflow:
   save_to_db: True
   replace_tables: False
 
+ofgl:
+  data_folder: back/tests/data/ofgl
+  urls_csv: back/tests/inputs/ofgl_urls_ci.csv
+  combined_filename: back/tests/data/ofgl/ofgl.parquet
+
 communities:
-  processed_data:
-    path: back/tests/data/communities/
-    all_communities_file: all_communities_data.parquet
-    selected_communities_file: selected_communities_data.parquet
-
-  ofgl:
-    url:
-      regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      communes: file:./back/tests/inputs/ofgl-base-communes-consolidee.test.csv
-      intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-    dtype:
-      Code Insee 2023 Région: str
-      Code Insee 2023 Département: str
-      Code Insee 2023 Commune: str
-    processed_data:
-      path: back/tests/data/ofgl/
-      filename: ofgl_data.parquet
-
-    epci:
-      file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
-      dtype:
-        siren: str
-        siren_membre: str
-
-  odf:
-    url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
-    dtype:
-      siren: str
-    processed_data:
-      path: back/tests/data/odf/
-      filename: odf_data.parquet
+  data_folder: back/tests/data/communities/
+  combined_filename: back/tests/data/communities/communities.parquet
+  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
@@ -130,6 +107,7 @@ elected_officials:
 
 sirene:
   data_folder: back/tests/data/sirene
+  combined_filename: back/tests/data/sirene/sirene.parquet
   url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
 
 datagouv_api:
