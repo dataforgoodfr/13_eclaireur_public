@@ -413,19 +413,24 @@ const FranceMap = () => {
             maxzoom={6}
             filter={['all', ['==', 'level', 1], ['==', 'level_0', 'FR']]}
             paint={{
-              'fill-color': [
-                'interpolate',
-                ['linear'],
-                ['feature-state', 'population'], // Use population from feature state
-                0,
-                '#f2f0f7', // Low population color
-                1000000,
-                '#9e9ac8',
-                10000000,
-                '#6a51a3', // High population color
+              "fill-color": [
+                "case",
+                ["==", ["feature-state", "population"], null],
+                "#f2f0f7", // Default to red when population is null/not loaded
+                [
+                  "interpolate",
+                  ["linear"],
+                  ["feature-state", "population"], // Use population from feature state
+                  0,
+                  "#f2f0f7", // Low population color
+                  1000000,
+                  "#9e9ac8",
+                  10000000,
+                  "#6a51a3", // High population color
+                ],
               ],
-              'fill-opacity': 0.85,
-              'fill-outline-color': '#000',
+              "fill-opacity": 0.85,
+              "fill-outline-color": "#000",
             }}
           />
 
