@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class XMLLoader(BaseLoader):
-    file_extensions = {"parquet"}
+    file_extensions = {"xml", "rdf"}
 
     def process_data(self, data) -> pd.DataFrame | None:
         # Try different encodings for the data
@@ -18,14 +18,15 @@ class XMLLoader(BaseLoader):
         for encoding in encodings_to_try:
             try:
                 decoded_content = data.decode(encoding)
-                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
-                df = self._process_from_decoded(decoded_content)
-                if isinstance(df, pd.DataFrame):
-                    return df
 
             except UnicodeDecodeError:
                 # Try the next encoding
                 continue
+            else:
+                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
+                df = self._process_from_decoded(decoded_content)
+                if isinstance(df, pd.DataFrame):
+                    return df
 
         LOGGER.error(f"Unable to process CSV content from: {self.file_url}")
         return None
