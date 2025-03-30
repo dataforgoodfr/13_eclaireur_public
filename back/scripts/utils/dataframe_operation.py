@@ -280,7 +280,7 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     return frame.assign(**{id_col: dt})
 
 
-def _is_dayfirst(dts: pd.Series) -> str:
+def _is_dayfirst(dts: pd.Series) -> bool:
     formats = dts.dropna().str.replace(r"\d", "d", regex=True)
     top_format = formats.value_counts().sort_values(ascending=False)
     if top_format.empty:
