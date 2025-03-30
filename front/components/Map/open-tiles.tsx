@@ -475,7 +475,7 @@ const FranceMap = () => {
             paint={{
               'fill-color': [
                 'case',
-                ['==', ['feature-state', 'population'], null], 
+                ['==', ['feature-state', 'population'], null],
                 '#f2f0f7', // Default to red when population is null/not loaded
                 [
                   'interpolate',
@@ -527,10 +527,10 @@ const FranceMap = () => {
             minzoom={8}
             maxzoom={14}
             filter={['==', 'level', 3]}
-         paint={{
+            paint={{
               'fill-color': [
                 'case',
-                ['==', ['feature-state', 'population'], null], 
+                ['==', ['feature-state', 'population'], null],
                 '#f2f0f7', // Default to red when population is null/not loaded
                 [
                   'interpolate',
