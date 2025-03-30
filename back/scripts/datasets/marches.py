@@ -27,6 +27,7 @@ UNNECESSARY_NESTED = [
 COLUMNS_RENAMER = {
     "modalitesExecution": "modaliteExecution",
     "techniques": "technique",
+    "acheteur.id": "acheteur_id",
 }
 
 
@@ -92,8 +93,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if not interim_fn.exists():
             return None
-        out = pd.read_json(interim_fn)
-        out.rename(columns=COLUMNS_RENAMER, inplace=True)
+        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.dtypes.pipe(lambda s: s[s == "object"]).index
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
