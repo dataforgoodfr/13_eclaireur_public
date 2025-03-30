@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -143,6 +143,10 @@ class TestExpandJsonColumns:
     [
         (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
         (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (
+            datetime(2020, 2, 1, 2, tzinfo=timezone(timedelta(hours=2))),
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+        ),
         ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
         ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
         (None, None),

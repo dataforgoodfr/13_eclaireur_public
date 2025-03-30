@@ -245,11 +245,12 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col]
+        dt = frame[id_col].dt.tz_localize("UTC")
+    elif "datetime64" in str(frame[id_col].dtype):
+        dt = frame[id_col].dt.tz_convert("UTC")
     else:
         is_dayfirst = _is_dayfirst(frame[id_col])
-        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst)
-    dt = dt.dt.tz_localize("UTC")
+        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst).dt.tz_localize("UTC")
     return frame.assign(**{id_col: dt})
 
 
