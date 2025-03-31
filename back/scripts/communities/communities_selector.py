@@ -96,18 +96,20 @@ class CommunitiesSelector:
         """
         Adds postal code information to the communities DataFrame.
         """
-        postal_code_df = pd.read_csv(
-            self.config["postal_code"]["url"],
-            delimiter=";",
-            encoding="latin1",
-            usecols=["#Code_commune_INSEE", "Code_postal"],
-        ).rename(
-            columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
-        ).drop_duplicates(subset=["code_insee"])
-
-        return frame.merge(
-            postal_code_df, on="code_insee", how="left"
+        postal_code_df = (
+            pd.read_csv(
+                self.config["postal_code"]["url"],
+                delimiter=";",
+                encoding="latin1",
+                usecols=["#Code_commune_INSEE", "Code_postal"],
+            )
+            .rename(
+                columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
+            )
+            .drop_duplicates(subset=["code_insee"])
         )
+
+        return frame.merge(postal_code_df, on="code_insee", how="left")
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
