@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:ns1="https://www.opendata56.fr/ld/ontologies/subventions-ville-de-lorient/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <ns1:subventions-ville-de-lorient-record rdf:about="https://www.opendata56.fr/ld/resources/subventions-ville-de-lorient/subventions-ville-de-lorient-record/dd5312e02b9faf9f9150abac467cce7932c3f0c2/">
+    <ns1:idbeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">77784904300040</ns1:idbeneficiaire>
+    <ns1:referencedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#string">056-215601212-20211216-150029-DE-1-1</ns1:referencedecision>
+    <ns1:avanceversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:avanceversement>
+    <ns1:nature rdf:datatype="http://www.w3.org/2001/XMLSchema#string">aide en numéraire</ns1:nature>
+    <ns1:referenceconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#int">21568</ns1:referenceconvention>
+    <ns1:notificationue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:notificationue>
+    <ns1:montant rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3300.0</ns1:montant>
+    <ns1:dateconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-04-17</ns1:dateconvention>
+    <ns1:datesperiodeversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2021-12-31</ns1:datesperiodeversement>
+    <ns1:conditionsversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unique</ns1:conditionsversement>
+    <ns1:idattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21560121200016</ns1:idattribuant>
+    <ns1:nombeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Patronage Laïque de Lorient PLL</ns1:nombeneficiaire>
+    <ns1:nomattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ville de Lorient</ns1:nomattribuant>
+    <ns1:datedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-12-16</ns1:datedecision>
+    <ns1:pourcentagesubvention rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.00</ns1:pourcentagesubvention>
+    <ns1:objet rdf:datatype="http://www.w3.org/2001/XMLSchema#string">évenèments et actions spécifiques</ns1:objet>
+  </ns1:subventions-ville-de-lorient-record>
+  <ns1:subventions-ville-de-lorient-record rdf:about="https://www.opendata56.fr/ld/resources/subventions-ville-de-lorient/subventions-ville-de-lorient-record/9710b1f8f8ed2304ae5ac860a9e0251c52c89c24/">
+    <ns1:idbeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">38156683500025</ns1:idbeneficiaire>
+    <ns1:referencedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#string">056-215601212-20210401-144562-DE-1-1</ns1:referencedecision>
+    <ns1:avanceversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:avanceversement>
+    <ns1:nature rdf:datatype="http://www.w3.org/2001/XMLSchema#string">aide en numéraire</ns1:nature>
+    <ns1:referenceconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#int">19544</ns1:referenceconvention>
+    <ns1:notificationue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:notificationue>
+    <ns1:montant rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20895.0</ns1:montant>
+    <ns1:dateconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-03-05</ns1:dateconvention>
+    <ns1:datesperiodeversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2021-04-02/2021-05-03/2021-09-02</ns1:datesperiodeversement>
+    <ns1:conditionsversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">échelonné</ns1:conditionsversement>
+    <ns1:idattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21560121200016</ns1:idattribuant>
+    <ns1:nombeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Football Club 56 Lorient FC56 Lorient</ns1:nombeneficiaire>
+    <ns1:nomattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ville de Lorient</ns1:nomattribuant>
+    <ns1:datedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-04-01</ns1:datedecision>
+    <ns1:pourcentagesubvention rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.00</ns1:pourcentagesubvention>
+    <ns1:objet rdf:datatype="http://www.w3.org/2001/XMLSchema#string">animation sportive</ns1:objet>
+  </ns1:subventions-ville-de-lorient-record>
+  <ns1:subventions-ville-de-lorient-record rdf:about="https://www.opendata56.fr/ld/resources/subventions-ville-de-lorient/subventions-ville-de-lorient-record/e13f45e5c0bb84ed98fc117050bac7f5d492efb0/">
+    <ns1:idbeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">77784991000040</ns1:idbeneficiaire>
+    <ns1:referencedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#string">056-215601212-20210401-144562-DE-1-1</ns1:referencedecision>
+    <ns1:avanceversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:avanceversement>
+    <ns1:nature rdf:datatype="http://www.w3.org/2001/XMLSchema#string">aide en numéraire</ns1:nature>
+    <ns1:referenceconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#int">21560</ns1:referenceconvention>
+    <ns1:notificationue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">non</ns1:notificationue>
+    <ns1:montant rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10000.0</ns1:montant>
+    <ns1:dateconvention rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-04-16</ns1:dateconvention>
+    <ns1:datesperiodeversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2021-06-03</ns1:datesperiodeversement>
+    <ns1:conditionsversement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">échelonné</ns1:conditionsversement>
+    <ns1:idattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21560121200016</ns1:idattribuant>
+    <ns1:nombeneficiaire rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Association Sportive et Artistique de Lorient (ASAL)</ns1:nombeneficiaire>
+    <ns1:nomattribuant rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ville de Lorient</ns1:nomattribuant>
+    <ns1:datedecision rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-04-01</ns1:datedecision>
+    <ns1:pourcentagesubvention rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.00</ns1:pourcentagesubvention>
+    <ns1:objet rdf:datatype="http://www.w3.org/2001/XMLSchema#string">aide au loyer</ns1:objet>
+  </ns1:subventions-ville-de-lorient-record>
+  </rdf:RDF>

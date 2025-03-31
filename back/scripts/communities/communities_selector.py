@@ -3,125 +3,102 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from back.scripts.communities.loaders.odf import OdfLoader
-from back.scripts.communities.loaders.ofgl import OfglLoader
-from back.scripts.utils.config import get_project_base_path
+
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.utils.config import get_project_base_path, project_config
+from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
+from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
-    It merges, cleans, and enriches datasets with geographic coordinates
-    while applying selection criteria (e.g., population, effectifs)
-    for open data law compliance and project-specific usage.
-
-    Steps:
-    1. Load data from OFGL, ODF, and Sirene datasets
-    2. Merge OFGL and ODF data on 'siren' column
-    3. Merge Sirene data on 'siren' column
-    4. Filter data based on legal requirements
-    5. Add geocoordinates to selected data
-    6. Save all and selected data to CSV
+    It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
-    _instance = None
-    _init_done = False
-
-    # Singleton pattern
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(CommunitiesSelector, cls).__new__(cls)
-        return cls._instance
-
-    # Constructor TODO: Refactor, too many responsibilities
     def __init__(self, config):
-        # Singleton pattern
-        if self._init_done:
-            return
         self.config = config
-        self.logger = logging.getLogger(__name__)
 
-        data_folder = get_project_base_path() / self.config["processed_data"]["path"]
-        data_folder.mkdir(parents=True, exist_ok=True)
+        self.data_folder = get_project_base_path() / config["data_folder"]
+        self.data_folder.mkdir(parents=True, exist_ok=True)
 
-        all_communities_filename = (
-            data_folder / self.config["processed_data"]["all_communities_file"]
+        self.output_filename = Path(self.config["combined_filename"])
+        self.output_filename.parent.mkdir(parents=True, exist_ok=True)
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def run(self):
+        if self.output_filename.exists():
+            return
+        communities = (
+            pd.read_parquet(project_config["ofgl"]["combined_filename"])
+            .drop_duplicates(subset=["siren"], keep="first")
+            .drop(columns=["exercice"])
+            .fillna({"population": 0})
+            .pipe(self.add_collectivite_platforms)
+            .pipe(self.add_epci_infos)
+            .pipe(self.add_sirene_infos)
         )
-        if all_communities_filename.exists():
-            self.all_data = pd.read_parquet(all_communities_filename)
-        else:
-            self.load_all_communities()
-            self.all_data.to_parquet(all_communities_filename)
-            self.all_data.to_csv(all_communities_filename.with_suffix(".csv"), sep=";")
 
-        selected_communities_filename = (
-            data_folder / self.config["processed_data"]["selected_communities_file"]
-        )
-        if selected_communities_filename.exists():
-            self.selected_data = pd.read_parquet(selected_communities_filename)
-        else:
-            self.load_selected_communities()
-            self.selected_data.to_parquet(selected_communities_filename)
-            self.selected_data.to_csv(
-                selected_communities_filename.with_suffix(".csv"), sep=";"
+        communities.to_parquet(self.output_filename, index=False)
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_collectivite_platforms(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        ODF dataset comes from a 2019 study about how collectivities contributed to the open data movement.
+        It is not updated since then and is not representative of the current landscape.
+        As a result, it is directly integrated as a CSV in the project to allow updates when needed.
+        URL : https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
+        """
+        odf = BaseLoader.loader_factory(self.config["odf_url"]).load()
+        return frame.merge(odf, on="siren", how="left")
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_sirene_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
+        sirene = pd.read_parquet(
+            project_config["sirene"]["combined_filename"],
+            columns=["siren", "naf8", "tranche_effectif", "raison_sociale", "is_active"],
+        ).pipe(lambda df: df[df["naf8"].isin(["8411Z", "8710C", "3700Z", "8413Z"])])
+
+        return (
+            frame.merge(sirene, on="siren", how="left")
+            .pipe(lambda df: df[df["is_active"].fillna(True)])
+            .fillna({"tranche_effectif": 0})
+            .assign(
+                effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
+                nom=lambda df: df["raison_sociale"],
             )
-
-        self._init_done = True
-
-    def load_all_communities(self):
-        # Load data from OFGL, ODF, and Sirene datasets
-        ofgl = OfglLoader(self.config["ofgl"])
-        odf = OdfLoader(self.config["odf"])
-        sirene = pd.read_parquet(Path(self.config["sirene"]["data_folder"]) / "sirene.parquet")
-        ofgl_data = ofgl.get()
-        odf_data = odf.get()
-
-        # Prepare & Merge OFGL and ODF data on 'siren' column
-        # TODO : If you cast to Int, it breaks
-        # TODO : casting seems redundant, check if it's necessary
-        # TODO Manage columns outside of classes (configs ?)
-        all_data = ofgl_data.merge(
-            odf_data[["siren", "url_ptf", "url_datagouv", "id_datagouv", "merge", "ptf"]],
-            on="siren",
-            how="left",
+            .assign(
+                should_publish=lambda df: (df["type"] != "COM")
+                | ((df["type"] == "COM") & (df["population"] >= 3500) & df["effectifs_sup_50"])
+            )
+            .drop(columns=["raison_sociale", "is_active"])
+            .merge(
+                sirene[["siren", "raison_sociale"]].rename(columns={"siren": "siren_epci"}),
+                on="siren_epci",
+                how="left",
+            )
+            .rename(columns={"raison_sociale": "nom_epci"})
         )
-        all_data = all_data[
-            [
-                "nom",
-                "siren",
-                "type",
-                "cog",
-                "cog_3digits",
-                "code_departement",
-                "code_departement_3digits",
-                "code_region",
-                "population",
-                "epci",
-                "url_ptf",
-                "url_datagouv",
-                "id_datagouv",
-                "merge",
-                "ptf",
-            ]
-        ]
 
-        self.all_data = all_data.merge(sirene, on="siren", how="left").assign(
-            population=lambda df: pd.to_numeric(df["population"].astype(str), errors="coerce"),
-            effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
+    def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
+        epci_mapping = (
+            BaseLoader.loader_factory(
+                self.config["epci_url"], columns=["siren", "siren_membre"]
+            )
+            .load()
+            .rename(columns={"siren": "siren_epci", "siren_membre": "siren"})
+            .pipe(normalize_identifiant, id_col="siren_epci", format=IdentifierFormat.SIREN)
+            .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         )
+        return frame.merge(epci_mapping, on="siren", how="left")
 
     def load_selected_communities(self):
         selected_data = self.all_data.copy()
-        selected_data = selected_data.loc[
-            (self.all_data["type"] != "COM")
-            | (
-                (self.all_data["type"] == "COM")
-                & (self.all_data["population"] >= 3500)
-                & self.all_data["effectifs_sup_50"]
-            )
-        ]
+        selected_data = selected_data.loc[selected_data["should_publish"]]
 
         # Add geocoordinates to selected data
         geolocator = GeoLocator(self.config["geolocator"])

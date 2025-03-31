@@ -44,6 +44,8 @@ class SireneWorkflow:
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.output_filename.exists():
+            return
         self._fetch_zip()
         self._format_to_parquet()
 
