@@ -45,9 +45,9 @@ class TopicAggregator(DatasetAggregator):
         datafile_loader_config: dict,
     ):
         self.topic = topic
-        self.topic_config = self.substitute_config(topic, project_config["search"][topic])
+        self.topic_config = project_config["search"][topic]
 
-        super().__init__(files_in_scope, datafile_loader_config)
+        super().__init__(files_in_scope, self.substitute_config(topic, datafile_loader_config))
 
         self._load_schema(self.topic_config["schema"])
         self._load_manual_column_rename()
