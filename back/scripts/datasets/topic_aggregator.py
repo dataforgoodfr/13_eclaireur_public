@@ -44,15 +44,6 @@ class TopicAggregator(DatasetAggregator):
         topic: str,
         datafile_loader_config: dict,
     ):
-        datafile_loader_config = copy.deepcopy(datafile_loader_config)
-        formatting = {"topic": topic}
-        datafile_loader_config["data_folder"] = (
-            datafile_loader_config["data_folder"] % formatting
-        )
-        datafile_loader_config["combined_filename"] = (
-            datafile_loader_config["combined_filename"] % formatting
-        )
-
         self.topic = topic
         self.topic_config = project_config["search"][topic]
 
@@ -62,6 +53,27 @@ class TopicAggregator(DatasetAggregator):
         self._load_manual_column_rename()
         self.extra_columns = Counter()
         self.missing_data = []
+
+    @classmethod
+    def get_config_key(cls):
+        return "topic_aggregator"
+
+    @classmethod
+    def substitute_config(cls, topic: str, datafile_loader_config: dict) -> dict:
+        datafile_loader_config = copy.deepcopy(datafile_loader_config)
+        formatting = {"topic": topic}
+        datafile_loader_config["data_folder"] = (
+            datafile_loader_config["data_folder"] % formatting
+        )
+        datafile_loader_config["combined_filename"] = (
+            datafile_loader_config["combined_filename"] % formatting
+        )
+        return {cls.get_config_key(): datafile_loader_config}
+
+    @classmethod
+    # default value is a hack until we rename and simplify topic aggregator, as it's always processing subventions
+    def get_output_path(cls, main_config: dict, topic: str = "subventions") -> Path:
+        return Path(main_config[cls.get_config_key()]["combined_filename"] % {"topic": topic})
 
     def _post_process(self):
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(

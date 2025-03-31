@@ -19,11 +19,25 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 DATASET_ID = "5cd57bf68b4c4179299eb0e9"
+UNNECESSARY_NESTED = [
+    "considerationsSociales",
+    "considerationsEnvironnementales",
+    "modalitesExecution",
+]
+COLUMNS_RENAMER = {
+    "modalitesExecution": "modaliteExecution",
+    "techniques": "technique",
+    "acheteur.id": "acheteur_id",
+}
 
 
 class MarchesPublicsWorkflow(DatasetAggregator):
     @classmethod
-    def from_config(cls, config: dict):
+    def get_config_key(cls) -> str:
+        return "marches_publics"
+
+    @classmethod
+    def from_config(cls, main_config: dict):
         """
         Fetch all aggregated datasets regardin public orders.
 
@@ -31,10 +45,11 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         and files containing only a month.
         We only select the monthly files if the year is not available on a yearly file.
         """
+        config = main_config[cls.get_config_key()]
         if config["test_urls"]:
             return cls(
                 pd.DataFrame.from_records([reduce(lambda x, y: x | y, config["test_urls"])]),
-                config,
+                main_config,
             )
 
         catalog = pd.read_parquet(project_config["datagouv_catalog"]["combined_filename"]).pipe(
@@ -53,11 +68,11 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         files = files.rename({"url": "dynamic_url"}).assign(
             url=files["id"].apply(DataGouvAPI.get_stable_file_url)
         )
-        return cls(files, config)
+        return cls(files, main_config)
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)
-        self._load_schema(config["schema"])
+        self._load_schema(config[self.get_config_key()]["schema"])
 
     def _load_schema(self, url):
         schema_filename = self.data_folder / "official_schema.parquet"
@@ -78,7 +93,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if not interim_fn.exists():
             return None
-        out = pd.read_json(interim_fn)
+        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.dtypes.pipe(lambda s: s[s == "object"]).index
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
@@ -147,13 +162,26 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if isinstance(titulaires, dict):
             titulaires = [titulaires]
 
+        # titulaire is sometines nested
+        if len(titulaires) > 0 and "titulaire" in titulaires[0].keys():
+            titulaires = [titu["titulaire"] for titu in titulaires]
+
+        # acheteur is sometimes just a dictionnary with a single "id" key
         unnested = {}
         for k, v in local_decla.items():
-            if isinstance(v, (list, dict)):
-                v = json.dumps(v)
-            elif isinstance(v, decimal.Decimal):
-                v = float(v)
-            unnested[k] = v
+            if k == "acheteur":
+                try:
+                    unnested["acheteur.id"] = str(v["id"])
+                except TypeError:
+                    unnested["acheteur.id"] = ""
+            elif k == "montant":
+                unnested["montant"] = float(v) / len(titulaires)
+            else:
+                if isinstance(v, (list, dict)):
+                    v = json.dumps(v)
+                elif isinstance(v, decimal.Decimal):
+                    v = float(v)
+                unnested[k] = v
         return [{f"titulaire_{k}": v for k, v in t.items()} | unnested for t in titulaires if t]
 
 

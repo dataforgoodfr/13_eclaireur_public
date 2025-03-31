@@ -8,7 +8,6 @@ ofgl:
   combined_filename: back/data/ofgl/ofgl.parquet
 
 communities:
-  data_folder: back/data/communities
   combined_filename: back/data/communities/communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
   odf_url: file:./back/scripts/datasets/odf.csv
@@ -79,7 +78,7 @@ datagouv_catalog:
   data_folder: back/data/datagouv_catalog
   combined_filename: back/data/datagouv_catalog/catalog.parquet
   catalog_url: null
-  
+
 datafile_loader:
   data_folder: 'back/data/datasets/%(topic)s'
   combined_filename: 'back/data/datasets/%(topic)s.parquet'

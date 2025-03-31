@@ -11,7 +11,7 @@ import polars as pl
 from tqdm import tqdm
 
 from back.scripts.loaders import LOADER_CLASSES
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_combined_filename, get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -47,14 +47,22 @@ class DatasetAggregator:
     respectively as "data_folder" and "combined_filename".
     """
 
-    def __init__(self, files: pd.DataFrame, config: dict):
-        self._config = config
+    @classmethod
+    def get_config_key(cls) -> str:
+        raise NotImplementedError()
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return get_combined_filename(main_config, cls.get_config_key())
+
+    def __init__(self, files: pd.DataFrame, main_config: dict):
+        self._config = main_config[self.get_config_key()]
 
         self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
 
-        self.data_folder = get_project_base_path() / config["data_folder"]
+        self.data_folder = get_project_base_path() / self._config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.output_filename = get_project_base_path() / config["combined_filename"]
+        self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
 
