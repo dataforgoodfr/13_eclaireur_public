@@ -92,6 +92,8 @@ const FranceMap = () => {
   const [regionsProcessed, setRegionsProcessed] = useState(false);
   const [departementsProcessed, setDepartementsProcessed] = useState(false);
 
+  const [cursor, setCursor] = useState<string>('grab');
+
   const [viewState, setViewState] = useState<Partial<ViewState>>({
     longitude: 2.2137,
     latitude: 46.2276,
@@ -126,12 +128,6 @@ const FranceMap = () => {
       setIsLoading(false); // Only set to false when both regions and departments are loaded
     }
   }, [isLoadingRegions, isLoadingDepartments]); // Trigger when either loading state changes
-
-  useEffect(() => {
-    // Update refs only if the memoized data has changed
-    if (memoizedRegions.length > 0) regionsRef.current = memoizedRegions;
-    if (memoizedDepartements.length > 0) departementsRef.current = memoizedDepartements;
-  }, [memoizedRegions, memoizedDepartements]);
 
   useEffect(() => {
     // Update refs only if the memoized data has changed
@@ -341,6 +337,12 @@ const FranceMap = () => {
     event.originalEvent.stopPropagation();
     const { features, point } = event;
 
+    if (event.features && event.features.length > 0) {
+      setCursor('pointer');
+    } else {
+      setCursor('grab');
+    }
+
     if (!features || features.length === 0) {
       setHoverInfo(null);
       return;
@@ -446,6 +448,7 @@ const FranceMap = () => {
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
+        cursor={cursor}
         onLoad={() => {
           setMapReady(true);
 
