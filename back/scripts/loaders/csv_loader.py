@@ -48,6 +48,8 @@ class CSVLoader(BaseLoader):
         return None
 
     def _process_from_decoded(self, decoded_content):
+        decoded_content = re.sub("^\n+", "", decoded_content)
+        decoded_content = re.sub("\r(\n)?", "\n", decoded_content)
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -6,6 +6,7 @@ import pytest
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     expand_json_columns,
+    is_dayfirst,
     normalize_date,
     normalize_identifiant,
     normalize_montant,
@@ -153,9 +154,13 @@ class TestExpandJsonColumns:
 @pytest.mark.parametrize(
     "input_value,expected_output",
     [
-        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (
+            datetime(2020, 2, 1, 2, tzinfo=timezone(timedelta(hours=2))),
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+        ),
+        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
         ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
         (None, None),
         ("", None),
@@ -168,6 +173,16 @@ def test_normalize_date(input_value, expected_output):
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+
+
+class TestIsDayFirst:
+    def test_is_day_first(self):
+        dts = pd.Series(["2022-02-01", "2022-01-02", "12-05-2022"])
+        assert not is_dayfirst(dts)
+
+    def test_not_is_day_first(self):
+        dts = pd.Series(["05/12/2022", "07/03/2024", "2024-04-03"])
+        assert is_dayfirst(dts)
 
 
 class TestNormalizeMontant:
