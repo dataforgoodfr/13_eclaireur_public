@@ -206,18 +206,22 @@ class TopicAggregator(DatasetAggregator):
                     "url_hash": file_metadata.url_hash,
                     "missing_rate": 1.0,
                     "reason": "missing_columns",
+                    "missing_columns": ",".join(missings),
                 }
             )
             raise RuntimeError("Missing columns : " + ",".join(missings))
 
-        mask = df[must_have_columns].isna().any(axis=1)
+        missings = df[must_have_columns].isna()
+        mask = missings.any(axis=1)
         missing_rate = mask.sum() / len(mask)
         if missing_rate > 0:
+            missings = sorted(missings.sum().pipe(lambda s: s[s > 0]).index.values)
             self.missing_data.append(
                 {
                     "url_hash": file_metadata.url_hash,
                     "missing_rate": missing_rate,
                     "reason": "missing_values",
+                    "missing_columns": ",".join(missings),
                 }
             )
         return df[~mask]
