@@ -421,12 +421,6 @@ const FranceMap = () => {
           Population: {data.population?.toLocaleString() ?? 'N/A'}
         </div>
         <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
-        {type === 'commune' && (
-          <div className='text-xs text-gray-500'>Département: {data.departement?.nom ?? 'N/A'}</div>
-        )}
-        {type !== 'region' && (
-          <div className='text-xs text-gray-500'>Région: {data.region?.nom ?? 'N/A'}</div>
-        )}
         <div className='text-xs text-gray-400'>Code: {data.code}</div>
       </div>
     );
