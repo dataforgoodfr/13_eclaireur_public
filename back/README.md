@@ -1,25 +1,32 @@
 # Pipeline d'intégration des données
 
-L'intégralité du contenu du dossier ./back/ concerne la partie backend du projet.
+L'intégralité du contenu du dossier `./back/` concerne la partie backend du projet.
 
 
 
 ## Table des matières
 
-1. [Structure](#structure-du-back)
-2. [Contribuer](#contribuer)
-    - 2.1 [Accès Repo](#acces-repo)
-    - 2.2 [Environnement de développement](#environnement-de-développement)
-        - 2.2.1 [Installer Poetry avec pipx](#installation-de-poetry-avec-pipx)
-        - 2.2.2 [Installer Poetry avec le dépôt officiel](#installation-de-poetry-avec-le-depot-officiel)
-        - 2.2.3 [Utiliser Poetry](#utiliser-poetry)
-        - 2.2.4 [Utiliser un venv python](#utiliser-un-venv-python)
-3. [Lancer les precommit hook localement](#lancer-les-precommit-hook-localement)
-4. [Utiliser Tox pour tester votre code](#utiliser-tox-pour-test-votre-code)
-5. [Lancer le script](#lancer-le-script)
-6. [License](#license)
-    - 5.1 [Code](#code)
-    - 5.2 [Data and Analyses](#data-and-analyses)
+- [Pipeline d'intégration des données](#pipeline-dintégration-des-données)
+  - [Table des matières](#table-des-matières)
+  - [Structure du back](#structure-du-back)
+  - [Contribuer](#contribuer)
+    - [Acces Repo](#acces-repo)
+    - [Environnement de développement](#environnement-de-développement)
+      - [Installation de Poetry avec pipx](#installation-de-poetry-avec-pipx)
+      - [Installation de Poetry avec le depot officiel](#installation-de-poetry-avec-le-depot-officiel)
+      - [Utiliser Poetry](#utiliser-poetry)
+      - [Utiliser un venv python](#utiliser-un-venv-python)
+  - [Lancer les precommit hook localement](#lancer-les-precommit-hook-localement)
+  - [Utiliser Tox pour tester votre code](#utiliser-tox-pour-tester-votre-code)
+  - [Executer PostgreSQL localement avec docker](#executer-postgresql-localement-avec-docker)
+    - [Installer docker](#installer-docker)
+    - [Démarrer une instance](#démarrer-une-instance)
+  - [Lancer le script](#lancer-le-script)
+    - [Sur des données de test](#sur-des-données-de-test)
+    - [Sur l'ensemble des données](#sur-lensemble-des-données)
+  - [Licenses](#licenses)
+    - [Code](#code)
+    - [Données et Analyses](#données-et-analyses)
 
 
 
@@ -63,6 +70,9 @@ git clone https://github.com/dataforgoodfr/13_eclaireur_public.git
 
 
 ### Environnement de développement
+
+
+> Le projet nécessite l'installation de Python 3.13 et de Poetry au minimum en version 2.
 
 
 Plusieurs [méthodes d'installation](https://python-poetry.org/docs/#installation) sont décrites dans la documentation de poetry dont:
@@ -162,22 +172,12 @@ Depuis un terminal:
     poetry run python back/main.py
 
 
-## License
+## Licenses
 
 ### Code
 
-The code in this repository is licensed under the MIT License:
+The code in this repository is licensed under the [MIT License](./../LICENSE)
 
-MIT License
+### Données et Analyses
 
-Copyright (c) 2023 Max Lévy
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-### Data and Analyses
-
-Unless otherwise stated, the data and analyses in this repository are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License. For more information, please visit [Creative Commons License](https://creativecommons.org/licenses/by/4.0/).
+Sauf indication contraire, les données et analyses de ce dépôt sont sous licence [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
