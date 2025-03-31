@@ -208,9 +208,7 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
     montant = np.where(
         with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
-    )
-    
-    montant = np.abs(montant)
+    ).abs()
 
     return frame.assign(**{id_col: montant})
 

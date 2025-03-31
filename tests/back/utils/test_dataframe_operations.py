@@ -186,10 +186,9 @@ class TestNormalizeMontant:
         expected = pd.DataFrame({"amount": [1500.0, None, None]})
         result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)
-        pd.testing.assert_frame_equal(result, expected)
 
     def test_negative_numbers(self):
         df = pd.DataFrame({"amount": [-1000, -2000.50, -300]})
-        expected = pd.DataFrame({"amount": [1000.0, 2000.50, 300.0]}) 
+        expected = pd.DataFrame({"amount": [1000.0, 2000.50, 300.0]})
         result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)
