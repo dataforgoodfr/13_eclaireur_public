@@ -108,7 +108,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if interim_fn.exists():
             return
 
-        with open(raw_filename, "r", encoding="utf-8") as raw:
+        with open(raw_filename, "rb") as raw:
             array_location = self.check_json_structure(raw_filename) + ".item"
 
             with open(interim_fn, "w") as interim:

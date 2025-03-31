@@ -209,8 +209,8 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         .str.replace("euros", "")
         .str.strip()
     )
-    with_double_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
-    with_single_digits = montant.str.match(r".*[.,]\d{1}$").fillna(False)
+    with_double_digits = montant.str.match(r".*[.,]\d{2}$").astype(bool).fillna(False)
+    with_single_digits = montant.str.match(r".*[.,]\d{1}$").astype(bool).fillna(False)
     montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
     montant = np.where(
         with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
