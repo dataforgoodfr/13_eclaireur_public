@@ -20,6 +20,9 @@ communities:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
 
+  postal_code:
+    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+
 datagouv:
   datasets:
     url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3

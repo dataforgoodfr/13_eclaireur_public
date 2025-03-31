@@ -48,6 +48,7 @@ class CommunitiesSelector:
             .pipe(self.add_collectivite_platforms)
             .pipe(self.add_epci_infos)
             .pipe(self.add_sirene_infos)
+            .pipe(self.add_postal_code)
         )
         communities.to_parquet(self.output_filename, index=False)
 
@@ -88,6 +89,24 @@ class CommunitiesSelector:
                 how="left",
             )
             .rename(columns={"raison_sociale": "nom_epci"})
+        )
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        Adds postal code information to the communities DataFrame.
+        """
+        postal_code_df = pd.read_csv(
+            self.config["postal_code"]["url"],
+            delimiter=";",
+            encoding="latin1",
+            usecols=["#Code_commune_INSEE", "Code_postal"],
+        ).rename(
+            columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
+        ).drop_duplicates(subset=["code_insee"])
+
+        return frame.merge(
+            postal_code_df, on="code_insee", how="left"
         )
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
