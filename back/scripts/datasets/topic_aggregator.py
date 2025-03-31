@@ -63,13 +63,10 @@ class TopicAggregator(DatasetAggregator):
         self.extra_columns = Counter()
         self.missing_data = []
 
-    def run(self):
-        super().run()
+    def _post_process(self):
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
             self.data_folder / "extra_columns.csv"
         )
-
-    def _post_process(self):
         pd.DataFrame.from_records(self.missing_data).to_parquet(
             self.data_folder / "missing_data.parquet"
         )
@@ -201,8 +198,8 @@ class TopicAggregator(DatasetAggregator):
         """
         Clean the dataframe by removing rows where all values are missing.
         """
-        must_have_columns = ("montant", "annee", "idAttribuant", "idAcheteur", "idBeneficiaire")
-        missings = set(must_have_columns) - set(df.columns)
+        must_have_columns = ["montant", "annee", "idAttribuant", "idBeneficiaire"]
+        missings = sorted(set(must_have_columns) - set(df.columns))
         if missings:
             self.missing_data.append(
                 {
@@ -211,7 +208,7 @@ class TopicAggregator(DatasetAggregator):
                     "reason": "missing_columns",
                 }
             )
-            raise RuntimeError("Missing columns")
+            raise RuntimeError("Missing columns : " + ",".join(missings))
 
         mask = df[must_have_columns].isna().any(axis=1)
         missing_rate = mask.sum() / len(mask)
