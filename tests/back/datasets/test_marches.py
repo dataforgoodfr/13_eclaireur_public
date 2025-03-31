@@ -24,7 +24,7 @@ def test_nested_json_structure():
 
 
 def test_marches_public_dataframes():
-    mp = MarchesPublicsWorkflow.from_config(config["marches_publics"])
+    mp = MarchesPublicsWorkflow.from_config(config)
 
     # Direct marche test
     direct_df = mp._read_parse_file(

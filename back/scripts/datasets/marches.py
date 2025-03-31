@@ -163,7 +163,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             titulaires = [titulaires]
 
         # titulaire is sometines nested
-        if titulaires[0] is not None and "titulaire" in titulaires[0].keys():
+        if len(titulaires) > 0 and "titulaire" in titulaires[0].keys():
             titulaires = [titu["titulaire"] for titu in titulaires]
 
         # acheteur is sometimes just a dictionnary with a single "id" key
@@ -171,9 +171,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         for k, v in local_decla.items():
             if k == "acheteur":
                 try:
-                    unnested[k + ".id"] = str(v["id"])
+                    unnested["acheteur.id"] = str(v["id"])
                 except TypeError:
-                    unnested[k + ".id"] = ""
+                    unnested["acheteur.id"] = ""
             elif k == "montant":
                 unnested["montant"] = float(v) / len(titulaires)
             else:
