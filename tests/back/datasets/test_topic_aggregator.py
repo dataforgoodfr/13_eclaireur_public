@@ -16,10 +16,6 @@ class TestTopicAggregator:
             "data_folder": self.path.name,
             "combined_filename": os.path.join(self.path.name, "final.parquet"),
         }
-        self.topic_config = {
-            "schema": {"url": "file:" + str(FIXTURES_PATH / "subvention_schema.json")},
-            "schema_dict_file": "back/data/datasets/subventions/inputs/dataset_dict.csv",
-        }
         self.raw_filename = Path(self.path.name) / "raw.csv"
         self.files_in_scope = pd.DataFrame(
             {
@@ -55,7 +51,6 @@ class TestTopicAggregator:
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
             topic="test_topic",
-            topic_config=self.topic_config,
             datafile_loader_config=self.config,
         )
         aggregator.run()
@@ -96,7 +91,6 @@ class TestTopicAggregator:
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
             topic="test_topic",
-            topic_config=self.topic_config,
             datafile_loader_config=self.config,
         )
 
