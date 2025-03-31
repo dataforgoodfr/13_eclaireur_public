@@ -2,7 +2,10 @@ import logging
 from pathlib import Path
 
 import pandas as pd
+import polars as pl
+from polars import col
 
+from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_combined_filename
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -23,7 +26,8 @@ class DataGouvCatalog:
         return get_combined_filename(main_config, cls.get_config_key())
 
     def __init__(self, main_config: dict):
-        self._config = main_config["datagouv_catalog"]
+        self.main_config = main_config
+        self._config = main_config[self.get_config_key()]
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
         self.output_filename = DataGouvCatalog.get_output_path(main_config)
@@ -39,7 +43,9 @@ class DataGouvCatalog:
         df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
-        df.to_parquet(self.output_filename)
+        pl.from_pandas(df).rename({"dataset.organization_id": "id_datagouv"}).pipe(
+            self._add_siren
+        ).write_parquet(self.output_filename)
 
     def _catalog_url(self):
         """
@@ -58,3 +64,10 @@ class DataGouvCatalog:
             raise Exception("No catalog dataset found.")
 
         return catalog_dataset["resource_url"].iloc[0]
+
+    def _add_siren(self, df: pl.DataFrame) -> pl.DataFrame:
+        communities = pl.read_parquet(
+            CommunitiesSelector.get_output_path(self.main_config),
+            columns=["siren", "id_datagouv"],
+        ).filter(col("id_datagouv").is_not_null())
+        return df.join(communities, how="left", on="id_datagouv")
