@@ -174,6 +174,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                     unnested[k + ".id"] = str(v["id"])
                 except TypeError:
                     unnested[k + ".id"] = ""
+            elif k == "montant":
+                unnested["montant"] = float(v) / len(titulaires)
             else:
                 if isinstance(v, (list, dict)):
                     v = json.dumps(v)

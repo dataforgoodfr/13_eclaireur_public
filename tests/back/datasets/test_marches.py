@@ -32,8 +32,10 @@ def test_marches_public_dataframes():
     )
     assert direct_df.shape == (3, 5)
     assert "acheteur_id" in direct_df.columns
+    assert "a_02" in direct_df["acheteur_id"].tolist()
     assert "titulaire_id" in direct_df.columns
-    assert direct_df["montant"].sum() == 580
+    assert "id_3" in direct_df["titulaire_id"].tolist()
+    assert direct_df["montant"].sum() == 540
     # Remove the interim.json file created by mp workflow
     os.remove(FIXTURES_DIRECTORY / "interim.json")
 
@@ -43,7 +45,9 @@ def test_marches_public_dataframes():
     )
     assert nested_df.shape == (3, 5)
     assert "acheteur_id" in nested_df.columns
+    assert "a_02" in nested_df["acheteur_id"].tolist()
     assert "titulaire_id" in nested_df.columns
-    assert nested_df["montant"].sum() == 240
+    assert "id_3" in nested_df["titulaire_id"].tolist()
+    assert nested_df["montant"].sum() == 220
     # Remove the interim.json file created by mp workflow
     os.remove(FIXTURES_DIRECTORY / "interim.json")
