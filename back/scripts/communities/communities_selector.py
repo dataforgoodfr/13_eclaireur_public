@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pandas as pd
 
+from back.scripts.communities.loaders.ofgl import OfglLoader
 from back.scripts.loaders.base_loader import BaseLoader
-from back.scripts.utils.config import get_project_base_path, project_config
+from back.scripts.utils.config import get_combined_filename, project_config
 from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
@@ -20,13 +21,19 @@ class CommunitiesSelector:
     It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
-    def __init__(self, config):
-        self.config = config
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "communities"
 
-        self.data_folder = get_project_base_path() / config["data_folder"]
-        self.data_folder.mkdir(parents=True, exist_ok=True)
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return get_combined_filename(main_config, cls.get_config_key())
 
-        self.output_filename = Path(self.config["combined_filename"])
+    def __init__(self, main_config):
+        self.main_config = main_config
+        self.config = main_config[self.get_config_key()]
+
+        self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
@@ -34,7 +41,7 @@ class CommunitiesSelector:
         if self.output_filename.exists():
             return
         communities = (
-            pd.read_parquet(project_config["ofgl"]["combined_filename"])
+            pd.read_parquet(OfglLoader.get_output_path(self.main_config))
             .drop_duplicates(subset=["siren"], keep="first")
             .drop(columns=["exercice"])
             .fillna({"population": 0})
@@ -42,7 +49,6 @@ class CommunitiesSelector:
             .pipe(self.add_epci_infos)
             .pipe(self.add_sirene_infos)
         )
-
         communities.to_parquet(self.output_filename, index=False)
 
     @tracker(ulogger=LOGGER, log_start=True)
