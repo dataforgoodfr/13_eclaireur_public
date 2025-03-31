@@ -388,7 +388,6 @@ const FranceMap = () => {
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
-    console.log(feature);
     const props = feature.properties;
     const code = props.code?.toString();
     let data;
