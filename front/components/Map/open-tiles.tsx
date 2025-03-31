@@ -474,26 +474,21 @@ const FranceMap = () => {
             filter={['all', ['==', 'level', 1], ['==', 'level_0', 'FR']]}
             paint={{
               'fill-color': [
-                'case',
-                ['==', ['feature-state', 'population'], null],
-                '#f2f0f7', // Default to red when population is null/not loaded
-                [
-                  'interpolate',
-                  ['linear'],
-                  ['feature-state', 'population'], // Use population from feature state
-                  0,
-                  '#f2f0f7', // Low population color
-                  1000000,
-                  '#9e9ac8',
-                  10000000,
-                  '#6a51a3', // High population color
-                ],
+                'interpolate',
+                ['linear'],
+                // Use a fallback value of 0 when feature-state population is not set
+                ['coalesce', ['feature-state', 'population'], 0],
+                0,
+                '#f2f0f7', // This ensures the default color is light
+                1000000,
+                '#9e9ac8',
+                10000000,
+                '#6a51a3',
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
             }}
           />
-
           {/* Departments Layer */}
           <Layer
             id='departements'
@@ -529,20 +524,16 @@ const FranceMap = () => {
             filter={['==', 'level', 3]}
             paint={{
               'fill-color': [
-                'case',
-                ['==', ['feature-state', 'population'], null],
-                '#f2f0f7', // Default to red when population is null/not loaded
-                [
-                  'interpolate',
-                  ['linear'],
-                  ['feature-state', 'population'], // Use population from feature state
-                  0,
-                  '#f2f0f7', // Low population color
-                  500,
-                  '#9e9ac8',
-                  1000,
-                  '#6a51a3', // High population color
-                ],
+                'interpolate',
+                ['linear'],
+                // Use a fallback value of 0 when feature-state population is not set
+                ['coalesce', ['feature-state', 'population'], 0],
+                0,
+                '#f2f0f7', // This ensures the default color is light
+                500,
+                '#9e9ac8',
+                1000,
+                '#6a51a3',
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
