@@ -4,13 +4,16 @@ import re
 import pandas as pd
 from tqdm import tqdm
 
+from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.utils.config import get_project_base_path, project_config
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import (
     expand_json_columns,
     sort_by_format_priorities,
 )
 from back.scripts.utils.datagouv_api import DataGouvAPI
+
+LOGGER = logging.getLogger(__name__)
 
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
@@ -23,13 +26,8 @@ class DataGouvSearcher:
     """
 
     def __init__(self, datagouv_config):
-        self.logger = logging.getLogger(__name__)
-
         self._config = datagouv_config
-        self.scope = pd.read_parquet(
-            get_project_base_path() / project_config["communities"]["combined_filename"]
-        )
-        print(sorted(self.scope.columns))
+        self.scope = pd.read_parquet(CommunitiesSelector.get_output_path(datagouv_config))
         self.data_folder = get_project_base_path() / self._config["paths"]["root"]
         self.organization_data_folder = (
             self.data_folder / self._config["paths"]["organization_datasets"]
@@ -106,12 +104,12 @@ class DataGouvSearcher:
         flagged_by_description = catalog["description"].str.contains(
             description_filter, case=False, na=False
         )
-        self.logger.info(
+        LOGGER.info(
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
         flagged_by_title = catalog["title"].str.contains(title_filter, case=False, na=False)
-        self.logger.info(
+        LOGGER.info(
             f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )
 
@@ -210,15 +208,13 @@ class DataGouvSearcher:
         """
         Log basic info about a search result dataframe
         """
-        self.logger.info(
+        LOGGER.info(
             f"Nombre de datasets correspondant au filtre de titre ou de description : {df['dataset_id'].nunique()}"
         )
-        self.logger.info(f"Nombre de fichiers : {df.shape[0]}")
-        self.logger.info(f"Nombre de fichiers uniques : {df['url'].nunique()}")
-        self.logger.info(
-            f"Nombre de fichiers par format : {df.groupby('format').size().to_dict()}"
-        )
-        self.logger.info(
+        LOGGER.info(f"Nombre de fichiers : {df.shape[0]}")
+        LOGGER.info(f"Nombre de fichiers uniques : {df['url'].nunique()}")
+        LOGGER.info(f"Nombre de fichiers par format : {df.groupby('format').size().to_dict()}")
+        LOGGER.info(
             f"Nombre de fichiers par fréquence : {df.groupby('frequency').size().to_dict()}"
         )
 
@@ -255,7 +251,7 @@ class DataGouvSearcher:
                 catalog, search_config["title_filter"], search_config["description_filter"]
             ).merge(metadata_catalog, on="dataset_id")
             datafiles.append(topdown_datafiles)
-            self.logger.info("Topdown datafiles basic info :")
+            LOGGER.info("Topdown datafiles basic info :")
             self._log_basic_info(topdown_datafiles)
 
         if method in ["bu_only", "all"]:
@@ -266,7 +262,7 @@ class DataGouvSearcher:
                 search_config["api"]["testIds"],
             )
             datafiles.append(bottomup_datafiles)
-            self.logger.info("Bottomup datafiles basic info :")
+            LOGGER.info("Bottomup datafiles basic info :")
             self._log_basic_info(bottomup_datafiles)
 
         datafiles = (
@@ -276,7 +272,7 @@ class DataGouvSearcher:
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
         )
-        self.logger.info("Total datafiles basic info :")
+        LOGGER.info("Total datafiles basic info :")
         self._log_basic_info(datafiles)
         datafiles.to_parquet(final_datasets_filename)
 
