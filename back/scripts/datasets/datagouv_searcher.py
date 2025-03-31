@@ -1,14 +1,13 @@
 import logging
 import re
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
 
-from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.loaders.csv_loader import CSVLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
+from back.scripts.utils.config import get_combined_filename, get_project_base_path
 from back.scripts.utils.dataframe_operation import (
-    expand_json_columns,
     sort_by_format_priorities,
 )
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -25,98 +24,54 @@ class DataGouvSearcher:
     It provides one public method get_datafiles(search_config, method) to build a list of datafiles based on title and description filters and column names filters.
     """
 
-    def __init__(self, datagouv_config):
-        self._config = datagouv_config
-        self.scope = pd.read_parquet(CommunitiesSelector.get_output_path(datagouv_config))
-        self.data_folder = get_project_base_path() / self._config["paths"]["root"]
-        self.organization_data_folder = (
-            self.data_folder / self._config["paths"]["organization_datasets"]
-        )
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "datagouv_search"
 
-        self.organization_data_folder.mkdir(parents=True, exist_ok=True)
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return get_combined_filename(main_config, cls.get_config_key())
 
-    def initialize_catalog(self):
-        """
-        Load or create the data.gouv dataset catalog and metadata catalog.
-        """
+    def __init__(self, main_config: dict):
+        self.main_config = main_config
+        self._config = main_config[self.get_config_key()]
 
-        catalog_filename = self.data_folder / self._config["files"]["catalog"]
-        if catalog_filename.exists():
-            return pd.read_parquet(catalog_filename)
+        self.data_folder = get_project_base_path() / self._config["data_folder"]
+        self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
-        dataset_catalog_loader = CSVLoader(
-            self._config["datasets"]["url"],
-            columns_to_keep=self._config["datasets"]["columns"],
-        )
-        datasets_catalog = (
-            dataset_catalog_loader.load()
-            .rename(columns={"id": "dataset_id"})
-            .merge(
-                id_datagouvs_to_siren,
-                left_on="organization_id",
-                right_on="id_datagouv",
-            )
-            .drop(columns=["id_datagouv"])
-        )
-        datasets_catalog.to_parquet(catalog_filename)
-        return datasets_catalog
+    def run(self):
+        if self.get_output_path(self.main_config).exists():
+            return
+        self.catalog = pd.read_parquet(DataGouvCatalog.get_output_path(self.main_config))
+        print(self.catalog)
+        from_dataset_infos = self._select_datasets_by_title_and_desc()
+        from_dataset_infos.to_parquet(self.get_output_path(self.main_config))
+        print(from_dataset_infos)
 
-    def initialize_catalog_metadata(self):
-        catalog_metadata_filename = self.data_folder / self._config["files"]["catalog_metadata"]
-        if catalog_metadata_filename.exists():
-            return pd.read_parquet(catalog_metadata_filename)
-
-        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
-        datafile_catalog_loader = CSVLoader(self._config["datafiles"]["url"])
-        datasets_metadata = (
-            datafile_catalog_loader.load()
-            .rename(columns={"dataset.organization_id": "organization_id", "id": "metadata_id"})
-            .merge(
-                id_datagouvs_to_siren,
-                left_on="organization_id",
-                right_on="id_datagouv",
-            )
-            .drop(columns=["id_datagouv"])
-            .pipe(expand_json_columns, column="extras")
-            .rename(
-                columns={
-                    "dataset.id": "dataset_id",
-                    "type": "type_resource",
-                    "extras_check:status": "resource_status",
-                }
-            )
-            # This line is necessary in case of absence of check:status in all jsons.
-            .assign(resource_status=lambda df: df.get("resource_status", -1))
-            .fillna({"resource_status": -1})
-            .astype({"resource_status": "int16"})
-        )
-        datasets_metadata.to_parquet(catalog_metadata_filename)
-        return datasets_metadata
-
-    def _select_datasets_by_title_and_desc(
-        self, catalog: pd.DataFrame, title_filter: str, description_filter: str
-    ) -> pd.DataFrame:
+    def _select_datasets_by_title_and_desc(self) -> pd.DataFrame:
         """
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
         """
-        flagged_by_description = catalog["description"].str.contains(
-            description_filter, case=False, na=False
+        description_pattern = re.compile("|".join(self._config["description_filter"]))
+        flagged_by_description = (
+            self.catalog["dataset.description"]
+            .str.lower()
+            .str.contains(description_pattern, na=False)
         )
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
-        flagged_by_title = catalog["title"].str.contains(title_filter, case=False, na=False)
+        title_pattern = re.compile("|".join(self._config["title_filter"]))
+        flagged_by_title = (
+            self.catalog["dataset.title"].str.lower().str.contains(title_pattern, na=False)
+        )
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )
 
-        return catalog.loc[
-            (flagged_by_title | flagged_by_description),
-            ["siren", "dataset_id", "title", "description", "organization", "frequency"],
-        ]
+        return self.catalog[flagged_by_title | flagged_by_description]
 
     def _select_prefered_format(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -145,7 +100,7 @@ class DataGouvSearcher:
         """
         Select datasets based on metadata fetched from data.gouv organisation page.
         """
-        id_datagouvs_to_siren = self.scope[["siren", "id_datagouv"]]
+        id_datagouvs_to_siren = self.communities[["siren", "id_datagouv"]]
         id_datagouvs_list = (
             sorted(id_datagouvs_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
         )
@@ -268,7 +223,7 @@ class DataGouvSearcher:
         datafiles = (
             pd.concat(datafiles, ignore_index=False)
             .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
-            .merge(self.scope[["siren", "nom", "type"]], on="siren", how="left")
+            .merge(self.communities[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="datagouv")
             .pipe(self._select_prefered_format)
         )
