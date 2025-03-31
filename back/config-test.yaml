@@ -1,6 +1,6 @@
 workflow:
   save_to_db: True
-  replace_tables: False
+  replace_tables: True
 
 ofgl:
   data_folder: back/tests/data/ofgl
