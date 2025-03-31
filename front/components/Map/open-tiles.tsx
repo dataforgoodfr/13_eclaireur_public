@@ -445,6 +445,8 @@ const FranceMap = () => {
         onMouseOut={() => setHoverInfo(null)}
         onClick={onClick}
         attributionControl={false}
+        dragRotate={false}
+        touchPitch={false}
         onLoad={() => {
           setMapReady(true);
 
