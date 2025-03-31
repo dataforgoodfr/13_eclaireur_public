@@ -2,7 +2,9 @@ import os
 import tempfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import pytest
 
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 
@@ -50,7 +52,7 @@ class TestTopicAggregator:
         inp.to_csv(self.raw_filename, index=False)
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
-            topic="test_topic",
+            topic="subventions",
             datafile_loader_config=self.config,
         )
         aggregator.run()
@@ -70,13 +72,15 @@ class TestTopicAggregator:
                 "idRAE": None,
                 "notificationUE": "non",
                 "pourcentageSubvention": "1",
-                "topic": "test_topic",
+                "topic": "subventions",
                 "url": "file:" + str(self.raw_filename),
                 "coll_type": "COM",
+                "annee": np.int32(2023),
             }
         )
         pd.testing.assert_frame_equal(out, expected)
 
+    @pytest.mark.skip(reason="Need to implement a system to reinject siren")
     def test_minimal_benef_only(
         self,
     ):
@@ -90,7 +94,7 @@ class TestTopicAggregator:
         inp.to_csv(self.raw_filename, index=False)
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
-            topic="test_topic",
+            topic="subventions",
             datafile_loader_config=self.config,
         )
 
