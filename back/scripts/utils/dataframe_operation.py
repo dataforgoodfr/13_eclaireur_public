@@ -271,11 +271,23 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col]
+        dt = frame[id_col].dt.tz_localize("UTC")
+    elif "datetime64" in str(frame[id_col].dtype):
+        dt = frame[id_col].dt.tz_convert("UTC")
     else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=True)
-    dt = dt.dt.tz_localize("UTC")
+        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst(frame[id_col])).dt.tz_localize(
+            "UTC"
+        )
     return frame.assign(**{id_col: dt})
+
+
+def is_dayfirst(dts: pd.Series) -> bool:
+    formats = dts.dropna().str.replace(r"\d", "d", regex=True)
+    top_format = formats.value_counts().sort_values(ascending=False)
+    if top_format.empty:
+        return False
+    top_format = top_format.index[0]
+    return not top_format.startswith("d" * 4)
 
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
