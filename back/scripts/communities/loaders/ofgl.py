@@ -83,14 +83,6 @@ class OfglLoader(DatasetAggregator):
         self.columns.to_csv(self.data_folder / "columns.csv")
         return df
 
-    def insee_column(self, code: str) -> str:
-        if code == "DEP":
-            return "code_insee_dept"
-        elif code == "REG":
-            return "code_insee_region"
-        else:
-            return "code_insee"
-
     def get(self):
         data_file = self.data_folder / self._config["processed_data"]["filename"]
 
