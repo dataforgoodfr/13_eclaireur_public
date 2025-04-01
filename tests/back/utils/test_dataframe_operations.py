@@ -1,9 +1,11 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
 from back.scripts.utils.dataframe_operation import (
+    IdentifierFormat,
     expand_json_columns,
+    is_dayfirst,
     normalize_date,
     normalize_identifiant,
     normalize_montant,
@@ -48,6 +50,12 @@ class TestNormalizeBeneficiaireIdentifiant:
         )
         pd.testing.assert_frame_equal(expected_df, normalize_identifiant(df, "idBeneficiaire"))
 
+    def test_siren_format(self):
+        df = pd.DataFrame({"idBeneficiaire": ["123456789", "123456789", "12345678"]})
+        expected_df = pd.DataFrame({"idBeneficiaire": ["123456789", "123456789", "012345678"]})
+        result = normalize_identifiant(df, "idBeneficiaire", format=IdentifierFormat.SIREN)
+        pd.testing.assert_frame_equal(expected_df, result)
+
     def test_siret(self):
         df = pd.DataFrame(
             {"idBeneficiaire": ["01234567890001", "01234567890001", "1234567890001"]}
@@ -66,6 +74,11 @@ class TestNormalizeBeneficiaireIdentifiant:
         )
         expected_df = pd.DataFrame({"idBeneficiaire": ["01234567890001"] * 3})
         pd.testing.assert_frame_equal(expected_df, normalize_identifiant(df, "idBeneficiaire"))
+
+    def test_invalid_format(self):
+        df = pd.DataFrame({"idBeneficiaire": ["123456789", "123456788"]})
+        with pytest.raises(RuntimeError, match="Format must be an IdentifierFormat enum value"):
+            normalize_identifiant(df, "idBeneficiaire", format="invalid")
 
 
 class TestExpandJsonColumns:
@@ -140,9 +153,13 @@ class TestExpandJsonColumns:
 @pytest.mark.parametrize(
     "input_value,expected_output",
     [
-        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (
+            datetime(2020, 2, 1, 2, tzinfo=timezone(timedelta(hours=2))),
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+        ),
+        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
         ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
         (None, None),
         ("", None),
@@ -155,6 +172,16 @@ def test_normalize_date(input_value, expected_output):
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+
+
+class TestIsDayFirst:
+    def test_is_day_first(self):
+        dts = pd.Series(["2022-02-01", "2022-01-02", "12-05-2022"])
+        assert not is_dayfirst(dts)
+
+    def test_not_is_day_first(self):
+        dts = pd.Series(["05/12/2022", "07/03/2024", "2024-04-03"])
+        assert is_dayfirst(dts)
 
 
 class TestNormalizeMontant:

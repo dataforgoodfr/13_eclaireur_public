@@ -8,11 +8,9 @@
       "montant": 500.0,
       "titulaires": [
         {
-          "titulaire": {
             "typeIdentifiant": "SIRET",
             "id": "id_1"
           }
-        }
       ]
     },
     {
@@ -20,14 +18,16 @@
       "acheteur": {
         "id": "a_02"
       },
-      "montant": 12.78,
+      "montant": 40.0,
       "titulaires": [
         {
-          "titulaire": {
             "typeIdentifiant": "SIRET",
             "id": "id_2"
+          },
+        {
+            "typeIdentifiant": "SIRET",
+            "id": "id_3"
           }
-        }
       ]
     }
   ]
