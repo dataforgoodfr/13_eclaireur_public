@@ -67,9 +67,7 @@ class SireneWorkflow:
         if xls_url_cat_ju:
             file_name = xls_url_cat_ju.split("/")[-1]
             file_path = self.data_folder / file_name
-            print(xls_url_cat_ju, file_path, file_path.exists())
             if not file_path.exists():
-                print(file_path)
                 urllib.request.urlretrieve(xls_url_cat_ju, file_path)
 
     def join_naf_level(
@@ -82,23 +80,24 @@ class SireneWorkflow:
         """
         Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df.
         """
-        naf_file_path = self.data_folder / f"naf2008_liste_n{level}.xls"
-        naf_df = pd.read_excel(naf_file_path, header=2)
-        naf_df["Code"] = naf_df["Code"].astype(str).str.replace(".", "", regex=False)
-        naf_polars = pl.from_pandas(naf_df[["Code", "Libellé"]])
-
-        if level == 5:
-            slice_func = pl.col("naf8")
-        elif level == 1:
-            slice_func = pl.col("naf8").str.slice(-1)
-        elif level == 2:
-            slice_func = pl.col("naf8").str.slice(0, 2)
-        elif level == 3:
-            slice_func = pl.col("naf8").str.slice(0, 3)
-        elif level == 4:
-            slice_func = pl.col("naf8").str.slice(0, 4)
-
         column_name = f"naf8_prefix_{level}"
+        naf_file_path = self.data_folder / f"naf2008_liste_n{level}.xls"
+
+        naf_df = pd.read_excel(naf_file_path, header=2)[["Code", "Libellé"]]
+        naf_df["Code"] = naf_df["Code"].astype(str).str.replace(".", "", regex=False)
+        naf_polars = pl.from_pandas(naf_df[["Code", "Libellé"]]).rename(
+            {"Libellé": f"Libellé_naf_n{level}", "Code": column_name}
+        )
+
+        # Le code NAF est composé de 5 niveaux :
+        # - Niveau 0 : correspond au code total (tous les chiffres du code)
+        # - Niveau 1 : correspond à la lettre (dernier caractère du code)
+        # - Niveaux 2 à 4 : correspondent respectivement aux 2 à 4 premiers chiffres du code
+        if level == 1:
+            slice_func = pl.col("naf8").str.slice(-1)
+        else:
+            slice_func = pl.col("naf8").str.slice(0, level)
+
         base_df = base_df.with_columns(
             pl.when(pl.col("nomenclature_naf") == "NAFRev2")
             .then(slice_func)
@@ -106,27 +105,15 @@ class SireneWorkflow:
             .alias(column_name)
         )
 
-        merged_df = base_df.join(
-            naf_polars.rename({"Libellé": f"Libellé_naf_n{level}"}),
-            left_on=column_name,
-            right_on="Code",
-            how="left",
-        ).drop(column_name)
-        return merged_df
+        return base_df.join(naf_polars, on=column_name, how="left").drop(column_name)
 
-    def join_juridical_level(
-        self, base_df, level, code_ju_col="code_ju", categories_ju_data=None
-    ):
+    def join_juridical_level(self, base_df, level, categories_ju_data, code_ju_col="code_ju"):
         """
         Effectue la jointure avec les données juridiques correspondant au niveau (niv1, niv2, niv3) sur base_df.
         """
         base_df = base_df.with_columns(pl.col(code_ju_col).cast(pl.Utf8))
-        if level == 1:
-            slice_func = pl.col(code_ju_col).str.slice(0, 1)
-        elif level == 2:
-            slice_func = pl.col(code_ju_col).str.slice(0, 2)
-        elif level == 3:
-            slice_func = pl.col(code_ju_col)
+
+        slice_func = pl.col(code_ju_col).str.slice(0, level)
 
         column_name = f"code_ju_part_{level}"
         base_df = base_df.with_columns(
@@ -137,18 +124,17 @@ class SireneWorkflow:
         )
 
         juridical_data = categories_ju_data[level - 1]
-        juridical_polars = pl.from_pandas(juridical_data[["Code", "Libellé"]])
+        juridical_polars = pl.from_pandas(juridical_data[["Code", "Libellé"]]).rename(
+            {"Libellé": f"categorie_juridique_n{level}_name", "Code": column_name}
+        )
 
-        juridical_polars = juridical_polars.with_columns(pl.col("Code").cast(pl.Utf8))
+        juridical_polars = juridical_polars.with_columns(pl.col(column_name).cast(pl.Utf8))
 
-        merged_df = base_df.join(
-            juridical_polars.rename({"Libellé": f"categorie_juridique_n{level}_name"}),
-            left_on=column_name,
-            right_on="Code",
+        return base_df.join(
+            juridical_polars,
+            on=column_name,
             how="left",
         ).drop(column_name)
-
-        return merged_df
 
     def _format_to_parquet(self):
         if self.filename.exists():
@@ -190,20 +176,10 @@ class SireneWorkflow:
             base_df = self.join_naf_level(base_df, level)
 
         juridical_data_path = self.data_folder / "cj_septembre_2022.xls"
-        categorie_juridique_niv1 = pd.read_excel(
-            juridical_data_path, sheet_name="Niveau I", header=3
-        )
-        categorie_juridique_niv2 = pd.read_excel(
-            juridical_data_path, sheet_name="Niveau II", header=3
-        )
-        categorie_juridique_niv3 = pd.read_excel(
-            juridical_data_path, sheet_name="Niveau III", header=3
-        )
-
+        sheet_levels = ["I", "II", "III"]
         categories_ju_data = [
-            categorie_juridique_niv1,
-            categorie_juridique_niv2,
-            categorie_juridique_niv3,
+            pd.read_excel(juridical_data_path, sheet_name=f"Niveau {level}", header=3)
+            for level in sheet_levels
         ]
 
         for level in range(1, 4):
