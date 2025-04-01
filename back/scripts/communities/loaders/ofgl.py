@@ -35,6 +35,8 @@ READ_COLUMNS = {
 
 
 class OfglLoader(DatasetAggregator):
+    INSEE_COL = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
+
     @classmethod
     def get_config_key(cls):
         return "ofgl"
@@ -55,7 +57,6 @@ class OfglLoader(DatasetAggregator):
         opts = {"columns": READ_COLUMNS.keys(), "dtype": COM_CSV_DTYPES}
 
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
-
         df = (
             loader.load()
             .rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
@@ -63,9 +64,15 @@ class OfglLoader(DatasetAggregator):
             .assign(
                 type=file_metadata.code,
                 outre_mer=lambda df: (df["outre_mer"] == "Oui").fillna(False),
-                code_insee=lambda df: df[self.insee_column(file_metadata.code)],
             )
-            .sort_values("exercice", ascending=False)
+        )
+
+        insee_col = self.INSEE_COL.get(file_metadata.code)
+        if insee_col:
+            df = df.assign(code_insee=lambda df: df[insee_col])
+
+        df = (
+            df.sort_values("exercice", ascending=False)
             .drop_duplicates(subset=["siren"], keep="first")
             .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         )
