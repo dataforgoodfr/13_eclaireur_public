@@ -3,14 +3,10 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.utils.config import get_combined_filename, get_project_base_path
-from back.scripts.utils.dataframe_operation import (
-    sort_by_format_priorities,
-)
-from back.scripts.utils.datagouv_api import DataGouvAPI
+from back.scripts.utils.dataframe_operation import sort_by_format_priorities
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,10 +39,12 @@ class DataGouvSearcher:
         if self.get_output_path(self.main_config).exists():
             return
         self.catalog = pd.read_parquet(DataGouvCatalog.get_output_path(self.main_config))
-        print(self.catalog)
-        from_dataset_infos = self._select_datasets_by_title_and_desc()
+        from_dataset_infos = (
+            self._select_datasets_by_title_and_desc()
+            .pipe(self._select_prefered_format)
+            .pipe(remove_same_dataset_formats)
+        )
         from_dataset_infos.to_parquet(self.get_output_path(self.main_config))
-        print(from_dataset_infos)
 
     def _select_datasets_by_title_and_desc(self) -> pd.DataFrame:
         """
@@ -90,75 +88,6 @@ class DataGouvSearcher:
             .drop(columns=["priority"])
         )
 
-    def _select_dataset_by_metadata(
-        self,
-        title_filter: list[str],
-        description_filter: list[str],
-        column_filter: list[str],
-        test_ids: list[str],
-    ) -> list[dict]:
-        """
-        Select datasets based on metadata fetched from data.gouv organisation page.
-        """
-        id_datagouvs_to_siren = self.communities[["siren", "id_datagouv"]]
-        id_datagouvs_list = (
-            sorted(id_datagouvs_to_siren["id_datagouv"].unique()) if not test_ids else test_ids
-        )
-
-        pattern_title = "|".join([x.lower() for x in title_filter])
-        pattern_description = "|".join([x.lower() for x in description_filter])
-        pattern_resources = "|".join([x.lower() for x in column_filter])
-
-        datasets = (
-            pd.concat(
-                [
-                    DataGouvAPI.organisation_datasets(
-                        orga, self._config["datagouv_api"]["organization_folder"]
-                    )
-                    for orga in tqdm(id_datagouvs_list)
-                ],
-                ignore_index=True,
-            )
-            .assign(
-                keyword_in_title=lambda df: df["title"]
-                .str.lower()
-                .str.contains(pattern_title, regex=True),
-                keyword_in_description=lambda df: df["description"]
-                .str.lower()
-                .str.contains(pattern_description, regex=True),
-                keyword_in_resource=lambda df: df["resource_description"]
-                .str.lower()
-                .str.contains(pattern_resources, regex=True)
-                .fillna(False),
-            )
-            .pipe(lambda df: df[df["keyword_in_title"] | df["keyword_in_description"]])
-        )
-
-        # A dataset may have multiple available formats (resources)
-        # Not all resources have the same info within metadata.
-        # If we find an interesting property for a given format, we assume it should be the same
-        # for all formats of this dataset.
-        propagated_columns = (
-            datasets.groupby("dataset_id")
-            .agg({"keyword_in_resource": "max"})
-            .pipe(lambda df: df[df["keyword_in_resource"]])
-        )
-
-        datasets = (
-            pd.merge(
-                datasets.drop(columns=["keyword_in_resource"]),
-                propagated_columns,
-                on="dataset_id",
-            )
-            .merge(
-                id_datagouvs_to_siren,
-                left_on="organization_id",
-                right_on="id_datagouv",
-            )
-            .drop(columns=["id_datagouv", "organization_id"])
-        )
-        return datasets
-
     def _log_basic_info(self, df: pd.DataFrame):
         """
         Log basic info about a search result dataframe
@@ -172,66 +101,6 @@ class DataGouvSearcher:
         LOGGER.info(
             f"Nombre de fichiers par fréquence : {df.groupby('frequency').size().to_dict()}"
         )
-
-    def select_datasets(self, search_config: dict, method: str = "all") -> pd.DataFrame:
-        """
-        Identify a set of datasets of interest with multiple methods.
-        `td_only` identifies datasets based on keywords on their title or description.
-        `bu_only` identifies datasets based on metadata from data.gouv api.
-        `all` combines both methods.
-        """
-        if method not in ["all", "td_only", "bu_only"]:
-            raise ValueError(
-                f"Unknown Datafiles Searcher method {method} : should be one of ['td_only', 'bu_only', 'all']"
-            )
-
-        final_datasets_filename = self.data_folder / self._config["files"]["datasets"]
-        if final_datasets_filename.exists():
-            return pd.read_parquet(final_datasets_filename)
-
-        catalog = self.initialize_catalog()
-        metadata_catalog = self.initialize_catalog_metadata()[
-            [
-                "dataset_id",
-                "format",
-                "created_at",
-                "url",
-                "type_resource",
-                "resource_status",
-            ]
-        ]
-        datafiles = []
-        if method in ["all", "td_only"]:
-            topdown_datafiles = self._select_datasets_by_title_and_desc(
-                catalog, search_config["title_filter"], search_config["description_filter"]
-            ).merge(metadata_catalog, on="dataset_id")
-            datafiles.append(topdown_datafiles)
-            LOGGER.info("Topdown datafiles basic info :")
-            self._log_basic_info(topdown_datafiles)
-
-        if method in ["bu_only", "all"]:
-            bottomup_datafiles = self._select_dataset_by_metadata(
-                search_config["api"]["title"],
-                search_config["api"]["description"],
-                search_config["api"]["columns"],
-                search_config["api"]["testIds"],
-            )
-            datafiles.append(bottomup_datafiles)
-            LOGGER.info("Bottomup datafiles basic info :")
-            self._log_basic_info(bottomup_datafiles)
-
-        datafiles = (
-            pd.concat(datafiles, ignore_index=False)
-            .pipe(lambda df: df[~df["type_resource"].fillna("empty").isin(["documentation"])])
-            .merge(self.communities[["siren", "nom", "type"]], on="siren", how="left")
-            .assign(source="datagouv")
-            .pipe(self._select_prefered_format)
-        )
-        LOGGER.info("Total datafiles basic info :")
-        self._log_basic_info(datafiles)
-        datafiles.to_parquet(final_datasets_filename)
-
-        return datafiles
 
 
 def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:

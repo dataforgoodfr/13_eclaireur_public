@@ -45,15 +45,12 @@ class WorkflowManager:
         FinancialAccounts(self.config).run()
         ElectedOfficialsWorkflow(self.config).run()
         DeclaInteretWorkflow(self.config).run()
+        DataGouvSearcher(self.config).run()
+
+        self.process_topic("subventions", self.config["search"]["subventions"])
         self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
-
-    def _run_subvention_and_marche(self):
-        # Loop through the topics defined in the config, e.g. marches publics or subventions.
-        for topic, topic_config in self.config["search"].items():
-            # Process each topic to get files in scope and datafiles
-            self.process_topic(topic, topic_config)
 
     def check_file_age(self, config):
         """
@@ -83,8 +80,9 @@ class WorkflowManager:
             # Find multiple datafiles from datagouv
             config = self.config["datagouv"]
             config["datagouv_api"] = self.config["datagouv_api"]
-            datagouv_searcher = DataGouvSearcher(config)
-            datagouv_topic_files_in_scope = datagouv_searcher.select_datasets(topic_config)
+            datagouv_topic_files_in_scope = pd.read_parquet(
+                DataGouvSearcher.get_output_path(self.config)
+            )
 
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder()
