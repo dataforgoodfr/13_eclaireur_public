@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
@@ -13,3 +15,20 @@ export enum CommunityType {
   /** Etablissement public territorial */
   EPT = 'EPT',
 }
+
+export const formSchema = z.object({
+  firstname: z.string().min(2, {
+    message: 'Votre prénom doit contenir au moins 2 caractères',
+  }),
+  lastname: z.string().min(2, {
+    message: 'Votre nom doit contenir au moins 2 caractères',
+  }),
+  email: z.string().email({
+    message: "Votre adresse email n'est pas valide",
+  }),
+  to: z.string().email(),
+  object: z.string(),
+  message: z.any(),
+});
+
+export type TformSchema = z.infer<typeof formSchema>;
