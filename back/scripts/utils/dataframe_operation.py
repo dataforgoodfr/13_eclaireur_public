@@ -192,7 +192,7 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "float64":
-        return np.abs(frame)
+        return frame.assign(**{id_col: np.abs(frame[id_col])})
     if str(frame[id_col].dtype) == "int64":
         return frame.assign(**{id_col: np.abs(frame[id_col].astype("float64"))})
     montant = (
