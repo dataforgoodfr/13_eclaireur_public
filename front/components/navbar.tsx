@@ -33,7 +33,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Interpeller',
-    href: '/',
+    href: '/interpeller',
     description: 'Comment inciter mes élus à plus de transparence ?',
   },
   {
