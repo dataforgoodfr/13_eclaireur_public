@@ -1,3 +1,6 @@
+from pathlib import Path
+import typing
+import polars as pl
 from polars import col
 
 from back.scripts.datasets.sirene import SireneWorkflow
@@ -11,7 +14,7 @@ class SubventionsEnricher(BaseEnricher):
         return "subventions"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict):
+    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
         return [
             TopicAggregator.get_output_path(
                 TopicAggregator.substitute_config(
@@ -26,7 +29,7 @@ class SubventionsEnricher(BaseEnricher):
         raise Exception("Utility class.")
 
     @classmethod
-    def _clean_and_enrich(cls, inputs):
+    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         """
         Enrich the raw subvention dataset
         """
