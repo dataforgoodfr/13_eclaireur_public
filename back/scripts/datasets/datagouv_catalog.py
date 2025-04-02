@@ -46,8 +46,8 @@ class DataGouvCatalog:
             raise RuntimeError("Failed to load dataset")
 
         df = df.pipe(normalize_column_names).pipe(expand_json_columns, column="extras")
-        if "resource_status" not in df.columns:
-            df = df.assign(resource_status=-1)
+        if "extras_check:status" not in df.columns:
+            df = df.assign(**{"extras_check:status": -1})
 
         return (
             pl.from_pandas(df)
