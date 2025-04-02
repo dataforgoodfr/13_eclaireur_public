@@ -19,6 +19,10 @@ communities:
     temp_folder:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
+  postal_code:
+    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+
+
 datagouv_search:
   data_folder: back/data/datagouv_search
   combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
