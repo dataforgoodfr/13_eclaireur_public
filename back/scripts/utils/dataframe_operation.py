@@ -268,16 +268,27 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
+        frame[f"année_{id_col}"] = frame[id_col].dt.year
         return frame
-
     if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col].dt.tz_localize("UTC")
-    elif "datetime64" in str(frame[id_col].dtype):
-        dt = frame[id_col].dt.tz_convert("UTC")
+        dt = frame[id_col]
     else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst(frame[id_col])).dt.tz_localize(
-            "UTC"
+        dt = pd.to_datetime(frame[id_col], dayfirst=True)
+
+    if (
+        (frame[id_col].astype(str).str.len() == 4) & (frame[id_col].astype(str).str.isdigit())
+    ).all():
+        frame[f"année_{id_col}"] = frame[id_col].astype(int)
+        frame[f"année_{id_col}"] = frame[f"année_{id_col}"].where(
+            frame[f"année_{id_col}"] >= 2000, pd.NaT
         )
+        frame[id_col] = pd.NaT
+        return frame
+    else:
+        dt = dt[dt.isna() | (dt.dt.year >= 2000)]
+        frame[f"année_{id_col}"] = dt.dt.year
+        dt = dt.dt.tz_localize("UTC")
+
     return frame.assign(**{id_col: dt})
 
 

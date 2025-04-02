@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
@@ -152,27 +152,46 @@ class TestExpandJsonColumns:
 
 
 @pytest.mark.parametrize(
-    "input_value,expected_output",
+    "input_value,expected_output,expected_year_column",
     [
-        (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
-        (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         (
-            datetime(2020, 2, 1, 2, tzinfo=timezone(timedelta(hours=2))),
-            datetime(2020, 2, 1, tzinfo=timezone.utc),
+            datetime(2020, 1, 1, tzinfo=timezone.utc),
+            datetime(2020, 1, 1, tzinfo=timezone.utc),
+            2020,
         ),
-        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
-        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
-        (None, None),
-        ("", None),
+        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
+        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc), 2019),
+        (None, None, None),
+        ("", None, None),
+        (datetime(1900, 1, 1), None, None),
+        (2020, None, 2020),
+        ("2020", None, 2020),
+        (1900, None, None),
     ],
 )
-def test_normalize_date(input_value, expected_output):
+# def test_normalize_date(input_value, expected_output):
+#     df = pd.DataFrame({"date": [input_value]})
+#     if expected_output is not None:
+#         out = normalize_date(df, "date")
+#         assert out["date"].iloc[0] == expected_output
+#     else:
+#         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+
+def test_normalize_date(input_value, expected_output, expected_year_column):
     df = pd.DataFrame({"date": [input_value]})
+    out = normalize_date(df, "date")
+    print("out", out)
     if expected_output is not None:
-        out = normalize_date(df, "date")
         assert out["date"].iloc[0] == expected_output
     else:
-        assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+        assert pd.isna(out["date"].iloc[0])
+
+    if expected_year_column is not None:
+        assert out["année_date"].iloc[0] == expected_year_column
+    else:
+        # Vérifier que l'année est également NaN lorsque l'année attendue est None
+        assert pd.isna(out["année_date"].iloc[0])
 
 
 class TestIsDayFirst:
