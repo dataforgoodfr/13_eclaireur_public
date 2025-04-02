@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect,PureComponent } from 'react';
-import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 
 import { Contrast, ArrowDownToLine } from "lucide-react"
 import {
@@ -35,6 +35,26 @@ export default function Trends({data}:{data: any[]}) {
       return acc;
     }, {}),
   );
+
+  function formatNumberWithSpaces(number: number): string {
+    return number.toLocaleString('fr-FR')
+  }
+
+  const renderLabel = (props: any) => {
+    const { x, y, width, value } = props;
+    return (
+      <text
+        x={x + width / 2}
+        y={y - 10} // Ajustez la position du label au-dessus de la barre
+        fill="#4e4e4e"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="16"
+      >
+        {formatNumberWithSpaces(value)} €
+      </text>
+    );
+  };
 
 
   return (
@@ -91,15 +111,6 @@ export default function Trends({data}:{data: any[]}) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="Année" />
-          <YAxis />
-          <Tooltip 
-            formatter={(value, name) => {
-              const tooltipLabels: Record<string, string> = {
-                Nombre: "Nombre de marchés",
-              };
-              return [value, tooltipLabels[name] || name];
-            }}
-          /> 
           <Legend 
             formatter={(value) => {
               const legendLabels: Record<string, string> = {
@@ -109,8 +120,14 @@ export default function Trends({data}:{data: any[]}) {
               return legendLabels[value] || value;
             }}
           />
-          {!contractDisplayed && <Bar dataKey="Montant" fill="#413ea0" />}
-          {contractDisplayed && <Bar dataKey="Nombre" fill="#ff7300" />}
+          {!contractDisplayed && 
+            <Bar dataKey="Montant" fill="#413ea0"  radius={[10, 10, 0, 0]} >
+              <LabelList content={renderLabel} />
+            </Bar>}
+          {contractDisplayed && 
+            <Bar dataKey="Nombre" fill="#ff7300"  radius={[10, 10, 0, 0]}>
+              <LabelList dataKey="Nombre" position="top" />
+            </Bar>}
         </BarChart>
       </ResponsiveContainer>
     </div>
