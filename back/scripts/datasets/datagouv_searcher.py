@@ -42,7 +42,7 @@ class DataGouvSearcher:
         from_dataset_infos = (
             self._select_datasets_by_title_and_desc()
             .pipe(self._select_prefered_format)
-            .pipe(remove_same_dataset_formats)
+            .pipe(remove_same_dataset_formats, column="base_url")
         )
         from_dataset_infos.to_parquet(self.get_output_path(self.main_config))
 
@@ -102,7 +102,7 @@ class DataGouvSearcher:
         )
 
 
-def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
+def remove_same_dataset_formats(df: pd.DataFrame, column: str = "url") -> pd.DataFrame:
     """
     Identify from url different formats of the same dataset and only select the most useful format.
 
@@ -115,16 +115,16 @@ def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
         f: re.compile(r"^(.*)\b" + f + r"\b") for f in df["format"].dropna().unique()
     }
     base_url = [
-        (fetch_base_url[row.format].match(row.url), row.url)
-        if row.url and not pd.isna(row.format)
-        else (None, row.url)
-        for row in df.itertuples()
+        (fetch_base_url[row["format"]].match(row[column]), row[column])
+        if row[column] and not pd.isna(row["format"])
+        else (None, row[column])
+        for _, row in df.iterrows()
     ]
     base_url = [m.group(1) if m else url for m, url in base_url]
     return (
-        df.assign(base_url=base_url)
+        df.assign(_base_url=base_url)
         .pipe(sort_by_format_priorities, keep=True)
-        .sort_values(["dataset_id", "base_url", "priority"])
-        .drop_duplicates(subset=["dataset_id", "base_url"], keep="first")
-        .drop(columns=["priority", "base_url"])
+        .sort_values(["dataset_id", "_base_url", "priority"])
+        .drop_duplicates(subset=["dataset_id", "_base_url"], keep="first")
+        .drop(columns=["priority", "_base_url"])
     )

@@ -58,11 +58,17 @@ class DataGouvCatalog:
                     "dataset_organization_id": "id_datagouv",
                     "type": "type_resource",
                     "extras_check:status": "resource_status",
+                    "url": "base_url",
                 }
             )
             .with_columns(
                 col("resource_status").fill_null(-1).cast(pl.Int16),
                 pl.lit(None).cast(pl.String).alias("dataset_description"),
+                (
+                    pl.lit("https://www.data.gouv.fr/fr/datasets/r/")
+                    + col("id").cast(pl.String)
+                ).alias("url"),
+                col("id").alias("url_hash"),
             )
             .pipe(self._add_siren)
         )

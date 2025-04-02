@@ -107,6 +107,7 @@ class TestDataGouvSearch:
                 "siren": ["111", "222", "333"],
                 "format": "csv",
                 "url": ["first_url", "second_url", "third_url"],
+                "base_url": ["first_url", "second_url", "third_url"],
                 "dataset_id": [1, 2, 4],
             }
         )
@@ -125,6 +126,7 @@ class TestDataGouvSearch:
                 "siren": ["111", "222"],
                 "format": "csv",
                 "url": ["first_url", "second_url"],
+                "base_url": ["first_url", "second_url"],
                 "dataset_id": [1, 2],
             }
         )
