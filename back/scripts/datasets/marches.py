@@ -11,8 +11,8 @@ from urllib.request import urlretrieve
 import ijson
 import pandas as pd
 
+from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.utils.config import project_config
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -52,8 +52,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 main_config,
             )
 
-        catalog = pd.read_parquet(project_config["datagouv_catalog"]["combined_filename"]).pipe(
-            lambda df: df[df["dataset.id"] == DATASET_ID]
+        catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
+            lambda df: df[df["dataset_id"] == DATASET_ID]
         )
         complete_years = catalog.assign(
             year=catalog["url"].str.extract(r"decp-(\d{4}).json")
