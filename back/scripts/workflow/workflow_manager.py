@@ -48,7 +48,6 @@ class WorkflowManager:
         DataGouvSearcher(self.config).run()
 
         self.process_topic("subventions", self.config["search"]["subventions"])
-        self._run_subvention_and_marche()
 
         self.logger.info("Workflow completed.")
 
@@ -87,7 +86,6 @@ class WorkflowManager:
             # Find single datafiles from single urls (standalone datasources outside of datagouv)
             single_urls_builder = SingleUrlsBuilder()
             single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
-
             # Concatenate both datafiles lists into one
             topic_files_in_scope = (
                 pd.concat(

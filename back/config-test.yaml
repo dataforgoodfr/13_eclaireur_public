@@ -86,6 +86,12 @@ datagouv_catalog:
   combined_filename: back/tests/data/datagouv_catalog/catalog.parquet
   catalog_url: file:./back/tests/inputs/datagouv_catalog.csv
 
+datagouv_search:
+  data_folder: back/data/datagouv_search
+  combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
+  title_filter: 
+    - subventions
+  description_filter: 
 datafile_loader:
   data_folder: 'back/tests/data/datasets/%(topic)s'
   combined_filename: 'back/tests/data/datasets/%(topic)s.parquet'

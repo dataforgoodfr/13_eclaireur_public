@@ -51,9 +51,9 @@ class DataGouvSearcher:
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
         """
-        description_pattern = re.compile("|".join(self._config["description_filter"]))
+        description_pattern = re.compile("|".join(self._config.get("description_filter") or []))
         flagged_by_description = (
-            self.catalog["dataset.description"]
+            self.catalog["dataset_description"]
             .str.lower()
             .str.contains(description_pattern, na=False)
         )
@@ -63,12 +63,11 @@ class DataGouvSearcher:
 
         title_pattern = re.compile("|".join(self._config["title_filter"]))
         flagged_by_title = (
-            self.catalog["dataset.title"].str.lower().str.contains(title_pattern, na=False)
+            self.catalog["dataset_title"].str.lower().str.contains(title_pattern, na=False)
         )
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )
-
         return self.catalog[flagged_by_title | flagged_by_description]
 
     def _select_prefered_format(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -122,7 +121,6 @@ def remove_same_dataset_formats(df: pd.DataFrame) -> pd.DataFrame:
         for row in df.itertuples()
     ]
     base_url = [m.group(1) if m else url for m, url in base_url]
-
     return (
         df.assign(base_url=base_url)
         .pipe(sort_by_format_priorities, keep=True)

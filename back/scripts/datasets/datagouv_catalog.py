@@ -8,6 +8,7 @@ from polars import col
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_combined_filename
+from back.scripts.utils.dataframe_operation import expand_json_columns, normalize_column_names
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -43,9 +44,26 @@ class DataGouvCatalog:
         df = BaseLoader.loader_factory(url).load()
         if not isinstance(df, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
-        pl.from_pandas(df).rename({"dataset.organization_id": "id_datagouv"}).pipe(
-            self._add_siren
-        ).write_parquet(self.output_filename)
+
+        df = df.pipe(normalize_column_names).pipe(expand_json_columns, column="extras")
+        if "resource_status" not in df.columns:
+            df = df.assign(resource_status=-1)
+
+        return (
+            pl.from_pandas(df)
+            .rename(
+                {
+                    "dataset_organization_id": "id_datagouv",
+                    "type": "type_resource",
+                    "extras_check:status": "resource_status",
+                }
+            )
+            .with_columns(
+                col("resource_status").fill_null(-1).cast(pl.Int16),
+                pl.lit(None).cast(pl.String).alias("dataset_description"),
+            )
+            .pipe(self._add_siren)
+        )
 
     def _catalog_url(self):
         """
