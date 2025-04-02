@@ -41,16 +41,18 @@ class DataGouvCatalog:
 
         url = self._config.get("catalog_url") or self._catalog_url()
 
-        df = BaseLoader.loader_factory(url).load()
-        if not isinstance(df, pd.DataFrame):
+        catalog = BaseLoader.loader_factory(url).load()
+        if not isinstance(catalog, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
 
-        df = df.pipe(normalize_column_names).pipe(expand_json_columns, column="extras")
-        if "extras_check:status" not in df.columns:
-            df = df.assign(**{"extras_check:status": -1})
+        catalog = catalog.pipe(normalize_column_names).pipe(
+            expand_json_columns, column="extras"
+        )
+        if "extras_check:status" not in catalog.columns:
+            catalog = catalog.assign(**{"extras_check:status": -1})
 
-        return (
-            pl.from_pandas(df)
+        catalog = (
+            pl.from_pandas(catalog)
             .rename(
                 {
                     "dataset_organization_id": "id_datagouv",
@@ -64,6 +66,8 @@ class DataGouvCatalog:
             )
             .pipe(self._add_siren)
         )
+
+        catalog.write_parquet(self.output_filename)
 
     def _catalog_url(self):
         """
