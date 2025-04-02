@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import polars as pl
 from polars import col
@@ -50,7 +51,7 @@ class DataGouvCatalog:
         )
         if "extras_check:status" not in catalog.columns:
             catalog = catalog.assign(**{"extras_check:status": -1})
-
+        columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
         catalog = (
             pl.from_pandas(catalog)
             .rename(
@@ -69,7 +70,12 @@ class DataGouvCatalog:
                     + col("id").cast(pl.String)
                 ).alias("url"),
                 col("id").alias("url_hash"),
+                col("format")
+                .fill_null(col("extras_check:headers:content-type"))
+                .fill_null(col("mime"))
+                .fill_null(col("extras_analysis:mime-type")),
             )
+            .select(*columns)
             .pipe(self._add_siren)
         )
 
