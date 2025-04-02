@@ -158,7 +158,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>Télécharger les données</DropdownMenuItem>
-              <DropdownMenuItem>Télécharger le graphique</DropdownMenuItem>
+              <DropdownMenuItem>Télécharger le tableau</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
