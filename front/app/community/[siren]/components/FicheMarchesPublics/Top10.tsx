@@ -1,7 +1,6 @@
 'use client'
 
-import React, { use } from 'react'
-import { useEffect, useState } from 'react'
+import {useState } from 'react'
 
 import {
   DropdownMenu,
