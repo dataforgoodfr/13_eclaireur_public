@@ -1,36 +1,44 @@
-'use client'
-import Link from 'next/link'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { formSchema, type TformSchema } from 'utils/types'
-import MessageToPoliticians from './MessageToPoliticians'
+'use client';
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useForm } from 'react-hook-form';
+
+
+
+import Link from 'next/link';
+
+
+
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { type TformSchema, formSchema } from 'utils/types';
+
+
+
+import MessageToPoliticians from './MessageToPoliticians';
+
+
+
+
 
 type TInterpellateForm = {
-  to: string[]
-  missingData: unknown
-}
+  to: string[];
+  missingData: unknown;
+  communityParam: string;
+};
 export default function InterpellateForm({
   to = ['olivier.pretre@gmx.fr'],
   missingData,
+  communityParam,
 }: TInterpellateForm) {
-  const formMessage = MessageToPoliticians
+  const formMessage = MessageToPoliticians;
   const {
     formState: { isSubmitting },
     setError,
-  } = useForm()
+  } = useForm();
 
   const form = useForm<TformSchema>({
     resolver: zodResolver(formSchema),
@@ -43,7 +51,7 @@ export default function InterpellateForm({
         'Transparence des données publiques – Publication des investissements et marchés publics',
       message: formMessage,
     },
-  })
+  });
 
   const onSubmit = async (data: TformSchema) => {
     const response = await fetch('/api/interpellate', {
@@ -52,54 +60,54 @@ export default function InterpellateForm({
       headers: {
         'Content-Type': 'application/json',
       },
-    })
-    const responseData = await response.json()
+    });
+    const responseData = await response.json();
     if (!response.ok) {
-      alert('Submitting form failed!')
-      return
+      alert('Submitting form failed!');
+      return;
     }
 
     if (responseData.errors) {
-      const errors = responseData.errors
+      const errors = responseData.errors;
 
       if (errors.firstname) {
         setError('firstname', {
           type: 'server',
           message: errors.firstname,
-        })
+        });
       } else if (errors.lastname) {
         setError('lastname', {
           type: 'server',
           message: errors.lastname,
-        })
+        });
       } else if (errors.email) {
         setError('email', {
           type: 'server',
           message: errors.email,
-        })
+        });
       } else {
-        alert('Something went wrong!')
+        alert('Something went wrong!');
       }
     }
-    form.reset()
-  }
+    form.reset();
+  };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-wrap gap-4 justify-center items-start"
+        className='flex flex-wrap items-start justify-center gap-4'
       >
-        <fieldset className="basis-1/4">
-          <legend className="mb-4">Vos coordonnées</legend>
+        <fieldset className='basis-1/4'>
+          <legend className='mb-4'>Vos coordonnées</legend>
           <FormField
             control={form.control}
-            name="firstname"
+            name='firstname'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Prénom</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrez votre prénom" {...field} />
+                  <Input placeholder='Entrez votre prénom' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -107,12 +115,12 @@ export default function InterpellateForm({
           />
           <FormField
             control={form.control}
-            name="lastname"
+            name='lastname'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nom</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrez votre nom" {...field} />
+                  <Input placeholder='Entrez votre nom' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -120,12 +128,12 @@ export default function InterpellateForm({
           />
           <FormField
             control={form.control}
-            name="email"
+            name='email'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrez votre adresse e-mail" {...field} />
+                  <Input placeholder='Entrez votre adresse e-mail' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,20 +141,16 @@ export default function InterpellateForm({
           />
         </fieldset>
 
-        <fieldset className="basis-2/3">
-          <legend className="mb-4">Votre message</legend>
+        <fieldset className='basis-2/3'>
+          <legend className='mb-4'>Votre message</legend>
           <FormField
             control={form.control}
-            name="to"
+            name='to'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>À</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Entrez votre adresse e-mail"
-                    disabled
-                    {...field}
-                  />
+                  <Input placeholder='Entrez votre adresse e-mail' disabled {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,40 +158,40 @@ export default function InterpellateForm({
           />
           <FormField
             control={form.control}
-            name="object"
+            name='object'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Objet</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrez votre nom" disabled {...field} />
+                  <Input placeholder='Entrez votre nom' disabled {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="simulatedTextArea">
-            <div className="simulatedLabel">Votre message</div>
+          <div className='simulatedTextArea'>
+            <div className='simulatedLabel'>Votre message</div>
             <div
-              id="simulatedTextAreaContent"
+              id='simulatedTextAreaContent'
               dangerouslySetInnerHTML={{ __html: formMessage }}
             ></div>
           </div>
 
-          <div className="flex items-center space-x-2 mt-4">
-            <Checkbox id="terms" checked={true} />
+          <div className='mt-4 flex items-center space-x-2'>
+            <Checkbox id='terms' checked={true} />
             <label
-              htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              htmlFor='terms'
+              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
             >
               Recevoir une copie du message par e-mail
             </label>
           </div>
         </fieldset>
 
-        <div className="my-12 min-w-full flex justify-center gap-4">
+        <div className='my-12 flex min-w-full justify-center gap-4'>
           <Link
-            href="/"
+            href={`/interpeller/${communityParam}/step2`}
             className={buttonVariants({
               variant: 'outline',
               className: 'min-w-[200] bg-black text-white',
@@ -196,7 +200,7 @@ export default function InterpellateForm({
             <ChevronLeft /> Revenir
           </Link>
           <Button
-            type="submit"
+            type='submit'
             disabled={isSubmitting}
             className={buttonVariants({
               variant: 'outline',
@@ -208,5 +212,5 @@ export default function InterpellateForm({
         </div>
       </form>
     </Form>
-  )
+  );
 }
