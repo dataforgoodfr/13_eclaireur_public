@@ -1,15 +1,12 @@
 'use client';
 
-import { PureComponent, useEffect, useState } from 'react';
+import { PureComponent, useState } from 'react';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import DownloadSelector from '@/app/community/[siren]/components/DownloadSelector';
+import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
-import { ArrowDownToLine, Contrast } from 'lucide-react';
+import { formatNumber } from '@/utils/utils';
+import { Contrast } from 'lucide-react';
 import {
   Bar,
   BarChart,
@@ -23,45 +20,41 @@ import {
   YAxis,
 } from 'recharts';
 
-type formattedDataTrends = {
-  Année: number;
-  Montant: number;
-  Nombre: number;
+type FormattedDataTrends = {
+  annee: number;
+  montant: number;
+  nombre: number;
 };
 
-export default function Trends({ data }: { data: any[] }) {
+export default function Trends({ data }: { data: MarchePublic[] }) {
   const [contractDisplayed, setContractDisplayed] = useState(false);
 
-  const trends: formattedDataTrends[] = Object.values(
-    data.reduce<Record<string, formattedDataTrends>>((acc, item) => {
+  const trends: FormattedDataTrends[] = Object.values(
+    data.reduce<Record<string, FormattedDataTrends>>((acc, item) => {
       const year = item.datenotification_annee;
 
       if (!acc[year]) {
-        acc[year] = { Année: year, Montant: 0, Nombre: 0 };
+        acc[year] = { annee: year, montant: 0, nombre: 0 };
       }
-      acc[year].Montant += parseFloat(item.montant) || 0;
-      acc[year].Nombre += 1;
+      acc[year].montant += parseFloat(String(item.montant)) || 0;
+      acc[year].nombre += 1;
 
       return acc;
     }, {}),
   );
-
-  function formatNumberWithSpaces(number: number): string {
-    return number.toLocaleString('fr-FR');
-  }
 
   const renderLabel = (props: any) => {
     const { x, y, width, value } = props;
     return (
       <text
         x={x + width / 2}
-        y={y - 10} // Ajustez la position du label au-dessus de la barre
+        y={y - 10}
         fill='#4e4e4e'
         textAnchor='middle'
         dominantBaseline='middle'
         fontSize='16'
       >
-        {formatNumberWithSpaces(value)} €
+        {formatNumber(value)} €
       </text>
     );
   };
@@ -94,17 +87,7 @@ export default function Trends({ data }: { data: any[] }) {
           <div className='rounded p-1 hover:bg-neutral-100'>
             <Contrast className='text-neutral-500' />
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <div className='rounded p-1 hover:bg-neutral-100'>
-                <ArrowDownToLine className='text-neutral-500' />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Télécharger les données</DropdownMenuItem>
-              <DropdownMenuItem>Télécharger le graphique</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <DownloadSelector />
         </div>
       </div>
       <div className='border p-4'>
@@ -121,7 +104,7 @@ export default function Trends({ data }: { data: any[] }) {
             }}
           >
             <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='Année' />
+            <XAxis dataKey='annee' />
             <Legend
               formatter={(value) => {
                 const legendLabels: Record<string, string> = {
@@ -132,13 +115,13 @@ export default function Trends({ data }: { data: any[] }) {
               }}
             />
             {!contractDisplayed && (
-              <Bar dataKey='Montant' fill='#413ea0' radius={[10, 10, 0, 0]}>
+              <Bar dataKey='montant' fill='#413ea0' radius={[10, 10, 0, 0]}>
                 <LabelList content={renderLabel} />
               </Bar>
             )}
             {contractDisplayed && (
-              <Bar dataKey='Nombre' fill='#ff7300' radius={[10, 10, 0, 0]}>
-                <LabelList dataKey='Nombre' position='top' />
+              <Bar dataKey='nombre' fill='#ff7300' radius={[10, 10, 0, 0]}>
+                <LabelList dataKey='nombre' position='top' />
               </Bar>
             )}
           </BarChart>

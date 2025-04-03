@@ -16,7 +16,7 @@ export type MarchePublic = {
   lieuexecution_code: string;
   lieuexecution_typecode: string;
   lieuexecution_nom: string;
-  montant: string;
+  montant: number;
   dureemois: number;
   procedure: string;
   codecpv: string;

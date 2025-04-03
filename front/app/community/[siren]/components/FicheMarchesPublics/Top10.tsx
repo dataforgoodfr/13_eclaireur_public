@@ -2,20 +2,9 @@
 
 import { useState } from 'react';
 
+import DownloadSelector from '@/app/community/[siren]/components/DownloadSelector';
+import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import {
   Table,
@@ -25,27 +14,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowDownToLine } from 'lucide-react';
+import { formatNumber } from '@/utils/utils';
 
-export default function Top10({ rawData }: { rawData: any[] }) {
+type YearOption = number | 'All';
+
+function getAvailableYears(data: MarchePublic[]) {
+  return [...new Set(data.map((item) => item.datenotification_annee))].sort(
+    (a: number, b: number) => a - b
+  );
+}
+
+export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
   const [categoriesDisplayed, setCategoriesDisplayed] = useState(false);
-  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
   // Selecter
-  const availableYears = [...new Set(rawData.map((item) => item.datenotification_annee))].sort(
-    (a, b) => Number(a) - Number(b),
-  );
+  const availableYears: number[] = getAvailableYears(rawData);
 
-  let filteredData: MarchePublic[];
-  if (selectedYear === 'All') {
-    filteredData = rawData;
-  } else {
-    filteredData = rawData.filter((item) => item.datenotification_annee === selectedYear);
-  }
-
-  function formatNumberWithSpaces(number: number): string {
-    return number.toLocaleString('fr-FR');
-  }
+  const filteredData =
+    selectedYear === 'All'
+      ? rawData
+      : rawData.filter((item) => item.datenotification_annee === selectedYear);
 
   function formatCompanies(input: string): string[] {
     return input
@@ -56,13 +45,10 @@ export default function Top10({ rawData }: { rawData: any[] }) {
 
   function getTop10Contract(data: any[]) {
     const sortedContracts = data.sort((a, b) => Number(b.montant) - Number(a.montant));
-    let Top10Contract = [];
-    if (sortedContracts.length > 10) {
-      Top10Contract = sortedContracts.slice(0, 10);
-    } else {
-      Top10Contract = sortedContracts;
-    }
-    return Top10Contract;
+    const top10Contract =
+      sortedContracts.length > 10 ? sortedContracts.slice(0, 10) : sortedContracts;
+
+    return top10Contract;
   }
 
   function getTop10Sector(data: any[]) {
@@ -77,7 +63,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
       {} as Record<string, number>,
     );
 
-    const total = filteredData.reduce((acc, item) => acc + parseFloat(item.montant), 0);
+    const total = filteredData.reduce((acc, item) => acc + parseFloat(String(item.montant)), 0);
     const top1 = Math.max(...Object.values(groupedData).map(Number));
 
     const formattedData = Object.entries(groupedData)
@@ -90,13 +76,10 @@ export default function Top10({ rawData }: { rawData: any[] }) {
       pourcentageCategoryTop1: Math.round((Number(item.size) / top1) * 100 * 10) / 10,
     }));
 
-    let Top10Sector;
-    if (formattedPlusTotal.length > 10) {
-      Top10Sector = formattedPlusTotal.slice(0, 10);
-    } else {
-      Top10Sector = formattedPlusTotal;
-    }
-    return Top10Sector;
+    const top10Sector =
+      formattedPlusTotal.length > 10 ? formattedPlusTotal.slice(0, 10) : formattedPlusTotal;
+
+    return top10Sector;
   }
 
   const getTop10SectorData = getTop10Sector(filteredData);
@@ -127,30 +110,8 @@ export default function Top10({ rawData }: { rawData: any[] }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          <Select onValueChange={(value) => setSelectedYear(value)}>
-            <SelectTrigger className='w-[100px]'>
-              <SelectValue placeholder='Tout voir' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='All'>Tout voir</SelectItem>
-              {availableYears.map((year) => (
-                <SelectItem key={year} value={year}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <div className='rounded p-1 hover:bg-neutral-100'>
-                <ArrowDownToLine className='text-neutral-500' />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Télécharger les données</DropdownMenuItem>
-              <DropdownMenuItem>Télécharger le tableau</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <YearSelector availableYears={availableYears} setSelectedYear={setSelectedYear} />
+          <DownloadSelector />
         </div>
       </div>
       {categoriesDisplayed && (
@@ -175,7 +136,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
                     ></div>
                   </div>
                 </TableCell>
-                <TableCell>{formatNumberWithSpaces(Number(item.size))} €</TableCell>
+                <TableCell>{formatNumber(Number(item.size))} €</TableCell>
                 <TableCell className='text-right'>{`${item.part}%`}</TableCell>
               </TableRow>
             ))}
@@ -194,7 +155,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
           <TableBody>
             {getTop10ContractData.map((item, index) => (
               <TableRow key={index}>
-                <TableCell className='space-x-1 font-medium'>
+                <TableCell className='space-x-1'>
                   {formatCompanies(item.titulaires_liste_noms).map((company, index) => (
                     <span key={index} className='py-.5 rounded-md bg-neutral-200 px-2'>
                       {company}
@@ -202,9 +163,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
                   ))}
                 </TableCell>
                 <TableCell className=''>{item.objet}</TableCell>
-                <TableCell className='text-right'>
-                  {formatNumberWithSpaces(Number(item.montant))} €
-                </TableCell>
+                <TableCell className='text-right'>{formatNumber(Number(item.montant))} €</TableCell>
               </TableRow>
             ))}
           </TableBody>
