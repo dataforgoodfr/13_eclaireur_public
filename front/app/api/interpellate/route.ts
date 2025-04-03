@@ -7,7 +7,6 @@ export async function POST(request: Request) {
   const body: unknown = await request.json()
 
   const result = formSchema.safeParse(body)
-  //   console.log('result => ', result)
   type TResultData = {
     firstname: string
     lastname: string
