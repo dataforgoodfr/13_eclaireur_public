@@ -2,27 +2,25 @@
 
 import { useForm } from 'react-hook-form';
 
-
-
 import Link from 'next/link';
-
-
+import { useRouter } from 'next/navigation';
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type TformSchema, formSchema } from 'utils/types';
 
-
-
 import MessageToPoliticians from './MessageToPoliticians';
-
-
-
-
 
 type TInterpellateForm = {
   to: string[];
@@ -34,6 +32,8 @@ export default function InterpellateForm({
   missingData,
   communityParam,
 }: TInterpellateForm) {
+  console.log('communityParam => ', communityParam);
+  const router = useRouter();
   const formMessage = MessageToPoliticians;
   const {
     formState: { isSubmitting },
@@ -90,6 +90,7 @@ export default function InterpellateForm({
       }
     }
     form.reset();
+    router.push(`/interpeller/${communityParam}/step4`);
   };
 
   return (

@@ -9,7 +9,12 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
 
-export default function InterpellateStep1({ params }: { params: { siren: string } }) {
+export default async function InterpellateStep1({
+  params,
+}: {
+  params: Promise<{ siren: string }>;
+}) {
+  const { siren } = await params;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
@@ -22,7 +27,7 @@ export default function InterpellateStep1({ params }: { params: { siren: string 
           <BudgetGlobal communityName='Nantes' />
         </div>
         <div className='mt-10 flex flex-col justify-between md:flex-row'>
-          <MiniFicheCommunity communitySiren={params.siren} />
+          <MiniFicheCommunity communitySiren={siren} />
           <div className='min-w-1/4 md:scale-[0.85]'>
             <h3 className='pl-5 font-bold'>Marchés publics</h3>
             <TransparencyScoreBar score={scores.marchesPublics} />
@@ -34,10 +39,7 @@ export default function InterpellateStep1({ params }: { params: { siren: string 
         </div>
         <div className='flex justify-between'>
           <RankingCommunity communityName='Nantes' />
-          <Link
-            className='flex items-end gap-2 hover:underline'
-            href={`/community/${params.siren}`}
-          >
+          <Link className='flex items-end gap-2 hover:underline' href={`/community/${siren}`}>
             Voir la fiche de la collectivité <MoveRight />
           </Link>
         </div>
@@ -53,7 +55,7 @@ export default function InterpellateStep1({ params }: { params: { siren: string 
           <ChevronLeft /> Revenir
         </Link>
         <Link
-          href={`/interpeller/${params.siren}/step2`}
+          href={`/interpeller/${siren}/step2`}
           className={buttonVariants({
             variant: 'outline',
             className: 'min-w-[200] bg-black text-white',
