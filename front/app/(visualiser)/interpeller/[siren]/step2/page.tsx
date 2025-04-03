@@ -9,7 +9,6 @@ export default async function InterpellateStep2({
 }: {
   params: Promise<{ siren: string }>;
 }) {
-  console.log('STEP2 params => ', await params);
   const { siren } = await params;
   return (
     <section id='interpellation-step2' className='my-16'>
