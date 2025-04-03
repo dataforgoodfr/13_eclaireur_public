@@ -91,6 +91,14 @@ class DatasetAggregator:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
 
+        with open(self.data_folder / "errors.json", "w") as f:
+            json.dump(self.errors, f)
+        self._post_process()
+        self._concatenate_files()
+
+    def _post_process(self):
+        pass
+
     def _process_file(self, file: tuple) -> None:
         """
         Download and normalize a spécific file.

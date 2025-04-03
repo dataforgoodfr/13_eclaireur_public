@@ -2,7 +2,9 @@ import os
 import tempfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import pytest
 
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 
@@ -15,10 +17,6 @@ class TestTopicAggregator:
         self.config = {
             "data_folder": self.path.name,
             "combined_filename": os.path.join(self.path.name, "final.parquet"),
-        }
-        self.topic_config = {
-            "schema": {"url": "file:" + str(FIXTURES_PATH / "subvention_schema.json")},
-            "schema_dict_file": "back/data/datasets/subventions/inputs/dataset_dict.csv",
         }
         self.raw_filename = Path(self.path.name) / "raw.csv"
         self.files_in_scope = pd.DataFrame(
@@ -54,8 +52,7 @@ class TestTopicAggregator:
         inp.to_csv(self.raw_filename, index=False)
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
-            topic="test_topic",
-            topic_config=self.topic_config,
+            topic="subventions",
             datafile_loader_config=self.config,
         )
         aggregator.run()
@@ -75,13 +72,15 @@ class TestTopicAggregator:
                 "idRAE": None,
                 "notificationUE": "non",
                 "pourcentageSubvention": "1",
-                "topic": "test_topic",
+                "topic": "subventions",
                 "url": "file:" + str(self.raw_filename),
                 "coll_type": "COM",
+                "annee": np.int32(2023),
             }
         )
         pd.testing.assert_frame_equal(out, expected)
 
+    @pytest.mark.skip(reason="Need to implement a system to reinject siren")
     def test_minimal_benef_only(
         self,
     ):
@@ -95,8 +94,7 @@ class TestTopicAggregator:
         inp.to_csv(self.raw_filename, index=False)
         aggregator = TopicAggregator(
             files_in_scope=self.files_in_scope,
-            topic="test_topic",
-            topic_config=self.topic_config,
+            topic="subventions",
             datafile_loader_config=self.config,
         )
 

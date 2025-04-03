@@ -8,6 +8,8 @@ import pandas as pd
 from .base_loader import BaseLoader
 
 LOGGER = logging.getLogger(__name__)
+STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
+WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
 class CSVLoader(BaseLoader):
@@ -48,8 +50,8 @@ class CSVLoader(BaseLoader):
         return None
 
     def _process_from_decoded(self, decoded_content):
-        decoded_content = re.sub("^\n+", "", decoded_content)
-        decoded_content = re.sub("\r(\n)?", "\n", decoded_content)
+        decoded_content = STARTING_NEWLINE.sub("", decoded_content)
+        decoded_content = WINDOWS_NEWLINE.sub("\n", decoded_content)
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {

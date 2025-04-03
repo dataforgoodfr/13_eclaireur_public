@@ -18,7 +18,7 @@ class TestCSVLoader:
     TAB_CSV = "name\tage\tcity\nJohn\t30\tNew York\nAnna\t25\tLos Angeles\nPeter\t45\tChicago"
     PIPE_CSV = "name|age|city\nJohn|30|New York\nAnna|25|Los Angeles\nPeter|45|Chicago"
     EMPTY_FIRST_LINE_CSV = (
-        "\nname,age,city\n,30,New York\nJohn,25,Los Angeles\nPeter,45,Chicago"
+        "\n\r\nname,age,city\n,30,New York\nJohn,25,Los Angeles\nPeter,45,Chicago"
     )
     WINDOWS_NEW_LINES = "name;age;city\r;30;New York\r\nJohn;25;Los Angeles\r\nPeter;45;Chicago"
 
