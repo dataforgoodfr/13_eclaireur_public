@@ -1,31 +1,38 @@
 import { MarchePublic } from '@/app/models/marche_public';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Trends from './Trends';
 import Top10 from './Top10';
+import Trends from './Trends';
 
 type FicheMarchesPublics = {
   marchesPublics: MarchePublic[];
 };
 
 export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
-
   return (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
-      <Tabs defaultValue="trends">
+      <Tabs defaultValue='trends'>
         <TabsList>
-          <TabsTrigger value="trends">Évolution</TabsTrigger>
-          <TabsTrigger value="distribution">Comparaison</TabsTrigger>
-          <TabsTrigger value="details">Top 10</TabsTrigger>
+          <TabsTrigger value='trends'>Évolution</TabsTrigger>
+          <TabsTrigger value='distribution'>Répartition</TabsTrigger>
+          <TabsTrigger value='compare'>Comparaison</TabsTrigger>
+          <TabsTrigger value='details'>Classement</TabsTrigger>
         </TabsList>
-        <TabsContent value="trends">
+        <TabsContent value='trends'>
           <Trends data={marchesPublics} />
         </TabsContent>
-        <TabsContent value="distribution">
-          <div className="bg-neutral-200 w-full h-[700px] flex items-center justify-center">A construire</div>
+        <TabsContent value='distribution'>
+          <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
+            Treemap en construction
+          </div>
         </TabsContent>
-        <TabsContent value="details">
+        <TabsContent value='compare'>
+          <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
+            En construction
+          </div>
+        </TabsContent>
+        <TabsContent value='details'>
           <Top10 rawData={marchesPublics} />
         </TabsContent>
       </Tabs>

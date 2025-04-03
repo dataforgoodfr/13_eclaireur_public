@@ -1,21 +1,22 @@
-'use client'
+'use client';
 
-import {useState } from 'react'
+import { useState } from 'react';
 
+import { MarchePublic } from '@/app/models/marche_public';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -23,70 +24,61 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { ArrowDownToLine } from 'lucide-react'
-import { MarchePublic } from '@/app/models/marche_public'
-
+} from '@/components/ui/table';
+import { ArrowDownToLine } from 'lucide-react';
 
 export default function Top10({ rawData }: { rawData: any[] }) {
-
-  const [categoriesDisplayed, setCategoriesDisplayed] = useState(false)
-  const [selectedYear, setSelectedYear] = useState('All')
+  const [categoriesDisplayed, setCategoriesDisplayed] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('All');
 
   // Selecter
   const availableYears = [...new Set(rawData.map((item) => item.datenotification_annee))].sort(
     (a, b) => Number(a) - Number(b),
-  )
+  );
 
-  let filteredData : MarchePublic[]
+  let filteredData: MarchePublic[];
   if (selectedYear === 'All') {
-    filteredData = rawData
+    filteredData = rawData;
   } else {
-    filteredData = rawData.filter((item) => item.datenotification_annee === selectedYear)
+    filteredData = rawData.filter((item) => item.datenotification_annee === selectedYear);
   }
 
   function formatNumberWithSpaces(number: number): string {
-    return number.toLocaleString('fr-FR')
+    return number.toLocaleString('fr-FR');
   }
 
   function formatCompanies(input: string): string[] {
     return input
       .replace(/[\[\]]/g, '')
-      .split(/',\s*'|",\s*"/) 
-      .map(item => item.replace(/^'|-'?$/g, '').trim())
-}
-  
+      .split(/',\s*'|",\s*"/)
+      .map((item) => item.replace(/^'|-'?$/g, '').trim());
+  }
 
   function getTop10Contract(data: any[]) {
-
-    const sortedContracts = data
-    .sort((a, b) => Number(b.montant) - Number(a.montant))
-    let Top10Contract = []
+    const sortedContracts = data.sort((a, b) => Number(b.montant) - Number(a.montant));
+    let Top10Contract = [];
     if (sortedContracts.length > 10) {
-      Top10Contract = sortedContracts.slice(0, 10)
+      Top10Contract = sortedContracts.slice(0, 10);
+    } else {
+      Top10Contract = sortedContracts;
     }
-    else {
-      Top10Contract = sortedContracts
-    }
-
-    return Top10Contract
+    return Top10Contract;
   }
 
   function getTop10Sector(data: any[]) {
-
     const groupedData = data.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
-          acc[cpv_2_label] = 0
+          acc[cpv_2_label] = 0;
         }
-        acc[cpv_2_label] += parseFloat(montant)
-        return acc
+        acc[cpv_2_label] += parseFloat(montant);
+        return acc;
       },
       {} as Record<string, number>,
-    )
+    );
 
-    const total = filteredData.reduce((acc, item) => acc + parseFloat(item.montant), 0)
-    const top1 = Math.max(...Object.values(groupedData).map(Number))
+    const total = filteredData.reduce((acc, item) => acc + parseFloat(item.montant), 0);
+    const top1 = Math.max(...Object.values(groupedData).map(Number));
 
     const formattedData = Object.entries(groupedData)
       .map(([name, size]) => ({ name, size }))
@@ -98,19 +90,17 @@ export default function Top10({ rawData }: { rawData: any[] }) {
       pourcentageCategoryTop1: Math.round((Number(item.size) / top1) * 100 * 10) / 10,
     }));
 
-    let sortedData;
+    let Top10Sector;
     if (formattedPlusTotal.length > 10) {
-      sortedData = formattedPlusTotal.slice(0, 10);
+      Top10Sector = formattedPlusTotal.slice(0, 10);
     } else {
-      sortedData = formattedPlusTotal;
+      Top10Sector = formattedPlusTotal;
     }
-
-    return sortedData;
+    return Top10Sector;
   }
 
   const getTop10SectorData = getTop10Sector(filteredData);
   const getTop10ContractData = getTop10Contract(filteredData);
-
 
   return (
     <>
@@ -164,7 +154,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
         </div>
       </div>
       {categoriesDisplayed && (
-        <Table>
+        <Table className='min-h-[600px]'>
           <TableHeader>
             <TableRow>
               <TableHead className='w-[400px]'>Secteur</TableHead>
@@ -193,7 +183,7 @@ export default function Top10({ rawData }: { rawData: any[] }) {
         </Table>
       )}
       {!categoriesDisplayed && (
-        <Table>
+        <Table className='min-h-[600px]'>
           <TableHeader>
             <TableRow>
               <TableHead className='w-[300px]'>Titulaires</TableHead>
@@ -204,27 +194,22 @@ export default function Top10({ rawData }: { rawData: any[] }) {
           <TableBody>
             {getTop10ContractData.map((item, index) => (
               <TableRow key={index}>
-                <TableCell className='font-medium space-x-1'>
+                <TableCell className='space-x-1 font-medium'>
                   {formatCompanies(item.titulaires_liste_noms).map((company, index) => (
-                    <span 
-                      key={index}
-                      className="bg-neutral-200 px-2 py-.5 rounded-md"
-                    >
+                    <span key={index} className='py-.5 rounded-md bg-neutral-200 px-2'>
                       {company}
                     </span>
                   ))}
                 </TableCell>
-                <TableCell className=''>
-                  {item.objet}
-                </TableCell>
+                <TableCell className=''>{item.objet}</TableCell>
                 <TableCell className='text-right'>
                   {formatNumberWithSpaces(Number(item.montant))} €
                 </TableCell>
-              </TableRow>)
-            )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       )}
     </>
-  )
+  );
 }
