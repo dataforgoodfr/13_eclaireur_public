@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import polars as pl
+import pandas as pd
 from sqlalchemy import text
 
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
@@ -17,6 +17,7 @@ class DataWarehouseWorkflow:
         self._config = config
         self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
+        self.chunksize = 1_000
 
         self.send_to_db = {
             "collectivites": CommunitiesEnricher.get_output_path(config),
@@ -45,7 +46,7 @@ class DataWarehouseWorkflow:
 
         with connector.engine.connect() as conn:
             for table_name, filename in self.send_to_db.items():
-                df = pl.read_parquet(filename)
+                df = pd.read_parquet(filename)
 
                 if if_table_exists == "append":
                     table_exists_query = text(
@@ -55,4 +56,4 @@ class DataWarehouseWorkflow:
                     if table_exists:
                         conn.execute(text(f"TRUNCATE {table_name}"))
 
-                df.write_database(table_name, conn, if_table_exists=if_table_exists)
+                df.to_sql(table_name, conn, if_exists=if_table_exists, chunksize=self.chunksize)
