@@ -15,13 +15,14 @@ export default async function InterpellateStep1({
   params: Promise<{ siren: string }>;
 }) {
   const { siren } = await params;
+  const buttonClassName = `buttonVariants({
+            variant: 'outline',
+            className: 'min-w-[200] bg-black text-white',
+          })`;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
-  const buttonClassName="buttonVariants({
-            variant: 'outline',
-            className: 'min-w-[200] bg-black text-white',
-          })"
+
   return (
     <section>
       <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Collectivité sélectionnée</h2>
