@@ -18,6 +18,10 @@ export default async function InterpellateStep1({
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
+  const buttonClassName="buttonVariants({
+            variant: 'outline',
+            className: 'min-w-[200] bg-black text-white',
+          })"
   return (
     <section>
       <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Collectivité sélectionnée</h2>
@@ -47,19 +51,13 @@ export default async function InterpellateStep1({
       <div className='my-12 flex justify-center gap-4'>
         <Link
           href='/interpeller'
-          className={buttonVariants({
-            variant: 'outline',
-            className: 'min-w-[200] bg-black text-white',
-          })}
+          className={buttonClassName}
         >
           <ChevronLeft /> Revenir
         </Link>
         <Link
           href={`/interpeller/${siren}/step2`}
-          className={buttonVariants({
-            variant: 'outline',
-            className: 'min-w-[200] bg-black text-white',
-          })}
+          className={buttonClassName}
         >
           Continuer <ChevronRight />
         </Link>
