@@ -4,6 +4,7 @@ import BadgeCommunity from '@/components/Communities/BadgeCommunity';
 import BudgetGlobal from '@/components/Communities/BudgetGlobal';
 import MiniFicheCommunity from '@/components/Communities/MiniFicheCommunity';
 import RankingCommunity from '@/components/Communities/RankingCommunity';
+import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { buttonVariants } from '@/components/ui/button';
@@ -15,10 +16,6 @@ export default async function InterpellateStep1({
   params: Promise<{ siren: string }>;
 }) {
   const { siren } = await params;
-  const buttonClassName = `buttonVariants({
-            variant: 'outline',
-            className: 'min-w-[200] bg-black text-white',
-          })`;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
@@ -50,18 +47,12 @@ export default async function InterpellateStep1({
         </div>
       </article>
       <div className='my-12 flex justify-center gap-4'>
-        <Link
-          href='/interpeller'
-          className={buttonClassName}
-        >
-          <ChevronLeft /> Revenir
-        </Link>
-        <Link
-          href={`/interpeller/${siren}/step2`}
-          className={buttonClassName}
-        >
-          Continuer <ChevronRight />
-        </Link>
+        <ButtonBackAndForth linkto='/interpeller' direction='back'>
+          Revenir
+        </ButtonBackAndForth>
+        <ButtonBackAndForth linkto={`/interpeller/${siren}/step2`} direction='forth'>
+          Continuer
+        </ButtonBackAndForth>
       </div>
     </section>
   );
