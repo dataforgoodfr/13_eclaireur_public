@@ -9,20 +9,20 @@ import {
 type YearOption = number | 'All';
 
 export default function YearSelector({
-  availableYears,
-  setSelectedYear,
+  years,
+  onSelect,
 }: {
-  availableYears: number[];
-  setSelectedYear: React.Dispatch<React.SetStateAction<YearOption>>;
+  years: number[];
+  onSelect: (option: YearOption) => void;
 }) {
   return (
-    <Select onValueChange={(value) => setSelectedYear(value === 'All' ? 'All' : parseInt(value))}>
+    <Select onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}>
       <SelectTrigger className='w-[100px]'>
         <SelectValue placeholder='Tout voir' />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value='All'>Tout voir</SelectItem>
-        {availableYears.map((year, index) => (
+        {years.map((year, index) => (
           <SelectItem key={index} value={String(year)}>
             {year}
           </SelectItem>

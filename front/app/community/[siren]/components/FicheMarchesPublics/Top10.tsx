@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadSelector';
+import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
@@ -20,7 +20,7 @@ type YearOption = number | 'All';
 
 function getAvailableYears(data: MarchePublic[]) {
   return [...new Set(data.map((item) => item.datenotification_annee))].sort(
-    (a: number, b: number) => a - b
+    (a: number, b: number) => a - b,
   );
 }
 
@@ -110,7 +110,7 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector availableYears={availableYears} setSelectedYear={setSelectedYear} />
+          <YearSelector years={availableYears} onSelect={setSelectedYear} />
           <DownloadSelector />
         </div>
       </div>
