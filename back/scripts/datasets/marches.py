@@ -108,7 +108,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if interim_fn.exists():
             return
 
-        with open(raw_filename, "r", encoding="utf-8") as raw:
+        with open(raw_filename, "rb") as raw:
             array_location = self.check_json_structure(raw_filename) + ".item"
 
             with open(interim_fn, "w") as interim:
@@ -150,6 +150,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
             except (StopIteration, ijson.JSONError):
                 return "unknown"
+        return "unknown"
 
     @staticmethod
     def unnest_marche(declaration: dict):
@@ -163,7 +164,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             titulaires = [titulaires]
 
         # titulaire is sometines nested
-        if len(titulaires) > 0 and "titulaire" in titulaires[0].keys():
+        if "titulaire" in titulaires[0].keys():
             titulaires = [titu["titulaire"] for titu in titulaires]
 
         # acheteur is sometimes just a dictionnary with a single "id" key
@@ -175,7 +176,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 except TypeError:
                     unnested["acheteur.id"] = ""
             elif k == "montant":
-                unnested["montant"] = float(v) / len(titulaires)
+                unnested["montant"] = v
+                unnested["countTitulaires"] = len(titulaires)
             else:
                 if isinstance(v, (list, dict)):
                     v = json.dumps(v)

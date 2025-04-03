@@ -17,7 +17,7 @@ class BaseEnricher:
         raise NotImplementedError("Method must be overriden")
 
     @classmethod
-    def _clean_and_enrich(cls, _main_config: dict) -> typing.List[Path]:
+    def _clean_and_enrich(cls, _inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         raise NotImplementedError("Method must be overriden")
 
     @classmethod
