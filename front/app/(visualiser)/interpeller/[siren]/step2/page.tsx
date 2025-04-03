@@ -4,9 +4,13 @@ import ElectedPolician from '@/components/ElectedPoliticians/SinglePoliticianCar
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
 
-export default async function InterpellateStep2({ params }: { params: { siren: string } }) {
+export default async function InterpellateStep2({
+  params,
+}: {
+  params: Promise<{ siren: string }>;
+}) {
   console.log('STEP2 params => ', await params);
-  const siren = await params.siren;
+  const { siren } = await params;
   return (
     <section id='interpellation-step2' className='my-16'>
       <article>

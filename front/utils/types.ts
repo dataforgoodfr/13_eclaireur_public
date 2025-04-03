@@ -18,13 +18,13 @@ export enum CommunityType {
 
 export const formSchema = z.object({
   firstname: z.string().min(2, {
-    message: 'Votre prénom doit contenir au moins 2 caractères',
+    message: 'Veuillez saisir votre prénom, celui-ci doit contenir au moins 2 caractères',
   }),
   lastname: z.string().min(2, {
-    message: 'Votre nom doit contenir au moins 2 caractères',
+    message: 'Veuillez saisir votre nom de famille, celui-ci doit contenir au moins 2 caractères',
   }),
   email: z.string().email({
-    message: "Votre adresse email n'est pas valide",
+    message: 'VEuillez saisir une adresse e-mail valide',
   }),
   to: z.string().email(),
   object: z.string(),
