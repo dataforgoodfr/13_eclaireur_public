@@ -134,7 +134,7 @@ sirene:
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n3.xls"
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n4.xls"
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n5.xls"
-  xls_url_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
+  xls_urls_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
   
 datagouv_api:
   organization_folder: back/data/datagouv_api/organizations
