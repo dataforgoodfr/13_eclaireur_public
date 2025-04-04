@@ -1,4 +1,5 @@
-"use client"
+'use client';
+
 import { useEffect, useState } from 'react';
 
 export function ErrorBoundary({ children }: { children: React.ReactNode }) {
