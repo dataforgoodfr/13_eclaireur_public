@@ -20,11 +20,15 @@ class CPVUtils:
         cpv_2_labels, cpv_8_labels = cls._get_cpv_2_and_8_labels(cpv_labels)
         return (
             frame.with_columns(
-                cpv_2=pl.col(column).map_elements(
-                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_2_PATTERN)
+                cpv_2=pl.col(column)
+                .cast(pl.String)
+                .map_elements(
+                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_2_PATTERN),
                 ),
-                cpv_8=pl.col(column).map_elements(
-                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_8_PATTERN)
+                cpv_8=pl.col(column)
+                .cast(pl.String)
+                .map_elements(
+                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_8_PATTERN),
                 ),
             )
             .join(cpv_2_labels, how="left", on="cpv_2")
@@ -50,7 +54,9 @@ class CPVUtils:
     ) -> pl.DataFrame:
         return (
             cpv_labels.with_columns(
-                pl.col(code_column).map_elements(lambda cpv: cls._extract_sub_cpv(cpv, pattern))
+                pl.col(code_column)
+                .cast(pl.String)
+                .map_elements(lambda cpv: cls._extract_sub_cpv(cpv, pattern)),
             )
             .filter(pl.col(code_column).is_not_null())
             .rename({code_column: f"cpv_{level}", label_column: f"cpv_{level}_label"})

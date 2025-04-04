@@ -43,7 +43,7 @@ datagouv_search:
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
-  url: https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
+  url: .back/data/cpv_labels/cpv_2008.xls
 
 search:
   subventions:
