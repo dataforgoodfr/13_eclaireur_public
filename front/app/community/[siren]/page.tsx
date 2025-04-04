@@ -38,7 +38,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   let marchesPublics;
   try {
     marchesPublics = await getMarchesPublics(siren);
-  } catch (e) {
+  } catch {
     marchesPublics = 'NoData';
   }
 
