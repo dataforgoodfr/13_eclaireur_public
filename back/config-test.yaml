@@ -91,7 +91,7 @@ datagouv_search:
   combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
   title_filter: 
     - subventions
-  description_filter: 
+  description_filter: null
 datafile_loader:
   data_folder: 'back/tests/data/datasets/%(topic)s'
   combined_filename: 'back/tests/data/datasets/%(topic)s.parquet'
