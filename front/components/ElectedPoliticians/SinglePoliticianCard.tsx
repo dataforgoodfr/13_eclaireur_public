@@ -34,9 +34,6 @@ export default function ElectedPolician({ name, photosrc, fonction, email }: TEl
       <CardContent>
         <p>{email}</p>
       </CardContent>
-      {/* <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter> */}
     </Card>
   );
 }
