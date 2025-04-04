@@ -4,26 +4,35 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+
 from back.scripts.utils.config import get_project_base_path
+
+LOGGER = logging.getLogger(__name__)
 
 
 class GeoLocator:
     """
     GeoLocator is a class that enriches a DataFrame containing regions, departments, EPCI, and communes with geocoordinates.
-    It uses the COG (INSEE code) to retrieve the coordinates of the regions, departments, and communes from various sources: CSV & API.
+    It uses the code_insee (INSEE code) to retrieve the coordinates of the regions, departments, and communes from various sources: CSV & API.
     One external method is available to add geocoordinates to the DataFrame.
     """
 
-    def __init__(self, geo_config):
-        self.logger = logging.getLogger(__name__)
+    def __init__(self, geo_config: dict):
         self._config = geo_config
 
     def _get_reg_dep_coords(self) -> pd.DataFrame:
         """Return scrapped data for regions and departements."""
         # TODO: Use CSVLoader
-        reg_dep_geoloc_df = pd.read_csv(
-            Path(self._config["reg_dep_coords_scrapped_data_file"]), sep=";", dtype={"cog": str}
-        ).drop(columns=["nom"])
+        reg_dep_geoloc_df = (
+            pd.read_csv(
+                Path(self._config["reg_dep_coords_scrapped_data_file"]),
+                sep=";",
+                dtype={"cog": str},
+            )
+            .drop(columns=["nom"])
+            .rename(columns={"cog": "code_insee"})
+        )
+        print(reg_dep_geoloc_df)
         if reg_dep_geoloc_df.empty:
             raise Exception("Regions and departements dataset should not be empty.")
 
@@ -55,8 +64,8 @@ class GeoLocator:
         payload.to_csv(payload_path, index=False)
         with open(payload_path, "rb") as payload_file:
             data = {
-                "citycode": "cog",
-                "result_columns": ["cog", "latitude", "longitude", "result_status"],
+                "citycode": "code_insee",
+                "result_columns": ["code_insee", "latitude", "longitude", "result_status"],
             }
             files = {"data": (payload_filename, payload_file, "text/csv")}
 
@@ -68,13 +77,11 @@ class GeoLocator:
             if df.empty:
                 return df
 
-            df = df[df["result_status"] == "ok"]
-            df = df[["cog", "latitude", "longitude"]]
-            df.loc[:, "type"] = "COM"
-            df = df.astype({"cog": str, "latitude": str, "longitude": str})
-            df["cog"] = df["cog"].str.zfill(5)
-
-            return df
+            return (
+                df.loc[df["result_status"] == "ok", ["code_insee", "latitude", "longitude"]]
+                .astype({"code_insee": str, "latitude": str, "longitude": str})
+                .assign(type="COM", code_insee=lambda df: df["code_insee"].str.zfill(5))
+            )
 
     def add_geocoordinates(self, data_frame) -> pd.DataFrame:
         """Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes.
@@ -84,7 +91,7 @@ class GeoLocator:
         4. merge results"""
         reg_dep_ctu = data_frame[data_frame["type"].isin(["REG", "DEP", "CTU"])].merge(
             self._get_reg_dep_coords(),
-            on=["type", "cog"],
+            on=["type", "code_insee"],
             how="left",
         )
 
@@ -96,8 +103,8 @@ class GeoLocator:
 
         cities = data_frame[data_frame["type"] == "COM"]
         geolocator_response = self._request_geolocator_api(
-            cities[["cog", "nom"]].drop_duplicates()
+            cities[["code_insee", "nom"]].drop_duplicates()
         )
-        cities = cities.merge(geolocator_response, on=["type", "cog"], how="left")
+        cities = cities.merge(geolocator_response, on=["type", "code_insee"], how="left")
 
         return pd.concat([reg_dep_ctu, epci, cities])
