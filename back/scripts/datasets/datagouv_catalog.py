@@ -49,8 +49,19 @@ class DataGouvCatalog:
         catalog = catalog.pipe(normalize_column_names).pipe(
             expand_json_columns, column="extras"
         )
-        if "extras_check:status" not in catalog.columns:
-            catalog = catalog.assign(**{"extras_check:status": -1})
+
+        extra_columns = {
+            "extras_check:status": -1,
+            "extras_check:headers:content-type": None,
+            "extras_analysis:checksum": None,
+            "extras_analysis:last-modified-at": None,
+            "extras_analysis:last-modified-detection": None,
+            "extras_analysis:parsing:parquet_size": None,
+            "extras_check:headers:content-md5": None,
+        }
+        catalog = catalog.assign(
+            **{k: v for k, v in extra_columns.items() if k not in catalog.columns}
+        )
         columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
         catalog = (
             pl.from_pandas(catalog)
