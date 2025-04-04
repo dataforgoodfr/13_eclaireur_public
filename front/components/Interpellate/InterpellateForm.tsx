@@ -2,9 +2,9 @@
 
 import { useForm } from 'react-hook-form';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { type TformSchema, formSchema } from 'utils/types';
 
 import MessageToPoliticians from './MessageToPoliticians';
@@ -192,15 +192,10 @@ export default function InterpellateForm({
         </fieldset>
 
         <div className='my-12 flex min-w-full justify-center gap-4'>
-          <Link
-            href={`/interpeller/${communityParam}/step2`}
-            className={buttonVariants({
-              variant: 'outline',
-              className: 'min-w-[200] bg-black text-white',
-            })}
-          >
-            <ChevronLeft /> Revenir
-          </Link>
+          <ButtonBackAndForth linkto={`/interpeller/${communityParam}/step2`} direction='back'>
+            Revenir
+          </ButtonBackAndForth>
+
           <Button
             type='submit'
             disabled={isSubmitting}
