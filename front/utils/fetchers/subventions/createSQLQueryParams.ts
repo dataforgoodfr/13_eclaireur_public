@@ -15,7 +15,7 @@ export type SubventionsParams = Partial<
  * @returns
  */
 export function createSQLQueryParams(options?: SubventionsParams) {
-  let query = `SELECT * FROM ${DataTable.Subventions}`;
+  let query = `SELECT * FROM ${DataTable.SubventionsStaging}`;
   let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {
