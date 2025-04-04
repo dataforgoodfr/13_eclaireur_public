@@ -1,3 +1,4 @@
+import { NoData } from '@/app/community/[siren]/components/NoData';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
@@ -14,14 +15,6 @@ async function getMarchesPublics(siren: string) {
 type FicheMarchesPublics = {
   marchesPublics: MarchePublic[];
 };
-
-function NoData() {
-  return (
-    <div className='flex h-[600px] w-full items-center justify-center bg-neutral-100'>
-      Aucune donnée n'a été publiée
-    </div>
-  );
-}
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
