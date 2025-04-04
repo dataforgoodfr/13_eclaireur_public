@@ -83,7 +83,7 @@ class TestDataGouvSearch:
     def setup_method(self):
         self.path = tempfile.TemporaryDirectory()
 
-        self.datagouv_catalog = os.path.join(self.path.name, "datagouv_atalog.parquet")
+        self.datagouv_catalog = os.path.join(self.path.name, "datagouv_catalog.parquet")
         self.main_config = {
             "datagouv_search": {
                 "data_folder": self.path.name,
