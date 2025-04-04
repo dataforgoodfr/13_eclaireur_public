@@ -50,9 +50,9 @@ class CommunitiesSelector:
             .fillna({"population": 0})
             .pipe(self.add_collectivite_platforms)
             .pipe(self.add_epci_infos)
+            .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
             .pipe(self.add_postal_code)
-            .pipe(self.add_geocoordinates)
             .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
@@ -81,7 +81,7 @@ class CommunitiesSelector:
             .fillna({"tranche_effectif": 0})
             .assign(
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
-                nom=lambda df: df["raison_sociale"],
+                nom=lambda df: df["raison_sociale"].fillna(df["nom"]),
             )
             .assign(
                 should_publish=lambda df: (df["type"] != "COM")
