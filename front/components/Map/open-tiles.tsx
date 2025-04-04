@@ -10,41 +10,21 @@ import Map, {
 } from 'react-map-gl/maplibre';
 
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import type { Community } from '@/app/models/community';
-import { useCommunities } from '@/utils/hooks/useCommunities';
 import { debounce } from 'lodash';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { fetchRegionsByCode, fetchCommunesByCode, fetchDepartementsByCode } from '@/utils/fetchers/map/map-fetchers';
 
 type AdminType = 'region' | 'departement' | 'commune';
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 
-// Replace the fetchCommunesByCode function with this POST-based version
-const fetchCommunesByCode = async (communeCodes: string[]) => {
-  try {
-    if (!communeCodes.length) return [];
 
-    // Use POST request with codes in the request body
-    const res = await fetch('/api/map_communes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ codes: communeCodes }),
-    });
-
-    const data = await res.json();
-    console.log('Fetched communes data:', data.communes);
-    return data.communes || [];
-  } catch (err) {
-    console.error('Failed to fetch communes data', err);
-    return [];
-  }
-};
-
+// TODO: Move to separate file
 const mergeFeatureData = (
   feature: any,
   regions: Community[],
@@ -55,16 +35,16 @@ const mergeFeatureData = (
   let mergedData = {};
 
   if (feature.properties.level === 1) {
-    featureId = feature.properties.name;
-    const regionData = regions.find((r) => r.nom === featureId);
+    featureId = feature.id.toString().slice(-2);
+    const regionData = regions.find((r) => r.code_insee_region === featureId);
     if (regionData) mergedData = { ...feature.properties, ...regionData };
   } else if (feature.properties.level === 2) {
     featureId = feature.properties.code;
-    const departementData = departements.find((d) => d.cog === featureId);
+    const departementData = departements.find((d) => d.code_insee === featureId);
     if (departementData) mergedData = { ...feature.properties, ...departementData };
   } else if (feature.properties.level === 3) {
     featureId = feature.properties.code;
-    const communeData = communes.find((c) => c.code === featureId);
+    const communeData = communes.find((c) => c.code_insee === featureId);
     if (communeData) {
       // console.log(`Merging commune data for ${featureId}:`, communeData)
       mergedData = { ...feature.properties, ...communeData };
@@ -84,13 +64,44 @@ const FranceMap = () => {
   const departementsRef = useRef<Community[]>([]);
   const communesRef = useRef<Community[]>([]);
   const router = useRouter();
-  // Track which commune codes we've already fetched
+  const [fetchedRegionCodes, setFetchedRegionCodes] = useState<Set<string>>(new Set());
+  const [fetchedDepartementCodes, setFetchedDepartementCodes] = useState<Set<string>>(new Set());
   const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
+
   const [mapReady, setMapReady] = useState(false);
 
-  // Track if we've already processed regions and departments
-  const [regionsProcessed, setRegionsProcessed] = useState(false);
-  const [departementsProcessed, setDepartementsProcessed] = useState(false);
+  const pathname =  usePathname();
+  // effect to ensure data is fetched and loaded each time we navigate back to the page. 
+  useEffect(() => {
+    if (mapReady && mapRef.current) {
+      const mapInstance = mapRef.current.getMap();
+      
+      let retryCount = 0;
+      const maxRetries = 5;
+      
+      const attemptQuery = () => {
+        const features = mapInstance.querySourceFeatures('statesData', {
+          sourceLayer: 'administrative',
+          filter: ['==', ['get', 'iso_a2'], 'FR'],
+        });
+        
+        console.log(`Attempt ${retryCount + 1}: Found ${features.length} features`);
+        
+        if (features.length > 0) {
+          // Features found, proceed with combining datasets
+          combineDatasets(mapInstance);
+        } else if (retryCount < maxRetries) {
+          // No features found yet, retry after a delay
+          retryCount++;
+          setTimeout(attemptQuery, 300);
+        } else {
+          console.error('Failed to find features after maximum retries');
+        }
+      };
+      
+      attemptQuery();
+    }
+  }, [mapReady, pathname]);
 
   const [cursor, setCursor] = useState<string>('grab');
 
@@ -106,102 +117,7 @@ const FranceMap = () => {
     feature: any;
     type: AdminType;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { data: regionsData, isLoading: isLoadingRegions } = useCommunities({
-    filters: { type: 'REG', limit: 100 },
-  });
-  const { data: departementsData, isLoading: isLoadingDepartments } = useCommunities({
-    filters: { type: 'DEP', limit: 500 },
-  });
-
-  // UseMemo to persist the data
-  const memoizedRegions = useMemo(() => regionsData || [], [regionsData]);
-  const memoizedDepartements = useMemo(() => departementsData || [], [departementsData]);
-
-  // Manage loading state directly based on data loading states
-
-  useEffect(() => {
-    if (isLoadingRegions || isLoadingDepartments) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false); // Only set to false when both regions and departments are loaded
-    }
-  }, [isLoadingRegions, isLoadingDepartments]); // Trigger when either loading state changes
-
-  useEffect(() => {
-    // Update refs only if the memoized data has changed
-    if (memoizedRegions.length > 0) regionsRef.current = memoizedRegions;
-    if (memoizedDepartements.length > 0) departementsRef.current = memoizedDepartements;
-  }, [memoizedRegions, memoizedDepartements]);
-
-  // Process regions and departments when the map is ready and data is loaded
-  useEffect(() => {
-    if (!mapReady || isLoadingRegions || isLoadingDepartments) return;
-
-    const mapInstance = mapRef.current?.getMap();
-    if (!mapInstance) return;
-
-    // Process regions if not already processed
-    if (!regionsProcessed && regionsRef.current.length > 0) {
-      processRegions(mapInstance);
-    }
-
-    // Process departments if not already processed
-    if (!departementsProcessed && departementsRef.current.length > 0) {
-      processDepartments(mapInstance);
-    }
-  }, [mapReady, isLoadingRegions, isLoadingDepartments, regionsProcessed, departementsProcessed]);
-
-  const processRegions = (mapInstance: maplibregl.Map) => {
-    console.log('Processing regions...');
-    const regionFeatures = mapInstance.querySourceFeatures('statesData', {
-      sourceLayer: 'administrative',
-      filter: ['all', ['==', 'level', 1], ['==', 'level_0', 'FR']],
-    });
-
-    if (regionFeatures.length === 0) {
-      // If no features found, try again later
-      setTimeout(() => processRegions(mapInstance), 500);
-      return;
-    }
-
-    regionFeatures.forEach((feature) => {
-      mergeFeatureData(feature, regionsRef.current, [], []);
-      const population = Number.parseInt(feature.properties.population) || 0;
-      mapInstance.setFeatureState(
-        { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-        { population },
-      );
-    });
-
-    setRegionsProcessed(true);
-    console.log('Regions processed successfully');
-  };
-
-  const processDepartments = (mapInstance: maplibregl.Map) => {
-    console.log('Processing departments...');
-    const departmentFeatures = mapInstance.querySourceFeatures('statesData', {
-      sourceLayer: 'administrative',
-      filter: ['all', ['==', 'level', 2], ['==', 'level_0', 'FR']],
-    });
-    if (departmentFeatures.length === 0) {
-      // If no features found, try again later
-      setTimeout(() => processDepartments(mapInstance), 500);
-      return;
-    }
-    departmentFeatures.forEach((feature) => {
-      mergeFeatureData(feature, [], departementsRef.current, []);
-      const population = Number.parseInt(feature.properties.population) || 0;
-      mapInstance.setFeatureState(
-        { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-        { population },
-      );
-    });
-
-    setDepartementsProcessed(true);
-    console.log('Departments processed successfully');
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const minimalistStyle = useMemo(
     () => ({
@@ -219,102 +135,114 @@ const FranceMap = () => {
     [MAPTILER_API_KEY],
   );
 
-  // This function now handles all data merging and fetching communes on demand
   const combineDatasets = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
 
     const features = mapInstance.querySourceFeatures('statesData', {
       sourceLayer: 'administrative',
-      filter: ['==', 'iso_a2', 'FR'],
+      filter: ['==', ['get', 'iso_a2'], 'FR'],
     });
+    
 
-    const communesInViewport = features.length;
 
-    // Log the number of communes in viewport for debugging (optional)
-    console.log(`Found ${communesInViewport} features in viewport`);
+    const regionsInViewport = features.filter((feature) => feature.properties.level === 1);
+    const departementsInViewport = features.filter((feature) => feature.properties.level === 2);
+    const communesInViewport = features.filter((feature) => feature.properties.level === 3);
 
-    // Only fetch communes if there are less than 5000 in the viewport
-    if (communesInViewport < 5000) {
-      // Collect commune codes that need to be fetched
+    const featuresInViewport =
+      regionsInViewport.length + departementsInViewport.length + communesInViewport.length;
+
+    if (featuresInViewport < 5000) {
+      const regionsCodesToFetch: string[] = [];
+      const departementCodesToFetch: string[] = [];
       const communeCodesToFetch: string[] = [];
 
       features.forEach((feature) => {
-        // For regions and departments, use the existing data
-        if (feature.properties.level === 1 || feature.properties.level === 2) {
+        if (feature.properties.level === 1) {
+          const featureId = feature?.id?.toString().slice(-2) || '';
+          const alreadyFetched = fetchedRegionCodes.has(featureId);
+          const alreadyInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
+          if (!alreadyInCache && featureId && !alreadyFetched) {
+            regionsCodesToFetch.push(featureId);
+          }
+        } else if (feature.properties.level === 2) {
+          const featureId: string = feature?.properties?.code;
+          const alreadyFetched = fetchedDepartementCodes.has(featureId);
+          const alreadyInCache = departementsRef.current.find((d) => d.code_insee === featureId);
+          if (!alreadyInCache && featureId && !alreadyFetched) {
+            departementCodesToFetch.push(featureId);
+          }
+        } else if (feature.properties.level === 3) {
+          const featureId = feature.properties.code;
+          const alreadyFetched = fetchedCommuneCodes.has(featureId);
+          const alreadyInCache = communesRef.current.find((c) => c.code === featureId);
+          if (!alreadyInCache && featureId && !alreadyFetched) {
+            communeCodesToFetch.push(featureId);
+          }
+        }
+      });
+
+      setIsLoading(true);
+
+      // Fetch and update Regions
+      if (regionsCodesToFetch.length > 0) {
+        const newRegions = await fetchRegionsByCode(regionsCodesToFetch);
+        regionsRef.current = [...regionsRef.current, ...newRegions];
+        setFetchedRegionCodes((prev) => {
+          const newSet = new Set(prev);
+          regionsCodesToFetch.forEach((code) => newSet.add(code));
+          return newSet;
+        });
+      }
+
+      // Fetch and update Departments
+      if (departementCodesToFetch.length > 0) {
+        const newDepartements = await fetchDepartementsByCode(departementCodesToFetch);
+        departementsRef.current = [...departementsRef.current, ...newDepartements];
+        setFetchedDepartementCodes((prev) => {
+          const newSet = new Set(prev);
+          departementCodesToFetch.forEach((code) => newSet.add(code));
+          return newSet;
+        });
+      }
+
+      // Fetch and update Communes
+      if (communeCodesToFetch.length > 0) {
+        const newCommunes = await fetchCommunesByCode(communeCodesToFetch);
+        const processedCommunes = newCommunes.map((commune: Community) => ({
+          ...commune,
+          code: commune.code_insee.toString(),
+        }));
+        communesRef.current = [...communesRef.current, ...processedCommunes];
+        setFetchedCommuneCodes((prev) => {
+          const newSet = new Set(prev);
+          communeCodesToFetch.forEach((code) => newSet.add(code));
+          return newSet;
+        });
+      }
+
+      // Enrich features with merged data
+      features.forEach((feature) => {
+        const level = feature.properties.level;
+        if (level === 1 || level === 2 || level === 3) {
           mergeFeatureData(
             feature,
             regionsRef.current,
             departementsRef.current,
             communesRef.current,
           );
+
           const population = Number.parseInt(feature.properties.population) || 0;
           mapInstance.setFeatureState(
             { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
             { population },
           );
         }
-        // For communes, collect codes to fetch
-        else if (feature.properties.level === 3) {
-          const featureId = feature.properties.code;
-          // Check if we already have this commune in our cache or if we've already fetched it
-          const existingCommune = communesRef.current.find((c) => c.code === featureId);
-          if (!existingCommune && featureId && !fetchedCommuneCodes.has(featureId)) {
-            communeCodesToFetch.push(featureId);
-          }
-        }
       });
 
-      console.log(`Need to fetch ${communeCodesToFetch.length} new communes`);
-
-      if (communeCodesToFetch.length > 0) {
-        setIsLoading(true);
-        const newCommunes = await fetchCommunesByCode(communeCodesToFetch);
-        console.log(`Received ${newCommunes.length} communes from API`);
-
-        // Add the new communes to our cache
-        if (newCommunes.length > 0) {
-          const processedCommunes = newCommunes.map((commune: Community) => ({
-            ...commune,
-            code: commune.cog.toString(),
-          }));
-
-          communesRef.current = [...communesRef.current, ...processedCommunes];
-
-          // Update our set of fetched codes
-          setFetchedCommuneCodes((prev) => {
-            const newSet = new Set(prev);
-            communeCodesToFetch.forEach((code) => newSet.add(code));
-            return newSet;
-          });
-        } else {
-          setFetchedCommuneCodes((prev) => {
-            const newSet = new Set(prev);
-            communeCodesToFetch.forEach((code) => newSet.add(code));
-            return newSet;
-          });
-        }
-
-        // Now process all features again with the updated commune data
-        features.forEach((feature) => {
-          if (feature.properties.level === 3) {
-            mergeFeatureData(
-              feature,
-              regionsRef.current,
-              departementsRef.current,
-              communesRef.current,
-            );
-            const population = Number.parseInt(feature.properties.population) || 0;
-            mapInstance.setFeatureState(
-              { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-              { population },
-            );
-          }
-        });
-
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     } else {
-      console.log('Too many communes in the viewport, skipping fetch.');
+      console.log('Too many features in the viewport, skipping fetch.');
     }
   };
 
@@ -360,46 +288,48 @@ const FranceMap = () => {
   const onClick = (event: MapLayerMouseEvent) => {
     const { features } = event;
     if (!features || features.length === 0) return;
-
+  
     const feature = features[0];
+    const props = feature.properties || {};
+    const layerId = feature.layer.id;
+  
     let type: AdminType = 'region';
-    if (feature.layer.id === 'regions') type = 'region';
-    else if (feature.layer.id === 'departements') type = 'departement';
-    else if (feature.layer.id === 'communes') type = 'commune';
-
-    const code =
-      feature.properties?.code?.toString() ||
-      feature.properties?.insee ||
-      feature.properties?.code_commune;
+    if (layerId === 'communes') type = 'commune';
+    else if (layerId === 'departements') type = 'departement';
+  
+    const code = props.code?.toString()
+    const regionCode = feature.id?.toString().slice(-2);
     let community;
-
-    if (type === 'commune') community = communesRef.current.find((c) => c.code === code);
-    else if (type === 'departement')
-      community = departementsRef.current.find(
-        (d) => d.code === code || d.nom === feature.properties?.name,
-      );
-    else
+  
+    if (type === 'commune') {
+      community = communesRef.current.find((c) => c.code_insee === code);
+    } else if (type === 'departement') {
+      community = departementsRef.current.find((d) => d.code_insee === code);
+    } else {
       community = regionsRef.current.find(
-        (r) => r.code === code || r.nom === feature.properties?.name,
+        (r) => r.code_insee_region === regionCode,
       );
-
-    if (community?.siren) router.push(`/community/${community.siren}`);
+    }
+  
+    if (community?.siren) {
+      router.push(`/community/${community.siren}`);
+    }
   };
-
+  
   const renderTooltip = () => {
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
     const props = feature.properties;
+    const regionCode = feature.id.toString().slice(-2)
     const code = props.code?.toString();
     let data;
-    if (type === 'commune') data = communesRef.current.find((c) => c.code === code);
+    if (type === 'commune') data = communesRef.current.find((c) => c.code_insee === code);
     else if (type === 'departement')
-      data = departementsRef.current.find((d) => d.cog === code || d.nom === props.name);
-    // check code bah rhin is alsace
-    // haut rhin is alsace
-    // corsica is not working
-    else data = regionsRef.current.find((r) => r.code === code || r.nom === props.name);
+      data = departementsRef.current.find((d) => d.code_insee === code);
+    // TODO: the tiles data for Alsace does not match the departements in the database
+    // there are two Bas-Rhin (code: 68) and Haut-Rhin (67) which are now code_insee: 67A
+    else data = regionsRef.current.find((r) => r.code_insee_region === regionCode);
 
     if (!data) {
       return (
@@ -427,6 +357,8 @@ const FranceMap = () => {
     );
   };
 
+  
+
   return (
     <div className='relative h-[800px] w-[800px] rounded-lg shadow-md'>
       {isLoading && (
@@ -451,10 +383,6 @@ const FranceMap = () => {
         cursor={cursor}
         onLoad={() => {
           setMapReady(true);
-
-          // Reset processed flags when navigating back to the page
-          setRegionsProcessed(false);
-          setDepartementsProcessed(false);
         }}
       >
         <Source

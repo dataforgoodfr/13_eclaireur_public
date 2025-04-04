@@ -15,8 +15,9 @@ export async function GET(request: NextRequest) {
     // Create a parameterized query with placeholders
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT * FROM staging_communities 
-      WHERE cog IN (${placeholders})
+      SELECT * FROM collectivities 
+      WHERE code_insee IN (${placeholders})
+      AND type = 'COM'
     `;
 
     // Execute database query with the values array as second parameter
@@ -47,8 +48,8 @@ export async function POST(request: NextRequest) {
     // Create a parameterized query with placeholders
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT * FROM staging_communities 
-      WHERE cog IN (${placeholders})
+      SELECT * FROM collectivites 
+      WHERE code_insee IN (${placeholders})
     `;
 
     // Execute database query with the values array as second parameter

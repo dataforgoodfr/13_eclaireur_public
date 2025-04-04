@@ -23,7 +23,6 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-
 export function formatNumber(number: number): string {
-  return number.toLocaleString('fr-FR')
+  return number.toLocaleString('fr-FR');
 }
