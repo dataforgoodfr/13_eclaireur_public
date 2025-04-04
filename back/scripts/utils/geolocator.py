@@ -104,7 +104,6 @@ class GeoLocator:
         )
 
         cities = frame[frame["type"] == "COM"]
-        print(cities)
         geolocator_response = self._request_geolocator_api(
             cities[["code_insee", "nom"]].drop_duplicates()
         )
