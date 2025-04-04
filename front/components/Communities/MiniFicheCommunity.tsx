@@ -9,10 +9,7 @@ async function getCommunity(siren: string) {
   return communitiesResults[0];
 }
 
-type TCommunitySiren = {
-  communitySiren: string;
-};
-export default async function MiniFicheCommunity({ communitySiren }: TCommunitySiren) {
+export default async function MiniFicheCommunity({ communitySiren }: { communitySiren: string }) {
   const community = await getCommunity(communitySiren);
   console.log('minifiche communitySiren => ', communitySiren);
   console.log('minifiche community !!! => ', community);
