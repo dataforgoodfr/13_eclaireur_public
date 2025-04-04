@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import { formSchema } from 'utils/types';
+import { InterpellateFormSchema } from 'utils/types';
 
 const HOST_ACCOUNT_ADDRESS = 'mail.gmx.com';
 const HOST_ACCOUNT_EMAIL = process.env.MY_EMAIL;
@@ -11,7 +11,7 @@ const HOST_ACCOUNT_EMAIL_CARBON_COPY = process.env.CC_EMAIL_MESSAGE;
 
 export async function POST(request: Request) {
   const body: unknown = await request.json();
-  const result = formSchema.safeParse(body);
+  const result = InterpellateFormSchema.safeParse(body);
   const { success, data } = result;
   let firstname, lastname, email, to, object, message;
   if (success && data) {

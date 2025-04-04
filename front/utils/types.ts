@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+
+
+
+
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
@@ -16,7 +20,7 @@ export enum CommunityType {
   EPT = 'EPT',
 }
 
-export const formSchema = z.object({
+export const InterpellateFormSchema = z.object({
   firstname: z.string().min(2, {
     message: 'Veuillez saisir votre prénom, celui-ci doit contenir au moins 2 caractères',
   }),
@@ -31,4 +35,4 @@ export const formSchema = z.object({
   message: z.any(),
 });
 
-export type TformSchema = z.infer<typeof formSchema>;
+export type FormSchema = z.infer<typeof InterpellateFormSchema>;

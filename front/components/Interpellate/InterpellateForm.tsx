@@ -18,20 +18,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
-import { type TformSchema, formSchema } from 'utils/types';
+import { type FormSchema, InterpellateFormSchema } from 'utils/types';
 
 import MessageToPoliticians from './MessageToPoliticians';
 
-type TInterpellateForm = {
-  to: string[];
-  missingData: unknown;
-  communityParam: string;
-};
 export default function InterpellateForm({
   to = ['olivier.pretre@gmx.fr'],
   missingData,
   communityParam,
-}: TInterpellateForm) {
+}: {
+  to: string[];
+  missingData: unknown;
+  communityParam: string;
+}) {
   console.log('communityParam => ', communityParam);
   const router = useRouter();
   const formMessage = MessageToPoliticians;
@@ -40,8 +39,8 @@ export default function InterpellateForm({
     setError,
   } = useForm();
 
-  const form = useForm<TformSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(InterpellateFormSchema),
     defaultValues: {
       firstname: '',
       lastname: '',
@@ -53,7 +52,7 @@ export default function InterpellateForm({
     },
   });
 
-  const onSubmit = async (data: TformSchema) => {
+  const onSubmit = async (data: FormSchema) => {
     const response = await fetch('/api/interpellate', {
       method: 'POST',
       body: JSON.stringify(data),
