@@ -42,7 +42,7 @@ export async function fetchDepartementsByCode(departementCodes: string[]) {
     if (!departementCodes.length) return [];
 
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL || '';
-    
+
     // Use URLSearchParams with multiple entries
     const query = new URLSearchParams();
     departementCodes.forEach((code) => {

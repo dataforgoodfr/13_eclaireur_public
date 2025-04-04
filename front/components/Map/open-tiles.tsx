@@ -13,16 +13,19 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 
 import type { Community } from '@/app/models/community';
+import {
+  fetchCommunesByCode,
+  fetchDepartementsByCode,
+  fetchRegionsByCode,
+} from '@/utils/fetchers/map/map-fetchers';
 import { debounce } from 'lodash';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { fetchRegionsByCode, fetchCommunesByCode, fetchDepartementsByCode } from '@/utils/fetchers/map/map-fetchers';
 
 type AdminType = 'region' | 'departement' | 'commune';
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
-
 
 // TODO: Move to separate file
 const mergeFeatureData = (
@@ -70,23 +73,23 @@ const FranceMap = () => {
 
   const [mapReady, setMapReady] = useState(false);
 
-  const pathname =  usePathname();
-  // effect to ensure data is fetched and loaded each time we navigate back to the page. 
+  const pathname = usePathname();
+  // effect to ensure data is fetched and loaded each time we navigate back to the page.
   useEffect(() => {
     if (mapReady && mapRef.current) {
       const mapInstance = mapRef.current.getMap();
-      
+
       let retryCount = 0;
       const maxRetries = 5;
-      
+
       const attemptQuery = () => {
         const features = mapInstance.querySourceFeatures('statesData', {
           sourceLayer: 'administrative',
           filter: ['==', ['get', 'iso_a2'], 'FR'],
         });
-        
+
         console.log(`Attempt ${retryCount + 1}: Found ${features.length} features`);
-        
+
         if (features.length > 0) {
           // Features found, proceed with combining datasets
           combineDatasets(mapInstance);
@@ -98,7 +101,7 @@ const FranceMap = () => {
           console.error('Failed to find features after maximum retries');
         }
       };
-      
+
       attemptQuery();
     }
   }, [mapReady, pathname]);
@@ -142,8 +145,6 @@ const FranceMap = () => {
       sourceLayer: 'administrative',
       filter: ['==', ['get', 'iso_a2'], 'FR'],
     });
-    
-
 
     const regionsInViewport = features.filter((feature) => feature.properties.level === 1);
     const departementsInViewport = features.filter((feature) => feature.properties.level === 2);
@@ -288,40 +289,38 @@ const FranceMap = () => {
   const onClick = (event: MapLayerMouseEvent) => {
     const { features } = event;
     if (!features || features.length === 0) return;
-  
+
     const feature = features[0];
     const props = feature.properties || {};
     const layerId = feature.layer.id;
-  
+
     let type: AdminType = 'region';
     if (layerId === 'communes') type = 'commune';
     else if (layerId === 'departements') type = 'departement';
-  
-    const code = props.code?.toString()
+
+    const code = props.code?.toString();
     const regionCode = feature.id?.toString().slice(-2);
     let community;
-  
+
     if (type === 'commune') {
       community = communesRef.current.find((c) => c.code_insee === code);
     } else if (type === 'departement') {
       community = departementsRef.current.find((d) => d.code_insee === code);
     } else {
-      community = regionsRef.current.find(
-        (r) => r.code_insee_region === regionCode,
-      );
+      community = regionsRef.current.find((r) => r.code_insee_region === regionCode);
     }
-  
+
     if (community?.siren) {
       router.push(`/community/${community.siren}`);
     }
   };
-  
+
   const renderTooltip = () => {
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
     const props = feature.properties;
-    const regionCode = feature.id.toString().slice(-2)
+    const regionCode = feature.id.toString().slice(-2);
     const code = props.code?.toString();
     let data;
     if (type === 'commune') data = communesRef.current.find((c) => c.code_insee === code);
@@ -356,8 +355,6 @@ const FranceMap = () => {
       </div>
     );
   };
-
-  
 
   return (
     <div className='relative h-[800px] w-[800px] rounded-lg shadow-md'>
