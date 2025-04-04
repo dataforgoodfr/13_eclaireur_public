@@ -19,7 +19,6 @@ id
 id_datagouv
 modified
 resource_status
-siren
 title
 type_resource
 url

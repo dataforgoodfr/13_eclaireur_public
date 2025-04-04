@@ -47,7 +47,7 @@ class WorkflowManager:
         DeclaInteretWorkflow(self.config).run()
         DataGouvSearcher(self.config).run()
 
-        self.process_topic("subventions", self.config["search"]["subventions"])
+        self.process_subvention("subventions", self.config["search"]["subventions"])
 
         self.logger.info("Workflow completed.")
 
@@ -71,35 +71,32 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def process_topic(self, topic, topic_config):
-        self.logger.info(f"Processing topic {topic}.")
+    def process_subvention(self, topic, topic_config):
+        self.logger.info(f"Processing subvention {topic}.")
         topic_files_in_scope = None
 
-        if topic_config["source"] == "multiple":
-            datagouv_topic_files_in_scope = pd.read_parquet(
-                DataGouvSearcher.get_output_path(self.config)
-            )
+        datagouv_topic_files_in_scope = pd.read_parquet(
+            DataGouvSearcher.get_output_path(self.config)
+        )
 
-            # Find single datafiles from single urls (standalone datasources outside of datagouv)
-            single_urls_builder = SingleUrlsBuilder()
-            single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
-            # Concatenate both datafiles lists into one
-            topic_files_in_scope = (
-                pd.concat(
-                    [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
-                    ignore_index=True,
-                )
-                .dropna(subset=["url"])
-                .pipe(correct_format_from_url)
-                .pipe(sort_by_format_priorities)
-                .drop_duplicates(subset=["url"], keep="first")
-                .pipe(remove_same_dataset_formats)
-                .pipe(select_implemented_formats)
+        # Find single datafiles from single urls (standalone datasources outside of datagouv)
+        single_urls_builder = SingleUrlsBuilder()
+        single_urls_topic_files_in_scope = single_urls_builder.get_datafiles(topic_config)
+        # Concatenate both datafiles lists into one
+        topic_files_in_scope = (
+            pd.concat(
+                [datagouv_topic_files_in_scope, single_urls_topic_files_in_scope],
+                ignore_index=True,
             )
+            .dropna(subset=["url"])
+            .pipe(correct_format_from_url)
+            .pipe(sort_by_format_priorities)
+            .drop_duplicates(subset=["url"], keep="first")
+            .pipe(remove_same_dataset_formats)
+            .pipe(select_implemented_formats)
+        )
 
-            topic_agg = TopicAggregator(
-                topic_files_in_scope, topic, self.config["datafile_loader"]
-            )
-            topic_agg.run()
+        topic_agg = TopicAggregator(topic_files_in_scope, topic, self.config["datafile_loader"])
+        topic_agg.run()
 
-            return topic_files_in_scope, topic_agg.aggregated_dataset
+        return topic_files_in_scope, topic_agg.aggregated_dataset

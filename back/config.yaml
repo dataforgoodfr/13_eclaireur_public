@@ -43,26 +43,6 @@ datagouv_search:
 
 search:
   subventions:
-    source: "multiple"
-    title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
-    description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
-    api:
-      testIds: [] # use full input
-      url: "https://www.data.gouv.fr/api/1/datasets/"
-      title:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      description:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      columns:
-        - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
     single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
