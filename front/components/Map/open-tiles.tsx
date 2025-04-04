@@ -351,7 +351,7 @@ const FranceMap = () => {
           Population: {data.population?.toLocaleString() ?? 'N/A'}
         </div>
         <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
-        <div className='text-xs text-gray-400'>Code: {data.code}</div>
+        <div className='text-xs text-gray-400'>Code: {data.code_insee}</div>
       </div>
     );
   };
