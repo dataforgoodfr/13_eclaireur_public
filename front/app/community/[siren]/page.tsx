@@ -4,7 +4,6 @@ import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
-
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
