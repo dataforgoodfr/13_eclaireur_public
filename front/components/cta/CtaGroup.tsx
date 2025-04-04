@@ -1,3 +1,4 @@
+import carteImage from '@/public/carte-image.png';
 import placeHolderImage from '@/public/placeholder.jpg';
 
 import CtaCard from './CtaCard';
@@ -7,9 +8,9 @@ export default function CtaGroup() {
     {
       title: 'Cartographie',
       caption: 'Quelles sont les collectivités les plus transparentes ?',
-      image: placeHolderImage,
+      image: carteImage,
       buttonText: 'Filtrer par indicateur',
-      href: '/',
+      href: '/map',
     },
 
     {
