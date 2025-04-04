@@ -176,7 +176,7 @@ const FranceMap = () => {
         } else if (feature.properties.level === 3) {
           const featureId = feature.properties.code;
           const alreadyFetched = fetchedCommuneCodes.has(featureId);
-          const alreadyInCache = communesRef.current.find((c) => c.code === featureId);
+          const alreadyInCache = communesRef.current.find((c) => c.code_insee === featureId);
           if (!alreadyInCache && featureId && !alreadyFetched) {
             communeCodesToFetch.push(featureId);
           }
