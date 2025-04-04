@@ -15,7 +15,7 @@ export type MarchesPublicsParams = Partial<
  * @returns
  */
 export function createSQLQueryParams(options?: MarchesPublicsParams) {
-  let query = `SELECT * FROM ${DataTable.MarchesPublics}`;
+  let query = `SELECT * FROM ${DataTable.MarchesPublicsStaging}`;
   let values: (CommunityType | number | string)[] = [];
 
   if (options === undefined) {

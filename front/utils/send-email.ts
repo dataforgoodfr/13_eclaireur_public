@@ -1,18 +1,18 @@
-import { FormData } from '@/components/ContactForm'
+import { FormData } from '@/components/ContactForm';
 
 export async function sendEmail(data: FormData) {
-//   console.log(data)
+  //   console.log(data)
 
-  const apiEndpoint = `api/email`
+  const apiEndpoint = `api/email`;
 
   const sendMailRes = fetch(apiEndpoint, {
     method: 'POST',
     body: JSON.stringify(data),
   })
     .then((res) => {
-        return res
+      return res;
     })
     .catch((err) => {
-      alert(err)
-    })
+      alert(err);
+    });
 }

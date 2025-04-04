@@ -1,4 +1,5 @@
-import ContactForm from '@/components/ContactForm'
+import ContactForm from '@/components/ContactForm';
+
 export default function page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>

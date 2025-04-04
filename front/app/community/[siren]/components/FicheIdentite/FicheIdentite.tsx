@@ -3,7 +3,6 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { BadgeEuro, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 import { FicheCard } from '../FicheCard';
-import NeighboursMap from '../NeighboursMap/NeighboursMap';
 import { TransparencyScores } from '../TransparencyScores/TransparencyScores';
 
 type FicheIdentiteProps = {
@@ -62,7 +61,8 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
           />
           <TinyCard title={obligationPublicationText} icon={<FileText />} />
         </div>
-        <NeighboursMap community={community} />
+        {/** TODO - Add back when lat/long are added in data */}
+        {/* <NeighboursMap community={community} /> */}
       </div>
       <TransparencyScores scores={scores} trends={trends} />
     </FicheCard>

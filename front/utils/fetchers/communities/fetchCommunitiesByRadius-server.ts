@@ -1,5 +1,7 @@
-import { Community } from '@/app/models/community';
+import { CommunityV0 } from '@/app/models/community';
 import { getQueryFromPool } from '@/utils/db';
+
+// TODO - replace 'public.selected_communitiestest_indices' by communities table when lat lont are added
 
 /**
  *
@@ -43,8 +45,8 @@ export async function fetchCommunitiesByRadius(
   latitude: number,
   longitude: number,
   radius: number,
-): Promise<Community[]> {
+): Promise<CommunityV0[]> {
   const params = createSQLQueryParams(latitude, longitude, radius);
 
-  return getQueryFromPool(...params) as Promise<Community[]>;
+  return getQueryFromPool(...params) as Promise<CommunityV0[]>;
 }
