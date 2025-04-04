@@ -4,7 +4,6 @@ import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
-
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
@@ -35,7 +34,13 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
   const community = await getCommunity(siren);
-  const marchesPublics = await getMarchesPublics(siren);
+
+  let marchesPublics;
+  try {
+    marchesPublics = await getMarchesPublics(siren);
+  } catch (e) {
+    marchesPublics = 'NoData';
+  }
 
   return (
     <Suspense key={community.siren} fallback={<Loading />}>

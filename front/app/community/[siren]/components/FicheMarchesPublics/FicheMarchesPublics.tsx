@@ -5,11 +5,18 @@ import Top10 from './Top10';
 import Trends from './Trends';
 
 type FicheMarchesPublics = {
-  marchesPublics: MarchePublic[];
+  marchesPublics: MarchePublic[] | string;
 };
 
 export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
-  return (
+  return marchesPublics == 'NoData' ? (
+    <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
+      <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
+      <div className='flex h-[600px] w-full items-center justify-center bg-neutral-100'>
+        Aucune donnée n'a été publiée
+      </div>
+    </div>
+  ) : (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
       <Tabs defaultValue='trends'>
@@ -20,7 +27,7 @@ export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
           <TabsTrigger value='details'>Classement</TabsTrigger>
         </TabsList>
         <TabsContent value='trends'>
-          <Trends data={marchesPublics} />
+          {Array.isArray(marchesPublics) && <Trends data={marchesPublics} />}
         </TabsContent>
         <TabsContent value='distribution'>
           <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
@@ -33,7 +40,7 @@ export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
           </div>
         </TabsContent>
         <TabsContent value='details'>
-          <Top10 rawData={marchesPublics} />
+          {Array.isArray(marchesPublics) && <Top10 rawData={marchesPublics} />}
         </TabsContent>
       </Tabs>
     </div>
