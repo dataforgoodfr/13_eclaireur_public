@@ -7,8 +7,7 @@ import RankingCommunity from '@/components/Communities/RankingCommunity';
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { buttonVariants } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
+import { MoveRight } from 'lucide-react';
 
 export default async function InterpellateStep1({
   params,
@@ -16,6 +15,10 @@ export default async function InterpellateStep1({
   params: Promise<{ siren: string }>;
 }) {
   const { siren } = await params;
+  const buttonClassName = `buttonVariants({
+            variant: 'outline',
+            className: 'min-w-[200] bg-black text-white',
+          })`;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
