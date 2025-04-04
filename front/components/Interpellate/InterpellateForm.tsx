@@ -172,9 +172,10 @@ export default function InterpellateForm({
           />
 
           <div className='simulatedTextArea'>
-            <div className='simulatedLabel'>Votre message</div>
+            <div className='text-sm font-medium'>Votre message</div>
             <div
               id='simulatedTextAreaContent'
+              className='w-full cursor-not-allowed rounded-md border border-input bg-transparent text-base opacity-35 shadow-sm transition-colors md:text-sm'
               dangerouslySetInnerHTML={{ __html: formMessage }}
             ></div>
           </div>

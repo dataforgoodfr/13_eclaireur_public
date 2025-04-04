@@ -24,7 +24,7 @@ export default function Page() {
           <SearchBar onSelect={({ siren }) => displayTransparencyScore(siren)} />
         </div>
       </article>
-      <article className='intro my-16'>
+      <article className='my-16'>
         <h2 className='my-6 text-xl font-bold uppercase'>Pourquoi interpeller mes élu.e.s ?</h2>
         <img
           src='https://placehold.co/200/png'
@@ -33,20 +33,20 @@ export default function Page() {
           alt='*'
           className='float-right'
         />
-        <p>
+        <p className='my-6'>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis officiis at magnam
           recusandae incidunt nobis animi facere, illo harum est?
         </p>
-        <p>
+        <p className='my-6'>
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus dicta commodi, iste harum
           quisquam fugit placeat inventore tenetur voluptas, nulla alias ab ea dignissimos
           reiciendis nemo incidunt doloremque! Consequatur nemo sequi labore, earum dolorum non.
         </p>
-        <p>
+        <p className='my-6'>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet quia cumque corrupti,
           tempora nesciunt expedita hic necessitatibus dicta incidunt ad!
         </p>
-        <p>
+        <p className='my-6'>
           <Link href='/' className={buttonVariants({ variant: 'outline' })}>
             En savoir plus <ChevronRight />
           </Link>
