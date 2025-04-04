@@ -9,6 +9,7 @@ import {
   Popup,
 } from 'react-map-gl/maplibre';
 
+import { CommunityV0 } from '@/app/models/community';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import Pin from './Pin';
@@ -24,11 +25,8 @@ const style: React.CSSProperties = {
   height: 400,
 };
 
-type Cities = {
-  longitude: number;
-  latitude: number;
-  nom: string;
-};
+// TODO - use Community when lat long are added in table
+type Cities = Pick<CommunityV0, 'latitude' | 'longitude' | 'nom'>;
 
 type MapWithCityMarkersProps = {
   center: [longitude: number, latitude: number];
