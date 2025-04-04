@@ -10,8 +10,7 @@ export type CommunitiesOptions = {
   };
 };
 
-// TODO - 27/03/2025 - Change to communities when communities is updated (missing lat, long)
-const TABLE_NAME = DataTable.CommunitiesTest;
+const TABLE_NAME = DataTable.Communities;
 
 function stringifySelectors(options: CommunitiesOptions): string {
   const { selectors } = options;
