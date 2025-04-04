@@ -6,7 +6,7 @@
         "acheteur": {
           "id": "a_01"
         },
-        "montant": 500.0,
+        "montant": 200.0,
         "titulaires": [
           {
             "titulaire": {
@@ -21,12 +21,18 @@
         "acheteur": {
           "id": "a_02"
         },
-        "montant": 12.78,
+        "montant": 20,
         "titulaires": [
           {
             "titulaire": {
               "typeIdentifiant": "SIRET",
               "id": "id_2"
+            }
+          },
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "id_3"
             }
           }
         ]

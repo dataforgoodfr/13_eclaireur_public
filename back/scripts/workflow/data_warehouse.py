@@ -3,6 +3,9 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
+from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
+from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
@@ -16,9 +19,12 @@ class DataWarehouseWorkflow:
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
         self.send_to_db = {
-            "all_commnunities": CommunitiesEnricher.get_output_path(config),
+            "collectivites": CommunitiesEnricher.get_output_path(config),
             "marches_publics": MarchesPublicsEnricher.get_output_path(config),
             "subventions": SubventionsEnricher.get_output_path(config),
+            "comptes_collectivites": FinancialAccounts.get_output_path(config),
+            "elus": ElectedOfficialsWorkflow.get_output_path(config),
+            "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
         }
 
     def run(self) -> None:

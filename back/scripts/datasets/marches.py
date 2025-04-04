@@ -19,6 +19,16 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 DATASET_ID = "5cd57bf68b4c4179299eb0e9"
+UNNECESSARY_NESTED = [
+    "considerationsSociales",
+    "considerationsEnvironnementales",
+    "modalitesExecution",
+]
+COLUMNS_RENAMER = {
+    "modalitesExecution": "modaliteExecution",
+    "techniques": "technique",
+    "acheteur.id": "acheteur_id",
+}
 
 
 class MarchesPublicsWorkflow(DatasetAggregator):
@@ -83,7 +93,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if not interim_fn.exists():
             return None
-        out = pd.read_json(interim_fn)
+        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.dtypes.pipe(lambda s: s[s == "object"]).index
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
@@ -98,7 +108,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if interim_fn.exists():
             return
 
-        with open(raw_filename, "r", encoding="utf-8") as raw:
+        with open(raw_filename, "rb") as raw:
             array_location = self.check_json_structure(raw_filename) + ".item"
 
             with open(interim_fn, "w") as interim:
@@ -140,6 +150,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
             except (StopIteration, ijson.JSONError):
                 return "unknown"
+        return "unknown"
 
     @staticmethod
     def unnest_marche(declaration: dict):
@@ -152,13 +163,27 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if isinstance(titulaires, dict):
             titulaires = [titulaires]
 
+        # titulaire is sometines nested
+        if "titulaire" in titulaires[0].keys():
+            titulaires = [titu["titulaire"] for titu in titulaires]
+
+        # acheteur is sometimes just a dictionnary with a single "id" key
         unnested = {}
         for k, v in local_decla.items():
-            if isinstance(v, (list, dict)):
-                v = json.dumps(v)
-            elif isinstance(v, decimal.Decimal):
-                v = float(v)
-            unnested[k] = v
+            if k == "acheteur":
+                try:
+                    unnested["acheteur.id"] = str(v["id"])
+                except TypeError:
+                    unnested["acheteur.id"] = ""
+            elif k == "montant":
+                unnested["montant"] = v
+                unnested["countTitulaires"] = len(titulaires)
+            else:
+                if isinstance(v, (list, dict)):
+                    v = json.dumps(v)
+                elif isinstance(v, decimal.Decimal):
+                    v = float(v)
+                unnested[k] = v
         return [{f"titulaire_{k}": v for k, v in t.items()} | unnested for t in titulaires if t]
 
 

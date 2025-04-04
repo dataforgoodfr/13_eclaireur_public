@@ -16,7 +16,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
   const lastUpdateText = `Dernière mise à jour le XX/XX/XX`;
 
   return (
-    <div className='w-fulljustify-stretch flex flex-col gap-6 bg-gray-200 p-6 md:flex-row'>
+    <div className='w-full justify-stretch flex flex-col gap-6 bg-gray-200 p-6 md:flex-row'>
       <FicheGoBack />
       <div className='flex-1 text-center'>
         <p className='text-xl font-bold'>{title}</p>

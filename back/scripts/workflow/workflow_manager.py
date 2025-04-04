@@ -105,7 +105,7 @@ class WorkflowManager:
             )
 
             topic_agg = TopicAggregator(
-                topic_files_in_scope, topic, topic_config, self.config["datafile_loader"]
+                topic_files_in_scope, topic, self.config["datafile_loader"]
             )
             topic_agg.run()
 

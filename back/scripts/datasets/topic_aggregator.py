@@ -14,7 +14,7 @@ from back.scripts.datasets.constants import (
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.dataframe_operation import (
     merge_duplicate_columns,
     normalize_column_names,
@@ -42,17 +42,17 @@ class TopicAggregator(DatasetAggregator):
         self,
         files_in_scope: pd.DataFrame,
         topic: str,
-        topic_config: dict,
         datafile_loader_config: dict,
     ):
         self.topic = topic
-        self.topic_config = topic_config
+        self.topic_config = project_config["search"][topic]
 
         super().__init__(files_in_scope, self.substitute_config(topic, datafile_loader_config))
 
-        self._load_schema(topic_config["schema"])
+        self._load_schema(self.topic_config["schema"])
         self._load_manual_column_rename()
         self.extra_columns = Counter()
+        self.missing_data = []
 
     @classmethod
     def get_config_key(cls):
@@ -75,10 +75,12 @@ class TopicAggregator(DatasetAggregator):
     def get_output_path(cls, main_config: dict, topic: str = "subventions") -> Path:
         return Path(main_config[cls.get_config_key()]["combined_filename"] % {"topic": topic})
 
-    def run(self):
-        super().run()
+    def _post_process(self):
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
             self.data_folder / "extra_columns.csv"
+        )
+        pd.DataFrame.from_records(self.missing_data).to_parquet(
+            self.data_folder / "missing_data.parquet"
         )
 
     def _load_schema(self, schema_topic_config):
@@ -182,7 +184,11 @@ class TopicAggregator(DatasetAggregator):
         )
         self._flag_inversion_siret(df, file_metadata)
         self._flag_extra_columns(df, file_metadata)
-        return df.pipe(self._select_official_columns).pipe(self._add_metadata, file_metadata)
+        return (
+            df.pipe(self._select_official_columns)
+            .pipe(self._add_metadata, file_metadata)
+            .pipe(self._clean_missing_values, file_metadata)
+        )
 
     def _add_metadata(self, df: pd.DataFrame, file_metadata: tuple):
         """
@@ -191,12 +197,46 @@ class TopicAggregator(DatasetAggregator):
         optional_features = {}
         if "idAttribuant" not in df.columns:
             optional_features["idAttribuant"] = str(file_metadata.siren).zfill(9) + "0" * 5
+        if "dateConvention" in df.columns:
+            optional_features["annee"] = df["dateConvention"].dt.year
         return df.assign(
             topic=self.topic,
             url=file_metadata.url,
             coll_type=file_metadata.type,
             **optional_features,
         )
+
+    def _clean_missing_values(self, df: pd.DataFrame, file_metadata: tuple):
+        """
+        Clean the dataframe by removing rows where all values are missing.
+        """
+        must_have_columns = ["montant", "annee", "idAttribuant", "idBeneficiaire"]
+        missings = sorted(set(must_have_columns) - set(df.columns))
+        if missings:
+            self.missing_data.append(
+                {
+                    "url_hash": file_metadata.url_hash,
+                    "missing_rate": 1.0,
+                    "reason": "missing_columns",
+                    "missing_columns": ",".join(missings),
+                }
+            )
+            raise RuntimeError("Missing columns : " + ",".join(missings))
+
+        missings = df[must_have_columns].isna()
+        mask = missings.any(axis=1)
+        missing_rate = mask.sum() / len(mask)
+        if missing_rate > 0:
+            missings = sorted(missings.sum().pipe(lambda s: s[s > 0]).index.values)
+            self.missing_data.append(
+                {
+                    "url_hash": file_metadata.url_hash,
+                    "missing_rate": missing_rate,
+                    "reason": "missing_values",
+                    "missing_columns": ",".join(missings),
+                }
+            )
+        return df[~mask]
 
     @staticmethod
     def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: tuple):
