@@ -7,6 +7,7 @@ import pandas as pd
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.communities.loaders.ofgl import OfglLoader
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.datagouv_searcher import (
     DataGouvSearcher,
@@ -37,6 +38,7 @@ class WorkflowManager:
 
     def run_workflow(self):
         self.logger.info("Workflow started.")
+        CPVLabelsWorkflow(self.config).run()
         SireneWorkflow(self.config).run()
         OfglLoader.from_config(self.config).run()
         CommunitiesSelector(self.config).run()
