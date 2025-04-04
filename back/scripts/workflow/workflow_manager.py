@@ -76,9 +76,6 @@ class WorkflowManager:
         topic_files_in_scope = None
 
         if topic_config["source"] == "multiple":
-            # Find multiple datafiles from datagouv
-            config = self.config["datagouv"]
-            config["datagouv_api"] = self.config["datagouv_api"]
             datagouv_topic_files_in_scope = pd.read_parquet(
                 DataGouvSearcher.get_output_path(self.config)
             )
