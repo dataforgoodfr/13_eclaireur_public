@@ -23,6 +23,10 @@ communities:
   postal_code:
     url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
 
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: .back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
+
 datagouv:
   datasets:
     url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
