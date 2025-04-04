@@ -1,22 +1,35 @@
 import { MarchePublic } from '@/app/models/marche_public';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
 import Top10 from './Top10';
 import Trends from './Trends';
 
+async function getMarchesPublics(siren: string) {
+  const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
+
+  return marchesPublicsResults;
+}
+
 type FicheMarchesPublics = {
-  marchesPublics: MarchePublic[] | string;
+  marchesPublics: MarchePublic[];
 };
 
-export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
-  return marchesPublics == 'NoData' ? (
-    <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
-      <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
-      <div className='flex h-[600px] w-full items-center justify-center bg-neutral-100'>
-        Aucune donnée n'a été publiée
+export async function FicheMarchesPublics({ siren }: { siren: string }) {
+  const marchesPublics = await getMarchesPublics(siren);
+
+  if (marchesPublics.length === 0) {
+    return (
+      <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
+        <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
+        <div className='flex h-[600px] w-full items-center justify-center bg-neutral-100'>
+          Aucune donnée n'a été publiée
+        </div>
       </div>
-    </div>
-  ) : (
+    );
+  }
+
+  return (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
       <Tabs defaultValue='trends'>
@@ -27,7 +40,7 @@ export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
           <TabsTrigger value='details'>Classement</TabsTrigger>
         </TabsList>
         <TabsContent value='trends'>
-          {Array.isArray(marchesPublics) && <Trends data={marchesPublics} />}
+          <Trends data={marchesPublics} />
         </TabsContent>
         <TabsContent value='distribution'>
           <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
@@ -40,7 +53,7 @@ export function FicheMarchesPublics({ marchesPublics }: FicheMarchesPublics) {
           </div>
         </TabsContent>
         <TabsContent value='details'>
-          {Array.isArray(marchesPublics) && <Top10 rawData={marchesPublics} />}
+          <Top10 rawData={marchesPublics} />
         </TabsContent>
       </Tabs>
     </div>
