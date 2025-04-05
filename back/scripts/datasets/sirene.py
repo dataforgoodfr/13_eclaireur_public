@@ -53,21 +53,21 @@ class SireneWorkflow:
             return
         urllib.request.urlretrieve(self._config["url"], self.zip_filename)
 
+    def _download_if_not_exists(self, url: str) -> Path:
+        file_name = url.split("/")[-1]
+        file_path = self.data_folder / file_name
+        if not file_path.exists():
+            urllib.request.urlretrieve(url, file_path)
+        return file_path
+
     def _fetch_xls_files(self) -> None:
         xls_links = self._config.get("xls_urls_naf", [])
         for file_url in xls_links:
-            file_name = file_url.split("/")[-1]
-            file_path = self.data_folder / file_name
-            if not file_path.exists():
-                urllib.request.urlretrieve(file_url, file_path)
+            self._download_if_not_exists(file_url)
 
         xls_url_cat_ju = self._config.get("xls_urls_cat_ju")
-
         if xls_url_cat_ju:
-            file_name = xls_url_cat_ju.split("/")[-1]
-            file_path = self.data_folder / file_name
-            if not file_path.exists():
-                urllib.request.urlretrieve(xls_url_cat_ju, file_path)
+            self._download_if_not_exists(xls_url_cat_ju)
 
     def join_naf_level(
         self,
@@ -140,7 +140,7 @@ class SireneWorkflow:
             }
         )
         juridical_polars = juridical_polars.with_columns(pl.col(column_name).cast(pl.Utf8))
-        print(level, juridical_polars, base_df[column_name])
+
         return base_df.join(
             juridical_polars,
             on=column_name,
