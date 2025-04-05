@@ -163,6 +163,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if isinstance(titulaires, dict):
             titulaires = [titulaires]
 
+        # Remove None
+        titulaires = [t for t in titulaires if t]
+        
         # titulaire is sometines nested
         if "titulaire" in titulaires[0].keys():
             titulaires = [titu["titulaire"] for titu in titulaires]
