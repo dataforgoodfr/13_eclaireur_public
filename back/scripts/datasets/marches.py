@@ -53,7 +53,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             )
 
         catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
-            lambda df: df[df["dataset_id"] == DATASET_ID]
+            lambda df: df[df["dataset.id"] == DATASET_ID]
         )
         complete_years = catalog.assign(
             year=catalog["url"].str.extract(r"decp-(\d{4}).json")
@@ -162,6 +162,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         titulaires = local_decla.pop("titulaires", minimal_titulaire) or minimal_titulaire
         if isinstance(titulaires, dict):
             titulaires = [titulaires]
+
+        # Remove None
+        titulaires = [t for t in titulaires if t]
 
         # titulaire is sometines nested
         if "titulaire" in titulaires[0].keys():
