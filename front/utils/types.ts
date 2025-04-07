@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-
-
-
-
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
@@ -30,7 +26,7 @@ export const InterpellateFormSchema = z.object({
   email: z.string().email({
     message: 'VEuillez saisir une adresse e-mail valide',
   }),
-  to: z.string().email(),
+  emails: z.string().email(),
   object: z.string(),
   message: z.any(),
 });
@@ -41,4 +37,9 @@ export type ElectedPolitician = {
   photoSrc?: string;
   fonction: string;
   email: string;
+};
+export type InterpellateFormProps = {
+  emails: string[];
+  missingData: unknown;
+  communityParam: string;
 };

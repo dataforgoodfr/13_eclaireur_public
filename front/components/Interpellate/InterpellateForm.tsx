@@ -19,20 +19,16 @@ import { Input } from '@/components/ui/input';
 import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
+import { InterpellateFormProps } from 'utils/types';
 import { type FormSchema, InterpellateFormSchema } from 'utils/types';
 
 import MessageToPoliticians from './MessageToPoliticians';
 
 export default function InterpellateForm({
-  to = ['olivier.pretre@gmx.fr'],
+  emails = ['olivier.pretre@gmx.fr'],
   missingData,
   communityParam,
-}: {
-  to: string[];
-  missingData: unknown;
-  communityParam: string;
-}) {
-  console.log('communityParam => ', communityParam);
+}: InterpellateFormProps) {
   const router = useRouter();
   const formMessage = MessageToPoliticians;
   const {
@@ -46,7 +42,7 @@ export default function InterpellateForm({
       firstname: '',
       lastname: '',
       email: '',
-      to: to[0],
+      emails: emails[0],
       object:
         'Transparence des données publiques – Publication des investissements et marchés publics',
       message: formMessage,
@@ -140,7 +136,7 @@ export default function InterpellateForm({
           <legend className='mb-4'>Votre message</legend>
           <FormField
             control={form.control}
-            name='to'
+            name='emails'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>À</FormLabel>

@@ -1,6 +1,10 @@
 import { Community } from '@/app/models/community';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
+
+
+
+
 async function getCommunity(siren: string) {
   const communitiesResults = await fetchCommunities({ filters: { siren } });
   if (communitiesResults.length === 0) {
@@ -11,6 +15,7 @@ async function getCommunity(siren: string) {
 
 export default async function MiniFicheCommunity({ communitySiren }: { communitySiren: string }) {
   const community = await getCommunity(communitySiren);
+  console.log('community => ', community);
   const { nom, siren, type, population } = community;
   // TODO : retrieve nom du département
   // TODO : retrieve nom de la région

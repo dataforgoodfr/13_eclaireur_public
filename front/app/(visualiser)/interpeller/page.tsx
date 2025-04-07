@@ -3,15 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
-
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-
-
-
-
 
 export default function Page() {
   const router = useRouter();
