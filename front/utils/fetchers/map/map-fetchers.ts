@@ -1,98 +1,70 @@
+const API_ROUTES = {
+  REGIONS: '/api/map/regions',
+  DEPARTEMENTS: '/api/map/departements',
+  COMMUNES: '/api/map/communes',
+};
+
 /**
  * Fetches region data by region codes
- * @param regionCodes - Array of region codes to fetch
- * @returns Array of region data
  */
-export async function fetchRegionsByCode(regionCodes: string[]) {
-  try {
-    if (!regionCodes.length) return [];
+export async function fetchRegionsByCode(regionCodes: string[]): Promise<any[]> {
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!regionCodes.length || !baseURL) return [];
 
-    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || '';
+  const url = new URL(API_ROUTES.REGIONS, baseURL);
+  regionCodes.forEach((code) => url.searchParams.append('codes', code));
 
-    // Use URLSearchParams with multiple entries
-    const query = new URLSearchParams();
-    regionCodes.forEach((code) => {
-      query.append('codes', code);
-    });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
-    const res = await fetch(`${baseURL}/api/map/regions?${query.toString()}`, {
-      method: 'GET',
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch regions: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    console.log('Fetched regions data:', data.regions);
-    return data.regions || [];
-  } catch (err) {
-    console.error('Failed to fetch regions data', err);
-    return [];
+  if (!res.ok) {
+    throw new Error(`Failed to fetch regions: ${res.status} ${res.statusText}`);
   }
+
+  const data = await res.json();
+  return data.regions || [];
 }
 
 /**
  * Fetches departement data by departement codes
- * @param departementCodes - Array of departement codes to fetch
- * @returns Array of departement data
  */
-export async function fetchDepartementsByCode(departementCodes: string[]) {
-  try {
-    if (!departementCodes.length) return [];
+export async function fetchDepartementsByCode(departementCodes: string[]): Promise<any[]> {
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!departementCodes.length || !baseURL) return [];
 
-    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || '';
+  const url = new URL(API_ROUTES.DEPARTEMENTS, baseURL);
+  departementCodes.forEach((code) => url.searchParams.append('codes', code));
 
-    // Use URLSearchParams with multiple entries
-    const query = new URLSearchParams();
-    departementCodes.forEach((code) => {
-      query.append('codes', code);
-    });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
-    const res = await fetch(`${baseURL}/api/map/departements?${query.toString()}`, {
-      method: 'GET',
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch departements: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return data.departements || [];
-  } catch (err) {
-    console.error('Failed to fetch departements data', err);
-    return [];
+  if (!res.ok) {
+    throw new Error(`Failed to fetch departements: ${res.status} ${res.statusText}`);
   }
+
+  const data = await res.json();
+  return data.departements || [];
 }
 
 /**
  * Fetches commune data by commune codes
- * @param communeCodes - Array of commune codes to fetch
- * @returns Array of commune data
  */
-export async function fetchCommunesByCode(communeCodes: string[]) {
-  try {
-    if (!communeCodes.length) return [];
+export async function fetchCommunesByCode(communeCodes: string[]): Promise<any[]> {
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!communeCodes.length || !baseURL) return [];
 
-    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || '';
+  const url = new URL(API_ROUTES.COMMUNES, baseURL);
 
-    // Use POST request with codes in the request body
-    const res = await fetch(`${baseURL}/api/map/communes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ codes: communeCodes }),
-    });
+  const res = await fetch(url.toString(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ codes: communeCodes }),
+  });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch communes: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return data.communes || [];
-  } catch (err) {
-    console.error('Failed to fetch communes data', err);
-    return [];
+  if (!res.ok) {
+    throw new Error(`Failed to fetch communes: ${res.status} ${res.statusText}`);
   }
+
+  const data = await res.json();
+  return data.communes || [];
 }
