@@ -38,7 +38,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             </div>
           </TabsContent>
           <TabsContent value='details'>
-            <Top10 rawData={marchesPublics} />
+            <Top10 data={marchesPublics} />
           </TabsContent>
         </Tabs>
       ) : (

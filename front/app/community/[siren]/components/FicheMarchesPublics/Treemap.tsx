@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 
+import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
+import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
+import { Switch } from '@/components/ui/switch';
 import * as d3 from 'd3';
 
 type TreeNode = {
@@ -19,20 +22,44 @@ type TreeLeaf = {
 
 type Tree = TreeNode | TreeLeaf;
 
-const data2: Tree = {
-  type: 'node',
-  name: 'boss',
-  value: 0,
-  children: [
-    { type: 'leaf', name: 'Mark', value: 90 },
-    { type: 'leaf', name: 'Robert', value: 12 },
-    { type: 'leaf', name: 'Emily', value: 34 },
-    { type: 'leaf', name: 'Marion', value: 53 },
-    { type: 'leaf', name: 'Nicolas', value: 98 },
-    { type: 'leaf', name: 'Malki', value: 22 },
-    { type: 'leaf', name: 'Djé', value: 12 },
-  ],
-};
+function wrapText(text: string, maxWidth: number): string[] {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = words[0] ?? '';
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const width = (currentLine + ' ' + word).length * 6.5; // Estimation ~6.5px par caractère
+    if (width < maxWidth) {
+      currentLine += ' ' + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+}
+
+function generateColorMap(names: string[]): Record<string, string> {
+  const colorMap: Record<string, string> = {};
+  const total = names.length;
+
+  names.forEach((name, index) => {
+    const hue = Math.round((360 / total) * index); // Répartition sur la roue chromatique
+    colorMap[name] = `hsl(${hue}, 65%, 55%)`;
+  });
+
+  return colorMap;
+}
+
+type YearOption = number | 'All';
+
+function getAvailableYears(data: MarchePublic[]) {
+  return [...new Set(data.map((item) => item.datenotification_annee))].sort(
+    (a: number, b: number) => a - b,
+  );
+}
 
 export default function Treemap({ data }: { data: MarchePublic[] }) {
   const [tooltip, setTooltip] = useState<{
@@ -49,29 +76,21 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
     value: 0,
   });
 
-  // const [selectedYear, setSelectedYear] = useState<YearOption>('All');
-  // const availableYears: number[] = getAvailableYears(rawData);
+  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const availableYears: number[] = getAvailableYears(data);
 
-  // const filteredData =
-  //   selectedYear === 'All'
-  //     ? rawData
-  //     : rawData.filter((item) => item.datenotification_annee === selectedYear);
-
-  // 1. Filtrer les données par année
-  // 2. Calculer la somme des montants par secteur
-  // 3. Trier les secteurs par somme par ordre décroissant
-  // 4. Garder les 9 secteurs les plus importants
-  // 5. Fusionner toutes les données restantes dans un seul objet "Autres"
-  // 6. Fusionner ces deux objets pour créer un getTop10Sector
-  // 7. Formatter la data pour le treemap
+  const filteredData =
+    selectedYear === 'All'
+      ? data
+      : data.filter((item) => item.datenotification_annee === selectedYear);
 
   function getTop10Sector(data: any[]) {
-    const groupedData = data.reduce(
+    const groupedData = filteredData.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
           acc[cpv_2_label] = 0;
         }
-        acc[cpv_2_label] += parseFloat(montant);
+        acc[cpv_2_label] += parseFloat(String(montant));
         return acc;
       },
       {} as Record<string, number>,
@@ -107,7 +126,6 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
     return formattedData;
   }
 
-  console.log(getTop10Sector(data));
   const formattedData: Tree = getTop10Sector(data);
 
   const hierarchy = d3
@@ -119,6 +137,8 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
   const treeGenerator = d3.treemap<Tree>().size([width, height]).padding(4);
 
   const root = treeGenerator(hierarchy);
+  const leafNames = root.leaves().map((leaf) => leaf.data.name);
+  const colorMap = generateColorMap(leafNames);
 
   const allShapes = root.leaves().map((leaf) => {
     return (
@@ -126,15 +146,16 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
         <rect
           x={leaf.x0}
           y={leaf.y0}
+          rx={12}
           width={leaf.x1 - leaf.x0}
           height={leaf.y1 - leaf.y0}
           stroke='transparent'
-          fill={'#69b3a2'}
-          className='treemap-rect transition-all duration-300 ease-in-out opacity-80 hover:opacity-100'
+          fill={colorMap[leaf.data.name]}
+          className='transition-all duration-500 ease-in-out'
           onMouseEnter={(e) => {
             setTooltip({
               visible: true,
-              x: e.clientX + 0,
+              x: e.clientX,
               y: e.clientY - 30,
               name: leaf.data.name,
               value: leaf.data.value,
@@ -143,34 +164,92 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
           onMouseMove={(e) => {
             setTooltip((prev) => ({
               ...prev,
-              x: e.clientX + 0,
+              x: e.clientX,
               y: e.clientY - 30,
             }));
           }}
           onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
         />
+        {leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 20 && (
+        <text
+          x={leaf.x0 + 8}
+          y={leaf.y0 + 20}
+          fontSize={16}
+          fontWeight={700}
+          fill='white'
+          className='pointer-events-none'
+        >
+          {leaf.data.value.toLocaleString()} €
+        </text>
+        )}
+
+        {leaf.x1 - leaf.x0 > 60 && leaf.y1 - leaf.y0 > 60 && (
+          <text
+            x={leaf.x0 + 8}
+            y={leaf.y0 + 40}
+            fontSize={14}
+            fontWeight={500}
+            fill='white'
+            className='pointer-events-none'
+          >
+            {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
+              <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+                {line}
+              </tspan>
+            ))}
+          </text>
+        )}
       </g>
     );
   });
 
   return (
-    <div>
-      <svg width={width} height={height}>
-        {allShapes}
-      </svg>
-      {tooltip.visible && (
-        <div
-          className='pointer-events-none fixed z-50 rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg'
-          style={{
-            top: tooltip.y,
-            left: tooltip.x,
-            transform: 'translateY(-50%)',
-          }}
-        >
-          <div className='font-bold'>{tooltip.name}</div>
-          <div>{tooltip.value.toLocaleString()} €</div>
+    <>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-baseline gap-2'>
+          <h3 className='py-2 text-xl'>Répartition </h3>
+          <div className='flex items-baseline gap-2'>
+            <div
+            // onClick={() => setCategoriesDisplayed(false)}
+            // className={`cursor-pointer ${!categoriesDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+            >
+              (des contrats
+            </div>
+            <Switch
+            // checked={categoriesDisplayed}
+            // onCheckedChange={() => setCategoriesDisplayed((prev) => !prev)}
+            />
+            <div
+            // onClick={() => setCategoriesDisplayed(true)}
+            // className={`cursor-pointer ${categoriesDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+            >
+              par secteurs)
+            </div>
+          </div>
         </div>
-      )}
-    </div>
+        <div className='flex items-center gap-2'>
+          <YearSelector years={availableYears} onSelect={setSelectedYear} />
+          <DownloadSelector />
+        </div>
+      </div>
+      <div>
+        <svg width={width} height={height}>
+          {allShapes}
+        </svg>
+        {tooltip.visible && (
+          <div
+            className='pointer-events-none fixed z-50 rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg'
+            style={{
+              top: tooltip.y,
+              left: tooltip.x,
+              transform: 'translateY(-50%)',
+            }}
+          >
+            <div className='font-bold'>{tooltip.name}</div>
+            <div>{tooltip.value.toLocaleString()} €</div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

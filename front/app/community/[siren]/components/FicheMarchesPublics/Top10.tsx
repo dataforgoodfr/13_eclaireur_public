@@ -24,17 +24,17 @@ function getAvailableYears(data: MarchePublic[]) {
   );
 }
 
-export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
+export default function Top10({ data }: { data: MarchePublic[] }) {
   const [categoriesDisplayed, setCategoriesDisplayed] = useState(false);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
   // Selecter
-  const availableYears: number[] = getAvailableYears(rawData);
+  const availableYears: number[] = getAvailableYears(data);
 
   const filteredData =
     selectedYear === 'All'
-      ? rawData
-      : rawData.filter((item) => item.datenotification_annee === selectedYear);
+      ? data
+      : data.filter((item) => item.datenotification_annee === selectedYear);
 
   function formatCompanies(input: string): string[] {
     return input
