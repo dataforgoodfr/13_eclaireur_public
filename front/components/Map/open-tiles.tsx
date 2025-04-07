@@ -25,6 +25,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 type AdminType = 'region' | 'departement' | 'commune';
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
+const MAX_FEATURES_LOAD = 5000
 
 // TODO: Move to separate file
 const mergeFeatureData = (
@@ -147,7 +148,7 @@ const FranceMap = () => {
     const featuresInViewport =
       regionsInViewport.length + departementsInViewport.length + communesInViewport.length;
 
-    if (featuresInViewport < 5000) {
+    if (featuresInViewport < MAX_FEATURES_LOAD) {
       const regionsCodesToFetch: string[] = [];
       const departementCodesToFetch: string[] = [];
       const communeCodesToFetch: string[] = [];
