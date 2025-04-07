@@ -18,12 +18,14 @@ from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
+from back.scripts.datasets.aggregate_community_table import AggregateCommunityTable
 from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.dataframe_operation import (
     correct_format_from_url,
     sort_by_format_priorities,
 )
 from back.scripts.utils.datagouv_api import select_implemented_formats
+
 
 
 class WorkflowManager:
@@ -45,6 +47,7 @@ class WorkflowManager:
         FinancialAccounts(self.config).run()
         ElectedOfficialsWorkflow(self.config).run()
         DeclaInteretWorkflow(self.config).run()
+        AggregateCommunityTable(self.config).run()
         DataGouvSearcher(self.config).run()
 
         self.process_subvention("subventions", self.config["search"]["subventions"])
