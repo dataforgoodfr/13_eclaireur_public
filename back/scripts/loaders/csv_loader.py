@@ -57,7 +57,7 @@ class CSVLoader(BaseLoader):
         csv_params = {
             "delimiter": ",",
             "on_bad_lines": "skip",
-            "low_memory": False,
+            "low_memory": True,
         }
         if self.dtype is not None:
             csv_params["dtype"] = self.dtype

@@ -21,7 +21,9 @@ class ParquetLoader(BaseLoader):
         with tempfile.TemporaryDirectory() as tempdir:
             filename = Path(tempdir) / "test.parquet"
             urllib.request.urlretrieve(self.file_url, filename)
-            return pd.read_parquet(filename, columns=self.columns_to_keep)
+            return pd.read_parquet(
+                filename, columns=self.columns_to_keep, dtype_backend="pyarrow"
+            )
 
     def _load_from_file(self):
         return pd.read_parquet(self.file_url, columns=self.columns_to_keep)
