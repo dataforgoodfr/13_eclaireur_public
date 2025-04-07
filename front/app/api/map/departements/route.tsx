@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
       AND type = 'DEP'
     `;
 
-    // Execute database query with the values array as second parameter
     const departements = await getQueryFromPool(query, codes);
     return NextResponse.json({ departements });
   } catch (error) {

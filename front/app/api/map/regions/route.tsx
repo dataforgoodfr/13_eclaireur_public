@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
     AND type = 'REG';
     `;
 
-    // Execute database query with the values array as second parameter
     const regions = await getQueryFromPool(query, codes);
     return NextResponse.json({ regions });
   } catch (error) {

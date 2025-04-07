@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
       AND type = 'COM'
     `;
 
-    // Execute database query with the values array as second parameter
     const communes = await getQueryFromPool(query, codes);
 
     return NextResponse.json({ communes });
@@ -49,7 +48,6 @@ export async function POST(request: NextRequest) {
       WHERE code_insee IN (${placeholders})
     `;
 
-    // Execute database query with the values array as second parameter
     const communes = await getQueryFromPool(query, codes);
 
     return NextResponse.json({ communes });
