@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import { getQueryFromPool } from '@/utils/db';
 
-// Handle GET requests (keeping for backward compatibility)
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
