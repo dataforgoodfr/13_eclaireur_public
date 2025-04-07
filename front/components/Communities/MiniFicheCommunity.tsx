@@ -11,12 +11,9 @@ async function getCommunity(siren: string) {
 
 export default async function MiniFicheCommunity({ communitySiren }: { communitySiren: string }) {
   const community = await getCommunity(communitySiren);
-  const { nom, siren, type, code_region, population } = community;
+  const { nom, siren, type, population } = community;
   // TODO : retrieve nom du département
   // TODO : retrieve nom de la région
-  // const nomRegion = code_region ? await getCommunity(code_region) : null;
-  // console.log('nomRegion => ', nomRegion);
-  // TODO : prévoir exceptions quand ville = département comme Paris
   return (
     <div className='right min-w-1/4 px-4 py-2'>
       <article>
