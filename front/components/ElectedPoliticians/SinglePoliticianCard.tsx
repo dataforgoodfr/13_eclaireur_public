@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { ElectedPolitician } from '@/utils/types';
 
 import {
   Card,
@@ -9,15 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { ElectedPolitician } from '@/utils/types';
 import { User } from 'lucide-react';
 
-export default function ElectedPolician({ name, photosrc, fonction, email }: ElectedPolitician) {
+export default function ElectedPolician({ name, photoSrc, fonction, email }: ElectedPolitician) {
   return (
     <Card className='text-center'>
       <CardHeader>
         <CardTitle className='capitalize'>
-          {photosrc ? (
-            <img src={photosrc} width='140' height='140' alt='' className='mx-auto' />
+          {photoSrc ? (
+            <img src={photoSrc} width='140' height='140' alt='' className='mx-auto' />
           ) : (
             <User size={140} className='mx-auto' />
           )}
