@@ -25,11 +25,12 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 type AdminType = 'region' | 'departement' | 'commune';
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
-const MAX_FEATURES_LOAD = 5000
+const MAX_FEATURES_LOAD = 5000;
 
 // TODO: Move to separate file
+// TODO: improve the function so that we are not modifying the feature object.
 const mergeFeatureData = (
-  feature: any,
+  feature: maplibregl.GeoJSONFeature,
   regions: Community[],
   departements: Community[],
   communes: Community[],
@@ -38,7 +39,7 @@ const mergeFeatureData = (
   let mergedData = {};
 
   if (feature.properties.level === 1) {
-    featureId = feature.id.toString().slice(-2);
+    featureId = feature?.id?.toString().slice(-2) as string;
     const regionData = regions.find((r) => r.code_insee_region === featureId);
     if (regionData) mergedData = { ...feature.properties, ...regionData };
   } else if (feature.properties.level === 2) {
@@ -55,7 +56,6 @@ const mergeFeatureData = (
       console.log(`No commune data found for code ${featureId}`);
     }
   }
-
   feature.properties = { ...feature.properties, ...mergedData };
 
   return feature;
