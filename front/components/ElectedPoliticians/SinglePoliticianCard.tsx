@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ElectedPolitician } from '@/utils/types';
 
 import {
   Card,
@@ -10,14 +11,7 @@ import {
 } from '@/components/ui/card';
 import { User } from 'lucide-react';
 
-type TElectedPolitician = {
-  name: string;
-  photosrc: string;
-  fonction: string;
-  email: string;
-};
-
-export default function ElectedPolician({ name, photosrc, fonction, email }: TElectedPolitician) {
+export default function ElectedPolician({ name, photosrc, fonction, email }: ElectedPolitician) {
   return (
     <Card className='text-center'>
       <CardHeader>

@@ -36,3 +36,9 @@ export const InterpellateFormSchema = z.object({
 });
 
 export type FormSchema = z.infer<typeof InterpellateFormSchema>;
+export type ElectedPolitician = {
+  name: string;
+  photosrc?: string;
+  fonction: string;
+  email: string;
+};
