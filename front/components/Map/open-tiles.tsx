@@ -69,8 +69,20 @@ const FranceMap = () => {
   const [fetchedRegionCodes, setFetchedRegionCodes] = useState<Set<string>>(new Set());
   const [fetchedDepartementCodes, setFetchedDepartementCodes] = useState<Set<string>>(new Set());
   const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
-
   const [mapReady, setMapReady] = useState(false);
+  const [cursor, setCursor] = useState<string>('grab');
+  const [viewState, setViewState] = useState<Partial<ViewState>>({
+    longitude: 2.2137,
+    latitude: 46.2276,
+    zoom: 5,
+  });
+  const [hoverInfo, setHoverInfo] = useState<{
+    x: number;
+    y: number;
+    feature: any;
+    type: AdminType;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // effect to ensure data is fetched and loaded each time we navigate back to the page.
   useEffect(() => {
@@ -103,22 +115,6 @@ const FranceMap = () => {
       attemptQuery();
     }
   }, [mapReady]);
-
-  const [cursor, setCursor] = useState<string>('grab');
-
-  const [viewState, setViewState] = useState<Partial<ViewState>>({
-    longitude: 2.2137,
-    latitude: 46.2276,
-    zoom: 5,
-  });
-
-  const [hoverInfo, setHoverInfo] = useState<{
-    x: number;
-    y: number;
-    feature: any;
-    type: AdminType;
-  } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const minimalistStyle = useMemo(
     () => ({
