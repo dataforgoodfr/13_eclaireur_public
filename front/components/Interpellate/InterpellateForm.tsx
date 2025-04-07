@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 import { type FormSchema, InterpellateFormSchema } from 'utils/types';
@@ -53,13 +54,7 @@ export default function InterpellateForm({
   });
 
   const onSubmit = async (data: FormSchema) => {
-    const response = await fetch('/api/interpellate', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await postInterpellate(data);
     const responseData = await response.json();
     if (!response.ok) {
       alert('Submitting form failed!');

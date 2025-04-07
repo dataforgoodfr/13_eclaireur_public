@@ -3,13 +3,19 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+
+
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
+
+
+
+
 export default function Page() {
   const router = useRouter();
-  const displayTransparencyScore = async (siren: string) => {
+  const goToStep1 = async (siren: string) => {
     router.push(`/interpeller/${siren}/step1`);
   };
 
@@ -21,7 +27,7 @@ export default function Page() {
       <article className='my-6 flex flex-col justify-start'>
         <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
         <div className='ml-16 min-w-[400] self-center'>
-          <SearchBar onSelect={({ siren }) => displayTransparencyScore(siren)} />
+          <SearchBar onSelect={({ siren }) => goToStep1(siren)} />
         </div>
       </article>
       <article className='my-16'>
