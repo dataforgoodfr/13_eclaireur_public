@@ -24,6 +24,13 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 type AdminType = 'region' | 'departement' | 'commune';
 
+type hoverInfo = {
+  x: number;
+  y: number;
+  feature: any;
+  type: AdminType;
+} | null;
+
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 const MAX_FEATURES_LOAD = 5000;
 
@@ -77,12 +84,7 @@ const FranceMap = () => {
     latitude: 46.2276,
     zoom: 5,
   });
-  const [hoverInfo, setHoverInfo] = useState<{
-    x: number;
-    y: number;
-    feature: any;
-    type: AdminType;
-  } | null>(null);
+  const [hoverInfo, setHoverInfo] = useState<hoverInfo>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // effect to ensure data is fetched and loaded each time we navigate back to the page.
