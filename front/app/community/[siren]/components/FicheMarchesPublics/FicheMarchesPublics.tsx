@@ -1,20 +1,16 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
-import { MarchePublic } from '@/app/models/marche_public';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
 import Top10 from './Top10';
 import Trends from './Trends';
+import Treemap from './Treemap';
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
 
   return marchesPublicsResults;
 }
-
-type FicheMarchesPublics = {
-  marchesPublics: MarchePublic[];
-};
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
@@ -34,9 +30,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value='distribution'>
-            <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-              Treemap en construction
-            </div>
+            <Treemap data={marchesPublics} />
           </TabsContent>
           <TabsContent value='compare'>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
