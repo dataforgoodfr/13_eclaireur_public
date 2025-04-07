@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Map, {
   Layer,
   type MapLayerMouseEvent,
   type MapRef,
   Source,
+  type StyleSpecification,
   type ViewState,
 } from 'react-map-gl/maplibre';
 
@@ -33,6 +34,19 @@ type HoverInfo = {
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 const MAX_FEATURES_LOAD = 5000;
+
+const BASE_MAP_STYLE = {
+  version: 8,
+  sources: {},
+  layers: [
+    {
+      id: 'background',
+      type: 'background',
+      paint: { 'background-color': '#f9f9f9' },
+    },
+  ],
+  glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MAPTILER_API_KEY}`,
+};
 
 // TODO: Move to separate file
 // TODO: improve the function so that we are not modifying the feature object.
@@ -118,24 +132,6 @@ const FranceMap = () => {
       attemptQuery();
     }
   }, [mapReady]);
-  
-
-  // TODO: make this a const as it is not going to change.  
-  const minimalistStyle = useMemo(
-    () => ({
-      version: 8,
-      sources: {},
-      layers: [
-        {
-          id: 'background',
-          type: 'background',
-          paint: { 'background-color': '#f9f9f9' },
-        },
-      ],
-      glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MAPTILER_API_KEY}`,
-    }),
-    [MAPTILER_API_KEY],
-  );
 
   const combineDatasets = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
@@ -364,8 +360,8 @@ const FranceMap = () => {
       )}
       <Map
         ref={mapRef}
-        mapLib={maplibregl as any}
-        mapStyle={minimalistStyle as any}
+        mapLib={maplibregl}
+        mapStyle={BASE_MAP_STYLE as StyleSpecification}
         {...viewState}
         onMove={handleMove}
         maxZoom={14}
