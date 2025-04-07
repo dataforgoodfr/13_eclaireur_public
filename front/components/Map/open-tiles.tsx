@@ -118,7 +118,9 @@ const FranceMap = () => {
       attemptQuery();
     }
   }, [mapReady]);
+  
 
+  // TODO: make this a const as it is not going to change.  
   const minimalistStyle = useMemo(
     () => ({
       version: 8,
