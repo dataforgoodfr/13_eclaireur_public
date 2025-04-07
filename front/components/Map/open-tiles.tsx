@@ -156,7 +156,7 @@ const FranceMap = () => {
       const regionsCodesToFetch: string[] = [];
       const departementCodesToFetch: string[] = [];
       const communeCodesToFetch: string[] = [];
-
+      // TODO: Refactor into funciton
       features.forEach((feature) => {
         if (feature.properties.level === 1) {
           const featureId = feature?.id?.toString().slice(-2) || '';
