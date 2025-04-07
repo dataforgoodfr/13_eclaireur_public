@@ -156,23 +156,23 @@ const FranceMap = () => {
       features.forEach((feature) => {
         if (feature.properties.level === 1) {
           const featureId = feature?.id?.toString().slice(-2) || '';
-          const alreadyFetched = fetchedRegionCodes.has(featureId);
-          const alreadyInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
-          if (!alreadyInCache && featureId && !alreadyFetched) {
+          const isAlreadyFetched = fetchedRegionCodes.has(featureId);
+          const isAlreadyInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
+          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
             regionsCodesToFetch.push(featureId);
           }
         } else if (feature.properties.level === 2) {
           const featureId: string = feature?.properties?.code;
-          const alreadyFetched = fetchedDepartementCodes.has(featureId);
-          const alreadyInCache = departementsRef.current.find((d) => d.code_insee === featureId);
-          if (!alreadyInCache && featureId && !alreadyFetched) {
+          const isAlreadyFetched = fetchedDepartementCodes.has(featureId);
+          const isAlreadyInCache = departementsRef.current.find((d) => d.code_insee === featureId);
+          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
             departementCodesToFetch.push(featureId);
           }
         } else if (feature.properties.level === 3) {
           const featureId = feature.properties.code;
-          const alreadyFetched = fetchedCommuneCodes.has(featureId);
-          const alreadyInCache = communesRef.current.find((c) => c.code_insee === featureId);
-          if (!alreadyInCache && featureId && !alreadyFetched) {
+          const isAlreadyFetched = fetchedCommuneCodes.has(featureId);
+          const isAlreadyInCache = communesRef.current.find((c) => c.code_insee === featureId);
+          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
             communeCodesToFetch.push(featureId);
           }
         }
