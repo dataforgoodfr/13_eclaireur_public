@@ -1,7 +1,7 @@
 import HomePageHeader from '@/components/HomePageHeader';
+import FranceMap from '@/components/Map/open-tiles';
 import ProjectDescription from '@/components/ProjectDescription';
 import CtaGroup from '@/components/cta/CtaGroup';
-import FranceMap from '@/components/Map/open-tiles';
 
 export default async function Home() {
   return (

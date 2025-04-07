@@ -10,7 +10,6 @@ import Map, {
 } from 'react-map-gl/maplibre';
 
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 
 import type { Community } from '@/app/models/community';
 import {

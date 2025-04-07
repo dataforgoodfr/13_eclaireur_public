@@ -22,6 +22,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ departements });
   } catch (error) {
     console.error('Database error:', error);
-    return NextResponse.json({ error: 'Internal Server Error fetching departements' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error fetching departements' },
+      { status: 500 },
+    );
   }
 }
