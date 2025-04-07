@@ -5,6 +5,7 @@ import InterpellateFAQ from '@/components/Interpellate/InterpellateFAQ';
 export const metadata: Metadata = {
   title: 'Interpeller - Eclaireur Public',
   description: '',
+  // TODO - compléter description (facultatif)
 };
 export default function InterpellateLayout({ children }: { children: React.ReactNode }) {
   return (
