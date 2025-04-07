@@ -10,11 +10,7 @@ class TestCPVUtils:
             ["11000000", "11000000-0", "11100000", "11100000-0", "1100000", "1100000-0"]
         )
         expected = pl.Series(["11", "11", None, None, None, None])
-        actual = cpvs.map_elements(
-            lambda ser: CPVUtils._extract_sub_cpv(
-                ser, pattern=CPVUtils._CPV_EXACTLY_LEVEL_2_PATTERN
-            )
-        )
+        actual = cpvs.str.extract(CPVUtils._CPV_EXACTLY_LEVEL_2_PATTERN)
         pltesting.assert_series_equal(actual, expected)
 
     def test_extract_sub_cpv_level_2(self):
@@ -22,9 +18,7 @@ class TestCPVUtils:
             ["11000000", "11000000-0", "11100000", "11100000-0", "1100000", "1100000-0"]
         )
         expected = pl.Series(["11", "11", "11", "11", None, None])
-        actual = cpvs.map_elements(
-            lambda ser: CPVUtils._extract_sub_cpv(ser, pattern=CPVUtils._CPV_LEVEL_2_PATTERN)
-        )
+        actual = cpvs.str.extract(CPVUtils._CPV_LEVEL_2_PATTERN)
         pltesting.assert_series_equal(actual, expected)
 
     def test_extract_sub_cpv_level_8(self):
@@ -32,9 +26,7 @@ class TestCPVUtils:
             ["11000000", "11000000-0", "11100000", "11100000-0", "1100000", "1100000-0"]
         )
         expected = pl.Series(["11000000", "11000000", "11100000", "11100000", None, None])
-        actual = cpvs.map_elements(
-            lambda ser: CPVUtils._extract_sub_cpv(ser, pattern=CPVUtils._CPV_LEVEL_8_PATTERN)
-        )
+        actual = cpvs.str.extract(CPVUtils._CPV_LEVEL_8_PATTERN)
         pltesting.assert_series_equal(actual, expected)
 
     def test_get_cpv_2_and_8_labels(self):

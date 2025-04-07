@@ -4,13 +4,14 @@ import polars as pl
 
 
 class CPVUtils:
+    # Reminder: CPV consist of 8 digits plus one verification digit, in the format 00000000-0
     # match if provided string is a group CPV (all digits but the first two and the last are zeros),
     #  and capture the first two digits identifying the division
-    _CPV_EXACTLY_LEVEL_2_PATTERN = re.compile(r"^(\d{2})0{6}(?:-\d)?$")
+    _CPV_EXACTLY_LEVEL_2_PATTERN = r"^(\d{2})0{6}(?:-\d)?$"
     # match if provided string is a valid CPV and capture the first two digits identifying the division
-    _CPV_LEVEL_2_PATTERN = re.compile(r"^(\d{2})\d{6}(?:-\d)?$")
+    _CPV_LEVEL_2_PATTERN = r"^(\d{2})\d{6}(?:-\d)?$"
     # match if provided string is a valid CPV and capture the first eight digits (last digit is a validation digit)
-    _CPV_LEVEL_8_PATTERN = re.compile(r"^(\d{8})(?:-\d)?$")
+    _CPV_LEVEL_8_PATTERN = r"^(\d{8})(?:-\d)?$"
 
     @classmethod
     def add_cpv_labels(
@@ -20,16 +21,8 @@ class CPVUtils:
         cpv_2_labels, cpv_8_labels = cls._get_cpv_2_and_8_labels(cpv_labels)
         return (
             frame.with_columns(
-                cpv_2=pl.col(column)
-                .cast(pl.String)
-                .map_elements(
-                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_2_PATTERN),
-                ),
-                cpv_8=pl.col(column)
-                .cast(pl.String)
-                .map_elements(
-                    lambda cpv: cls._extract_sub_cpv(cpv, cls._CPV_LEVEL_8_PATTERN),
-                ),
+                cpv_2=pl.col(column).str.extract(cls._CPV_LEVEL_2_PATTERN),
+                cpv_8=pl.col(column).str.extract(cls._CPV_LEVEL_8_PATTERN),
             )
             .join(cpv_2_labels, how="left", on="cpv_2")
             .join(cpv_8_labels, how="left", on="cpv_8")
@@ -47,17 +40,13 @@ class CPVUtils:
     def _extract_labels(
         cls,
         cpv_labels: pl.DataFrame,
-        pattern: re.Pattern,
+        pattern: str,
         level: int,
         code_column="CODE",
         label_column="FR",
     ) -> pl.DataFrame:
         return (
-            cpv_labels.with_columns(
-                pl.col(code_column)
-                .cast(pl.String)
-                .map_elements(lambda cpv: cls._extract_sub_cpv(cpv, pattern)),
-            )
+            cpv_labels.with_columns(pl.col(code_column).str.extract(pattern))
             .filter(pl.col(code_column).is_not_null())
             .rename({code_column: f"cpv_{level}", label_column: f"cpv_{level}_label"})
         )

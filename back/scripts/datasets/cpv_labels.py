@@ -8,8 +8,6 @@ from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
 
-# Source : ht
-
 
 class CPVLabelsWorkflow:
     @classmethod
