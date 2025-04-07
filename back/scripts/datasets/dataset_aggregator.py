@@ -58,13 +58,19 @@ class DatasetAggregator:
     def __init__(self, files: pd.DataFrame, main_config: dict):
         self._config = main_config[self.get_config_key()]
 
-        self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
+        self.files_in_scope = files.pipe(self._ensure_url_hash)
 
         self.data_folder = get_project_base_path() / self._config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
+
+    def _ensure_url_hash(self, frame: pd.DataFrame) -> pd.DataFrame:
+        hashes = frame["url"].apply(_sha256)
+        if "url_hash" not in frame.columns:
+            return frame.assign(url_hash=hashes)
+        return frame.fillna({"url_hash": hashes})
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:

@@ -932,6 +932,7 @@
   dependencies:
     "@radix-ui/react-use-layout-effect" "1.1.0"
 
+<<<<<<< HEAD
 
 "@radix-ui/react-label@^2.1.2":
   version "2.1.2"
@@ -940,6 +941,9 @@
   dependencies:
     "@radix-ui/react-primitive" "2.0.2"
 
+=======
+<<<<<<< HEAD
+>>>>>>> main
 "@radix-ui/react-menu@2.1.6":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-menu/-/react-menu-2.1.6.tgz#05fb1ef3fd7545c8abe61178372902970cdec3ce"
@@ -963,6 +967,14 @@
     "@radix-ui/react-use-callback-ref" "1.1.0"
     aria-hidden "^1.2.4"
     react-remove-scroll "^2.6.3"
+=======
+"@radix-ui/react-label@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-label/-/react-label-2.1.2.tgz#994a5d815c2ff46e151410ae4e301f1b639f9971"
+  integrity sha512-zo1uGMTaNlHehDyFQcDZXRJhUPDuukcnHz0/jnrup0JA6qL+AFpAnty+7VKa9esuU5xTblAZzTGYJKSKaBxBhw==
+  dependencies:
+    "@radix-ui/react-primitive" "2.0.2"
+>>>>>>> 62dcd5a (fix interpellate TS error & add step4)
 
 "@radix-ui/react-navigation-menu@^1.2.5":
   version "1.2.5"

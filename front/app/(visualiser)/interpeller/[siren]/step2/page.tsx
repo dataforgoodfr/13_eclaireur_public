@@ -20,7 +20,7 @@ export default async function InterpellateStep2({
           <li>
             <ElectedPolician
               name='toto'
-              photosrc='https://placehold.co/200/png'
+              photoSrc='https://placehold.co/200/png'
               fonction='Maire'
               email='johanna.rolland@nantes.com'
             />
@@ -28,7 +28,7 @@ export default async function InterpellateStep2({
           <li>
             <ElectedPolician
               name='toti'
-              photosrc=''
+              photoSrc=''
               fonction='Maire'
               email='johanna.rolland@nantes.com'
             />
@@ -36,7 +36,7 @@ export default async function InterpellateStep2({
           <li>
             <ElectedPolician
               name='Jackie'
-              photosrc=''
+              photoSrc=''
               fonction='Adjointe au maire'
               email='jaqueline-d@nantes.com'
             />
