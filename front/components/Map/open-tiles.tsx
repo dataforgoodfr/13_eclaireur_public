@@ -157,22 +157,22 @@ const FranceMap = () => {
         if (feature.properties.level === 1) {
           const featureId = feature?.id?.toString().slice(-2) || '';
           const isAlreadyFetched = fetchedRegionCodes.has(featureId);
-          const isAlreadyInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
-          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
+          const isInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
+          if (!isInCache && featureId && !isAlreadyFetched) {
             regionsCodesToFetch.push(featureId);
           }
         } else if (feature.properties.level === 2) {
           const featureId: string = feature?.properties?.code;
           const isAlreadyFetched = fetchedDepartementCodes.has(featureId);
-          const isAlreadyInCache = departementsRef.current.find((d) => d.code_insee === featureId);
-          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
+          const isInCache = departementsRef.current.find((d) => d.code_insee === featureId);
+          if (!isInCache && featureId && !isAlreadyFetched) {
             departementCodesToFetch.push(featureId);
           }
         } else if (feature.properties.level === 3) {
           const featureId = feature.properties.code;
           const isAlreadyFetched = fetchedCommuneCodes.has(featureId);
-          const isAlreadyInCache = communesRef.current.find((c) => c.code_insee === featureId);
-          if (!isAlreadyInCache && featureId && !isAlreadyFetched) {
+          const isInCache = communesRef.current.find((c) => c.code_insee === featureId);
+          if (!isInCache && featureId && !isAlreadyFetched) {
             communeCodesToFetch.push(featureId);
           }
         }
