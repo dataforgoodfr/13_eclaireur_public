@@ -1,39 +1,44 @@
-import { formSchema } from 'utils/types'
-import { NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
-import Mail from 'nodemailer/lib/mailer'
+import { NextResponse } from 'next/server';
+
+
+
+import nodemailer from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
+import { InterpellateFormSchema } from 'utils/types';
+
+
+
+
 
 export async function POST(request: Request) {
-  const body: unknown = await request.json()
+  const body: unknown = await request.json();
 
-  const result = formSchema.safeParse(body)
+  const result = InterpellateFormSchema.safeParse(body);
   //   console.log('result => ', result)
   type TResultData = {
-    firstname: string
-    lastname: string
-    email: string
-    to: string[]
-    object: string
-    message: string
-  }
-  const { success, data } = result
-  let firstname, lastname, email, to, object, message
+    firstname: string;
+    lastname: string;
+    email: string;
+    emails: string[];
+    object: string;
+    message: string;
+  };
+  const { success, data } = result;
+  let firstname, lastname, email, emails, object, message;
   if (success && data) {
-    ;({ firstname, lastname, email, to, object, message } = data)
+    ({ firstname, lastname, email, emails, object, message } = data);
   }
-  //   const { firstname, lastname, email, to, object, message } = data
-  console.log('firstname => ', firstname)
 
   // check out Zod's .flatten() method for an easier way to process errors
-  let zodErrors = {}
+  let zodErrors = {};
   if (!result.success) {
     result.error.issues.forEach((issue) => {
-      zodErrors = { ...zodErrors, [issue.path[0]]: issue.message }
-    })
+      zodErrors = { ...zodErrors, [issue.path[0]]: issue.message };
+    });
   }
 
   if (Object.keys(zodErrors).length > 0) {
-    return NextResponse.json({ errors: zodErrors })
+    return NextResponse.json({ errors: zodErrors });
   }
 
   const transport = nodemailer.createTransport({
@@ -44,7 +49,7 @@ export async function POST(request: Request) {
       user: process.env.MY_EMAIL,
       pass: process.env.MY_PASSWORD,
     },
-  })
+  });
 
   const mailOptions: Mail.Options = {
     from: process.env.MY_EMAIL,
@@ -52,7 +57,7 @@ export async function POST(request: Request) {
     cc: process.env.CC_EMAIL_MESSAGE,
     subject: `|| ECLAIREUR PUBLIC || Message de ${firstname} ${lastname} (${email})`,
     html: message,
-  }
+  };
 
   const sendMailPromise = () =>
     new Promise<string>((resolve, reject) => {
