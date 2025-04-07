@@ -17,7 +17,7 @@ import {
   fetchDepartementsByCode,
   fetchRegionsByCode,
 } from '@/utils/fetchers/map/map-fetchers';
-import { debounce } from 'lodash';
+import { debounce } from '@/utils/utils';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
