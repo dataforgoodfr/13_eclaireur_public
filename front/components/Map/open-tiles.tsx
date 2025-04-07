@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Map, {
   Layer,
   type MapLayerMouseEvent,
-  type StyleSpecification,
   type MapRef,
   Source,
+  type StyleSpecification,
   type ViewState,
 } from 'react-map-gl/maplibre';
 
@@ -36,17 +36,17 @@ const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 const MAX_FEATURES_LOAD = 5000;
 
 const BASE_MAP_STYLE = {
-    version: 8,
-    sources: {},
-    layers: [
-      {
-        id: 'background',
-        type: 'background',
-        paint: { 'background-color': '#f9f9f9' },
-      },
-    ],
-    glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MAPTILER_API_KEY}`,
-  }
+  version: 8,
+  sources: {},
+  layers: [
+    {
+      id: 'background',
+      type: 'background',
+      paint: { 'background-color': '#f9f9f9' },
+    },
+  ],
+  glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MAPTILER_API_KEY}`,
+};
 
 // TODO: Move to separate file
 const mergeFeatureData = (
@@ -58,9 +58,9 @@ const mergeFeatureData = (
   // Create a deep copy of the feature by serializing and deserializing
   // This is one way to clone a GeoJSONFeature without modifying the original
   const featureCopy = JSON.parse(JSON.stringify(feature)) as maplibregl.GeoJSONFeature;
-  
+
   let communityData: Partial<Community> | undefined;
-  
+
   // Find the appropriate community data based on the feature level
   if (featureCopy.properties.level === 1) {
     const featureId = featureCopy.id?.toString().slice(-2);
@@ -81,15 +81,15 @@ const mergeFeatureData = (
       }
     }
   }
-  
+
   // Update the properties on the copied feature
   if (communityData) {
-    featureCopy.properties = { 
+    featureCopy.properties = {
       ...featureCopy.properties,
-      ...communityData
+      ...communityData,
     };
   }
-  
+
   return featureCopy;
 };
 
@@ -143,9 +143,6 @@ const FranceMap = () => {
       attemptQuery();
     }
   }, [mapReady]);
-  
-
-
 
   const combineDatasets = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
@@ -239,11 +236,11 @@ const FranceMap = () => {
             feature,
             regionsRef.current,
             departementsRef.current,
-            communesRef.current
+            communesRef.current,
           );
 
           const population = Number.parseInt(enrichedFeature.properties.population) || 0;
-          
+
           mapInstance.setFeatureState(
             { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
             { population },
