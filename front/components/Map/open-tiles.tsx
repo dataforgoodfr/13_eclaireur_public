@@ -24,7 +24,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 type AdminType = 'region' | 'departement' | 'commune';
 
-type hoverInfo = {
+type HoverInfo = {
   x: number;
   y: number;
   feature: any;
@@ -84,7 +84,7 @@ const FranceMap = () => {
     latitude: 46.2276,
     zoom: 5,
   });
-  const [hoverInfo, setHoverInfo] = useState<hoverInfo>(null);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // effect to ensure data is fetched and loaded each time we navigate back to the page.
