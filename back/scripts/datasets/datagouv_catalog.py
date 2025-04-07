@@ -1,10 +1,15 @@
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import polars as pl
+from polars import col
 
+from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_combined_filename
+from back.scripts.utils.dataframe_operation import expand_json_columns, normalize_column_names
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -23,7 +28,8 @@ class DataGouvCatalog:
         return get_combined_filename(main_config, cls.get_config_key())
 
     def __init__(self, main_config: dict):
-        self._config = main_config["datagouv_catalog"]
+        self.main_config = main_config
+        self._config = main_config[self.get_config_key()]
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
         self.output_filename = DataGouvCatalog.get_output_path(main_config)
@@ -36,10 +42,55 @@ class DataGouvCatalog:
 
         url = self._config.get("catalog_url") or self._catalog_url()
 
-        df = BaseLoader.loader_factory(url).load()
-        if not isinstance(df, pd.DataFrame):
+        catalog = BaseLoader.loader_factory(url).load()
+        if not isinstance(catalog, pd.DataFrame):
             raise RuntimeError("Failed to load dataset")
-        df.to_parquet(self.output_filename)
+
+        catalog = catalog.pipe(normalize_column_names).pipe(
+            expand_json_columns, column="extras"
+        )
+
+        extra_columns = {
+            "extras_check:status": -1,
+            "extras_check:headers:content-type": None,
+            "extras_analysis:checksum": None,
+            "extras_analysis:last-modified-at": None,
+            "extras_analysis:last-modified-detection": None,
+            "extras_analysis:parsing:parquet_size": None,
+            "extras_check:headers:content-md5": None,
+        }
+        catalog = catalog.assign(
+            **{k: v for k, v in extra_columns.items() if k not in catalog.columns}
+        )
+        columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
+        catalog = (
+            pl.from_pandas(catalog)
+            .rename(
+                {
+                    "dataset_organization_id": "id_datagouv",
+                    "type": "type_resource",
+                    "extras_check:status": "resource_status",
+                    "url": "base_url",
+                }
+            )
+            .with_columns(
+                col("resource_status").fill_null(-1).cast(pl.Int16),
+                pl.lit(None).cast(pl.String).alias("dataset_description"),
+                (
+                    pl.lit("https://www.data.gouv.fr/fr/datasets/r/")
+                    + col("id").cast(pl.String)
+                ).alias("url"),
+                col("id").alias("url_hash"),
+                col("format")
+                .fill_null(col("extras_check:headers:content-type"))
+                .fill_null(col("mime"))
+                .fill_null(col("extras_analysis:mime-type")),
+            )
+            .select(*columns)
+            .pipe(self._add_siren)
+        )
+
+        catalog.write_parquet(self.output_filename)
 
     def _catalog_url(self):
         """
@@ -58,3 +109,10 @@ class DataGouvCatalog:
             raise Exception("No catalog dataset found.")
 
         return catalog_dataset["resource_url"].iloc[0]
+
+    def _add_siren(self, df: pl.DataFrame) -> pl.DataFrame:
+        communities = pl.read_parquet(
+            CommunitiesSelector.get_output_path(self.main_config),
+            columns=["siren", "id_datagouv"],
+        ).filter(col("id_datagouv").is_not_null())
+        return df.join(communities, how="left", on="id_datagouv")
