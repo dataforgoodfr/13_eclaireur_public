@@ -73,7 +73,6 @@ const FranceMap = () => {
 
   const [mapReady, setMapReady] = useState(false);
 
-  //mconst pathname = usePathname();
   // effect to ensure data is fetched and loaded each time we navigate back to the page.
   useEffect(() => {
     if (mapReady && mapRef.current) {
