@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No commune codes provided' }, { status: 400 });
     }
 
-    // Create a parameterized query with placeholders
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
       SELECT * FROM collectivites
@@ -24,6 +23,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ departements });
   } catch (error) {
     console.error('Database error:', error);
-    return NextResponse.json({ error: 'Internal Server Error fetching communes' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error fetching departements' }, { status: 500 });
   }
 }
