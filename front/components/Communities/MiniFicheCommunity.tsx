@@ -1,10 +1,6 @@
 import { Community } from '@/app/models/community';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
-
-
-
-
 async function getCommunity(siren: string) {
   const communitiesResults = await fetchCommunities({ filters: { siren } });
   if (communitiesResults.length === 0) {

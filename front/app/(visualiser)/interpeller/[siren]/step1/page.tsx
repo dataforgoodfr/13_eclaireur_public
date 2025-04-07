@@ -28,7 +28,7 @@ export default async function InterpellateStep1({
       <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Collectivité sélectionnée</h2>
       <article className='px-8 py-12 outline'>
         <div className='flex justify-between'>
-          <BadgeCommunity name='exemplaire' />
+          <BadgeCommunity isExemplaire={true} />
           <BudgetGlobal communityName='Nantes' />
         </div>
         <div className='mt-10 flex flex-col justify-between md:flex-row'>
