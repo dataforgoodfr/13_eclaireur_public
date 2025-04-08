@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   description: 'License d’utilisation',
 };
 
-
 export default function page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>

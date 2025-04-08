@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
- 
-const isProduction = process.env.NODE_ENV === "production";
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,5 +9,5 @@ export default function robots(): MetadataRoute.Robots {
       allow: isProduction ? '/' : '',
       disallow: isProduction ? '' : '/',
     },
-  }
+  };
 }

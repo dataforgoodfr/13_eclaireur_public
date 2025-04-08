@@ -20,10 +20,32 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     template: '%s | Éclaireur Public',
-    default: 'Éclaireur Public'
+    default: 'Éclaireur Public',
   },
-  description: 'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
-  keywords:['Transparence financière', 'Gestion des dépenses publiques', 'Collectivités locales', 'Comptes publics', 'Réforme comptable', 'Budgets locaux', 'Finances locales', 'Responsabilité publique', 'Gouvernance locale', 'Dépenses municipales', 'Contrôle budgétaire', 'Information citoyenne', 'Comptabilité publique', 'Optimisation des dépenses', 'Rapports financiers', 'Engagement citoyen', 'Transparence budgétaire', 'Décentralisation financière', 'Audit des dépenses', 'Participation citoyenne']
+  description:
+    'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
+  keywords: [
+    'Transparence financière',
+    'Gestion des dépenses publiques',
+    'Collectivités locales',
+    'Comptes publics',
+    'Réforme comptable',
+    'Budgets locaux',
+    'Finances locales',
+    'Responsabilité publique',
+    'Gouvernance locale',
+    'Dépenses municipales',
+    'Contrôle budgétaire',
+    'Information citoyenne',
+    'Comptabilité publique',
+    'Optimisation des dépenses',
+    'Rapports financiers',
+    'Engagement citoyen',
+    'Transparence budgétaire',
+    'Décentralisation financière',
+    'Audit des dépenses',
+    'Participation citoyenne',
+  ],
 };
 
 export default function RootLayout({
