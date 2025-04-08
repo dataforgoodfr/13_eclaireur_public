@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Méthodologie',
+  description: 'Explications de la méthodologie utilisée pour récupérer et traiter les données utilisées sur le site.',
+};
+
 export default function page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>

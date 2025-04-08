@@ -1,3 +1,11 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Licence d’utilisation',
+  description: 'License d’utilisation',
+};
+
+
 export default function page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>
