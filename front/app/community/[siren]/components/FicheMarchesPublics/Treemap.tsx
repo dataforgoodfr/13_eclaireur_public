@@ -6,6 +6,14 @@ import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDow
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { formatNumber } from '@/utils/utils';
 import * as d3 from 'd3';
 
@@ -76,12 +84,11 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
     name: '',
     value: 0,
   });
-
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
-
-  
-  const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [tableDisplayed, setTableDisplayed] = useState(false);
+  const [linesDisplayed, setLinesDisplayed] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const resize = () => {
@@ -89,17 +96,15 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
         setContainerWidth(containerRef.current.offsetWidth);
       }
     };
-  
+
     const observer = new ResizeObserver(resize);
     if (containerRef.current) {
       observer.observe(containerRef.current);
       resize();
     }
-  
+
     return () => observer.disconnect();
   }, []);
-  
-
 
   const availableYears: number[] = getAvailableYears(data);
 
@@ -108,7 +113,7 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
       ? data
       : data.filter((item) => item.datenotification_annee === selectedYear);
 
-  function getTop10Sector(data: any[]) {
+  function getTopSectors(data: any[]) {
     const groupedData = data.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
@@ -124,38 +129,52 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
       .map(([name, size]) => ({ name, size }))
       .sort((a, b) => Number(b.size) - Number(a.size));
 
-    const top10Sector =
-      sortedGroupedData.length > 10 ? sortedGroupedData.slice(0, 10) : sortedGroupedData;
+    const total = data.reduce((acc, item) => acc + parseFloat(String(item.montant)), 0);
+    const top1 = Number(sortedGroupedData.slice(0, 1)[0].size);
 
-    const othersSectors =
-      sortedGroupedData.length > 10
-        ? {
-            name: 'Autres',
-            size: sortedGroupedData.slice(10).reduce((acc, item) => acc + Number(item.size), 0),
-          }
-        : { name: 'Autres', size: 0 };
+    const sortedGroupedDataPlusTotal = sortedGroupedData.map((item) => ({
+      ...item,
+      part: Math.round((Number(item.size) / total) * 100 * 10) / 10,
+      pourcentageCategoryTop1: Math.round((Number(item.size) / top1) * 100 * 10) / 10,
+    }));
 
-    const top10SectorWithOthers = top10Sector.concat(othersSectors);
+    const topSectors =
+      sortedGroupedDataPlusTotal.length > 10 + 10 * linesDisplayed
+        ? sortedGroupedDataPlusTotal.slice(0, 10 + 10 * linesDisplayed)
+        : sortedGroupedDataPlusTotal;
+
+    // Pour calculer la catégories "Autres" - A garder pour le moment
+    // const othersSectors =
+    //   sortedGroupedDataPlusTotal.length > 10
+    //     ? {
+    //         name: 'Autres',
+    //         size: sortedGroupedDataPlusTotal
+    //           .slice(10)
+    //           .reduce((acc, item) => acc + Number(item.size), 0),
+    //       }
+    //     : { name: 'Autres', size: 0 };
+
+    // const top10SectorWithOthers = top10Sector.concat(othersSectors);
 
     const formattedData: Tree = {
       type: 'node',
       name: 'boss',
       value: 0,
-      children: top10SectorWithOthers.map((item) => ({
+      children: sortedGroupedData.map((item) => ({
         type: 'leaf',
         name: item.name,
         value: Number(item.size),
       })),
     };
 
-    return formattedData;
+    return [formattedData, topSectors];
   }
 
-  const formattedData: Tree = getTop10Sector(filteredData);
+  const [formattedData, topSectors] = getTopSectors(filteredData) as [Tree, any[]];
+  console.log(topSectors);
 
   const height = 600;
   const width = containerWidth || 1486;
-  console.log("width1 :", width);
 
   const hierarchy = d3
     .hierarchy<Tree>(formattedData, (d) => (d.type === 'node' ? d.children : undefined))
@@ -208,7 +227,7 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
           {formatNumber(leaf.data.value)}
         </text>
       )}
-      {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 60 && (
+      {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
         <text
           x={leaf.x0 + 8}
           y={leaf.y0 + 42}
@@ -233,9 +252,31 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
         <div className='flex items-baseline gap-2'>
           <h3 className='py-2 text-xl'>Répartition </h3>
           <div className='flex items-baseline gap-2'>
-            <div>(graphique</div>
-            <Switch />
-            <div>tableau)</div>
+            <div
+              onClick={() => {
+                setTableDisplayed(false);
+                setLinesDisplayed(0);
+              }}
+              className={`cursor-pointer ${!tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+            >
+              (graphique
+            </div>{' '}
+            <Switch
+              checked={tableDisplayed}
+              onCheckedChange={() => {
+                setTableDisplayed((prev) => !prev);
+                setLinesDisplayed(0);
+              }}
+            />
+            <div
+              onClick={() => {
+                setTableDisplayed(true);
+                setLinesDisplayed(0);
+              }}
+              className={`cursor-pointer ${tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+            >
+              tableau)
+            </div>{' '}
           </div>
         </div>
         <div className='flex items-center gap-2'>
@@ -243,25 +284,69 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-
-      <div ref={containerRef}>
-        <svg width={width} height={height}>
-          {allShapes}
-        </svg>
-        {tooltip.visible && (
-          <div
-            className='pointer-events-none fixed z-50 rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg max-w-[200px]'
-            style={{
-              top: tooltip.y,
-              left: tooltip.x,
-              transform: 'translateY(-50%)',
-            }}
-          >
-            <div className='font-bold'>{tooltip.name}</div>
-            <div>{tooltip.value.toLocaleString()} €</div>
-          </div>
-        )}
-      </div>
+      {tableDisplayed && (
+        <>
+          <Table className='min-h-[600px]'>
+            <TableHeader>
+              <TableRow>
+                <TableHead className='w-[400px]'>Secteur</TableHead>
+                <TableHead className='w-[700px]'>Montant</TableHead>
+                <TableHead className=''></TableHead>
+                <TableHead className='text-right'>Part</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {topSectors.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className='font-medium'>{item.name}</TableCell>
+                  <TableCell>
+                    <div className='relative h-2 w-full rounded-md'>
+                      <div
+                        className='h-2 rounded-md bg-blue-500'
+                        style={{ width: `${item.pourcentageCategoryTop1}%` }}
+                      ></div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{formatNumber(Number(item.size))}</TableCell>
+                  <TableCell className='text-right'>{`${item.part}%`}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {formattedData.type === 'node' &&
+            formattedData.children &&
+            formattedData.children.length > 10 + 10 * linesDisplayed && (
+              <div className='flex items-center justify-center pt-6'>
+                <button
+                  className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
+                  onClick={() => setLinesDisplayed(linesDisplayed + 1)}
+                >
+                  Voir plus
+                </button>
+              </div>
+            )}
+        </>
+      )}
+      {!tableDisplayed && (
+        <div ref={containerRef}>
+          <svg width={width} height={height}>
+            {allShapes}
+          </svg>
+          {tooltip.visible && (
+            <div
+              className='pointer-events-none fixed z-50 max-w-[200px] rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg'
+              style={{
+                top: tooltip.y,
+                left: tooltip.x,
+                transform: 'translateY(-50%)',
+              }}
+            >
+              <div className='font-bold'>{tooltip.name}</div>
+              <div>{tooltip.value.toLocaleString()} €</div>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }

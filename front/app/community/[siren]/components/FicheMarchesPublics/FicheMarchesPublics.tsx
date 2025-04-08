@@ -3,8 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
 import Top10 from './Top10';
-import Trends from './Trends';
 import Treemap from './Treemap';
+import Trends from './Trends';
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
@@ -24,7 +24,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <TabsTrigger value='trends'>Évolution</TabsTrigger>
             <TabsTrigger value='distribution'>Répartition</TabsTrigger>
             <TabsTrigger value='compare'>Comparaison</TabsTrigger>
-            <TabsTrigger value='details'>Classement</TabsTrigger>
+            <TabsTrigger value='details'>Contrats</TabsTrigger>
           </TabsList>
           <TabsContent value='trends'>
             <Trends data={marchesPublics} />
