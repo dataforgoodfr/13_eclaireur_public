@@ -1,20 +1,13 @@
 import { NextResponse } from 'next/server';
 
-
-
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { InterpellateFormSchema } from 'utils/types';
-
-
-
-
 
 export async function POST(request: Request) {
   const body: unknown = await request.json();
 
   const result = InterpellateFormSchema.safeParse(body);
-  //   console.log('result => ', result)
   type TResultData = {
     firstname: string;
     lastname: string;
