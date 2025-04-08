@@ -24,5 +24,13 @@ export function debounce<A = unknown, R = void>(
 }
 
 export function formatNumber(number: number): string {
-  return number.toLocaleString('fr-FR');
+  if (number >= 1000_000_000) {
+    return (number / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + ' Md€';
+  } else if (number >= 1_000_000) {
+    return (number / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' M€';
+  } else if (number >= 1_000) {
+    return (number / 1_000).toFixed(1).replace(/\.0$/, '') + ' k€';
+  } else {
+    return number.toLocaleString('fr-FR') + ' €';
+  }
 }

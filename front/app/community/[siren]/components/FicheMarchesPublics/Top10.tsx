@@ -136,7 +136,7 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
                     ></div>
                   </div>
                 </TableCell>
-                <TableCell>{formatNumber(Number(item.size))} €</TableCell>
+                <TableCell>{formatNumber(Number(item.size))}</TableCell>
                 <TableCell className='text-right'>{`${item.part}%`}</TableCell>
               </TableRow>
             ))}
@@ -163,7 +163,7 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
                   ))}
                 </TableCell>
                 <TableCell className=''>{item.objet}</TableCell>
-                <TableCell className='text-right'>{formatNumber(Number(item.montant))} €</TableCell>
+                <TableCell className='text-right'>{(Number(item.montant).toLocaleString())} €</TableCell>
               </TableRow>
             ))}
           </TableBody>

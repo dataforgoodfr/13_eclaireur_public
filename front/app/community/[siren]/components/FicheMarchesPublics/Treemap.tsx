@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
+import { formatNumber } from '@/utils/utils';
 import * as d3 from 'd3';
 
 type TreeNode = {
@@ -46,7 +47,7 @@ function generateColorMap(names: string[]): Record<string, string> {
   const total = names.length;
 
   names.forEach((name, index) => {
-    const hue = Math.round((360 / total) * index); // Répartition sur la roue chromatique
+    const hue = Math.round((360 / total) * index);
     colorMap[name] = `hsl(${hue}, 65%, 55%)`;
   });
 
@@ -77,6 +78,29 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
   });
 
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const resize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+  
+    const observer = new ResizeObserver(resize);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+      resize();
+    }
+  
+    return () => observer.disconnect();
+  }, []);
+  
+
+
   const availableYears: number[] = getAvailableYears(data);
 
   const filteredData =
@@ -85,7 +109,7 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
       : data.filter((item) => item.datenotification_annee === selectedYear);
 
   function getTop10Sector(data: any[]) {
-    const groupedData = filteredData.reduce(
+    const groupedData = data.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
           acc[cpv_2_label] = 0;
@@ -102,6 +126,7 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
 
     const top10Sector =
       sortedGroupedData.length > 10 ? sortedGroupedData.slice(0, 10) : sortedGroupedData;
+
     const othersSectors =
       sortedGroupedData.length > 10
         ? {
@@ -126,82 +151,81 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
     return formattedData;
   }
 
-  const formattedData: Tree = getTop10Sector(data);
+  const formattedData: Tree = getTop10Sector(filteredData);
+
+  const height = 600;
+  const width = containerWidth || 1486;
+  console.log("width1 :", width);
 
   const hierarchy = d3
     .hierarchy<Tree>(formattedData, (d) => (d.type === 'node' ? d.children : undefined))
     .sum((d) => d.value);
 
-  const width = 1440;
-  const height = 600;
   const treeGenerator = d3.treemap<Tree>().size([width, height]).padding(4);
-
   const root = treeGenerator(hierarchy);
+
   const leafNames = root.leaves().map((leaf) => leaf.data.name);
   const colorMap = generateColorMap(leafNames);
 
-  const allShapes = root.leaves().map((leaf) => {
-    return (
-      <g key={leaf.id}>
-        <rect
-          x={leaf.x0}
-          y={leaf.y0}
-          rx={12}
-          width={leaf.x1 - leaf.x0}
-          height={leaf.y1 - leaf.y0}
-          stroke='transparent'
-          fill={colorMap[leaf.data.name]}
-          className='transition-all duration-500 ease-in-out'
-          onMouseEnter={(e) => {
-            setTooltip({
-              visible: true,
-              x: e.clientX,
-              y: e.clientY - 30,
-              name: leaf.data.name,
-              value: leaf.data.value,
-            });
-          }}
-          onMouseMove={(e) => {
-            setTooltip((prev) => ({
-              ...prev,
-              x: e.clientX,
-              y: e.clientY - 30,
-            }));
-          }}
-          onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
-        />
-        {leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 20 && (
+  const allShapes = root.leaves().map((leaf) => (
+    <g key={leaf.id}>
+      <rect
+        x={leaf.x0}
+        y={leaf.y0}
+        rx={12}
+        width={leaf.x1 - leaf.x0}
+        height={leaf.y1 - leaf.y0}
+        stroke='transparent'
+        fill={colorMap[leaf.data.name]}
+        className='transition-all duration-500 ease-in-out'
+        onMouseEnter={(e) => {
+          setTooltip({
+            visible: true,
+            x: e.clientX,
+            y: e.clientY - 30,
+            name: leaf.data.name,
+            value: leaf.data.value,
+          });
+        }}
+        onMouseMove={(e) => {
+          setTooltip((prev) => ({
+            ...prev,
+            x: e.clientX,
+            y: e.clientY - 30,
+          }));
+        }}
+        onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+      />
+      {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
         <text
           x={leaf.x0 + 8}
-          y={leaf.y0 + 20}
+          y={leaf.y0 + 22}
           fontSize={16}
           fontWeight={700}
           fill='white'
           className='pointer-events-none'
         >
-          {leaf.data.value.toLocaleString()} €
+          {formatNumber(leaf.data.value)}
         </text>
-        )}
-
-        {leaf.x1 - leaf.x0 > 60 && leaf.y1 - leaf.y0 > 60 && (
-          <text
-            x={leaf.x0 + 8}
-            y={leaf.y0 + 40}
-            fontSize={14}
-            fontWeight={500}
-            fill='white'
-            className='pointer-events-none'
-          >
-            {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
-              <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
-                {line}
-              </tspan>
-            ))}
-          </text>
-        )}
-      </g>
-    );
-  });
+      )}
+      {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 60 && (
+        <text
+          x={leaf.x0 + 8}
+          y={leaf.y0 + 42}
+          fontSize={14}
+          fontWeight={500}
+          fill='white'
+          className='pointer-events-none'
+        >
+          {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
+            <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      )}
+    </g>
+  ));
 
   return (
     <>
@@ -209,22 +233,9 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
         <div className='flex items-baseline gap-2'>
           <h3 className='py-2 text-xl'>Répartition </h3>
           <div className='flex items-baseline gap-2'>
-            <div
-            // onClick={() => setCategoriesDisplayed(false)}
-            // className={`cursor-pointer ${!categoriesDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              (des contrats
-            </div>
-            <Switch
-            // checked={categoriesDisplayed}
-            // onCheckedChange={() => setCategoriesDisplayed((prev) => !prev)}
-            />
-            <div
-            // onClick={() => setCategoriesDisplayed(true)}
-            // className={`cursor-pointer ${categoriesDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              par secteurs)
-            </div>
+            <div>(graphique</div>
+            <Switch />
+            <div>tableau)</div>
           </div>
         </div>
         <div className='flex items-center gap-2'>
@@ -232,13 +243,14 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      <div>
+
+      <div ref={containerRef}>
         <svg width={width} height={height}>
           {allShapes}
         </svg>
         {tooltip.visible && (
           <div
-            className='pointer-events-none fixed z-50 rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg'
+            className='pointer-events-none fixed z-50 rounded bg-gray-900 px-3 py-2 text-sm text-white shadow-lg max-w-[200px]'
             style={{
               top: tooltip.y,
               left: tooltip.x,
