@@ -283,7 +283,7 @@ const FranceMap = () => {
       setHoverInfo(null);
       return;
     }
-
+    // TODO: create function getFeatureAdminType
     const feature = features[0];
     let type: AdminType = 'region';
     if (feature.layer.id === 'regions') type = 'region';
