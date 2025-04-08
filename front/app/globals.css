@@ -184,3 +184,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+#simulatedTextAreaContent p {
+  @apply px-3 py-1;
+}
