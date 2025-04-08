@@ -43,7 +43,7 @@ class WorkflowManager:
         DataGouvCatalog(self.config).run()
         MarchesPublicsWorkflow.from_config(self.config).run()
         FinancialAccounts(self.config).run()
-        ElectedOfficialsWorkflow(self.config).run()
+        ElectedOfficialsWorkflow.from_config(self.config).run()
         DeclaInteretWorkflow(self.config).run()
         DataGouvSearcher(self.config).run()
 
