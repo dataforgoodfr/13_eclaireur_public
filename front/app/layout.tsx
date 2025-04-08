@@ -18,7 +18,6 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  
   title: {
     template: '%s | Éclaireur Public',
     default: 'Éclaireur Public'
