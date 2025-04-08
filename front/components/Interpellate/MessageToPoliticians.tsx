@@ -40,6 +40,6 @@ const messageToPoliticians = `<p>
                   Dans l’attente de votre réponse, veuillez agréer, Madame,
                   Monsieur, l’expression de mes salutations distinguées.
                 </p>
-                <p>[Votre Nom]</p>`
+                <p>[Votre Nom]</p>`;
 
-export default messageToPoliticians
+export default messageToPoliticians;

@@ -46,7 +46,7 @@ export default async function InterpellateStep4({
           </p>
         </Link>
       </article>
-      <p className='min-w-full text-center pt-16'>
+      <p className='min-w-full pt-16 text-center'>
         <Link href={`/community/${siren}`} className={buttonVariants({ variant: 'outline' })}>
           Continuer à explorer les données <ChevronRight />
         </Link>
