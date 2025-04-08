@@ -42,4 +42,4 @@ const messageToPoliticians = `<p>
                 </p>
                 <p>[Votre Nom]</p>`
 
-export default MessageToPoliticians
+export default messageToPoliticians
