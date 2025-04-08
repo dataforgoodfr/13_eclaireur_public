@@ -8,8 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ElectedPolitician } from '@/utils/types';
 import { User } from 'lucide-react';
+
+type ElectedPolitician = {
+  name: string;
+  photoSrc?: string;
+  fonction: string;
+  email: string;
+};
 
 export default function ElectedPolician({ name, photoSrc, fonction, email }: ElectedPolitician) {
   return (

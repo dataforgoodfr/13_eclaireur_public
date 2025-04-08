@@ -19,10 +19,15 @@ import { Input } from '@/components/ui/input';
 import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
-import { InterpellateFormProps } from 'utils/types';
-import { type FormSchema, InterpellateFormSchema } from 'utils/types';
 
 import MessageToPoliticians from './MessageToPoliticians';
+import { type FormSchema, InterpellateFormSchema } from './types';
+
+export type InterpellateFormProps = {
+  emails: string[];
+  missingData: unknown;
+  communityParam: string;
+};
 
 export default function InterpellateForm({
   emails = ['olivier.pretre@gmx.fr'],
