@@ -61,24 +61,6 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
   },
 ];
 
-const partagereMenus: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Linkedin',
-    href: '/',
-    description: '',
-  },
-  {
-    title: 'Facebook',
-    href: '/',
-    description: '',
-  },
-  {
-    title: 'Bluesky',
-    href: '/',
-    description: '',
-  },
-];
-
 const aProposMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Le projet',
@@ -121,7 +103,6 @@ export default function Navbar() {
             </Link>
           </NavigationMenuItem>
           {NavigationMenuGroup('À propos', aProposMenus)}
-          {NavigationMenuGroup('Partager', partagereMenus)}
         </NavigationMenuList>
 
         {/* Mobile */}
@@ -143,7 +124,6 @@ export default function Navbar() {
                   </p>
                 </Link>
                 {AccordionMenu('À propos', aProposMenus)}
-                {AccordionMenu('Partager', partagereMenus)}
               </Accordion>
             </SheetContent>
           </Sheet>
