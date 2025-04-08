@@ -5,8 +5,6 @@ export default function NotFound() {
     <ErrorPage
       title='Page non trouvée (Erreur 404)'
       description='Il est possible que vous ayez suivi un mauvais lien ou que la page ait été déplacée.'
-      imagePath='/404.jpg'
-      displayContact={false}
     />
   );
 }

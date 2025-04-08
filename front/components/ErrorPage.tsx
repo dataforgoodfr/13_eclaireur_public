@@ -5,18 +5,16 @@ import { Button } from '@/components/ui/button';
 type ErrorPageProps = {
   title: string;
   description: string;
-  imagePath: string;
-  displayContact: boolean;
 };
 
 
-export default function ErrorPage({ title, description, imagePath, displayContact }: ErrorPageProps) {
+export default function ErrorPage({ title, description }: ErrorPageProps) {
   return (
-    <div className='grid h-[600px] place-content-center justify-items-center bg-white px-4'>
+    <div className='grid h-[500px] place-content-center justify-items-center bg-white px-4'>
     <Image
-    src={imagePath}
-    width={400}
-    height={400}
+    src="/error.svg"
+    width={250}
+    height={250}
     alt=""
     className=''
   />
@@ -25,7 +23,7 @@ export default function ErrorPage({ title, description, imagePath, displayContac
         {description}
       </p>
       <Link href={'/'}>
-        <Button className='mt-5'>Retour à l'accueil</Button>
+        <Button className='mt-5'>Retour à l'ddaccueil</Button>
       </Link>
   </div>
   );
