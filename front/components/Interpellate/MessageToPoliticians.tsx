@@ -1,4 +1,4 @@
-const MessageToPoliticians = `<p>
+const messageToPoliticians = `<p>
                   À l’attention de [Nom de l’élu·e ou de la collectivité]
                   <br />
                   [Fonction]
