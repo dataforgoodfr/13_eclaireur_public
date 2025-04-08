@@ -44,7 +44,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
   const trends = { subventions: 1, marchesPublics: 0.01 };
 
   return (
-    <FicheCard title={ficheTitle}>
+    <FicheCard title={ficheTitle} displayCopyUrl={true}>
       <div className='mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
         <div className='flex flex-col gap-2'>
           <TinyCard title={collectivitesLabel} description={community.type} icon={<Layers />} />
