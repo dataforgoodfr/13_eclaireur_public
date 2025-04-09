@@ -26,7 +26,7 @@ export default function CtaGroup() {
       caption: 'Ma collectivité est-elle transparente ?',
       image: placeHolderImage,
       buttonText: 'Engagement citoyen',
-      href: '/',
+      href: '/interpeller',
     },
   ];
 
