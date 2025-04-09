@@ -5,6 +5,7 @@ import BudgetGlobal from '@/components/Communities/BudgetGlobal';
 import MiniFicheCommunity from '@/components/Communities/MiniFicheCommunity';
 import RankingCommunity from '@/components/Communities/RankingCommunity';
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
+import Stepper from '@/components/Interpellate/Stepper';
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { MoveRight } from 'lucide-react';
@@ -18,8 +19,14 @@ export default async function InterpellateStep1({
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
   const trends = { subventions: 1, marchesPublics: 0.01 };
+
+  const currentStep = 1;
+  const NUMBER_OF_STEPS = 4;
+
   return (
-    <section>
+    <section className='my-16'>
+      <Stepper currentStep={currentStep} numberOfSteps={NUMBER_OF_STEPS} />
+
       <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Collectivité sélectionnée</h2>
       <article className='px-8 py-12 outline'>
         <div className='flex justify-between'>
