@@ -13,54 +13,18 @@ class AggregateCommunityTable:
 
     def __init__(self, config):
         self.config = config
-        # self.output_path = Path(get_project_base_path()) / "data" / "aggregated_outputs"
-        # self.output_path.mkdir(exist_ok=True, parents=True)
 
     def aggregate_data(self):
         print("Running AggregateCommunityTable...")
         df_communities = pd.read_parquet(self.config["communities"]["combined_filename"])
         df_financial_accounts = pd.read_parquet(self.config["financial_accounts"]["combined_filename"])
-        print(df_communities.columns)
-        print(df_financial_accounts.columns)
-        raise
-
-        # # Chargement des fichiers normalisés
-        # base_path = Path(get_project_base_path()) / "data" / "datasets"
-        # marches = pd.read_csv(base_path / "marches" / "outputs" / "normalized_data.csv", sep=";")
-        # decla = pd.read_csv(base_path / "declarations" / "outputs" / "normalized_data.csv", sep=";")
-
-        # # Agrégats
-        # mp = marches.groupby(["siren", "annee"])["montant"].sum().reset_index(name="total_mp")
-        # sd = decla.groupby(["siren", "annee"])["montant"].sum().reset_index(name="subvention_declaree")
-        # sfa = fa.groupby(["siren", "annee"])[["budget_total", "subvention_budget"]].sum().reset_index()
-
-        # # Jointure avec collectivités
-        # df = communities.merge(mp, on="siren", how="left")
-        # df = df.merge(sd, on="siren", how="left")
-        # df = df.merge(sfa, on="siren", how="left")
-
-        # # Moyennes par type/année/région/département (à affiner selon types)
-        # def moyenne(df, col, by):
-        #     return df.groupby(by)[col].transform("mean")
-
-        # df["mp_moy_nationale"] = moyenne(df, "total_mp", ["annee", "type"])
-        # df["mp_moy_regionale"] = moyenne(df, "total_mp", ["annee", "type", "code_region"])
-        # df["mp_moy_departementale"] = moyenne(df, "total_mp", ["annee", "type", "code_departement"])
-        # df["subv_moy_nationale"] = moyenne(df, "subvention_budget", ["annee", "type"])
-        # df["subv_moy_regionale"] = moyenne(df, "subvention_budget", ["annee", "type", "code_region"])
-        # df["subv_moy_departementale"] = moyenne(df, "subvention_budget", ["annee", "type", "code_departement"])
-
-        # # Table finale
-        # final = df[[
-        #     "nom", "siren", "type", "annee",
-        #     "budget_total", "subvention_budget",
-        #     "subvention_declaree", "total_mp",
-        #     "mp_moy_nationale", "mp_moy_regionale", "mp_moy_departementale",
-        #     "subv_moy_nationale", "subv_moy_regionale", "subv_moy_departementale"
-        # ]]
-
-        # # save_csv(final, self.output_path, "aggregated_community_table.csv", sep=";")
-        # print("Aggregated table saved.")
+        # print(df_communities.columns)
+        df_financial_accounts["code_insee"] = df_financial_accounts["region"].combine_first(df_financial_accounts["dept"])
+        df_financial_accounts["code_insee"] = df_financial_accounts["code_insee"].str.lstrip('0')
+        df_financial_accounts = df_financial_accounts[["exercice", "code_insee", "subventions"]]
+        df_communities = df_communities.merge(df_financial_accounts, on="code_insee", how="left")
+        print(df_communities)
+        return df_communities
 
 
 from back.scripts.utils.argument_parser import ArgumentParser
@@ -80,4 +44,4 @@ if __name__ == "__main__":
     project_config.load(config)
 
     LoggerManager.configure_logger(config)
-    AggregateCommunityTable(config).run()
+    AggregateCommunityTable(config).aggregate_data()
