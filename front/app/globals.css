@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .global-margin {
+    @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -177,4 +183,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+#simulatedTextAreaContent p {
+  @apply px-3 py-1;
 }

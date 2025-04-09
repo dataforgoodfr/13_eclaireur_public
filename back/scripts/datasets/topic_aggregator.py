@@ -5,6 +5,7 @@ from collections import Counter
 from pathlib import Path
 
 import pandas as pd
+from inflection import underscore as to_snake_case
 
 from back.scripts.datasets.constants import (
     TOPIC_COLUMNS_NORMALIZATION_REGEX,
@@ -188,6 +189,7 @@ class TopicAggregator(DatasetAggregator):
             df.pipe(self._select_official_columns)
             .pipe(self._add_metadata, file_metadata)
             .pipe(self._clean_missing_values, file_metadata)
+            .rename(columns=to_snake_case)
         )
 
     def _add_metadata(self, df: pd.DataFrame, file_metadata: tuple):

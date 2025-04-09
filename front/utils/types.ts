@@ -1,3 +1,5 @@
+
+
 export enum CommunityType {
   Region = 'REG',
   Departement = 'DEP',
