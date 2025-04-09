@@ -171,7 +171,6 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
   }
 
   const [formattedData, topSectors] = getTopSectors(filteredData) as [Tree, any[]];
-  console.log(topSectors);
 
   const height = 600;
   const width = containerWidth || 1486;
