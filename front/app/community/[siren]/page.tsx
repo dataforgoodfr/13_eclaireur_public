@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
+import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
@@ -23,14 +24,18 @@ async function getCommunity(siren: string) {
 export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
-  const community = await getCommunity(siren);
+  // const community = await getCommunity(siren);
 
   return (
-    <Suspense key={community.siren} fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+    {/* <Suspense key={community.siren} fallback={<Loading />}>
       <FicheHeader community={community} />
-      <FicheIdentite community={community} />
+      <FicheIdentite community={community} /> */}
       <ErrorBoundary>
         <FicheMarchesPublics siren={siren} />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <FicheSubventions siren={siren} />
       </ErrorBoundary>
     </Suspense>
   );
