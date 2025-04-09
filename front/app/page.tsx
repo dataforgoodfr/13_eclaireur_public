@@ -1,5 +1,5 @@
 import HomePageHeader from '@/components/HomePageHeader';
-import FranceMap from '@/components/Map/open-tiles';
+import FranceMap from '@/components/Map/Map';
 import ProjectDescription from '@/components/ProjectDescription';
 import CtaGroup from '@/components/cta/CtaGroup';
 

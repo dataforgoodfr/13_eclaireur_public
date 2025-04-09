@@ -23,6 +23,8 @@ import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import type { TerritoryData } from './MapLayout';
+
 type AdminType = 'region' | 'departement' | 'commune';
 
 type HoverInfo = {
@@ -77,7 +79,7 @@ const mergeFeatureData = (
     if (featureId) {
       communityData = communes.find((c) => c.code_insee === featureId);
       if (!communityData) {
-        console.log(`No commune data found for code ${featureId}`);
+        //  console.log(`No commune data found for code ${featureId}`);
       }
     }
   }
@@ -93,7 +95,11 @@ const mergeFeatureData = (
   return featureCopy;
 };
 
-const FranceMap = () => {
+interface TerritoryMapProps {
+  selectedTerritoryData: TerritoryData | undefined;
+}
+
+export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) {
   const mapRef = useRef<MapRef>(null);
   const regionsRef = useRef<Community[]>([]);
   const departementsRef = useRef<Community[]>([]);
@@ -104,13 +110,29 @@ const FranceMap = () => {
   const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
   const [mapReady, setMapReady] = useState(false);
   const [cursor, setCursor] = useState<string>('grab');
-  const [viewState, setViewState] = useState<Partial<ViewState>>({
-    longitude: 2.2137,
-    latitude: 46.2276,
-    zoom: 5,
-  });
+  const [viewState, setViewState] = useState<Partial<ViewState>>(
+    selectedTerritoryData?.viewState || {
+      longitude: 2.2137,
+      latitude: 46.2276,
+      zoom: 5,
+    },
+  );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const regionsMaxZoom = selectedTerritoryData?.regionsMaxZoom || 6;
+  const departementsMaxZoom = selectedTerritoryData?.departementsMaxZoom || 8;
+  const communesMaxZoom = selectedTerritoryData?.communesMaxZoom || 14;
+
+  // Get the filter from the selected territory or use default
+  const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
+
+  // Update viewState when selectedTerritoryData changes
+  useEffect(() => {
+    if (selectedTerritoryData) {
+      setViewState(selectedTerritoryData.viewState);
+    }
+  }, [selectedTerritoryData]);
 
   // effect to ensure data is fetched and loaded each time we navigate back to the page.
   useEffect(() => {
@@ -123,7 +145,7 @@ const FranceMap = () => {
       const attemptQuery = () => {
         const features = mapInstance.querySourceFeatures('statesData', {
           sourceLayer: 'administrative',
-          filter: ['==', ['get', 'iso_a2'], 'FR'],
+          filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
         });
 
         console.log(`Attempt ${retryCount + 1}: Found ${features.length} features`);
@@ -149,7 +171,7 @@ const FranceMap = () => {
 
     const features = mapInstance.querySourceFeatures('statesData', {
       sourceLayer: 'administrative',
-      filter: ['==', ['get', 'iso_a2'], 'FR'],
+      filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
     });
 
     const regionsInViewport = features.filter((feature) => feature.properties.level === 1);
@@ -263,10 +285,10 @@ const FranceMap = () => {
 
   const handleMove = (event: any) => {
     setViewState(event.viewState);
-    if (event.viewState.zoom >= 8) {
-      const mapInstance = mapRef.current?.getMap();
-      if (mapInstance) debouncedQuery(mapInstance);
-    }
+    console.log(event.viewState.zoom);
+
+    const mapInstance = mapRef.current?.getMap();
+    if (mapInstance) debouncedQuery(mapInstance);
   };
 
   const onHover = (event: MapLayerMouseEvent) => {
@@ -400,8 +422,12 @@ const FranceMap = () => {
             source-layer='administrative'
             type='fill'
             minzoom={0}
-            maxzoom={6}
-            filter={['all', ['==', 'level', 1], ['==', 'level_0', 'FR']]}
+            maxzoom={regionsMaxZoom}
+            filter={[
+              'all',
+              ['==', 'level', 1],
+              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+            ]}
             paint={{
               'fill-color': [
                 'interpolate',
@@ -424,14 +450,18 @@ const FranceMap = () => {
             id='departements'
             source-layer='administrative'
             type='fill'
-            minzoom={6}
-            maxzoom={8}
-            filter={['all', ['==', 'level', 2], ['==', 'level_0', 'FR']]}
+            minzoom={regionsMaxZoom}
+            maxzoom={departementsMaxZoom}
+            filter={[
+              'all',
+              ['==', 'level', 2],
+              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+            ]}
             paint={{
               'fill-color': [
                 'interpolate',
                 ['linear'],
-                ['feature-state', 'population'], // Use population from feature state
+                ['coalesce', ['feature-state', 'population'], 0], // Use population from feature state
                 0,
                 '#f2f0f7', // Low population color
                 500000,
@@ -449,8 +479,8 @@ const FranceMap = () => {
             id='communes'
             source-layer='administrative'
             type='fill'
-            minzoom={8}
-            maxzoom={14}
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
             filter={['==', 'level', 3]}
             paint={{
               'fill-color': [
@@ -475,11 +505,15 @@ const FranceMap = () => {
             id='region-borders'
             source-layer='administrative'
             type='line'
-            minzoom={6}
-            maxzoom={14}
-            filter={['all', ['==', 'level', 1], ['==', 'level_0', 'FR']]}
+            minzoom={regionsMaxZoom}
+            maxzoom={communesMaxZoom}
+            filter={[
+              'all',
+              ['==', 'level', 1],
+              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+            ]}
             paint={{
-              'line-color': '#FF9800',
+              'line-color': 'black',
               'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],
               'line-opacity': 1,
             }}
@@ -490,9 +524,13 @@ const FranceMap = () => {
             id='department-borders'
             source-layer='administrative'
             type='line'
-            minzoom={8}
-            maxzoom={14}
-            filter={['all', ['==', 'level', 2], ['==', 'level_0', 'FR']]}
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
+            filter={[
+              'all',
+              ['==', 'level', 2],
+              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+            ]}
             paint={{
               'line-color': 'black',
               'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],
@@ -504,6 +542,4 @@ const FranceMap = () => {
       {renderTooltip()}
     </div>
   );
-};
-
-export default FranceMap;
+}
