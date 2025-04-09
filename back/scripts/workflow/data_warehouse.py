@@ -10,6 +10,7 @@ from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.utils.psql_connector import PSQLConnector
+from back.scripts.datasets.aggregate_community_table import AggregateCommunityTable
 
 
 class DataWarehouseWorkflow:
@@ -25,12 +26,14 @@ class DataWarehouseWorkflow:
             "comptes_collectivites": FinancialAccounts.get_output_path(config),
             "elus": ElectedOfficialsWorkflow.get_output_path(config),
             "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
+            # "collectivites_aggregees": AggregateCommunityTable.get_output_path(config),
         }
 
     def run(self) -> None:
         CommunitiesEnricher.enrich(self._config)
         SubventionsEnricher.enrich(self._config)
         MarchesPublicsEnricher.enrich(self._config)
+        # AggregateCommunityTable.aggregate_data(self._config)
         self._send_to_postgres()
 
     def _send_to_postgres(self):

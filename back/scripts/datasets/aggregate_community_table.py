@@ -1,30 +1,33 @@
 from pathlib import Path
 import pandas as pd
 
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES
 
 
 class AggregateCommunityTable:
+
+    @classmethod
+    def get_output_path(cls) -> str:
+        return "collectivites_aggregees"
+
+
     def __init__(self, config):
         self.config = config
         # self.output_path = Path(get_project_base_path()) / "data" / "aggregated_outputs"
         # self.output_path.mkdir(exist_ok=True, parents=True)
 
-    def run(self):
+    def aggregate_data(self):
         print("Running AggregateCommunityTable...")
+        df_communities = pd.read_parquet(self.config["communities"]["combined_filename"])
+        df_financial_accounts = pd.read_parquet(self.config["financial_accounts"]["combined_filename"])
+        print(df_communities.columns)
+        print(df_financial_accounts.columns)
+        raise
 
         # # Chargement des fichiers normalisés
         # base_path = Path(get_project_base_path()) / "data" / "datasets"
         # marches = pd.read_csv(base_path / "marches" / "outputs" / "normalized_data.csv", sep=";")
         # decla = pd.read_csv(base_path / "declarations" / "outputs" / "normalized_data.csv", sep=";")
-        # fa = pd.read_csv(base_path / "financial_accounts" / "outputs" / "normalized_data.csv", sep=";")
-        # communities = pd.read_csv(Path(get_project_base_path()) / "data" / "communities" / "processed_data" / "selected_communities_data.csv", sep=";")
-
-        # # Nettoyage basique
-        # marches["siren"] = marches["siren"].astype(str)
-        # decla["siren"] = decla["siren"].astype(str)
-        # fa["siren"] = fa["siren"].astype(str)
-        # communities["siren"] = communities["siren"].astype(str)
 
         # # Agrégats
         # mp = marches.groupby(["siren", "annee"])["montant"].sum().reset_index(name="total_mp")

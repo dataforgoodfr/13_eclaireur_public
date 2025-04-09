@@ -1,6 +1,6 @@
 workflow:
-  save_to_db: True
-  replace_tables: True
+  save_to_db: False
+  replace_tables: False
 
 ofgl:
   data_folder: back/tests/data/ofgl
@@ -9,6 +9,7 @@ ofgl:
 
 communities:
   combined_filename: back/tests/data/communities/communities.parquet
+  aggregated_filename: back/tests/data/communities/aggregated_communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
   odf_url: file:./back/scripts/datasets/odf.csv
 
