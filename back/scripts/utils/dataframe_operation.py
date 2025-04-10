@@ -307,7 +307,6 @@ def is_dayfirst(dts: pd.Series) -> bool:
     top_format = top_format.index[0]
     return not top_format.startswith("d" * 4)
 
-
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Add to a dataframe columns from keys of a json column.

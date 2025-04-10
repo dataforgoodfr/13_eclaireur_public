@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import pandas as pd
 import pytest
@@ -182,10 +182,10 @@ def test_normalize_date(input_value, expected_output):
         assert pd.isna(out["date"].iloc[0])
 
     if expected_year_column is not None:
-        assert out["année_date"].iloc[0] == expected_year_column
+        assert out["anneedate"].iloc[0] == expected_year_column
     else:
         # Vérifier que l'année est également NaN lorsque l'année attendue est None
-        assert pd.isna(out["année_date"].iloc[0])
+        assert pd.isna(out["anneedate"].iloc[0])
 
 
 class TestIsDayFirst:
