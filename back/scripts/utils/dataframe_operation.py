@@ -279,7 +279,6 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
             f"annee{id_col}": None
         })
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-       # frame[f"annee{id_col}"] = frame[id_col].dt.year
         return frame.assign(**{
             f"annee{id_col}": frame[id_col].dt.year
         })
