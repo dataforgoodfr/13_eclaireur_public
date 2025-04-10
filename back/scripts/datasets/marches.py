@@ -53,7 +53,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             )
 
         catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
-            lambda df: df[df["dataset.id"] == DATASET_ID]
+            lambda df: df[df["dataset_id"] == DATASET_ID]
         )
         complete_years = catalog.assign(
             year=catalog["url"].str.extract(r"decp-(\d{4}).json")
@@ -93,8 +93,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if not interim_fn.exists():
             return None
-        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
-        object_columns = out.dtypes.pipe(lambda s: s[s == "object"]).index
+        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER).pipe()
+        object_columns = out.select_dtypes(include=["object"]).columns
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
 
