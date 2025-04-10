@@ -13,6 +13,7 @@ from back.scripts.utils.dataframe_operation import (
 )
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
+from back.scripts.utils.datagouv_api import DataGouvAPI
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,11 +100,21 @@ class CommunitiesSelector:
     @tracker(ulogger=LOGGER, log_start=True)
     def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
-        Adds postal code information to the communities DataFrame.
+        Adds postal code information to the communities DataFrame by fetching
+        the latest version from data.gouv.fr using the dataset ID.
         """
+        dataset_id = self.config["postal_code"]["dataset_id"]
+        resources_df = DataGouvAPI.dataset_resources(dataset_id)
+        if resources_df.empty:
+            raise ValueError(f"No resources found for dataset ID {dataset_id}")
+        # Find the main CSV resource
+        resource_url = resources_df.loc[
+            resources_df["format"].str.lower() == "csv", "resource_url"
+        ].iloc[0]
+
         postal_code_df = (
             pd.read_csv(
-                self.config["postal_code"]["url"],
+                resource_url,
                 delimiter=";",
                 encoding="latin1",
                 usecols=["#Code_commune_INSEE", "Code_postal"],

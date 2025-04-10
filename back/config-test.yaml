@@ -21,7 +21,7 @@ communities:
       filename: cities_to_geolocate.csv
 
   postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+    dataset_id: "545b55e1c751df52de9b6045"
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
