@@ -32,7 +32,7 @@ type TreeNode = {
 
 type Tree = TreeNode | TreeLeaf;
 
-interface SectorTableProps {
+type SectorTableProps = {
   topSectors: Sector[];
   formattedData: Tree;
   linesDisplayed: number;
