@@ -13,7 +13,6 @@ import pandas as pd
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -55,19 +54,19 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
             lambda df: df[df["dataset_id"] == DATASET_ID]
         )
+        if catalog.empty:
+            raise ValueError("No resources found for dataset_id: {}".format(DATASET_ID))
+
         complete_years = catalog.assign(
-            year=catalog["url"].str.extract(r"decp-(\d{4}).json")
+            year=catalog["base_url"].str.extract(r"decp-(\d{4}).json")
         ).pipe(lambda df: df[df["year"].notna()])
         all_years = complete_years["year"].dropna().unique()
 
         monthly = catalog.assign(
-            year=catalog["url"].str.extract(r"decp-(\d{4})-\d{2}.json")
+            year=catalog["base_url"].str.extract(r"decp-(\d{4})-\d{2}.json")
         ).pipe(lambda df: df[df["year"].notna() & ~df["year"].isin(all_years)])
 
         files = pd.concat([complete_years, monthly])
-        files = files.rename({"url": "dynamic_url"}).assign(
-            url=files["id"].apply(DataGouvAPI.get_stable_file_url)
-        )
         return cls(files, main_config)
 
     def __init__(self, files: pd.DataFrame, config: dict):
