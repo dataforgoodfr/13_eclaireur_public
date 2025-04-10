@@ -274,12 +274,15 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        frame[f"annee{id_col}"] = None
-        frame[id_col] = None
-        return frame
+        return frame.assign(**{
+            id_col: None,
+            f"annee{id_col}": None
+        })
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        frame[f"annee{id_col}"] = frame[id_col].dt.year
-        return frame
+       # frame[f"annee{id_col}"] = frame[id_col].dt.year
+        return frame.assign(**{
+            f"annee{id_col}": frame[id_col].dt.year
+        })
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
@@ -291,22 +294,22 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         # Détecte les float/int convertibles
         col_numeric = pd.to_numeric(col, errors="coerce")
         float_mask = col_numeric.notna() & (col_numeric % 1 == 0)
-        col_cleaned = col_str.copy()
-        col_cleaned.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
-        # Année seule détectée
-        year_only_mask = col_cleaned.str.fullmatch(r"\d{4}")
-        col_cleaned.loc[year_only_mask] = col_cleaned[year_only_mask] + "-01-01"
-        dt = pd.to_datetime(col_cleaned, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
+        col_str.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
+        year_only = col_str.str.fullmatch(r"\d{4}")
+        col_str.loc[year_only] += "-01-01"
+        dt = pd.to_datetime(col_str, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
 
     # Filtrer les dates avant 2000
     dt = dt.where(dt.dt.year>=2000)
-    frame[f"annee{id_col}"] = dt.dt.year
 
     # Localiser en UTC si pas encore fait
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
 
-    return frame.assign(**{id_col: dt})
+    return frame.assign(**{
+        id_col: dt,
+        f"annee{id_col}": dt.dt.year
+    })
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
