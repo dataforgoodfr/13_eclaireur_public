@@ -92,7 +92,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         interim_fn = raw_filename.parent / "interim.json"
         if not interim_fn.exists():
             return None
-        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER).pipe()
+        out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.select_dtypes(include=["object"]).columns
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
         return out.assign(**corrected)
