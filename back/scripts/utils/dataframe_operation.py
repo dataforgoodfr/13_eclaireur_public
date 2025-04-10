@@ -273,26 +273,37 @@ def normalize_identifiant(
 def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
+    if frame[id_col].isnull().all():
+        frame[f"annee{id_col}"] = None
+        frame[id_col] = None
+        return frame
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        frame[f"année_{id_col}"] = frame[id_col].dt.year
+        frame[f"annee{id_col}"] = frame[id_col].dt.year
         return frame
-    if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col]
-    else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=True)
 
-    if (
-        (frame[id_col].astype(str).str.len() == 4) & (frame[id_col].astype(str).str.isdigit())
-    ).all():
-        frame[f"année_{id_col}"] = frame[id_col].astype(int)
-        frame[f"année_{id_col}"] = frame[f"année_{id_col}"].where(
-            frame[f"année_{id_col}"] >= 2000, pd.NaT
-        )
-        frame[id_col] = pd.NaT
-        return frame
+    if str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col].dt.tz_localize("UTC")
     else:
-        dt = dt[dt.isna() | (dt.dt.year >= 2000)]
-        frame[f"année_{id_col}"] = dt.dt.year
+
+        col = frame[id_col]
+        col_str = col.astype(str)
+
+        # Détecte les float/int convertibles
+        col_numeric = pd.to_numeric(col, errors="coerce")
+        float_mask = col_numeric.notna() & (col_numeric % 1 == 0)
+        col_cleaned = col_str.copy()
+        col_cleaned.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
+        # Année seule détectée
+        year_only_mask = col_cleaned.str.fullmatch(r"\d{4}")
+        col_cleaned.loc[year_only_mask] = col_cleaned[year_only_mask] + "-01-01"
+        dt = pd.to_datetime(col_cleaned, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
+
+    # Filtrer les dates avant 2000
+    dt = dt.where(dt.dt.year>=2000)
+    frame[f"annee{id_col}"] = dt.dt.year
+
+    # Localiser en UTC si pas encore fait
+    if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
 
     return frame.assign(**{id_col: dt})
@@ -305,7 +316,6 @@ def is_dayfirst(dts: pd.Series) -> bool:
         return False
     top_format = top_format.index[0]
     return not top_format.startswith("d" * 4)
-
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
