@@ -7,18 +7,18 @@ import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-
 // import Trends from './Trends';
 
 async function getSubventions(siren: string) {
-  const marchesPublicsResults = await fetchSubventions({ attribuant_siren: siren });
+  const subventionsResults = await fetchSubventions({ attribuant_siren: siren });
 
-  return marchesPublicsResults;
+  return subventionsResults;
 }
 
 export async function FicheSubventions({ siren }: { siren: string }) {
-  const marchesPublics = await getSubventions(siren);
-  console.log(marchesPublics)
+  const subventions = await getSubventions(siren);
+  console.log(subventions)
 
   return (
-    <div>
-      Hello World
-    </div>
+    <>
+      {/* {subventions.length === 0 && <NoData />} */}
+    </>
   )
 }
