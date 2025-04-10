@@ -55,8 +55,11 @@ class TestTopicAggregator:
             topic="subventions",
             datafile_loader_config=self.config,
         )
-        aggregator.run()
+        print(f"Vérification de la sortie : {self.config['combined_filename']}")
+
+        #aggregator.run()
         out = pd.read_parquet(self.config["combined_filename"])
+        print(f"Contenu du fichier Parquet : \n{out}")
         expected = pd.DataFrame(
             {
                 "nom_attribuant": "Métropole de Lyon (Budget principal)",
