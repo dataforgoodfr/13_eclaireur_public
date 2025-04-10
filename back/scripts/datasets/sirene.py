@@ -66,8 +66,7 @@ class SireneWorkflow:
             self._download_if_not_exists(file_url)
 
         xls_url_cat_ju = self._config.get("xls_urls_cat_ju")
-        if xls_url_cat_ju:
-            self._download_if_not_exists(xls_url_cat_ju)
+        self._download_if_not_exists(xls_url_cat_ju)
 
     def join_naf_level(
         self,
@@ -104,7 +103,6 @@ class SireneWorkflow:
             pl.when(pl.col("nomenclature_naf") == "NAFRev2")
             .then(slice_func)
             .otherwise(None)
-            .alias(column_name)
         )
 
         return base_df.join(naf_polars, on=column_name, how="left").drop(column_name)
@@ -130,7 +128,6 @@ class SireneWorkflow:
             pl.when(pl.col(code_ju_col).is_not_null())
             .then(slice_func)
             .otherwise(None)
-            .alias(column_name)
         )
 
         juridical_polars = categories_ju_data[level - 1]["Code", "Libellé"].rename(
