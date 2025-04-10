@@ -54,7 +54,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         dominantBaseline='middle'
         fontSize='16'
       >
-        {formatNumber(value)} €
+        {formatNumber(value)}
       </text>
     );
   };
