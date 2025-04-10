@@ -299,7 +299,10 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     else:
         dt = dt.dt.tz_convert("UTC")
 
-    return frame.assign(**{id_col: dt})
+    return frame.assign(**{
+        id_col: dt,
+        f"annee{id_col}": dt.dt.year
+    })
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
