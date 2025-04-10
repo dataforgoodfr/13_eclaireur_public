@@ -2,7 +2,7 @@ import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
-import Top10 from './Top10';
+import Contract from './Contract';
 import Treemap from './Treemap';
 import Trends from './Trends';
 
@@ -38,7 +38,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             </div>
           </TabsContent>
           <TabsContent value='details'>
-            <Top10 data={marchesPublics} />
+            <Contract data={marchesPublics} />
           </TabsContent>
         </Tabs>
       ) : (
