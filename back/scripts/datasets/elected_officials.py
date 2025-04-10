@@ -2,12 +2,11 @@ import logging
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm
 
-from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import normalize_date
 from back.scripts.utils.datagouv_api import DataGouvAPI
-from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ RENAME_COMMON_COLUMNS = {
 }
 
 
-class ElectedOfficialsWorkflow:
+class ElectedOfficialsWorkflow(DatasetAggregator):
     DATASET_ID = "5c34c4d1634f4173183a64f1"
 
     @classmethod
@@ -59,62 +58,50 @@ class ElectedOfficialsWorkflow:
             / "elected_officials.parquet"
         )
 
-    def __init__(self, main_config: dict):
-        self._config = main_config[self.get_config_key()]
-        self.data_folder = Path(self._config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-        self.output_filename = self.get_output_path(main_config)
+    @classmethod
+    def from_config(cls, config: dict):
+        local_config = config[cls.get_config_key()]
+        data_folder = Path(local_config["data_folder"])
+        data_folder.mkdir(exist_ok=True, parents=True)
+        resources = DataGouvAPI.dataset_resources(cls.DATASET_ID, savedir=data_folder).assign(
+            url_hash=lambda df: df["resource_id"],
+            url=lambda df: "https://www.data.gouv.fr/fr/datasets/r/" + df["resource_id"],
+        )
+        return cls(resources, config)
 
-    @tracker(ulogger=LOGGER, log_start=True)
-    def run(self) -> None:
-        if self.output_filename.exists():
-            return
-        self._fetch_raw_datasets()
-        self._combine_datasets()
-        self.elected_officials.to_parquet(self.output_filename)
-
-    def _fetch_raw_datasets(self):
-        """
-        Fetch all resources from the target dataset.
-        Each resource consist in the data for a different elected position (mayor, senator, etc.).
-        """
-        resources = DataGouvAPI.dataset_resources(self.DATASET_ID, savedir=self.data_folder)
-        self.raw_datasets = {}
-        for _, resource in tqdm(resources.iterrows()):
-            filename = self.data_folder / f"{resource['resource_id']}.parquet"
-            if filename.exists():
-                continue
-            self.raw_datasets[resource["resource_description"]] = BaseLoader.loader_factory(
-                resource["resource_url"]
-            ).load()
-
-    def _combine_datasets(self):
-        combined = []
-        for mandat, df in self.raw_datasets.items():
-            present_columns = {
-                k: v for k, v in RENAME_COMMON_COLUMNS.items() if k in df.columns
-            }
-            combined.append(
-                df[present_columns.keys()].rename(columns=present_columns).assign(mandat=mandat)
-            )
-
-        self.elected_officials = (
-            pd.concat(combined, ignore_index=True)
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
+        present_columns = {k: v for k, v in RENAME_COMMON_COLUMNS.items() if k in df.columns}
+        return (
+            df[present_columns.keys()]
+            .rename(columns=present_columns)
             .assign(
-                date_naissance=lambda df: pd.to_datetime(
-                    df["date_naissance"], dayfirst=True, errors="coerce"
-                ),
-                date_debut_mandat=lambda df: pd.to_datetime(
-                    df["date_debut_mandat"], dayfirst=True, errors="coerce"
-                ),
+                mandat=file_metadata.resource_description.split(" au ")[0],
                 code_socio_pro=lambda df: df["code_socio_pro"].astype("Int16"),
             )
-            .astype(
-                {
-                    "code_dept": str,
-                    "code_commune": str,
-                    "code_canton": str,
-                    "code_collectivite": str,
-                }
-            )
+            .pipe(normalize_date, "date_naissance")
+            .pipe(normalize_date, "date_debut_mandat")
+            .pipe(normalize_date, "date_debut_fonction")
+            .pipe(self._clean_nan_strs)
+            .pipe(self._normalize_codes)
+            .pipe(self._flag_leader)
+        )
+
+    def _clean_nan_strs(self, df: pd.DataFrame):
+        columns = ["code_collectivite", "code_canton"]
+        updates = {
+            c: df[c].fillna("nan").where(lambda s: s != "nan") for c in columns if c in df
+        }
+        return df.assign(**updates)
+
+    def _normalize_codes(self, df: pd.DataFrame):
+        if "code_dept" in df.columns:
+            df = df.assign(code_dept=df["code_dept"].str.zfill(2))
+        if "code_commune" in df.columns:
+            df = df.assign(code_commune=df["code_commune"].str.zfill(5))
+        return df
+
+    def _flag_leader(self, df: pd.DataFrame):
+        return df.assign(
+            is_leader=lambda df: df["lib_fonction"].str.startswith("Président")
+            | (df["lib_fonction"] == "Maire")
         )

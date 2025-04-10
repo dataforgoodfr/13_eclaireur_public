@@ -159,6 +159,18 @@ class DatasetAggregator:
             df.to_parquet(out_filename, index=False)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+        opts = {"dtype": str} if file_metadata.format == "csv" else {}
+        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
+        try:
+            df = loader.load()
+            if not isinstance(df, pd.DataFrame):
+                LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
+                raise RuntimeError("Unable to load file into a DataFrame")
+            return df.pipe(self._normalize_frame, file_metadata)
+        except Exception as e:
+            self.errors[str(e)].append(raw_filename.parent.name)
+
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
         raise NotImplementedError()
 
     def _remaining_to_normalize(self):
