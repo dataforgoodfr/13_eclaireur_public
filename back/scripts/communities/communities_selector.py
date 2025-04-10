@@ -1,5 +1,4 @@
 import logging
-import re
 from pathlib import Path
 
 import pandas as pd
@@ -7,9 +6,14 @@ import pandas as pd
 from back.scripts.communities.loaders.ofgl import OfglLoader
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_combined_filename, project_config
-from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
+from back.scripts.utils.dataframe_operation import (
+    IdentifierFormat,
+    normalize_column_names,
+    normalize_identifiant,
+)
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
+from back.scripts.utils.datagouv_api import DataGouvAPI
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,8 +51,10 @@ class CommunitiesSelector:
             .fillna({"population": 0})
             .pipe(self.add_collectivite_platforms)
             .pipe(self.add_epci_infos)
+            .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
             .pipe(self.add_postal_code)
+            .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
 
@@ -76,7 +82,7 @@ class CommunitiesSelector:
             .fillna({"tranche_effectif": 0})
             .assign(
                 effectifs_sup_50=lambda df: df["tranche_effectif"] >= 50,
-                nom=lambda df: df["raison_sociale"],
+                nom=lambda df: df["raison_sociale"].fillna(df["nom"]),
             )
             .assign(
                 should_publish=lambda df: (df["type"] != "COM")
@@ -94,11 +100,21 @@ class CommunitiesSelector:
     @tracker(ulogger=LOGGER, log_start=True)
     def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
-        Adds postal code information to the communities DataFrame.
+        Adds postal code information to the communities DataFrame by fetching
+        the latest version from data.gouv.fr using the dataset ID.
         """
+        dataset_id = self.config["postal_code"]["dataset_id"]
+        resources_df = DataGouvAPI.dataset_resources(dataset_id)
+        if resources_df.empty:
+            raise ValueError(f"No resources found for dataset ID {dataset_id}")
+        # Find the main CSV resource
+        resource_url = resources_df.loc[
+            resources_df["format"].str.lower() == "csv", "resource_url"
+        ].iloc[0]
+
         postal_code_df = (
             pd.read_csv(
-                self.config["postal_code"]["url"],
+                resource_url,
                 delimiter=";",
                 encoding="latin1",
                 usecols=["#Code_commune_INSEE", "Code_postal"],
@@ -123,37 +139,7 @@ class CommunitiesSelector:
         )
         return frame.merge(epci_mapping, on="siren", how="left")
 
-    def load_selected_communities(self):
-        selected_data = self.all_data.copy()
-        selected_data = selected_data.loc[selected_data["should_publish"]]
-
-        # Add geocoordinates to selected data
+    def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
         geolocator = GeoLocator(self.config["geolocator"])
-        selected_data = geolocator.add_geocoordinates(selected_data).rename(
-            columns=lambda col: re.sub(r"[.-]", "_", col.lower())
-        )
-        self.selected_data = selected_data
 
-    def get_datagouv_ids_to_siren(self):
-        """
-        Retrieve rows with non-null 'id_datagouv', returning a DataFrame with 'siren' and 'id_datagouv' columns.
-
-        Returns:
-            DataFrame: Filtered data containing 'siren' and 'id_datagouv' for valid entries.
-        """
-        new_instance = self.selected_data.copy()
-        datagouv_ids = new_instance[new_instance["id_datagouv"].notnull()][
-            ["siren", "id_datagouv"]
-        ]
-        return datagouv_ids  # return a dataframe with siren and id_datagouv columns
-
-    # Function to retrieve rows with non-null 'siren', returning a DataFrame with 'siren', 'nom', and 'type' columns.
-    def get_selected_ids(self):
-        new_instance = self.selected_data.copy()
-        selected_data_ids = new_instance[new_instance["siren"].notnull()][
-            ["siren", "nom", "type"]
-        ]
-        selected_data_ids.drop_duplicates(
-            subset=["siren"], keep="first", inplace=True
-        )  # keep only the first duplicated value TODO to be improved
-        return selected_data_ids  # return a dataframe with siren and & basic info
+        return geolocator.add_geocoordinates(frame)

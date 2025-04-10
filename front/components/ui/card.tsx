@@ -24,7 +24,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('font-semibold capitalize leading-none tracking-tight', className)}
+      className={cn('font-semibold leading-none tracking-tight', className)}
       {...props}
     />
   ),
@@ -52,4 +52,4 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };

@@ -198,9 +198,9 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "float64":
-        return frame
+        return frame.assign(**{id_col: np.abs(frame[id_col])})
     if str(frame[id_col].dtype) == "int64":
-        return frame.assign(**{id_col: frame[id_col].astype("float64")})
+        return frame.assign(**{id_col: np.abs(frame[id_col].astype("float64"))})
     montant = (
         frame[id_col]
         .astype(str)
@@ -212,9 +212,15 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     with_double_digits = montant.str.match(r".*[.,]\d{2}$").astype(bool).fillna(False)
     with_single_digits = montant.str.match(r".*[.,]\d{1}$").astype(bool).fillna(False)
     montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
-    montant = np.where(
-        with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
+
+    montant = np.abs(
+        np.where(
+            with_single_digits,
+            montant / 10,
+            np.where(with_double_digits, montant / 100, montant),
+        )
     )
+
     return frame.assign(**{id_col: montant})
 
 

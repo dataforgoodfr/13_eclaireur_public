@@ -11,8 +11,8 @@ from urllib.request import urlretrieve
 import ijson
 import pandas as pd
 
+from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.utils.config import project_config
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -52,7 +52,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 main_config,
             )
 
-        catalog = pd.read_parquet(project_config["datagouv_catalog"]["combined_filename"]).pipe(
+        catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
             lambda df: df[df["dataset.id"] == DATASET_ID]
         )
         complete_years = catalog.assign(
@@ -150,6 +150,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
             except (StopIteration, ijson.JSONError):
                 return "unknown"
+        return "unknown"
 
     @staticmethod
     def unnest_marche(declaration: dict):
@@ -162,8 +163,11 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if isinstance(titulaires, dict):
             titulaires = [titulaires]
 
+        # Remove None
+        titulaires = [t for t in titulaires if t]
+
         # titulaire is sometines nested
-        if len(titulaires) > 0 and "titulaire" in titulaires[0].keys():
+        if "titulaire" in titulaires[0].keys():
             titulaires = [titu["titulaire"] for titu in titulaires]
 
         # acheteur is sometimes just a dictionnary with a single "id" key
@@ -175,7 +179,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 except TypeError:
                     unnested["acheteur.id"] = ""
             elif k == "montant":
-                unnested["montant"] = float(v) / len(titulaires)
+                unnested["montant"] = v
+                unnested["countTitulaires"] = len(titulaires)
             else:
                 if isinstance(v, (list, dict)):
                     v = json.dumps(v)

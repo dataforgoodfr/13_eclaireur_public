@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
-
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     expand_json_columns,
@@ -222,8 +221,8 @@ class TestNormalizeMontant:
         pd.testing.assert_frame_equal(result, expected)
 
     def test_string_with_special_characters(self):
-        df = pd.DataFrame({"amount": ["1,500 €", "2 500 euros", "3,500.00", "125.3"]})
-        expected = pd.DataFrame({"amount": [1500.0, 2500.0, 3500.0, 125.3]})
+        df = pd.DataFrame({"amount": ["1,500 €", "2 500 euros", "3,500.00", "125.3", "-1000"]})
+        expected = pd.DataFrame({"amount": [1500.0, 2500.0, 3500.0, 125.3, 1000]})
         result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)
 
@@ -232,4 +231,9 @@ class TestNormalizeMontant:
         expected = pd.DataFrame({"amount": [1500.0, None, None]})
         result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)
+
+    def test_negative_numbers(self):
+        df = pd.DataFrame({"amount": [-1000.0, -2000.50, -300]})
+        expected = pd.DataFrame({"amount": [1000.0, 2000.50, 300.0]})
+        result = normalize_montant(df, "amount")
         pd.testing.assert_frame_equal(result, expected)

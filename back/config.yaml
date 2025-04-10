@@ -21,51 +21,30 @@ communities:
       filename: cities_to_geolocate.csv
 
   postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+    dataset_id: "545b55e1c751df52de9b6045"
 
-datagouv:
-  datasets:
-    url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
-    columns:
-      - "id"
-      - "title"
-      - "url"
-      - "description"
-      - "organization"
-      - "organization_id"
-      - "frequency"
-  datafiles:
-    url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
-  paths:
-    root: back/data/datagouv_search
-    organization_datasets: organization_datasets
-  files:
-    catalog: datagouv_catalog.parquet
-    catalog_metadata: catalog_metadata.parquet
-    datasets: datagouv_datasets.parquet
+
+datagouv_search:
+  data_folder: back/data/datagouv_search
+  combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
+  title_filter:
+    - conventions de subvention
+    - subv.*asso
+    - subvention.*association
+    - subventions du conseil régional
+    - interventions de la région des pays de la Loire
+    - scdl - subventions
+  description_filter:
+    - conventions de subvention
+    - subvention.*association
+    - subv.*asso
+
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: .back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
 search:
   subventions:
-    source: "multiple"
-    title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
-    description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
-    api:
-      testIds: [] # use full input
-      url: "https://www.data.gouv.fr/api/1/datasets/"
-      title:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      description:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      columns:
-        - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
     single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
