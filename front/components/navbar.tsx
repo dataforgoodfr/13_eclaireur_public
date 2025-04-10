@@ -33,7 +33,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Interpeller',
-    href: '/',
+    href: '/interpeller',
     description: 'Comment inciter mes élus à plus de transparence ?',
   },
   {
@@ -58,24 +58,6 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
     title: 'Cadre réglementaire',
     href: '/',
     description: 'Quelles sont les obligations des collectivités ? ',
-  },
-];
-
-const partagereMenus: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Linkedin',
-    href: '/',
-    description: '',
-  },
-  {
-    title: 'Facebook',
-    href: '/',
-    description: '',
-  },
-  {
-    title: 'Bluesky',
-    href: '/',
-    description: '',
   },
 ];
 
@@ -121,7 +103,6 @@ export default function Navbar() {
             </Link>
           </NavigationMenuItem>
           {NavigationMenuGroup('À propos', aProposMenus)}
-          {NavigationMenuGroup('Partager', partagereMenus)}
         </NavigationMenuList>
 
         {/* Mobile */}
@@ -143,7 +124,6 @@ export default function Navbar() {
                   </p>
                 </Link>
                 {AccordionMenu('À propos', aProposMenus)}
-                {AccordionMenu('Partager', partagereMenus)}
               </Accordion>
             </SheetContent>
           </Sheet>

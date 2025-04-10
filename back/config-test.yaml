@@ -21,7 +21,11 @@ communities:
       filename: cities_to_geolocate.csv
 
   postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+    dataset_id: "545b55e1c751df52de9b6045"
+
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: ./back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
 search:
   subventions:
@@ -46,7 +50,7 @@ datagouv_catalog:
 datagouv_search:
   data_folder: back/tests/data/datagouv_search
   combined_filename: back/tests/data/datagouv_search/datagouv_datasets.parquet
-  title_filter: 
+  title_filter:
     - subventions
   description_filter: null
 
