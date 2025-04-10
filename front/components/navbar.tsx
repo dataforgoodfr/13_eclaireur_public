@@ -79,7 +79,7 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
   },
   {
     title: 'Contact',
-    href: '/',
+    href: '/contact',
     description: '',
   },
 ];
