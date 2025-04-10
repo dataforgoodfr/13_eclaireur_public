@@ -109,7 +109,6 @@ export default function ContactForm() {
           name='usermessage'
           placeholder='Tapez votre message ici'
           rows={5}
-          // minlength={5}
           aria-required
           required
           value={enteredMessage}
