@@ -295,7 +295,6 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     # Filtrer les dates avant 2000
     dt = dt.where(dt.dt.year >= 2000)
 
-    # Localiser en UTC si pas encore fait
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
 
