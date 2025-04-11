@@ -2,39 +2,15 @@ workflow:
   save_to_db: False
   replace_tables: False
 
+ofgl:
+  data_folder: back/data/ofgl
+  urls_csv: back/scripts/datasets/ofgl_urls.csv
+  combined_filename: back/data/ofgl/ofgl.parquet
+
 communities:
-  processed_data:
-    path: back/data/communities/processed_data
-    all_communities_file: all_communities_data.parquet
-    selected_communities_file: selected_communities_data.parquet
-
-  ofgl:
-    url:
-      regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      communes: https://data.ofgl.fr/explore/dataset/ofgl-base-communes-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_name=true&disjunctive.epci_name=true&disjunctive.tranche_population=true&disjunctive.tranche_revenu_imposable_par_habitant=true&disjunctive.com_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-    dtype:
-      Code Insee 2023 Région: str
-      Code Insee 2023 Département: str
-      Code Insee 2023 Commune: str
-    processed_data:
-      path: back/data/communities/processed_data
-      filename: ofgl_data.csv
-
-    epci:
-      file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
-      dtype:
-        siren: str
-        siren_membre: str
-
-  odf:
-    url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
-    dtype:
-      siren: str
-    processed_data:
-      path: back/data/communities/processed_data
-      filename: odf_data.csv
+  combined_filename: back/data/communities/communities.parquet
+  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
@@ -44,49 +20,31 @@ communities:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
 
-datagouv:
-  datasets:
-    url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
-    columns:
-      - "id"
-      - "title"
-      - "url"
-      - "description"
-      - "organization"
-      - "organization_id"
-      - "frequency"
-  datafiles:
-    url: https://www.data.gouv.fr/fr/datasets/r/4babf5f2-6a9c-45b5-9144-ca5eae6a7a6d
-  paths:
-    root: back/data/datagouv_search
-    organization_datasets: organization_datasets
-  files:
-    catalog: datagouv_catalog.parquet
-    catalog_metadata: catalog_metadata.parquet
-    datasets: datagouv_datasets.parquet
+  postal_code:
+    dataset_id: "545b55e1c751df52de9b6045"
+
+
+datagouv_search:
+  data_folder: back/data/datagouv_search
+  combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
+  title_filter:
+    - conventions de subvention
+    - subv.*asso
+    - subvention.*association
+    - subventions du conseil régional
+    - interventions de la région des pays de la Loire
+    - scdl - subventions
+  description_filter:
+    - conventions de subvention
+    - subvention.*association
+    - subv.*asso
+
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: .back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
 search:
   subventions:
-    source: "multiple"
-    title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
-    description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
-    api:
-      testIds: [] # use full input
-      url: "https://www.data.gouv.fr/api/1/datasets/"
-      title:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      description:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      columns:
-        - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
     single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
@@ -102,7 +60,7 @@ datagouv_catalog:
   data_folder: back/data/datagouv_catalog
   combined_filename: back/data/datagouv_catalog/catalog.parquet
   catalog_url: null
-  
+
 datafile_loader:
   data_folder: 'back/data/datasets/%(topic)s'
   combined_filename: 'back/data/datasets/%(topic)s.parquet'
@@ -127,6 +85,7 @@ elected_officials:
 
 sirene:
   data_folder: back/data/sirene
+  combined_filename:  back/data/sirene/sirene.parquet
   url: https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip
   xls_urls_naf:
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"

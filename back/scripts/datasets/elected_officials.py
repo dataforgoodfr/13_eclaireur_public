@@ -5,6 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
@@ -46,18 +47,31 @@ RENAME_COMMON_COLUMNS = {
 class ElectedOfficialsWorkflow:
     DATASET_ID = "5c34c4d1634f4173183a64f1"
 
-    def __init__(self, source_folder: Path | str):
-        self.data_folder = Path(source_folder)
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "elected_officials"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "elected_officials.parquet"
+        )
+
+    def __init__(self, main_config: dict):
+        self._config = main_config[self.get_config_key()]
+        self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
+        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
-        combined_filename = self.data_folder / "elected_officials.parquet"
-        if combined_filename.exists():
+        if self.output_filename.exists():
             return
         self._fetch_raw_datasets()
         self._combine_datasets()
-        self.elected_officials.to_parquet(combined_filename)
+        self.elected_officials.to_parquet(self.output_filename)
 
     def _fetch_raw_datasets(self):
         """

@@ -1,24 +1,24 @@
 import hashlib
 import logging
-import numpy as np
-from sqlalchemy import create_engine, text
 import os
-from dotenv import load_dotenv
+
+import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
 
 load_dotenv()  # Charge les variables d'environnement à partir du fichier .env
 
 
 class PSQLConnector:
-    def __init__(self, replace_tables):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
 
         self.dbname = os.getenv("DB_NAME", "eclaireur_public")
         self.user = os.getenv("DB_USER", "eclaireur_public")
         self.password = os.getenv("DB_PASSWORD", "secret")
         self.host = os.getenv("DB_HOST", "localhost")
-        self.port = os.getenv("DB_PORT", "5432")
-        self.replace_tables = replace_tables
+        self.port = os.getenv("DB_PORT", "5436")
         self.engine = None
         self._connect()
 
@@ -34,6 +34,13 @@ class PSQLConnector:
         self.engine = create_engine(
             f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         )
+
+
+class Historisateur:
+    """
+    This class is currently dead code but the logic will be used
+    for source historisation.
+    """
 
     def drop_table_if_exists(self, table_name):
         try:

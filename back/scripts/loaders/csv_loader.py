@@ -8,24 +8,26 @@ import pandas as pd
 from .base_loader import BaseLoader
 
 LOGGER = logging.getLogger(__name__)
+STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
+WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
 class CSVLoader(BaseLoader):
     file_extensions = {"csv"}
     file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
 
-    def __init__(self, file_url, columns_to_keep=None, dtype=None, **kwargs):
+    def __init__(self, file_url, columns=None, dtype=None, **kwargs):
         """
         Initialize the CSV loader for either URL or local file.
 
         Args:
             source (str): URL or file path to the CSV file
-            columns_to_keep (list, optional): List of column names to keep
+            columns (list, optional): List of column names to keep
             dtype (dict, optional): Dictionary of column data types
             logger (logging.Logger, optional): Logger object for logging
         """
         super().__init__(file_url, **kwargs)
-        self.columns_to_keep = columns_to_keep
+        self.columns = columns
         self.dtype = dtype
 
     def process_data(self, data) -> pd.DataFrame | None:
@@ -48,6 +50,8 @@ class CSVLoader(BaseLoader):
         return None
 
     def _process_from_decoded(self, decoded_content):
+        decoded_content = STARTING_NEWLINE.sub("", decoded_content)
+        decoded_content = WINDOWS_NEWLINE.sub("\n", decoded_content)
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {
@@ -58,11 +62,12 @@ class CSVLoader(BaseLoader):
         if self.dtype is not None:
             csv_params["dtype"] = self.dtype
 
-        if self.columns_to_keep is not None:
-            csv_params["usecols"] = lambda c: c in self.columns_to_keep
+        if self.columns is not None:
+            csv_params["usecols"] = lambda c: c in self.columns
 
         try:
             dialect = sniffer.sniff(sample)
+            csv_params["header"] = 0 if sniffer.has_header(sample) else None
             csv_params["delimiter"] = dialect.delimiter
             LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
 

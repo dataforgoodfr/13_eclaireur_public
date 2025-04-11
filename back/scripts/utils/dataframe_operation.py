@@ -1,10 +1,13 @@
 import json
 import logging
 import re
+from enum import Enum
 
 import numpy as np
 import pandas as pd
 from unidecode import unidecode
+
+from back.scripts.datasets.constants import FORMAT_PRIORITIES
 
 """
 This script contains functions to manipulate DataFrames.
@@ -14,6 +17,11 @@ This script contains functions to manipulate DataFrames.
 4 - Detecting the first row index where the data starts
 5 - Detecting the first column index where the data starts
 """
+
+
+class IdentifierFormat(Enum):
+    SIREN = "siren"
+    SIRET = "siret"
 
 
 def merge_duplicate_columns(df: pd.DataFrame, separator: str = " / ") -> pd.DataFrame:
@@ -172,9 +180,14 @@ def detect_skipcolumns(df):
 
 
 def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(
-        columns=lambda col: re.sub(r"_+", "_", re.sub(r"[.-]", "_", col.lower())).strip()
-    )
+    return df.rename(columns=_normalise_column_name)
+
+
+def _normalise_column_name(name: str) -> str:
+    name = re.sub(r"[_\n.-]+", "_", name.lower())
+    name = re.sub("^(fields|properties)_", "", name)
+    name = re.sub("_?@value$", "", name)
+    return name.strip()
 
 
 def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
@@ -185,9 +198,9 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "float64":
-        return frame
+        return frame.assign(**{id_col: np.abs(frame[id_col])})
     if str(frame[id_col].dtype) == "int64":
-        return frame.assign(**{id_col: frame[id_col].astype("float64")})
+        return frame.assign(**{id_col: np.abs(frame[id_col].astype("float64"))})
     montant = (
         frame[id_col]
         .astype(str)
@@ -196,19 +209,43 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         .str.replace("euros", "")
         .str.strip()
     )
-    with_double_digits = montant.str.match(r".*[.,]\d{2}$").fillna(False)
-    with_single_digits = montant.str.match(r".*[.,]\d{1}$").fillna(False)
+    with_double_digits = montant.str.match(r".*[.,]\d{2}$").astype(bool).fillna(False)
+    with_single_digits = montant.str.match(r".*[.,]\d{1}$").astype(bool).fillna(False)
     montant = montant.str.replace(r"[,.]", "", regex=True).astype("float")
-    montant = np.where(
-        with_single_digits, montant / 10, np.where(with_double_digits, montant / 100, montant)
+
+    montant = np.abs(
+        np.where(
+            with_single_digits,
+            montant / 10,
+            np.where(with_double_digits, montant / 100, montant),
+        )
     )
+
     return frame.assign(**{id_col: montant})
 
 
-def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
+def normalize_identifiant(
+    frame: pd.DataFrame, id_col: str, format: IdentifierFormat = IdentifierFormat.SIRET
+) -> pd.DataFrame:
     """
-    Ensure that the selected column can be interpreted as a string siret.
+    Normalize identifier values in the specified column to either SIREN (9 digits) or SIRET (14 digits) format.
+
+    Args:
+        frame: Input DataFrame containing the identifier column
+        id_col: Name of the column containing identifiers
+        format: Target format for normalization (SIREN or SIRET)
+
+    Returns:
+        DataFrame with normalized identifiers
+
+    Raises:
+        RuntimeError: If the median length of identifiers is neither 9 (SIREN) nor 14 (SIRET)
     """
+    if not isinstance(format, IdentifierFormat):
+        raise RuntimeError(
+            f"Format must be an IdentifierFormat enum value. Got: {type(format)}"
+        )
+
     if id_col not in frame.columns:
         return frame
     frame = frame.assign(
@@ -221,13 +258,15 @@ def normalize_identifiant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
             .str.replace(r"[\xa0 ]", "", regex=True)
         }
     )
+
+    filling = 14 if format == IdentifierFormat.SIRET else 9
     median_length = frame[id_col].str.len().median()
     if median_length == 9:
         # identifier is actually siren
-        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(14, "0")})
+        return frame.assign(**{id_col: frame[id_col].str.zfill(9).str.ljust(filling, "0")})
     elif median_length == 14:
         # identifier is actually siret
-        return frame.assign(**{id_col: frame[id_col].str.zfill(14)})
+        return frame.assign(**{id_col: frame[id_col].str.zfill(14).str[:filling]})
     raise RuntimeError("idBeneficiaire median length is neither siren not siret.")
 
 
@@ -238,11 +277,23 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col]
+        dt = frame[id_col].dt.tz_localize("UTC")
+    elif "datetime64" in str(frame[id_col].dtype):
+        dt = frame[id_col].dt.tz_convert("UTC")
     else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=True)
-    dt = dt.dt.tz_localize("UTC")
+        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst(frame[id_col])).dt.tz_localize(
+            "UTC"
+        )
     return frame.assign(**{id_col: dt})
+
+
+def is_dayfirst(dts: pd.Series) -> bool:
+    formats = dts.dropna().str.replace(r"\d", "d", regex=True)
+    top_format = formats.value_counts().sort_values(ascending=False)
+    if top_format.empty:
+        return False
+    top_format = top_format.index[0]
+    return not top_format.startswith("d" * 4)
 
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
@@ -280,3 +331,14 @@ def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
         ~url_format.str.startswith("json").fillna(False), "json"
     ).fillna(df["format"])
     return df.assign(format=url_format)
+
+
+def sort_by_format_priorities(df: pd.DataFrame, keep: bool = False) -> pd.DataFrame:
+    out = df.assign(
+        priority=df["format"]
+        .map({n: i for i, n in enumerate(FORMAT_PRIORITIES)})
+        .fillna(len(FORMAT_PRIORITIES)),
+    ).sort_values(["priority"])
+    if not keep:
+        out = out.drop(columns=["priority"])
+    return out

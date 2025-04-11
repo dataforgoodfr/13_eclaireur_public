@@ -7,6 +7,7 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -34,24 +35,38 @@ class SireneWorkflow:
     https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
     """
 
-    def __init__(self, config: dict):
-        self._config = config
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "sirene"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "sirene.parquet"
+        )
+
+    def __init__(self, main_config: dict):
+        self._config = main_config[self.get_config_key()]
         self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.filename = self.data_folder / "sirene.parquet"
-        self.zip_filename = self.data_folder / "sirene.zip"
+        self.input_filename = self.data_folder / "sirene.zip"
+        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.output_filename.exists():
+            return
         self._fetch_zip()
         self._fetch_xls_files()
         self._format_to_parquet()
 
     def _fetch_zip(self):
-        if self.zip_filename.exists():
+        if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.zip_filename)
+        urllib.request.urlretrieve(self._config["url"], self.input_filename)
 
     def _download_if_not_exists(self, url: str) -> Path:
         file_name = url.split("/")[-1]
@@ -145,13 +160,14 @@ class SireneWorkflow:
         ).drop(column_name)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.output_filename.exists():
             return
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with zipfile.ZipFile(self.zip_filename) as zip_ref:
+            with zipfile.ZipFile(self.input_filename) as zip_ref:
                 zip_ref.extractall(tmpdirname)
                 csv_fn = Path(tmpdirname) / "StockUniteLegale_utf8.csv"
+
                 base_df = (
                     pl.scan_csv(
                         csv_fn, schema_overrides={"trancheEffectifsUniteLegale": pl.String}
@@ -200,3 +216,4 @@ class SireneWorkflow:
             )
 
         base_df.write_parquet(self.filename)
+

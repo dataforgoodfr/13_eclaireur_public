@@ -16,6 +16,7 @@ from back.scripts.utils.beautifulsoup_utils import (
     get_tag_int,
     get_tag_text,
 )
+from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -45,13 +46,25 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
 class DeclaInteretWorkflow:
     """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
 
-    def __init__(self, config: dict):
-        self._config = config
-        self.data_folder = Path(config["data_folder"])
+    @classmethod
+    def get_config_key(cls) -> str:
+        return "declarations_interet"
+
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "elected_officials.parquet"
+        )
+
+    def __init__(self, main_config: dict):
+        self._config = main_config[self.get_config_key()]
+        self.data_folder = Path(self._config["data_folder"])
         self.data_folder.mkdir(exist_ok=True, parents=True)
 
-        self.xml_filename = self.data_folder / "declarations.xml"
-        self.filename = self.data_folder / "declarations.parquet"
+        self.input_filename = self.data_folder / "declarations.xml"
+        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
@@ -59,21 +72,21 @@ class DeclaInteretWorkflow:
         self._format_to_parquet()
 
     def _fetch_xml(self):
-        if self.xml_filename.exists():
+        if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.xml_filename)
+        urllib.request.urlretrieve(self._config["url"], self.input_filename)
 
     def _format_to_parquet(self):
-        if self.filename.exists():
+        if self.output_filename.exists():
             return
-        with self.xml_filename.open() as f:
+        with self.input_filename.open(encoding="utf-8") as f:
             soup = BeautifulSoup(f.read(), features="xml")
 
         declarations = soup.find_all("declaration")
         df = pd.DataFrame.from_records(
             chain(*[self._parse_declaration(declaration) for declaration in tqdm(declarations)])
         )
-        df.to_parquet(self.filename)
+        df.to_parquet(self.output_filename)
 
     @staticmethod
     def _parse_declaration(declaration: BeautifulSoup) -> list[dict]:

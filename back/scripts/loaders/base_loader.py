@@ -2,6 +2,7 @@ import itertools
 import logging
 import os
 import re
+from pathlib import Path
 from typing import Pattern, Self
 from urllib.parse import urlparse
 
@@ -37,7 +38,7 @@ class BaseLoader:
     # http://www.iana.org/assignments/media-types/media-types.xhtml
     file_media_type_regex: Pattern[str] | str | None = None
 
-    def __init__(self, file_url, num_retries=3, delay_between_retries=5, **kwargs):
+    def __init__(self, file_url: str | Path, num_retries=3, delay_between_retries=5, **kwargs):
         # file_url : URL of the file to load
         # num_retries : Number of retries in case of failure
         # delay_between_retries : Delay between retries in seconds
@@ -88,9 +89,9 @@ class BaseLoader:
         raise NotImplementedError("This method should be implemented by subclasses.")
 
     @classmethod
-    def loader_factory(cls, file_url: str, **loader_kwargs) -> Self:
+    def loader_factory(cls, file_url: str | Path, **loader_kwargs) -> Self:
         # Factory method to create the appropriate loader based on the file URL
-
+        file_url = str(file_url)
         loader_class = cls.search_loader_class(file_url)
         if loader_class:
             return loader_class(file_url, **loader_kwargs)

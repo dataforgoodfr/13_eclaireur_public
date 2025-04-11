@@ -11,7 +11,7 @@ import polars as pl
 from tqdm import tqdm
 
 from back.scripts.loaders import LOADER_CLASSES
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import get_combined_filename, get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ def _sha256(s):
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
-class BaseDatasetAggregator:
+class DatasetAggregator:
     """
     Base class for multiple dataset aggregation functionality.
 
@@ -47,21 +47,41 @@ class BaseDatasetAggregator:
     respectively as "data_folder" and "combined_filename".
     """
 
+    @classmethod
+    def get_config_key(cls) -> str:
+        raise NotImplementedError()
 
-class DatasetAggregator:
-    def __init__(self, files: pd.DataFrame, config: dict):
-        self._config = config
+    @classmethod
+    def get_output_path(cls, main_config: dict) -> Path:
+        return get_combined_filename(main_config, cls.get_config_key())
 
-        self.files_in_scope = files.assign(url_hash=lambda df: df["url"].apply(_sha256))
+    def __init__(self, files: pd.DataFrame, main_config: dict):
+        self._config = main_config[self.get_config_key()]
 
-        self.data_folder = get_project_base_path() / (config["data_folder"])
+        self.files_in_scope = files.pipe(self._ensure_url_hash)
+
+        self.data_folder = get_project_base_path() / self._config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
-        self.combined_filename = get_project_base_path() / (config["combined_filename"])
-        self.combined_filename.parent.mkdir(parents=True, exist_ok=True)
+        self.output_filename = self.get_output_path(main_config)
+        self.output_filename.parent.mkdir(parents=True, exist_ok=True)
         self.errors = defaultdict(list)
+
+    def _ensure_url_hash(self, frame: pd.DataFrame) -> pd.DataFrame:
+        hashes = frame["url"].apply(_sha256)
+        if "url_hash" not in frame.columns:
+            return frame.assign(url_hash=hashes)
+        return frame.fillna({"url_hash": hashes})
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
+        if self.output_filename.exists():
+            return
+        self._process_files()
+        self._concatenate_files()
+        with open(self.data_folder / "errors.json", "w") as f:
+            json.dump(self.errors, f)
+
+    def _process_files(self):
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -77,9 +97,13 @@ class DatasetAggregator:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
 
-        self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
+        self._post_process()
+        self._concatenate_files()
+
+    def _post_process(self):
+        pass
 
     def _process_file(self, file: tuple) -> None:
         """
@@ -108,6 +132,7 @@ class DatasetAggregator:
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
             self.errors[str(e)].append(file_metadata.url)
+        LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
     def _dataset_filename(self, file_metadata: tuple, step: str):
         """
@@ -131,7 +156,7 @@ class DatasetAggregator:
             return
         df = self._read_parse_file(file_metadata, raw_filename)
         if isinstance(df, pd.DataFrame):
-            df.to_parquet(out_filename)
+            df.to_parquet(out_filename, index=False)
 
     def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
         raise NotImplementedError()
@@ -173,16 +198,16 @@ class DatasetAggregator:
         This step is made in polars as the sum of all dataset by be heavy on memory.
         """
         all_files = list(self.data_folder.glob("*/norm.parquet"))
-        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self)}")
+        LOGGER.info(f"Concatenating {len(all_files)} files for {str(self.output_filename)}")
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
-        df.sink_parquet(self.combined_filename)
+        df.sink_parquet(self.output_filename)
 
     @property
     def aggregated_dataset(self):
         """
         Property to return the aggregated dataset.
         """
-        if not self.combined_filename.exists():
+        if not self.output_filename.exists():
             raise RuntimeError("Combined file does not exists. You must run .load() first.")
-        return pd.read_parquet(self.combined_filename)
+        return pd.read_parquet(self.output_filename)

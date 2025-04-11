@@ -1,0 +1,42 @@
+{
+  "marches": {
+    "marche": [
+      {
+        "id": "01",
+        "acheteur": {
+          "id": "a_01"
+        },
+        "montant": 200.0,
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "id_1"
+            }
+          }
+        ]
+      },
+      {
+        "id": "02",
+        "acheteur": {
+          "id": "a_02"
+        },
+        "montant": 20,
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "id_2"
+            }
+          },
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "id_3"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
