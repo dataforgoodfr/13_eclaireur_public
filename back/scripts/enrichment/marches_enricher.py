@@ -44,7 +44,7 @@ class MarchesPublicsEnricher(BaseEnricher):
         return pl.from_pandas(marches_pd).pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
 
     @staticmethod
-    def forme_prix_enrich(cls, marches: pl.DataFrame) -> pl.DataFrame:
+    def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         return marches.with_columns(
                 pl.when(pl.col("formePrix") == "Ferme, actualisable")
                 .then(pl.lit("Ferme et actualisable"))
@@ -71,10 +71,10 @@ class MarchesPublicsEnricher(BaseEnricher):
                 return None
             
     @staticmethod
-    def type_prix_enrich(cls, marches: pl.DataFrame) -> pl.DataFrame:
+    def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
     
         return marches.with_columns(
-                pl.col("typesPrix").map_elements(cls.safe_typePrix_json_load, return_dtype=pl.Utf8)
+                pl.col("typesPrix").map_elements(MarchesPublicsEnricher.safe_typePrix_json_load, return_dtype=pl.Utf8)
             )\
             .with_columns(
                 pl.coalesce(pl.col(["typesPrix", "typePrix", "TypePrix"])).alias("typePrix")
