@@ -87,11 +87,14 @@ class SireneWorkflow:
         self,
         base_df: pl.DataFrame,
         level: str,
-        nomenclature_filter_col: str = "nomenclature_naf",
-        nomenclature_value: str = "NAFRev2",
     ) -> pl.DataFrame:
         """
-        Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df
+        Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df.
+
+        Le code NAF est composé de 5 niveaux :
+        - Niveau 0 : correspond au code total (tous les chiffres du code)
+        - Niveau 1 : correspond à la lettre (dernier caractère du code)
+        - Niveaux 2 à 4 : correspondent respectivement aux 2 à 4 premiers chiffres du code
         """
         column_name = f"naf8_prefix_{level}"
         naf_file_path = self.data_folder / f"naf2008_liste_n{level}.xls"
@@ -105,10 +108,7 @@ class SireneWorkflow:
         naf_polars = naf_polars.with_columns(
             pl.col(column_name).cast(pl.Utf8).str.replace(".", "", literal=True)
         )
-        # Le code NAF est composé de 5 niveaux :
-        # - Niveau 0 : correspond au code total (tous les chiffres du code)
-        # - Niveau 1 : correspond à la lettre (dernier caractère du code)
-        # - Niveaux 2 à 4 : correspondent respectivement aux 2 à 4 premiers chiffres du code
+
         if level == 1:
             slice_func = pl.col("naf8").str.slice(-1)
         else:
