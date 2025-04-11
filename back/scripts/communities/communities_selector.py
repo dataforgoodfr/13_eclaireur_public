@@ -54,6 +54,7 @@ class CommunitiesSelector:
             .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
             .pipe(self.add_postal_code)
+            .pipe(self.add_geo_metrics)
             .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
@@ -126,6 +127,31 @@ class CommunitiesSelector:
         )
 
         return frame.merge(postal_code_df, on="code_insee", how="left")
+
+    @tracker(ulogger=LOGGER, log_start=True)
+    def add_geo_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        Adds area (superficie) and density information to the communities DataFrame by fetching
+        the latest version from data.gouv.fr using the dataset_id.
+        """
+        dataset_id = self.config["geo_metrics"]["dataset_id"]
+        resources_df = DataGouvAPI.dataset_resources(dataset_id)
+        if resources_df.empty:
+            raise ValueError(f"No resources found for dataset ID {dataset_id}")
+
+        # Find the parquet resource
+        resource_url = resources_df.loc[
+            resources_df["format"].str.lower() == "csv", "resource_url"
+        ].iloc[0]
+
+        geo_metrics_df = pd.read_csv(
+            resource_url,
+            delimiter=",",
+            dtype={"code_insee": str},
+            usecols=["code_insee", "superficie_km2", "densite"],
+        ).drop_duplicates(subset=["code_insee"])
+
+        return frame.merge(geo_metrics_df, on="code_insee", how="left")
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
