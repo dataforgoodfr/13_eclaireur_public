@@ -29,8 +29,9 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        marches = cls.forme_prix_enrich(marches)
-        marches = cls.type_prix_enrich(marches)
+        marches = marches\
+            .pipe(cls.forme_prix_enrich)\
+            .pipe(cls.type_prix_enrich)
 
         # do stuff with sirene
         marches_pd = (
@@ -43,26 +44,18 @@ class MarchesPublicsEnricher(BaseEnricher):
         return pl.from_pandas(marches_pd).pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
 
     @staticmethod
-    def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
-        marches = (
-            marches.with_columns(
+    def forme_prix_enrich(cls, marches: pl.DataFrame) -> pl.DataFrame:
+        return marches.with_columns(
                 pl.when(pl.col("formePrix") == "Ferme, actualisable")
                 .then(pl.lit("Ferme et actualisable"))
-                .otherwise(pl.col("formePrix"))
-            )
-            .with_columns(
-                pl.when(pl.col("formePrix") == "")
+                .when(pl.col("formePrix") == "")
                 .then(pl.lit(None))
                 .otherwise(pl.col("formePrix"))
-            )
-            .rename({"formePrix": "forme_prix"})
+                .alias("forme_prix")
         )
 
-        return marches
-
-    @staticmethod
-    def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
-        def safe_typePrix_json_load(x):
+    @staticmethod 
+    def safe_typePrix_json_load(x):
             try:
                 parsed = json.loads(x)
                 if isinstance(parsed, list) and parsed:
@@ -76,20 +69,20 @@ class MarchesPublicsEnricher(BaseEnricher):
                 return None
             except (json.JSONDecodeError, TypeError):
                 return None
-
-        marches = (
-            marches.with_columns(
-                pl.col("typesPrix").map_elements(safe_typePrix_json_load, return_dtype=pl.Utf8)
-            )
+            
+    @staticmethod
+    def type_prix_enrich(cls, marches: pl.DataFrame) -> pl.DataFrame:
+    
+        return marches.with_columns(
+                pl.col("typesPrix").map_elements(cls.safe_typePrix_json_load, return_dtype=pl.Utf8)
+            )\
             .with_columns(
                 pl.coalesce(pl.col(["typesPrix", "typePrix", "TypePrix"])).alias("typePrix")
-            )
+            )\
             .with_columns(
                 pl.when((pl.col("typePrix") == "") | (pl.col("typePrix") == "NC"))
                 .then(pl.lit(None))
                 .otherwise(pl.col("typePrix"))
-            )
-            .rename({"typePrix": "type_prix"})
+            )\
+            .rename({"typePrix": "type_prix"})\
             .drop(["typesPrix", "TypePrix"])
-        )
-        return marches
