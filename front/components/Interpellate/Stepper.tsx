@@ -1,8 +1,8 @@
 type StepperProps = {
   currentStep: number;
-  numberOfSteps: number;
+  numberOfSteps?: number;
 };
-export default function Stepper({ currentStep, numberOfSteps }: StepperProps) {
+export default function Stepper({ currentStep, numberOfSteps = 4 }: StepperProps) {
   const activeColor = (index: number) =>
     currentStep-1 >= index ? 'text-white bg-gray-950' : 'text-gray-600 bg-gray-300';
   const isFinalStep = (index: number) => index === numberOfSteps - 1;

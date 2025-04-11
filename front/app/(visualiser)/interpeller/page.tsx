@@ -11,13 +11,6 @@ import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
 export default function Page() {
-  // const [currentStep, setCurrentStep] = useState(0);
-  const currentStep = 1;
-  const NUMBER_OF_STEPS = 4;
-
-  // const goToNextStep = () =>
-  //   setCurrentStep((prev) => (prev === NUMBER_OF_STEPS - 1 ? prev : prev + 1));
-  // const goToPreviousStep = () => setCurrentStep((prev) => (prev <= 0 ? prev : prev - 1));
 
   const router = useRouter();
   const goToStep1 = async (siren: string) => {
@@ -26,7 +19,7 @@ export default function Page() {
 
   return (
     <section id='interpellation-step1-nocommunity' className='my-16'>
-      <Stepper currentStep={currentStep} numberOfSteps={NUMBER_OF_STEPS} />
+      <Stepper currentStep={1} />
       <article className='my-6 flex flex-col justify-start'>
         <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
         <div className='ml-16 min-w-[400] self-center'>
