@@ -91,7 +91,7 @@ class SireneWorkflow:
         nomenclature_value: str = "NAFRev2",
     ) -> pl.DataFrame:
         """
-        Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df.
+        Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df
         """
         column_name = f"naf8_prefix_{level}"
         naf_file_path = self.data_folder / f"naf2008_liste_n{level}.xls"
