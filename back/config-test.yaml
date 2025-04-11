@@ -7,7 +7,6 @@ ofgl:
   urls_csv: back/tests/inputs/ofgl_urls_ci.csv
   combined_filename: back/tests/data/ofgl/ofgl.parquet
 
-
 communities:
   combined_filename: back/tests/data/communities/communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
