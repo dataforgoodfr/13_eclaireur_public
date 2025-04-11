@@ -115,9 +115,7 @@ class SireneWorkflow:
             slice_func = pl.col("naf8").str.slice(0, level)
 
         base_df = base_df.with_columns(
-            pl.when(pl.col("nomenclature_naf") == "NAFRev2")
-            .then(slice_func)
-            .alias(column_name)
+            pl.when(pl.col("nomenclature_naf") == "NAFRev2").then(slice_func).alias(column_name)
         )
 
         return base_df.join(naf_polars, on=column_name, how="left").drop(column_name)
@@ -140,9 +138,7 @@ class SireneWorkflow:
 
         column_name = f"code_ju_part_{level}"
         base_df = base_df.with_columns(
-            pl.when(pl.col(code_ju_col).is_not_null())
-            .then(slice_func)            
-            .alias(column_name)
+            pl.when(pl.col(code_ju_col).is_not_null()).then(slice_func).alias(column_name)
         )
 
         juridical_polars = categories_ju_data[level - 1]["Code", "Libellé"].rename(
@@ -216,4 +212,3 @@ class SireneWorkflow:
             )
 
         base_df.write_parquet(self.filename)
-
