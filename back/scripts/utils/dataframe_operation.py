@@ -273,18 +273,42 @@ def normalize_identifiant(
 def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
+    if frame[id_col].isnull().all():
+        return frame.assign(**{
+            id_col: None,
+            f"annee{id_col}": None
+        })
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        return frame
+        return frame.assign(**{
+            f"annee{id_col}": frame[id_col].dt.year
+        })
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
-    elif "datetime64" in str(frame[id_col].dtype):
-        dt = frame[id_col].dt.tz_convert("UTC")
     else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst(frame[id_col])).dt.tz_localize(
-            "UTC"
-        )
-    return frame.assign(**{id_col: dt})
+
+        col = frame[id_col]
+        col_str = col.astype(str)
+
+        # Détecte les float/int convertibles
+        col_numeric = pd.to_numeric(col, errors="coerce")
+        float_mask = col_numeric.notna() & (col_numeric % 1 == 0)
+        col_str.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
+        year_only = col_str.str.fullmatch(r"\d{4}")
+        col_str.loc[year_only] += "-01-01"
+        dt = pd.to_datetime(col_str, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
+
+    # Filtrer les dates avant 2000
+    dt = dt.where(dt.dt.year>=2000)
+
+    # Localiser en UTC si pas encore fait
+    if dt.dt.tz is None:
+        dt = dt.dt.tz_localize("UTC")
+
+    return frame.assign(**{
+        id_col: dt,
+        f"annee{id_col}": dt.dt.year
+    })
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
@@ -294,7 +318,6 @@ def is_dayfirst(dts: pd.Series) -> bool:
         return False
     top_format = top_format.index[0]
     return not top_format.startswith("d" * 4)
-
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
