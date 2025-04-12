@@ -52,6 +52,12 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
         )
+        marches = marches.pipe(cls.forme_prix_enrich).pipe(cls.type_prix_enrich)
+
+        # Deduplicate à pipe avec la ligne au dessus quand ce sera prêt
+        marches = marches.pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
+
+        # do stuff with sirene
         marches_pd = (
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
@@ -81,6 +87,32 @@ class MarchesPublicsEnricher(BaseEnricher):
             .otherwise(pl.col("formePrix"))
             .alias("forme_prix")
         ).drop("formePrix")
+
+    @staticmethod
+    def safe_typePrix_json_load(x):
+        try:
+            parsed = json.loads(x)
+            if isinstance(parsed, list) and parsed:
+                return parsed[0]
+            elif isinstance(parsed, dict):
+                type_prix = parsed.get("typePrix")
+                if isinstance(type_prix, list) and type_prix:
+                    return type_prix[0]
+                if isinstance(type_prix, str):
+                    return type_prix
+            return None
+        except (json.JSONDecodeError, TypeError):
+            return
+
+    @staticmethod
+    def set_unique_id(marches: pl.DataFrame) -> pl.DataFrame:
+        return marches.with_columns(
+            pl.concat_str(
+                ["id", "uid", "uuid", "dateNotification", "codeCPV", "titulaire_id"],
+                separator="-",
+                ignore_nulls=True,
+            ).alias("iduiduuiddncpvtid")
+        )
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -319,4 +351,36 @@ class MarchesPublicsEnricher(BaseEnricher):
                 return_dtype=pl.Utf8,
             )
             .alias(col_name)
+        )
+
+    @staticmethod
+    def drop_source_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
+        # Déplucate les MP identiques qui viennent de sources différentes.
+
+        # Dataset of sources by frequency to build priority when deduplicating
+        source_priority = (
+            marches.filter(pl.col("source").is_not_null())
+            .group_by("source")
+            .count()
+            .sort("count", descending=True)
+            .with_row_index(name="priority")
+            .drop("count")
+        )
+
+        # A checker a quel point ça impacte les cas avec modifications non null
+        return (
+            marches.with_columns([pl.col("source").is_null().cast(int).alias("source_is_null")])
+            .join(source_priority, on="source", how="left")
+            .with_columns([pl.col("priority").fill_null(999)])
+            .with_columns(
+                [
+                    pl.col("priority")
+                    .rank("dense", descending=False)
+                    .over("iduiduuiddncpvtid")
+                    .alias("rank")
+                ]
+            )
+            .with_columns([(pl.col("rank") > 1).cast(pl.Int8).alias("is_duplicate")])
+            .filter(pl.col("is_duplicate") == 0)
+            .drop(["is_duplicate", "rank", "priority", "source_is_null"])
         )
