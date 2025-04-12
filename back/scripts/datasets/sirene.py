@@ -83,11 +83,7 @@ class SireneWorkflow:
         xls_url_cat_ju = self._config.get("xls_urls_cat_ju")
         self._download_if_not_exists(xls_url_cat_ju)
 
-    def join_naf_level(
-        self,
-        base_df: pl.DataFrame,
-        level: str,
-    ) -> pl.DataFrame:
+    def join_naf_level(self, base_df: pl.DataFrame, level: str) -> pl.DataFrame:
         """
         Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df.
 
@@ -149,11 +145,7 @@ class SireneWorkflow:
         )
         juridical_polars = juridical_polars.with_columns(pl.col(column_name).cast(pl.Utf8))
 
-        return base_df.join(
-            juridical_polars,
-            on=column_name,
-            how="left",
-        ).drop(column_name)
+        return base_df.join(juridical_polars, on=column_name, how="left").drop(column_name)
 
     def _format_to_parquet(self):
         if self.output_filename.exists():
