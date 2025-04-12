@@ -22,7 +22,7 @@ export default function ErrorPage({ title, description }: ErrorPageProps) {
       <h1 className='text-xl text-gray-700'>{title}</h1>
       <p className='text-gray-800'>{description}</p>
       <Link href={'/'}>
-        <Button className='mt-5'>Retour à l'ddaccueil</Button>
+        <Button className='mt-5'>Retour à l'accueil</Button>
       </Link>
     </div>
   );
