@@ -31,6 +31,9 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         marches = marches.pipe(cls.forme_prix_enrich).pipe(cls.type_prix_enrich)
 
+        # Deduplicate à pipe avec la ligne au dessus quand ce sera prêt
+        marches = marches.pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
+
         # do stuff with sirene
         marches_pd = (
             marches.to_pandas()
@@ -66,7 +69,17 @@ class MarchesPublicsEnricher(BaseEnricher):
                     return type_prix
             return None
         except (json.JSONDecodeError, TypeError):
-            return None
+            return
+
+    @staticmethod
+    def set_unique_id(marches: pl.DataFrame) -> pl.DataFrame:
+        return marches.with_columns(
+            pl.concat_str(
+                ["id", "uid", "uuid", "dateNotification", "codeCPV", "titulaire_id"],
+                separator="-",
+                ignore_nulls=True,
+            ).alias("iduiduuiddncpvtid")
+        )
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -86,4 +99,36 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .rename({"typePrix": "type_prix"})
             .drop(["typesPrix", "TypePrix"])
+        )
+
+    @staticmethod
+    def drop_source_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
+        # Déplucate les MP identiques qui viennent de sources différentes.
+
+        # Dataset of sources by frequency to build priority when deduplicating
+        source_priority = (
+            marches.filter(pl.col("source").is_not_null())
+            .group_by("source")
+            .count()
+            .sort("count", descending=True)
+            .with_row_index(name="priority")
+            .drop("count")
+        )
+
+        # A checker a quel point ça impacte les cas avec modifications non null
+        return (
+            marches.with_columns([pl.col("source").is_null().cast(int).alias("source_is_null")])
+            .join(source_priority, on="source", how="left")
+            .with_columns([pl.col("priority").fill_null(999)])
+            .with_columns(
+                [
+                    pl.col("priority")
+                    .rank("dense", descending=False)
+                    .over("iduiduuiddncpvtid")
+                    .alias("rank")
+                ]
+            )
+            .with_columns([(pl.col("rank") > 1).cast(pl.Int8).alias("is_duplicate")])
+            .filter(pl.col("is_duplicate") == 0)
+            .drop(["is_duplicate", "rank", "priority", "source_is_null"])
         )
