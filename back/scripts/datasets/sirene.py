@@ -203,4 +203,4 @@ class SireneWorkflow:
                 base_df, level, categories_ju_data=categories_ju_data
             )
 
-        base_df.write_parquet(self.filename)
+        base_df.write_parquet(self.output_filename)
