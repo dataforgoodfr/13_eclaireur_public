@@ -22,9 +22,11 @@ communities:
 
   geo_metrics:
     dataset_id: "6745d9ae4524d845d2138193"
+    data_folder: back/data/communities/scrapped_data/geo_metrics
 
   postal_code:
     dataset_id: "545b55e1c751df52de9b6045"
+    data_folder: back/data/communities/scrapped_data/postal_code
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
