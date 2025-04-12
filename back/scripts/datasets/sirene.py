@@ -1,5 +1,6 @@
 import logging
 import tempfile
+import time
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -72,6 +73,7 @@ class SireneWorkflow:
         file_name = url.split("/")[-1]
         file_path = self.data_folder / file_name
         if not file_path.exists():
+            time.sleep(1)
             urllib.request.urlretrieve(url, file_path)
         return file_path
 
