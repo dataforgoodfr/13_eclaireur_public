@@ -30,6 +30,10 @@ EFFECTIF_CODE_TO_EMPLOYEES = {
     "52": 5000,
 }
 
+# Rate limiting configuration
+RATE_LIMIT_DELAY = 1.5  # seconds between requests
+MAX_RETRIES = 3  # number of retries for failed downloads
+
 
 class SireneWorkflow:
     """
@@ -56,6 +60,9 @@ class SireneWorkflow:
         self.input_filename = self.data_folder / "sirene.zip"
         self.output_filename = self.get_output_path(main_config)
 
+        # Track the last download time to enforce rate limiting
+        self._last_download_time = 0
+
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
         if self.output_filename.exists():
@@ -67,15 +74,79 @@ class SireneWorkflow:
     def _fetch_zip(self):
         if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.input_filename)
+        self._download_if_not_exists(self._config["url"], self.input_filename)
 
-    def _download_if_not_exists(self, url: str) -> Path:
-        file_name = url.split("/")[-1]
-        file_path = self.data_folder / file_name
-        if not file_path.exists():
-            time.sleep(1)
-            urllib.request.urlretrieve(url, file_path)
+    def _download_if_not_exists(self, url: str, file_path: Path = None) -> Path:
+        """
+        Download a file from a URL with rate limiting to avoid server throttling.
+
+        Args:
+            url: The URL to download from
+            file_path: Optional path to save the file to. If not provided, will use the filename from the URL.
+
+        Returns:
+            Path to the downloaded file
+        """
+        if file_path is None:
+            file_name = url.split("/")[-1]
+            file_path = self.data_folder / file_name
+
+        if file_path.exists():
+            LOGGER.info(f"File already exists: {file_path}")
+            return file_path
+
+        LOGGER.info(f"Downloading {url} to {file_path}")
+
+        # Enforce rate limiting
+        self._enforce_rate_limit()
+
+        # Try to download with retries
+        for attempt in range(MAX_RETRIES):
+            try:
+                # Create a custom opener with proper headers
+                opener = urllib.request.build_opener()
+                opener.addheaders = [
+                    (
+                        "User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    ),
+                    ("Accept", "*/*"),
+                ]
+                urllib.request.install_opener(opener)
+
+                # Download the file
+                urllib.request.urlretrieve(url, file_path)
+
+                # Update last download time
+                self._last_download_time = time.time()
+
+                LOGGER.info(f"Successfully downloaded {url}")
+                return file_path
+
+            except Exception as e:
+                LOGGER.warning(f"Download attempt {attempt + 1}/{MAX_RETRIES} failed: {e}")
+                if attempt < MAX_RETRIES - 1:
+                    # Wait longer between retries
+                    sleep_time = RATE_LIMIT_DELAY * (attempt + 1)
+                    LOGGER.info(f"Retrying in {sleep_time} seconds...")
+                    time.sleep(sleep_time)
+                else:
+                    LOGGER.error(f"Failed to download {url} after {MAX_RETRIES} attempts")
+                    raise
+
         return file_path
+
+    def _enforce_rate_limit(self):
+        """Enforce a minimum delay between downloads to avoid rate limiting."""
+        current_time = time.time()
+        elapsed = current_time - self._last_download_time
+
+        if elapsed < RATE_LIMIT_DELAY:
+            sleep_time = RATE_LIMIT_DELAY - elapsed
+            LOGGER.info(f"Rate limiting: waiting {sleep_time:.2f} seconds")
+            time.sleep(sleep_time)
+
+        self._last_download_time = time.time()
 
     def _fetch_xls_files(self) -> None:
         xls_links = self._config.get("xls_urls_naf", [])
