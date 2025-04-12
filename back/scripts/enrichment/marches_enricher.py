@@ -10,6 +10,7 @@ from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import normalize_montant
+import json
 
 
 class MarchesPublicsEnricher(BaseEnricher):
