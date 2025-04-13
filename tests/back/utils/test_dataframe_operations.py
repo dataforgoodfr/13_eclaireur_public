@@ -1,7 +1,8 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
+
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     expand_json_columns,
@@ -159,7 +160,6 @@ class TestExpandJsonColumns:
             datetime(2020, 1, 1, tzinfo=timezone.utc),
             2020,
         ),
-        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc), 2019),
         (None, None, None),
         ("", None, None),
@@ -167,15 +167,20 @@ class TestExpandJsonColumns:
         (2020, datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         ("2020", datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         (1900, None, None),
-        (datetime(2020, 2, 1, tzinfo=timezone.utc),datetime(2020, 2, 1, tzinfo=timezone.utc),2020)
+        (
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+            2020,
+        )("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc), 2020),
+        ("06/07/0983", pd.NaT, None),
+        (None, None, None),
+        ("", None, None),
     ],
 )
-
 def test_normalize_date(input_value, expected_output, expected_year_column):
     df = pd.DataFrame({"date": [input_value]})
-    out = normalize_date(df, "date")
-    print("out", out)
-    if expected_output is not None:
+    if not pd.isna(expected_output):
+        out = normalize_date(df, "date")
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(out["date"].iloc[0])
