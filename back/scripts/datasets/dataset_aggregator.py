@@ -183,8 +183,8 @@ class DatasetAggregator:
                     str(x.parent.name) for x in self.data_folder.glob("*/norm.parquet")
                 ],
                 "exists": 1,
-            }
-        )
+            },
+        ).assign(url_hash=lambda df: df["url_hash"].astype(str).where(df["url_hash"].notnull()))
         return list(
             self.files_in_scope.merge(
                 current,
