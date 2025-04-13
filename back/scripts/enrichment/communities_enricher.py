@@ -2,11 +2,13 @@ from pathlib import Path
 import typing
 import polars as pl
 from datetime import datetime
+from datetime import datetime
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.utils.config import get_project_base_path
 
 
@@ -24,7 +26,7 @@ class CommunitiesEnricher(BaseEnricher):
             CommunitiesSelector.get_output_path(main_config),
             SubventionsEnricher.get_output_path(main_config),
             FinancialAccounts.get_output_path(main_config),
-            #  MarchesPublicsEnricher.get_output_path(main_config),
+            MarchesPublicsEnricher.get_output_path(main_config),
         ]
 
     @classmethod
@@ -44,11 +46,7 @@ class CommunitiesEnricher(BaseEnricher):
 
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
-        (
-            communities,
-            subventions,
-            financial,
-        ) = inputs
+        communities, subventions, financial, marche = inputs
 
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
@@ -68,15 +66,9 @@ class CommunitiesEnricher(BaseEnricher):
     @classmethod
     def bareme_subventions(cls, subventions, financial, communities) -> pl.DataFrame:
         subventionsFiltred = subventions.filter(pl.col("annee") > 2016)
+        print(financial.columns)
         subventionsFiltred = subventionsFiltred.with_columns(pl.col("annee").cast(pl.Int64))
         financialFiltred = financial.filter(pl.col("annee") > 2016)
-
-        required_cols = ["region", "dept", "insee_commune"]
-        for col in required_cols:
-            if col not in financialFiltred.columns:
-                financialFiltred = financialFiltred.with_columns(
-                    pl.lit(None, dtype=pl.Utf8).alias("insee_commune")
-                )
 
         financialFiltred = financialFiltred.with_columns(
             pl.when(
