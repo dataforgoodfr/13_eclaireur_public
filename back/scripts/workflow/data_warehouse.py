@@ -29,9 +29,9 @@ class DataWarehouseWorkflow:
 
     def run(self) -> None:
         ElectedOfficialsEnricher.enrich(self._config)
-        CommunitiesEnricher.enrich(self._config)
         SubventionsEnricher.enrich(self._config)
-        MarchesPublicsEnricher.enrich(self._config)
+        # MarchesPublicsEnricher.enrich(self._config)
+        CommunitiesEnricher.enrich(self._config)
 
         self._send_to_postgres()
 
