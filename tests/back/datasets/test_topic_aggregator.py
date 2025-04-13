@@ -46,7 +46,7 @@ class TestTopicAggregator:
                 "datesPeriodeVersement": "2023-11-09",
                 "idRAE": None,
                 "notificationUE": "non",
-                "pourcentageSubvention": 1
+                "pourcentageSubvention": 1,
             }
         )
         inp.to_csv(self.raw_filename, index=False)

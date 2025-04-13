@@ -275,6 +275,7 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
         return frame
     if frame[id_col].isnull().all():
         return frame.assign(**{id_col: pd.NaT, f"annee{id_col}": np.nan})
+
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
         dt = frame[id_col]
         # return frame.assign(**{f"annee{id_col}": frame[id_col].dt.year})
@@ -293,11 +294,10 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     # Filtrer les dates avant 2000
     dt = dt.where(dt.dt.year >= 2000)
 
-    # Localiser en UTC si pas encore fait
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
 
-    return frame.assign(**{id_col: dt, f"annee{id_col}": dt.dt.year})
+    return frame.assign(**{id_col: dt})
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
