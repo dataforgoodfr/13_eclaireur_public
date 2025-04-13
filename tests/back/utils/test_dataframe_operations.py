@@ -152,7 +152,7 @@ class TestExpandJsonColumns:
 
 
 @pytest.mark.parametrize(
-    "input_value,expected_output,expected_year_column",
+    "input_value,expected_output",
     [
         (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
         (datetime(2020, 1, 1, tzinfo=timezone.utc), datetime(2020, 1, 1, tzinfo=timezone.utc)),
@@ -180,12 +180,6 @@ def test_normalize_date(input_value, expected_output):
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(out["date"].iloc[0])
-
-    if expected_year_column is not None:
-        assert out["anneedate"].iloc[0] == expected_year_column
-    else:
-        # Vérifier que l'année est également NaN lorsque l'année attendue est None
-        assert pd.isna(out["anneedate"].iloc[0])
 
 
 class TestIsDayFirst:
