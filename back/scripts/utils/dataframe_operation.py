@@ -299,10 +299,7 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     else:
         dt = dt.dt.tz_convert("UTC")
 
-    return frame.assign(**{
-        id_col: dt,
-        f"annee{id_col}": dt.dt.year
-    })
+    return frame.assign(**{id_col: dt})
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
@@ -312,6 +309,7 @@ def is_dayfirst(dts: pd.Series) -> bool:
         return False
     top_format = top_format.index[0]
     return not top_format.startswith("d" * 4)
+
 
 def expand_json_columns(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
