@@ -70,7 +70,6 @@ class MarchesPublicsEnricher(BaseEnricher):
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
-
         return (
             marches.with_columns(
                 pl.col("typesPrix").map_elements(
