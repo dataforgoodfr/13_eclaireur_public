@@ -274,9 +274,9 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        return frame.assign(**{id_col: None, f"annee{id_col}": None})
+        return frame.assign(**{id_col: None})
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        return frame.assign(**{f"annee{id_col}": frame[id_col].dt.year})
+        return frame
 
     if str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
@@ -298,7 +298,7 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
 
-    return frame.assign(**{id_col: dt, f"annee{id_col}": dt.dt.year})
+    return frame.assign(**{id_col: dt})
 
 
 def is_dayfirst(dts: pd.Series) -> bool:
