@@ -1,7 +1,8 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
+
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     expand_json_columns,
@@ -167,10 +168,13 @@ class TestExpandJsonColumns:
         (2020, datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         ("2020", datetime(2020, 1, 1, tzinfo=timezone.utc), 2020),
         (1900, None, None),
-        (datetime(2020, 2, 1, tzinfo=timezone.utc),datetime(2020, 2, 1, tzinfo=timezone.utc),2020)
+        (
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+            datetime(2020, 2, 1, tzinfo=timezone.utc),
+            2020,
+        ),
     ],
 )
-
 def test_normalize_date(input_value, expected_output, expected_year_column):
     df = pd.DataFrame({"date": [input_value]})
     out = normalize_date(df, "date")
