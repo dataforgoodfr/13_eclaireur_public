@@ -274,11 +274,10 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        return frame.assign(**{id_col: pd.NaT, f"annee{id_col}": np.nan})
+        return frame.assign(**{id_col: pd.NaT})
 
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
         dt = frame[id_col]
-        # return frame.assign(**{f"annee{id_col}": frame[id_col].dt.year})
     elif str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
     else:
