@@ -274,23 +274,21 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        return frame.assign(**{id_col: None, f"annee{id_col}": None})
+        return frame.assign(**{id_col: pd.NaT, f"annee{id_col}": np.nan})
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        return frame.assign(**{f"annee{id_col}": frame[id_col].dt.year})
-
-    if str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col]
+        # return frame.assign(**{f"annee{id_col}": frame[id_col].dt.year})
+    elif str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
     else:
-        col = frame[id_col]
-        col_str = col.astype(str)
+        dt = frame[id_col].astype(str).where(frame[id_col].notnull())
 
-        # Détecte les float/int convertibles
-        col_numeric = pd.to_numeric(col, errors="coerce")
-        float_mask = col_numeric.notna() & (col_numeric % 1 == 0)
-        col_str.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
-        year_only = col_str.str.fullmatch(r"\d{4}")
-        col_str.loc[year_only] += "-01-01"
-        dt = pd.to_datetime(col_str, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
+        year_only = pd.to_numeric(dt, errors="coerce")
+        if year_only.notna().any():
+            year_only = year_only.fillna(0).astype(int).astype(str)
+            dt = year_only + "-01-01"
+
+        dt = pd.to_datetime(dt, dayfirst=is_dayfirst(dt), errors="coerce", utc=True)
 
     # Filtrer les dates avant 2000
     dt = dt.where(dt.dt.year >= 2000)

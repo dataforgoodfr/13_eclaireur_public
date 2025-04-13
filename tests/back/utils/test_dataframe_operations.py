@@ -171,7 +171,8 @@ class TestExpandJsonColumns:
             datetime(2020, 2, 1, tzinfo=timezone.utc),
             datetime(2020, 2, 1, tzinfo=timezone.utc),
             2020,
-        )("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc), 2020),
+        ),
+        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc), 2020),
         ("06/07/0983", pd.NaT, None),
         (None, None, None),
         ("", None, None),
@@ -179,8 +180,8 @@ class TestExpandJsonColumns:
 )
 def test_normalize_date(input_value, expected_output, expected_year_column):
     df = pd.DataFrame({"date": [input_value]})
+    out = normalize_date(df, "date")
     if not pd.isna(expected_output):
-        out = normalize_date(df, "date")
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(out["date"].iloc[0])
