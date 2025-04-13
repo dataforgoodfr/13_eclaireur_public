@@ -46,7 +46,7 @@ class TestTopicAggregator:
                 "datesPeriodeVersement": "2023-11-09",
                 "idRAE": None,
                 "notificationUE": "non",
-                "pourcentageSubvention": 1
+                "pourcentageSubvention": 1,
             }
         )
         inp.to_csv(self.raw_filename, index=False)
@@ -57,7 +57,7 @@ class TestTopicAggregator:
         )
         print(f"Vérification de la sortie : {self.config['combined_filename']}")
 
-        #aggregator.run()
+        aggregator.run()
         out = pd.read_parquet(self.config["combined_filename"])
         print(f"Contenu du fichier Parquet : \n{out}")
         expected = pd.DataFrame(
