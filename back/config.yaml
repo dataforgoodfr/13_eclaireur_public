@@ -20,8 +20,13 @@ communities:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
 
+  geo_metrics:
+    dataset_id: "6745d9ae4524d845d2138193"
+    data_folder: back/data/communities/scrapped_data/geo_metrics
+
   postal_code:
     dataset_id: "545b55e1c751df52de9b6045"
+    data_folder: back/data/communities/scrapped_data/postal_code
 
 
 datagouv_search:
