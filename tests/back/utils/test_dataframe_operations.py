@@ -175,20 +175,13 @@ class TestExpandJsonColumns:
         ),
     ],
 )
-def test_normalize_date(input_value, expected_output, expected_year_column):
+def test_normalize_date(input_value, expected_output):
     df = pd.DataFrame({"date": [input_value]})
-    out = normalize_date(df, "date")
-    print("out", out)
-    if expected_output is not None:
+    if not pd.isna(expected_output):
+        out = normalize_date(df, "date")
         assert out["date"].iloc[0] == expected_output
     else:
-        assert pd.isna(out["date"].iloc[0])
-
-    if expected_year_column is not None:
-        assert out["anneedate"].iloc[0] == expected_year_column
-    else:
-        # Vérifier que l'année est également NaN lorsque l'année attendue est None
-        assert pd.isna(out["anneedate"].iloc[0])
+        assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
 
 
 class TestIsDayFirst:

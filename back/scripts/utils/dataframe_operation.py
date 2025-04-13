@@ -281,6 +281,7 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
     else:
+
         col = frame[id_col]
         col_str = col.astype(str)
 
