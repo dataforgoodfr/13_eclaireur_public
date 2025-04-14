@@ -1,9 +1,9 @@
 'use client';
 
-import { PureComponent, useState } from 'react';
+import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
 import { formatNumber } from '@/utils/utils';
 import { Contrast } from 'lucide-react';
@@ -11,13 +11,10 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Label,
   LabelList,
   Legend,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
-  YAxis,
 } from 'recharts';
 
 type FormattedDataTrends = {

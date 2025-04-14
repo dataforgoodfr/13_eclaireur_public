@@ -1,13 +1,14 @@
-import { Subvention } from '@/app/models/subvention';
+import { SubventionV0 } from '@/app/models/subvention';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type SubventionsParams = {
-  selectors?: (keyof Subvention)[];
-  filters?: Partial<Pick<Subvention, 'attribuant_siren' | 'attribuant_type'>>;
+  selectors?: (keyof SubventionV0)[];
+  filters?: Partial<Pick<SubventionV0, 'attribuant_siren' | 'attribuant_type'>>;
   limit?: number;
+  orderBy?: { direction: 'asc' | 'desc'; column: keyof SubventionV0 };
 };
 
 const TABLE_NAME = DataTable.SubventionsStaging;
@@ -27,7 +28,7 @@ export function createSQLQueryParams(options?: SubventionsParams) {
     return [query, values] as const;
   }
 
-  const { filters, limit } = options;
+  const { filters, limit, orderBy } = options;
 
   const whereConditions: string[] = [];
 
@@ -49,8 +50,13 @@ export function createSQLQueryParams(options?: SubventionsParams) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
+  if (orderBy) {
+    query += ` ORDER BY $${values.length + 1} $${values.length + 2}`;
+    values.push(...[orderBy.column, orderBy.direction]);
+  }
+
   if (limit) {
-    query += ` LIMIT ${values.length + 1}`;
+    query += ` LIMIT $${values.length + 1}`;
     values.push(limit);
   }
 

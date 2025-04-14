@@ -1,5 +1,5 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
@@ -7,7 +7,11 @@ import Top10 from './Top10';
 import Trends from './Trends';
 
 async function getMarchesPublics(siren: string) {
-  const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
+  const marchesPublicsResults = await fetchMarchesPublics({
+    filters: { acheteur_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 10,
+  });
 
   return marchesPublicsResults;
 }
@@ -18,6 +22,12 @@ type FicheMarchesPublics = {
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
+  const test = await fetchMarchesPublics({
+    filters: { acheteur_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 10,
+    orderBy: { direction: 'asc', column: 'montant' },
+  });
 
   return (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>

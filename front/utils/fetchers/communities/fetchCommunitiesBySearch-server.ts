@@ -1,7 +1,11 @@
 import { Community } from '@/app/models/community';
 import { getQueryFromPool } from '@/utils/db';
 
-const TABLE_NAME = 'staging_communities';
+import { DataTable } from '../constants';
+
+// TODO - add back nom_unaccented
+
+const TABLE_NAME = DataTable.Communities;
 
 const ROWS_PER_PAGE = 100;
 
@@ -13,13 +17,13 @@ const ROWS_PER_PAGE = 100;
  */
 export function createSQLQueryParams(query: string, page = 1): [string, (string | number)[]] {
   const limit = page * ROWS_PER_PAGE;
-  const values = [`%${query}%`, `%${query}%`, limit]; // Values for nom, siren, and limit
+  const values = [`%${query}%`, limit]; // Values for nom, siren, and limit
   const querySQL = `
     SELECT nom, siren, type 
     FROM ${TABLE_NAME} 
-    WHERE nom_unaccented ILIKE $1
-      OR siren ILIKE $2 
-    LIMIT $3
+    WHERE nom ILIKE $1
+      OR siren ILIKE $1
+    LIMIT $2
 `;
   return [querySQL, values];
 }
