@@ -23,7 +23,7 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-export function formatNumber(number: number): string {
+export function formatNumber1(number: number): string {
   if (number >= 1000_000_000) {
     return (number / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + ' Md€';
   } else if (number >= 1_000_000) {
@@ -34,3 +34,18 @@ export function formatNumber(number: number): string {
     return number.toLocaleString('fr-FR') + ' €';
   }
 }
+
+export function formatNumber(number: number): string {
+  let options = {
+    notation: "compact" as const,
+    currency: "EUR" as const,
+    style: "currency" as const,
+    maximumFractionDigits: 1,
+  };
+
+  let frenchformatter = new Intl.NumberFormat("fr-FR", options);
+  let FRformattedNumber = frenchformatter.format(number);
+
+  return FRformattedNumber;
+}
+

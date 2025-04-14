@@ -8,36 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Sector, TreeData } from '@/utils/types';
 import { formatNumber } from '@/utils/utils';
-
-type Sector = {
-  name: string;
-  size: number;
-  part: number;
-  pourcentageCategoryTop1: number;
-};
-
-type TreeLeaf = {
-  type: 'leaf';
-  name: string;
-  value: number;
-};
-
-type TreeNode = {
-  type: 'node';
-  value: number;
-  name: string;
-  children: Tree[];
-};
-
-type Tree = TreeNode | TreeLeaf;
 
 type SectorTableProps = {
   topSectors: Sector[];
-  formattedData: Tree;
+  formattedData: TreeData;
   linesDisplayed: number;
   onLoadMore: () => void;
-}
+};
 
 export default function SectorTable({
   topSectors,

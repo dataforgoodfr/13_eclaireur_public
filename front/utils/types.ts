@@ -15,3 +15,28 @@ export enum CommunityType {
   /** Etablissement public territorial */
   EPT = 'EPT',
 }
+
+
+export type YearOption = number | 'All';
+
+export type Sector = {
+  name: string;
+  size: number;
+  part: number;
+  pourcentageCategoryTop1: number;
+};
+
+export type TreeLeaf = {
+  type: 'leaf';
+  name: string;
+  value: number;
+};
+
+export type TreeNode = {
+  type: 'node';
+  value: number;
+  name: string;
+  children: TreeData[];
+};
+
+export type TreeData = TreeNode | TreeLeaf;

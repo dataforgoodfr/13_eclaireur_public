@@ -14,8 +14,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatNumber } from '@/utils/utils';
+import { YearOption } from '@/utils/types';
 
-type YearOption = number | 'All';
 
 function getAvailableYears(data: MarchePublic[]) {
   return [...new Set(data.map((item) => item.datenotification_annee))].sort(
@@ -34,7 +34,7 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
       ? data
       : data.filter((item) => item.datenotification_annee === selectedYear);
 
-  function formatCompanies(input: string): string[] {
+  function formatCompanyNames(input: string): string[] {
     return input
       .replace(/[\[\]]/g, '')
       .split(/',\s*'|",\s*"/)
@@ -77,7 +77,7 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
           {topContractData.map((item, index) => (
             <TableRow key={index}>
               <TableCell className='space-x-1'>
-                {formatCompanies(item.titulaires_liste_noms).map((company, index) => (
+                {formatCompanyNames(item.titulaires_liste_noms).map((company, index) => (
                   <span key={index} className='py-.5 rounded-md bg-neutral-200 px-2'>
                     {company}
                   </span>

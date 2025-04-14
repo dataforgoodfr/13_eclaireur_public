@@ -6,32 +6,11 @@ import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDow
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { TreeData, YearOption } from '@/utils/types';
 import { formatNumber } from '@/utils/utils';
 import * as d3 from 'd3';
 
 import SectorTable from './SectorTable';
-
-type TreeNode = {
-  type: 'node';
-  value: number;
-  name: string;
-  children: Tree[];
-};
-type TreeLeaf = {
-  type: 'leaf';
-  name: string;
-  value: number;
-};
-
-type Tree = TreeNode | TreeLeaf;
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -63,8 +42,6 @@ function generateColorMap(names: string[]): Record<string, string> {
 
   return colorMap;
 }
-
-type YearOption = number | 'All';
 
 function getAvailableYears(data: MarchePublic[]) {
   return [...new Set(data.map((item) => item.datenotification_annee))].sort(
@@ -145,7 +122,7 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
         ? sortedGroupedDataPlusTotal.slice(0, 10 + 10 * linesDisplayed)
         : sortedGroupedDataPlusTotal;
 
-    const formattedData: Tree = {
+    const formattedData: TreeData = {
       type: 'node',
       name: 'boss',
       value: 0,
@@ -159,16 +136,16 @@ export default function Treemap({ data }: { data: MarchePublic[] }) {
     return [formattedData, topSectors];
   }
 
-  const [formattedData, topSectors] = getTopSectors(filteredData) as [Tree, any[]];
+  const [formattedData, topSectors] = getTopSectors(filteredData) as [TreeData, any[]];
 
   const height = 600;
   const width = containerWidth || 1486;
 
   const hierarchy = d3
-    .hierarchy<Tree>(formattedData, (d) => (d.type === 'node' ? d.children : undefined))
+    .hierarchy<TreeData>(formattedData, (d) => (d.type === 'node' ? d.children : undefined))
     .sum((d) => d.value);
 
-  const treeGenerator = d3.treemap<Tree>().size([width, height]).padding(4);
+  const treeGenerator = d3.treemap<TreeData>().size([width, height]).padding(4);
   const root = treeGenerator(hierarchy);
 
   const leafNames = root.leaves().map((leaf) => leaf.data.name);
