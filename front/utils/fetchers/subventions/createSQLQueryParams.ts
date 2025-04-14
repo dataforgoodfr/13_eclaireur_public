@@ -1,14 +1,14 @@
-import { SubventionV0 } from '@/app/models/subvention';
+import { Subvention } from '@/app/models/subvention';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type SubventionsParams = {
-  selectors?: (keyof SubventionV0)[];
-  filters?: Partial<Pick<SubventionV0, 'attribuant_siren' | 'attribuant_type'>>;
+  selectors?: (keyof Subvention)[];
+  filters?: Partial<Pick<Subvention, 'attribuant_siren' | 'attribuant_type'>>;
   limit?: number;
-  orderBy?: { direction: 'asc' | 'desc'; column: keyof SubventionV0 };
+  orderBy?: { direction: 'asc' | 'desc'; column: keyof Subvention };
 };
 
 const TABLE_NAME = DataTable.SubventionsStaging;
