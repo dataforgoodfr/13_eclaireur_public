@@ -11,7 +11,8 @@ export default function MapPage() {
   const [communityType, setCommunityType] = useState(CommunityType.Region);
 
   const { isLoading, data } = useCommunities({
-    filters: { type: communityType, limit: 100, siren: undefined },
+    filters: { type: communityType, siren: undefined },
+    limit: 100,
   });
 
   console.log({ data });
