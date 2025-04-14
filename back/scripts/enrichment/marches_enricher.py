@@ -1,12 +1,14 @@
-from pathlib import Path
+import json
 import typing
+from pathlib import Path
+
 import polars as pl
+
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import normalize_montant
-import json
 
 
 class MarchesPublicsEnricher(BaseEnricher):
@@ -36,7 +38,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
             .assign(
-                montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1)
+                montant=lambda df: df["montant"] / df["count_titulaires"].fillna(1)
             )  # distribute montant evenly when more than one contractor
         )
         return pl.from_pandas(marches_pd).pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
@@ -44,22 +46,22 @@ class MarchesPublicsEnricher(BaseEnricher):
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         return marches.with_columns(
-            pl.when(pl.col("formePrix") == "Ferme, actualisable")
+            pl.when(pl.col("forme_prix") == "Ferme, actualisable")
             .then(pl.lit("Ferme et actualisable"))
-            .when(pl.col("formePrix") == "")
+            .when(pl.col("forme_prix") == "")
             .then(pl.lit(None))
-            .otherwise(pl.col("formePrix"))
+            .otherwise(pl.col("forme_prix"))
             .alias("forme_prix")
         )
 
     @staticmethod
-    def safe_typePrix_json_load(x):
+    def safe_type_prix_json_load(x):
         try:
             parsed = json.loads(x)
             if isinstance(parsed, list) and parsed:
                 return parsed[0]
             elif isinstance(parsed, dict):
-                type_prix = parsed.get("typePrix")
+                type_prix = parsed.get("type_prix")
                 if isinstance(type_prix, list) and type_prix:
                     return type_prix[0]
                 if isinstance(type_prix, str):
@@ -72,18 +74,15 @@ class MarchesPublicsEnricher(BaseEnricher):
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         return (
             marches.with_columns(
-                pl.col("typesPrix").map_elements(
-                    MarchesPublicsEnricher.safe_typePrix_json_load, return_dtype=pl.Utf8
+                pl.col("types_prix").map_elements(
+                    MarchesPublicsEnricher.safe_type_prix_json_load, return_dtype=pl.Utf8
                 )
             )
+            .with_columns(pl.coalesce(pl.col(["types_prix", "type_prix"])).alias("type_prix"))
             .with_columns(
-                pl.coalesce(pl.col(["typesPrix", "typePrix", "TypePrix"])).alias("typePrix")
-            )
-            .with_columns(
-                pl.when((pl.col("typePrix") == "") | (pl.col("typePrix") == "NC"))
+                pl.when((pl.col("type_prix") == "") | (pl.col("type_prix") == "NC"))
                 .then(pl.lit(None))
-                .otherwise(pl.col("typePrix"))
+                .otherwise(pl.col("type_prix"))
             )
-            .rename({"typePrix": "type_prix"})
-            .drop(["typesPrix", "TypePrix"])
+            .drop(["types_prix"])
         )

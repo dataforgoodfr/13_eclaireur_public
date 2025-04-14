@@ -1,5 +1,6 @@
 import re
 import typing
+
 import polars as pl
 
 
@@ -15,7 +16,7 @@ class CPVUtils:
 
     @classmethod
     def add_cpv_labels(
-        cls, frame: pl.DataFrame, cpv_labels: pl.DataFrame, column="codeCPV"
+        cls, frame: pl.DataFrame, cpv_labels: pl.DataFrame, column="code_cpv"
     ) -> pl.DataFrame:
         "Extract the first two and eight digits of the provided CPV column, and add corresponding labels to frame."
         cpv_2_labels, cpv_8_labels = cls._get_cpv_2_and_8_labels(cpv_labels)

@@ -10,6 +10,7 @@ from urllib.request import urlretrieve
 
 import ijson
 import pandas as pd
+from inflection import underscore as to_snake_case
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
@@ -95,7 +96,12 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.select_dtypes(include=["object"]).columns
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
-        return out.assign(**corrected)
+        out = out.assign(**corrected)
+        if "typePrix" in out.columns and "TypePrix" in out.columns:
+            out = out.assign(typePrix=lambda df: df["typePrix"].fillna(df["TypePrix"])).drop(
+                columns=["TypePrix"]
+            )
+        return out.rename(columns=to_snake_case)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def _read_parse_interim(self, raw_filename: Path) -> None:
