@@ -56,7 +56,7 @@ class CommunitiesSelector:
             .pipe(self.add_epci_infos)
             .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
-            .pipe(self.add_geo_metrics)
+            .pipe(self.add_geo_and_postal_metrics)
             .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
@@ -101,9 +101,9 @@ class CommunitiesSelector:
         )
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def add_geo_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def add_geo_and_postal_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
-        Adds area (superficie) and density information to the communities DataFrame by fetching
+        Adds area (superficie), density and postal code to the communities DataFrame by fetching
         the latest version from data.gouv.fr using the dataset_id.
         """
         geo_metrics_filename = self.data_folder / "geo_metrics.parquet"
