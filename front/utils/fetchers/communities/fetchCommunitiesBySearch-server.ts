@@ -15,7 +15,9 @@ const ROWS_PER_PAGE = 100;
  */
 export function createSQLQueryParams(query: string, page = 1): [string, (string | number)[]] {
   const limit = page * ROWS_PER_PAGE;
-  const values = [query, query, `%${query}%`, `%${query}%`, limit]; // exact nom, exact cp, partial nom, partial cp, limit
+  const exactQuery = query;
+  const partialQuery = `%${query}%`;
+  const values = [exactQuery, exactQuery, partialQuery, partialQuery, limit];
   const querySQL = `
     SELECT nom, code_postal, type, siren
     FROM ${TABLE_NAME}
