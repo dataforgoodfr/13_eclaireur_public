@@ -12,7 +12,7 @@ const API_ROUTE = '/api/selected_communities';
 export async function fetchCommunities(options?: CommunitiesOptions): Promise<Community[]> {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const limit = options?.filters?.limit;
+  const limit = options?.limit;
   const type = options?.filters?.type;
 
   const url = new URL(API_ROUTE, baseURL);
