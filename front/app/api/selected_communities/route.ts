@@ -5,6 +5,7 @@ import {
   CommunitiesOptions,
   createSQLQueryParams,
 } from '@/utils/fetchers/communities/createSQLQueryParams';
+import { Pagination } from '@/utils/fetchers/types';
 import { CommunityType } from '@/utils/types';
 
 function mapCommunityType(type: string | null) {
@@ -17,7 +18,7 @@ function mapCommunityType(type: string | null) {
   throw new Error(`Community type is wrong - ${type}`);
 }
 
-async function getDataFromPool(options: CommunitiesOptions) {
+async function getDataFromPool(options: CommunitiesOptions, pagination?: Pagination) {
   const params = createSQLQueryParams(options);
 
   return getQueryFromPool(...params);
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const type = mapCommunityType(searchParams.get('type')) ?? undefined;
     const limit = Number(searchParams.get('limit')) ?? undefined;
+    const page = Number(searchParams.get('page')) ?? undefined;
     const siren = searchParams.get('siren') ?? undefined;
 
     if (isLimitValid(limit)) {
@@ -46,7 +48,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
     }
 
-    const data = await getDataFromPool({ filters: { type, siren }, limit });
+    const pagination =
+      page !== undefined && limit !== undefined
+        ? {
+            limit,
+            page,
+          }
+        : undefined;
+    const data = await getDataFromPool({ filters: { type, siren }, limit }, pagination);
 
     return NextResponse.json(data);
   } catch (error) {

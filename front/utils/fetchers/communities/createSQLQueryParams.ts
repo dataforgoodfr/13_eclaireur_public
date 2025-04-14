@@ -3,6 +3,7 @@ import { Community } from '@/app/models/community';
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
+import { Pagination } from '../types';
 
 export type CommunitiesOptions = {
   selectors?: (keyof Community)[];
@@ -17,7 +18,7 @@ const TABLE_NAME = DataTable.Communities;
  * @param options
  * @returns
  */
-export function createSQLQueryParams(options?: CommunitiesOptions) {
+export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: Pagination) {
   let values: (CommunityType | number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
@@ -49,9 +50,18 @@ export function createSQLQueryParams(options?: CommunitiesOptions) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
-  if (limit) {
+  if (pagination) {
+    query;
+  }
+
+  if (limit && !pagination) {
     query += ` LIMIT $${values.length + 1}`;
     values.push(limit);
+  }
+
+  if (pagination) {
+    query += ` LIMIT $${values.length + 1} OFFSET ($${values.length + 2} - 1) * $${values.length + 1};`;
+    values.push(...[pagination.limit, pagination.page]);
   }
 
   return [query, values] as const;
