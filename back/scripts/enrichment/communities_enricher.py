@@ -66,9 +66,15 @@ class CommunitiesEnricher(BaseEnricher):
     @classmethod
     def bareme_subventions(cls, subventions, financial, communities) -> pl.DataFrame:
         subventionsFiltred = subventions.filter(pl.col("annee") > 2016)
-        print(financial.columns)
         subventionsFiltred = subventionsFiltred.with_columns(pl.col("annee").cast(pl.Int64))
         financialFiltred = financial.filter(pl.col("annee") > 2016)
+
+        required_cols = ["region", "dept", "insee_commune"]
+        for col in required_cols:
+            if col not in financialFiltred.columns:
+                financialFiltred = financialFiltred.with_columns(
+                    pl.lit(None, dtype=pl.Utf8).alias("insee_commune")
+                )
 
         financialFiltred = financialFiltred.with_columns(
             pl.when(
