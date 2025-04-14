@@ -9,7 +9,7 @@ const ROWS_PER_PAGE = 10;
 
 /**
  * Create the SQL query to get the top marches publics by montant
- * @param page starts at 1
+ * @param limit
  * @returns
  */
 export function createSQLQueryParams(limit: number): [string, (string | number)[]] {
@@ -28,11 +28,12 @@ export function createSQLQueryParams(limit: number): [string, (string | number)[
 }
 
 /**
- * Fetch the top subventions by montant (SSR) with pagination
- * @param query
- * @param page starts at 1
+ * Fetch the top marches publics by montant (SSR) with pagination
+ * @param limit
  */
-export async function fetchTopMarchesPublics(limit = ROWS_PER_PAGE): Promise<MarchePublic[]> {
+export async function fetchTopMarchesPublicsByTitulaire(
+  limit = ROWS_PER_PAGE,
+): Promise<MarchePublic[]> {
   const params = createSQLQueryParams(limit);
   const marchesPublics = (await getQueryFromPool(...params)) as MarchePublic[];
 
