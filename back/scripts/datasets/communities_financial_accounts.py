@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
+from back.scripts.utils.dataframe_operation import normalize_date
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,4 +29,7 @@ class FinancialAccounts(DatasetAggregator):
         selected_columns = {
             v: k for k, v in self.columns_mapping[file_metadata.type].dropna().to_dict().items()
         }
-        return df[selected_columns.keys()].rename(columns=selected_columns)
+        df = normalize_date(df, "exercice")
+        df["annee"] = df["exercice"].dt.year
+        cols_to_keep = list(selected_columns.keys()) + ["annee"]
+        return df[cols_to_keep].rename(columns=selected_columns)
