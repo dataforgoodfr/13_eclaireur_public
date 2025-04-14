@@ -82,6 +82,8 @@ class DatasetAggregator:
             json.dump(self.errors, f)
 
     def _process_files(self):
+        files = list(self._remaining_to_normalize())
+        print(f"Nombre de fichiers à traiter : {len(files)}")  # ← ici
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -96,7 +98,6 @@ class DatasetAggregator:
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
-
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
         self._post_process()
