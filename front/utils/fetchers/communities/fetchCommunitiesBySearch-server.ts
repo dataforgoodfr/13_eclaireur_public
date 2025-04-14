@@ -1,7 +1,9 @@
 import { Community } from '@/app/models/community';
 import { getQueryFromPool } from '@/utils/db';
 
-const TABLE_NAME = 'staging_communities';
+import { DataTable } from '../constants';
+
+const TABLE_NAME = DataTable.Communities;
 
 const ROWS_PER_PAGE = 100;
 
@@ -13,14 +15,21 @@ const ROWS_PER_PAGE = 100;
  */
 export function createSQLQueryParams(query: string, page = 1): [string, (string | number)[]] {
   const limit = page * ROWS_PER_PAGE;
-  const values = [`%${query}%`, `%${query}%`, limit]; // Values for nom, siren, and limit
+  const values = [query, query, `%${query}%`, `%${query}%`, limit]; // exact nom, exact cp, partial nom, partial cp, limit
   const querySQL = `
-    SELECT nom, siren, type 
-    FROM ${TABLE_NAME} 
-    WHERE nom_unaccented ILIKE $1
-      OR siren ILIKE $2 
-    LIMIT $3
-`;
+    SELECT nom, code_postal, type, siren
+    FROM ${TABLE_NAME}
+    WHERE unaccent(nom) ILIKE $3
+      OR code_postal::text ILIKE $4
+    ORDER BY
+      CASE
+        WHEN unaccent(nom) = $1 THEN 1
+        WHEN code_postal::text = $2 THEN 2
+        ELSE 3
+      END,
+      unaccent(nom) ASC
+    LIMIT $5
+  `;
   return [querySQL, values];
 }
 
@@ -35,5 +44,7 @@ export async function fetchCommunitiesBySearch(
 ): Promise<Pick<Community, 'nom' | 'siren'>[]> {
   const params = createSQLQueryParams(query, page);
 
-  return getQueryFromPool(...params) as Promise<Pick<Community, 'nom' | 'siren' | 'type'>[]>;
+  return getQueryFromPool(...params) as Promise<
+    Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]
+  >;
 }

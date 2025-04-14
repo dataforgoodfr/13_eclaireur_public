@@ -5,7 +5,7 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '.
 
 type SuggestionsProps = {
   query: string;
-  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function Suggestions({ query, onSelect }: SuggestionsProps) {
@@ -23,7 +23,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandGroup>
             {suggestions?.map((suggestion) => (
               <CommandItem key={suggestion.siren} onSelect={(e) => onSelect(suggestion)}>
-                {suggestion.nom} - {suggestion.type} - {suggestion.siren}
+                {suggestion.nom} - {suggestion.type} - {suggestion.code_postal}
               </CommandItem>
             ))}
           </CommandGroup>
