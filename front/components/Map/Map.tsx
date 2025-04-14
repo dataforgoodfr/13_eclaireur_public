@@ -25,6 +25,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import type { TerritoryData } from './MapLayout';
 
+// TODO data checking:
+// Guyane does not have a department
+// Martinique does not have a department
+// Mayotte does not have a region
+
 type AdminType = 'region' | 'departement' | 'commune';
 
 type HoverInfo = {
@@ -36,6 +41,11 @@ type HoverInfo = {
 
 const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 const MAX_FEATURES_LOAD = 5000;
+const DEFAULT_VIEW_STATE = {
+  longitude: 2.2137,
+  latitude: 46.2276,
+  zoom: 5,
+}
 
 const BASE_MAP_STYLE = {
   version: 8,
@@ -111,11 +121,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
   const [mapReady, setMapReady] = useState(false);
   const [cursor, setCursor] = useState<string>('grab');
   const [viewState, setViewState] = useState<Partial<ViewState>>(
-    selectedTerritoryData?.viewState || {
-      longitude: 2.2137,
-      latitude: 46.2276,
-      zoom: 5,
-    },
+    selectedTerritoryData?.viewState || DEFAULT_VIEW_STATE
   );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -164,7 +170,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
 
       attemptQuery();
     }
-  }, [mapReady]);
+  }, [mapReady, selectedTerritoryData]);
 
   const combineDatasets = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
@@ -366,6 +372,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
           style={{ left: x + 10, top: y + 10 }}
         >
           <div className='text-sm text-gray-600'>Unknown {type}</div>
+          <div className='text-sm text-gray-600'>Unknown {feature.properties.name}</div>
         </div>
       );
     }
@@ -426,7 +433,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             filter={[
               'all',
               ['==', 'level', 1],
-              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+              ['==', 'level_0', territoryFilterCode || 'FR'],
             ]}
             paint={{
               'fill-color': [
@@ -455,7 +462,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             filter={[
               'all',
               ['==', 'level', 2],
-              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+              ['==', 'level_0', territoryFilterCode || 'FR'],
             ]}
             paint={{
               'fill-color': [
@@ -510,7 +517,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             filter={[
               'all',
               ['==', 'level', 1],
-              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+              ['==', 'level_0', territoryFilterCode || 'FR'],
             ]}
             paint={{
               'line-color': 'black',
@@ -529,7 +536,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             filter={[
               'all',
               ['==', 'level', 2],
-              ['==', 'level_0', selectedTerritoryData?.filterCode || 'FR'],
+              ['==', 'level_0', territoryFilterCode || 'FR'],
             ]}
             paint={{
               'line-color': 'black',
