@@ -7,7 +7,6 @@ from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
-from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.utils.config import get_project_base_path
 
 
@@ -25,7 +24,7 @@ class CommunitiesEnricher(BaseEnricher):
             CommunitiesSelector.get_output_path(main_config),
             SubventionsEnricher.get_output_path(main_config),
             FinancialAccounts.get_output_path(main_config),
-            MarchesPublicsEnricher.get_output_path(main_config),
+            #  MarchesPublicsEnricher.get_output_path(main_config),
         ]
 
     @classmethod
@@ -45,7 +44,11 @@ class CommunitiesEnricher(BaseEnricher):
 
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
-        communities, subventions, financial, marche = inputs
+        (
+            communities,
+            subventions,
+            financial,
+        ) = inputs
 
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
