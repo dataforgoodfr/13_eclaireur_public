@@ -12,15 +12,19 @@
  * @returns {number} The corresponding numeric score.
  */
 export default function scoreLetterToNumber(score: string | null | undefined): number {
-    if (!score) return 5 // Default to worst score if null/undefined
-    switch (score) {
-      case 'A': return 1
-      case 'B': return 2
-      case 'C': return 3
-      case 'D': return 4
-      case 'E': return 5
-      default: return 5 // Default to worst score for invalid values
-    }
+  if (!score) return 5; // Default to worst score if null/undefined
+  switch (score) {
+    case 'A':
+      return 1;
+    case 'B':
+      return 2;
+    case 'C':
+      return 3;
+    case 'D':
+      return 4;
+    case 'E':
+      return 5;
+    default:
+      return 5; // Default to worst score for invalid values
   }
-
-  
+}

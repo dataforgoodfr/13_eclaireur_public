@@ -4,7 +4,7 @@ export const DEFAULT_VIEW_STATE = {
   longitude: 2.2137,
   latitude: 46.2276,
   zoom: 5,
-}
+};
 
 export const BASE_MAP_STYLE = {
   version: 8,

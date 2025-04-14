@@ -5,6 +5,23 @@ import type { ViewState } from 'react-map-gl/maplibre';
 
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
 import FranceMap from './Map';
+import MapDataControls from './MapDataControls';
+
+export type ChoroplethDataSource = {
+  name: string;
+  dataName: string;
+};
+
+const choroplethDataSource: Record<string, ChoroplethDataSource> = {
+  subventions_score: {
+    name: 'Subventions Score',
+    dataName: 'subventions_score',
+  },
+  mp_score: {
+    name: 'Marches Public Score',
+    dataName: 'mp_scrore',
+  },
+};
 
 // Define the territory data type
 export type TerritoryData = {
@@ -93,14 +110,18 @@ export const territories: Record<string, TerritoryData> = {
 
 export default function MapLayout() {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('subventions_score');
 
-  // The currently selected territory data or undefined if nothing selected
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
+  const selectedChoroplethData = choroplethDataSource[selectedDataSource];
 
   return (
     <>
       <div className='min-h-screen'>
-        <FranceMap selectedTerritoryData={selectedTerritoryData} />
+        <FranceMap
+          selectedTerritoryData={selectedTerritoryData}
+          selectedChoroplethData={selectedChoroplethData}
+        />
       </div>
       <div>
         <h2>Select France Metropole or Overseas Territory</h2>

@@ -24,96 +24,42 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import type { TerritoryData } from './MapLayout';
+import type { ChoroplethDataSource } from './MapLayout';
+import {
+  BASE_MAP_STYLE,
+  DEFAULT_VIEW_STATE,
+  MAPTILER_API_KEY,
+  MAX_FEATURES_LOAD,
+} from './constants';
+import type { CommunityMaps, HoverInfo } from './types';
+import createCommunityMaps from './utils/createCommunityMaps';
+import enrichFeatureWithData from './utils/enrichFeatureWithData';
+import extractFeaturesByLevel from './utils/extractFeaturesByLevel';
+import { fetchMissingData } from './utils/fetchMissingData';
+import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
+import getCodesToFetch from './utils/getCodesToFetch';
+import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 
 // TODO data checking:
 // Guyane does not have a department
 // Martinique does not have a department
 // Mayotte does not have a region
 
-type AdminType = 'region' | 'departement' | 'commune';
-
-type HoverInfo = {
-  x: number;
-  y: number;
-  feature: any;
-  type: AdminType;
-} | null;
-
-const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
-const MAX_FEATURES_LOAD = 5000;
-const DEFAULT_VIEW_STATE = {
-  longitude: 2.2137,
-  latitude: 46.2276,
-  zoom: 5,
-}
-
-const BASE_MAP_STYLE = {
-  version: 8,
-  sources: {},
-  layers: [
-    {
-      id: 'background',
-      type: 'background',
-      paint: { 'background-color': '#f9f9f9' },
-    },
-  ],
-  glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${MAPTILER_API_KEY}`,
-};
-
-// TODO: Move to separate file
-const mergeFeatureData = (
-  feature: maplibregl.GeoJSONFeature,
-  regions: Community[],
-  departements: Community[],
-  communes: Community[],
-): maplibregl.GeoJSONFeature => {
-  // Create a deep copy of the feature by serializing and deserializing
-  // This is one way to clone a GeoJSONFeature without modifying the original
-  const featureCopy = JSON.parse(JSON.stringify(feature)) as maplibregl.GeoJSONFeature;
-
-  let communityData: Partial<Community> | undefined;
-
-  // Find the appropriate community data based on the feature level
-  if (featureCopy.properties.level === 1) {
-    const featureId = featureCopy.id?.toString().slice(-2);
-    if (featureId) {
-      communityData = regions.find((r) => r.code_insee_region === featureId);
-    }
-  } else if (featureCopy.properties.level === 2) {
-    const featureId = featureCopy.properties.code;
-    if (featureId) {
-      communityData = departements.find((d) => d.code_insee === featureId);
-    }
-  } else if (featureCopy.properties.level === 3) {
-    const featureId = featureCopy.properties.code;
-    if (featureId) {
-      communityData = communes.find((c) => c.code_insee === featureId);
-      if (!communityData) {
-        //  console.log(`No commune data found for code ${featureId}`);
-      }
-    }
-  }
-
-  // Update the properties on the copied feature
-  if (communityData) {
-    featureCopy.properties = {
-      ...featureCopy.properties,
-      ...communityData,
-    };
-  }
-
-  return featureCopy;
-};
-
 interface TerritoryMapProps {
   selectedTerritoryData: TerritoryData | undefined;
+  selectedChoroplethData: ChoroplethDataSource;
 }
 
-export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) {
+export default function FranceMap({
+  selectedTerritoryData,
+  selectedChoroplethData,
+}: TerritoryMapProps) {
   const mapRef = useRef<MapRef>(null);
+  const communityMapsRef = useRef<CommunityMaps | null>(null);
   const regionsRef = useRef<Community[]>([]);
   const departementsRef = useRef<Community[]>([]);
   const communesRef = useRef<Community[]>([]);
+
   const router = useRouter();
   const [fetchedRegionCodes, setFetchedRegionCodes] = useState<Set<string>>(new Set());
   const [fetchedDepartementCodes, setFetchedDepartementCodes] = useState<Set<string>>(new Set());
@@ -121,7 +67,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
   const [mapReady, setMapReady] = useState(false);
   const [cursor, setCursor] = useState<string>('grab');
   const [viewState, setViewState] = useState<Partial<ViewState>>(
-    selectedTerritoryData?.viewState || DEFAULT_VIEW_STATE
+    selectedTerritoryData?.viewState || DEFAULT_VIEW_STATE,
   );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -132,6 +78,22 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
 
   // Get the filter from the selected territory or use default
   const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
+
+  const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
+
+  useEffect(() => {
+    if (
+      regionsRef.current.length > 0 &&
+      departementsRef.current.length > 0 &&
+      communesRef.current.length > 0
+    ) {
+      communityMapsRef.current = createCommunityMaps(
+        regionsRef.current,
+        departementsRef.current,
+        communesRef.current,
+      );
+    }
+  }, [regionsRef.current, departementsRef.current, communesRef.current]);
 
   // Update viewState when selectedTerritoryData changes
   useEffect(() => {
@@ -158,7 +120,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
 
         if (features.length > 0) {
           // Features found, proceed with combining datasets
-          combineDatasets(mapInstance);
+          fetchAndEnrichVisibleFeatures(mapInstance);
         } else if (retryCount < maxRetries) {
           // No features found yet, retry after a delay
           retryCount++;
@@ -167,12 +129,11 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
           console.error('Failed to find features after maximum retries');
         }
       };
-
       attemptQuery();
     }
   }, [mapReady, selectedTerritoryData]);
 
-  const combineDatasets = async (mapInstance: maplibregl.Map) => {
+  const fetchAndEnrichVisibleFeatures = async (mapInstance: maplibregl.Map) => {
     if (!mapInstance) return;
 
     const features = mapInstance.querySourceFeatures('statesData', {
@@ -180,100 +141,75 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
       filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
     });
 
-    const regionsInViewport = features.filter((feature) => feature.properties.level === 1);
-    const departementsInViewport = features.filter((feature) => feature.properties.level === 2);
-    const communesInViewport = features.filter((feature) => feature.properties.level === 3);
+    // break the features into different Admin types
+    const { regions, departments, communes } = extractFeaturesByLevel(features);
 
-    const featuresInViewport =
-      regionsInViewport.length + departementsInViewport.length + communesInViewport.length;
+    const featuresInViewport = regions.length + departments.length + communes.length;
 
     if (featuresInViewport < MAX_FEATURES_LOAD) {
       const regionsCodesToFetch: string[] = [];
       const departementCodesToFetch: string[] = [];
       const communeCodesToFetch: string[] = [];
+
       // TODO: Refactor into funciton
       features.forEach((feature) => {
-        if (feature.properties.level === 1) {
-          const featureId = feature?.id?.toString().slice(-2) || '';
-          const isAlreadyFetched = fetchedRegionCodes.has(featureId);
-          const isInCache = regionsRef.current.find((r) => r.code_insee_region === featureId);
-          if (!isInCache && featureId && !isAlreadyFetched) {
-            regionsCodesToFetch.push(featureId);
-          }
-        } else if (feature.properties.level === 2) {
-          const featureId: string = feature?.properties?.code;
-          const isAlreadyFetched = fetchedDepartementCodes.has(featureId);
-          const isInCache = departementsRef.current.find((d) => d.code_insee === featureId);
-          if (!isInCache && featureId && !isAlreadyFetched) {
-            departementCodesToFetch.push(featureId);
-          }
-        } else if (feature.properties.level === 3) {
-          const featureId = feature.properties.code;
-          const isAlreadyFetched = fetchedCommuneCodes.has(featureId);
-          const isInCache = communesRef.current.find((c) => c.code_insee === featureId);
-          if (!isInCache && featureId && !isAlreadyFetched) {
-            communeCodesToFetch.push(featureId);
-          }
-        }
+        const level = feature.properties.level;
+
+        getCodesToFetch(
+          feature,
+          level,
+          level === 1
+            ? fetchedRegionCodes
+            : level === 2
+              ? fetchedDepartementCodes
+              : fetchedCommuneCodes,
+          level === 1 ? regionsRef : level === 2 ? departementsRef : communesRef,
+          level === 1
+            ? (code) => regionsCodesToFetch.push(code)
+            : level === 2
+              ? (code) => departementCodesToFetch.push(code)
+              : (code) => communeCodesToFetch.push(code),
+        );
       });
 
       setIsLoading(true);
 
-      // Fetch and update Regions
-      if (regionsCodesToFetch.length > 0) {
-        const newRegions = await fetchRegionsByCode(regionsCodesToFetch);
-        regionsRef.current = [...regionsRef.current, ...newRegions];
-        setFetchedRegionCodes((prev) => {
-          const newSet = new Set(prev);
-          regionsCodesToFetch.forEach((code) => newSet.add(code));
-          return newSet;
-        });
-      }
+      await fetchMissingData(
+        regionsCodesToFetch,
+        fetchRegionsByCode,
+        regionsRef,
+        setFetchedRegionCodes,
+      );
 
-      // Fetch and update Departments
-      if (departementCodesToFetch.length > 0) {
-        const newDepartements = await fetchDepartementsByCode(departementCodesToFetch);
-        departementsRef.current = [...departementsRef.current, ...newDepartements];
-        setFetchedDepartementCodes((prev) => {
-          const newSet = new Set(prev);
-          departementCodesToFetch.forEach((code) => newSet.add(code));
-          return newSet;
-        });
-      }
+      await fetchMissingData(
+        departementCodesToFetch,
+        fetchDepartementsByCode,
+        departementsRef,
+        setFetchedDepartementCodes,
+      );
 
-      // Fetch and update Communes
-      if (communeCodesToFetch.length > 0) {
-        const newCommunes = await fetchCommunesByCode(communeCodesToFetch);
-        const processedCommunes = newCommunes.map((commune: Community) => ({
-          ...commune,
-          code: commune.code_insee.toString(),
-        }));
-        communesRef.current = [...communesRef.current, ...processedCommunes];
-        setFetchedCommuneCodes((prev) => {
-          const newSet = new Set(prev);
-          communeCodesToFetch.forEach((code) => newSet.add(code));
-          return newSet;
-        });
-      }
+      await fetchMissingData(
+        communeCodesToFetch,
+        fetchCommunesByCode,
+        communesRef,
+        setFetchedCommuneCodes,
+      );
 
-      // Enrich features with merged data
+      communityMapsRef.current = createCommunityMaps(
+        regionsRef.current,
+        departementsRef.current,
+        communesRef.current,
+      );
+
       features.forEach((feature) => {
-        const level = feature.properties.level;
-        if (level === 1 || level === 2 || level === 3) {
-          const enrichedFeature = mergeFeatureData(
-            feature,
-            regionsRef.current,
-            departementsRef.current,
-            communesRef.current,
-          );
-
-          const population = Number.parseInt(enrichedFeature.properties.population) || 0;
-
-          mapInstance.setFeatureState(
-            { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-            { population },
-          );
-        }
+        const enrichedFeature = enrichFeatureWithData(feature, communityMapsRef.current);
+        mapInstance.setFeatureState(
+          { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
+          {
+            subventions_score: enrichedFeature.subventions_score,
+            population: enrichedFeature.population,
+          },
+        );
       });
 
       setIsLoading(false);
@@ -284,14 +220,13 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
 
   const debouncedQuery = useCallback(
     debounce((mapInstance: maplibregl.Map) => {
-      combineDatasets(mapInstance);
+      fetchAndEnrichVisibleFeatures(mapInstance);
     }, 300),
     [],
   );
 
   const handleMove = (event: any) => {
     setViewState(event.viewState);
-    console.log(event.viewState.zoom);
 
     const mapInstance = mapRef.current?.getMap();
     if (mapInstance) debouncedQuery(mapInstance);
@@ -301,50 +236,22 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
     event.originalEvent.stopPropagation();
     const { features, point } = event;
 
-    if (event.features && event.features.length > 0) {
+    if (features?.length) {
       setCursor('pointer');
+      const feature = features[0];
+      const type = getAdminTypeFromLayerId(feature.layer.id);
+      setHoverInfo({ x: point.x, y: point.y, feature, type });
     } else {
       setCursor('grab');
-    }
-
-    if (!features || features.length === 0) {
       setHoverInfo(null);
-      return;
     }
-    // TODO: create function getFeatureAdminType
-    const feature = features[0];
-    let type: AdminType = 'region';
-    if (feature.layer.id === 'regions') type = 'region';
-    else if (feature.layer.id === 'departements') type = 'departement';
-    else if (feature.layer.id === 'communes') type = 'commune';
-
-    setHoverInfo({ x: point.x, y: point.y, feature, type });
   };
 
   const onClick = (event: MapLayerMouseEvent) => {
-    const { features } = event;
-    if (!features || features.length === 0) return;
+    const feature = event.features?.[0];
+    if (!feature) return;
 
-    const feature = features[0];
-    const props = feature.properties || {};
-    const layerId = feature.layer.id;
-
-    let type: AdminType = 'region';
-    if (layerId === 'communes') type = 'commune';
-    else if (layerId === 'departements') type = 'departement';
-
-    const code = props.code?.toString();
-    const regionCode = feature.id?.toString().slice(-2);
-    let community;
-
-    if (type === 'commune') {
-      community = communesRef.current.find((c) => c.code_insee === code);
-    } else if (type === 'departement') {
-      community = departementsRef.current.find((d) => d.code_insee === code);
-    } else {
-      community = regionsRef.current.find((r) => r.code_insee_region === regionCode);
-    }
-
+    const community = getCommunityDataFromFeature(feature, communityMapsRef.current);
     if (community?.siren) {
       router.push(`/community/${community.siren}`);
     }
@@ -354,40 +261,29 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
-    const props = feature.properties;
-    const regionCode = feature.id.toString().slice(-2);
-    const code = props.code?.toString();
-    let data;
-    if (type === 'commune') data = communesRef.current.find((c) => c.code_insee === code);
-    else if (type === 'departement')
-      data = departementsRef.current.find((d) => d.code_insee === code);
-    // TODO: the tiles data for Alsace does not match the departements in the database
-    // there are two Bas-Rhin (code: 68) and Haut-Rhin (67) which are now code_insee: 67A
-    else data = regionsRef.current.find((r) => r.code_insee_region === regionCode);
-
-    if (!data) {
-      return (
-        <div
-          className='pointer-events-none absolute z-50 rounded-lg bg-white px-3 py-2 text-sm text-gray-900 shadow-md'
-          style={{ left: x + 10, top: y + 10 }}
-        >
-          <div className='text-sm text-gray-600'>Unknown {type}</div>
-          <div className='text-sm text-gray-600'>Unknown {feature.properties.name}</div>
-        </div>
-      );
-    }
+    const data = getCommunityDataFromFeature(feature, communityMapsRef.current);
 
     return (
       <div
         className='pointer-events-none absolute z-50 rounded-lg bg-white px-3 py-2 text-sm text-gray-900 shadow-md'
         style={{ left: x + 10, top: y + 10 }}
       >
-        <div className='font-semibold'>{data.nom}</div>
-        <div className='text-xs text-gray-700'>
-          Population: {data.population?.toLocaleString() ?? 'N/A'}
-        </div>
-        <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
-        <div className='text-xs text-gray-400'>Code: {data.code_insee}</div>
+        {data ? (
+          <>
+            <div className='font-semibold'>{data.nom}</div>
+            <div className='text-xs text-gray-700'>
+              Population: {data.population?.toLocaleString() ?? 'N/A'}
+            </div>
+            <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
+            <div className='text-xs text-gray-400'>Code: {data.code_insee}</div>
+            <div className='text-xs text-gray-400'>subventions_score: {data.subventions_score}</div>
+          </>
+        ) : (
+          <>
+            <div className='text-sm text-gray-600'>Unknown {type}</div>
+            <div className='text-sm text-gray-600'>{feature.properties?.name}</div>
+          </>
+        )}
       </div>
     );
   };
@@ -430,23 +326,23 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             type='fill'
             minzoom={0}
             maxzoom={regionsMaxZoom}
-            filter={[
-              'all',
-              ['==', 'level', 1],
-              ['==', 'level_0', territoryFilterCode || 'FR'],
-            ]}
+            filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
             paint={{
               'fill-color': [
                 'interpolate',
                 ['linear'],
                 // Use a fallback value of 0 when feature-state population is not set
-                ['coalesce', ['feature-state', 'population'], 0],
-                0,
-                '#f2f0f7', // This ensures the default color is light
-                1000000,
-                '#9e9ac8',
-                10000000,
-                '#6a51a3',
+                ['coalesce', ['feature-state', choroplethParameter], 5],
+                1,
+                '#2ca02c', // green
+                2,
+                '#a1d99b', // light green
+                3,
+                '#ffffb2', // yellow
+                4,
+                '#fdae6b', // orange
+                5,
+                '#de2d26', // red
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
@@ -459,22 +355,22 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             type='fill'
             minzoom={regionsMaxZoom}
             maxzoom={departementsMaxZoom}
-            filter={[
-              'all',
-              ['==', 'level', 2],
-              ['==', 'level_0', territoryFilterCode || 'FR'],
-            ]}
+            filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
             paint={{
               'fill-color': [
                 'interpolate',
                 ['linear'],
-                ['coalesce', ['feature-state', 'population'], 0], // Use population from feature state
-                0,
-                '#f2f0f7', // Low population color
-                500000,
-                '#9e9ac8', // Medium population color
-                5000000,
-                '#6a51a3', // High population color
+                ['coalesce', ['feature-state', choroplethParameter], 5],
+                1,
+                '#2ca02c', // green
+                2,
+                '#a1d99b', // light green
+                3,
+                '#ffffb2', // yellow
+                4,
+                '#fdae6b', // orange
+                5,
+                '#de2d26', // red
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
@@ -493,14 +389,17 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
               'fill-color': [
                 'interpolate',
                 ['linear'],
-                // Use a fallback value of 0 when feature-state population is not set
-                ['coalesce', ['feature-state', 'population'], 0],
-                0,
-                '#f2f0f7', // This ensures the default color is light
-                500,
-                '#9e9ac8',
-                1000,
-                '#6a51a3',
+                ['coalesce', ['feature-state', choroplethParameter], 5],
+                1,
+                '#2ca02c', // green
+                2,
+                '#a1d99b', // light green
+                3,
+                '#ffffb2', // yellow
+                4,
+                '#fdae6b', // orange
+                5,
+                '#de2d26', // red
               ],
               'fill-opacity': 0.85,
               'fill-outline-color': '#000',
@@ -514,11 +413,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             type='line'
             minzoom={regionsMaxZoom}
             maxzoom={communesMaxZoom}
-            filter={[
-              'all',
-              ['==', 'level', 1],
-              ['==', 'level_0', territoryFilterCode || 'FR'],
-            ]}
+            filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
             paint={{
               'line-color': 'black',
               'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],
@@ -533,11 +428,7 @@ export default function FranceMap({ selectedTerritoryData }: TerritoryMapProps) 
             type='line'
             minzoom={departementsMaxZoom}
             maxzoom={communesMaxZoom}
-            filter={[
-              'all',
-              ['==', 'level', 2],
-              ['==', 'level_0', territoryFilterCode || 'FR'],
-            ]}
+            filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
             paint={{
               'line-color': 'black',
               'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],

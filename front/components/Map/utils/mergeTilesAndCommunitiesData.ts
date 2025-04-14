@@ -1,5 +1,8 @@
-import { Community } from "@/app/models/community";
-import type { CommunityMaps } from "../types";
+import { Community } from '@/app/models/community';
+
+import type { CommunityMaps } from '../types';
+import { FeatureLevel } from '../types';
+
 /**
  * Merges community data (region, department, or commune) into a GeoJSON tile feature
  * based on its administrative level and unique identifier.
@@ -15,19 +18,10 @@ import type { CommunityMaps } from "../types";
  * @returns {maplibregl.GeoJSONFeature} A new GeoJSON feature with merged properties.
  */
 
-
-
-enum FeatureLevel {
-  Region = 1,
-  Department = 2,
-  Commune = 3
-}
-
 const mergeTilesAndCommunitiesData = (
   feature: maplibregl.GeoJSONFeature,
   communityMaps: CommunityMaps,
 ): maplibregl.GeoJSONFeature => {
-
   const featureCopy = JSON.parse(JSON.stringify(feature)) as maplibregl.GeoJSONFeature;
 
   const level = featureCopy.properties.level;
@@ -45,7 +39,6 @@ const mergeTilesAndCommunitiesData = (
     featureId = featureCopy.properties.code;
     communityData = featureId ? communityMaps.communesByCode[featureId] : undefined;
   }
-
   // Update the properties on the copied feature
   if (communityData) {
     featureCopy.properties = {
@@ -53,8 +46,7 @@ const mergeTilesAndCommunitiesData = (
       ...communityData,
     };
   }
-
   return featureCopy;
 };
 
-export default mergeTilesAndCommunitiesData
+export default mergeTilesAndCommunitiesData;
