@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import FranceMap from '@/components/Map/open-tiles';
 import SelectCommunityType from '@/components/SelectCommunityType';
 import { useCommunities } from '@/utils/hooks/useCommunities';
 import { CommunityType } from '@/utils/types';
@@ -18,7 +19,9 @@ export default function MapPage() {
 
   return (
     <div className='global-margin my-20 flex flex-row gap-x-10'>
-      <div className='min-h-screen'>{/*  <FranceMap /> */}</div>
+      <div className='min-h-screen'>
+        <FranceMap />
+      </div>
       <div>
         <SelectCommunityType onChange={setCommunityType} />
         {isLoading && 'Chargement...'}

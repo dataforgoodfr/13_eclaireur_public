@@ -8,8 +8,7 @@ export type Community = {
   code_insee_departement: string;
   code_insee_region: string;
   categorie: string;
-  // TODO - change back to population
-  population_x: number;
+  population: number;
   latitude: number | null;
   longitude: number | null;
   siren_epci: string;

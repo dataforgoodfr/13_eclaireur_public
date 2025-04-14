@@ -51,7 +51,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
           <TinyCard title={collectivitesLabel} description={community.type} icon={<Layers />} />
           <TinyCard
             title={populationLabel}
-            description={`${community.population_x.toLocaleString()} ${populationUnit}`}
+            description={`${community.population.toLocaleString()} ${populationUnit}`}
             icon={<Users />}
           />
           <TinyCard title={agentsLabel} description={`TODO ${agentsUnit}`} icon={<Landmark />} />

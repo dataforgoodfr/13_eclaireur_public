@@ -11,7 +11,7 @@ async function getCommunity(siren: string) {
 export default async function MiniFicheCommunity({ communitySiren }: { communitySiren: string }) {
   const community = await getCommunity(communitySiren);
   console.log('community => ', community);
-  const { nom, siren, type, population_x: population } = community;
+  const { nom, type, population } = community;
   // TODO : retrieve nom du département
   // TODO : retrieve nom de la région
   return (
@@ -20,7 +20,7 @@ export default async function MiniFicheCommunity({ communitySiren }: { community
         <h3 className='text-2xl font-bold'>{nom}</h3>
         <p>Ville {type}</p>
         <p>Loire-Atlantique (44), Pays-de-la-Loire</p>
-        <p>{community.population_x} habitants</p>
+        <p>{population} habitants</p>
       </article>
     </div>
   );
