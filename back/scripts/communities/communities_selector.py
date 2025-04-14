@@ -56,7 +56,6 @@ class CommunitiesSelector:
             .pipe(self.add_epci_infos)
             .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
-            .pipe(self.add_postal_code)
             .pipe(self.add_geo_metrics)
             .pipe(normalize_column_names)
         )
@@ -102,48 +101,6 @@ class CommunitiesSelector:
         )
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
-        """
-        Adds postal code information to the communities DataFrame by fetching
-        the latest version from data.gouv.fr using the dataset ID.
-        """
-        postal_code_filename = self.data_folder / "postal_code.parquet"
-        if postal_code_filename.exists():
-            LOGGER.info("Loading postal code dataset from local cache")
-            postal_code_df = pd.read_parquet(postal_code_filename)
-            return frame.merge(postal_code_df, on="code_insee", how="left")
-
-        dataset_id = self.config["postal_code_dataset_id"]
-
-        resources_df = DataGouvAPI.dataset_resources(dataset_id)
-        if resources_df.empty:
-            raise ValueError(f"No resources found for dataset ID {dataset_id}")
-
-        resource_url = resources_df.loc[
-            resources_df["format"].str.lower() == "csv", "resource_url"
-        ].iloc[0]
-
-        postal_code_df = (
-            BaseLoader.loader_factory(
-                resource_url,
-                delimiter=";",
-                encoding="latin1",
-                dtype={"#Code_commune_INSEE": str, "Code_postal": str},
-                usecols=["#Code_commune_INSEE", "Code_postal"],
-            )
-            .load()
-            .rename(
-                columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
-            )
-            .drop_duplicates(subset=["code_insee"])[["code_insee", "code_postal"]]
-        )
-
-        LOGGER.info("Saving postal code dataset to local cache")
-        postal_code_df.to_parquet(postal_code_filename)
-
-        return frame.merge(postal_code_df, on="code_insee", how="left")
-
-    @tracker(ulogger=LOGGER, log_start=True)
     def add_geo_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
         Adds area (superficie) and density information to the communities DataFrame by fetching
@@ -172,7 +129,9 @@ class CommunitiesSelector:
                 usecols=["code_insee", "superficie_km2"],
             )
             .load()
-            .drop_duplicates(subset=["code_insee"])[["code_insee", "superficie_km2"]]
+            .drop_duplicates(subset=["code_insee"])[
+                ["code_insee", "superficie_km2", "code_postal"]
+            ]
         )
 
         LOGGER.info("Saving geometrics dataset to local cache")
