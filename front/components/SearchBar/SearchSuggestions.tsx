@@ -23,7 +23,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandGroup>
             {suggestions?.map((suggestion) => (
               <CommandItem key={suggestion.siren} onSelect={(e) => onSelect(suggestion)}>
-                {suggestion.nom} - {suggestion.type} - {suggestion.code_postal}
+                {suggestion.nom} - {suggestion.type} {suggestion.code_postal && (<span>-</span>)} {suggestion.code_postal}
               </CommandItem>
             ))}
           </CommandGroup>
