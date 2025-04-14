@@ -7,7 +7,7 @@ import Top10 from './Top10';
 import Trends from './Trends';
 
 async function getMarchesPublics(siren: string) {
-  const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
+  const marchesPublicsResults = await fetchMarchesPublics({ filters: { acheteur_siren: siren } });
 
   return marchesPublicsResults;
 }
