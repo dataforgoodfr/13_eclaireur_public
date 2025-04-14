@@ -20,8 +20,13 @@ communities:
       path: back/tests/data/geolocator/
       filename: cities_to_geolocate.csv
 
+  geo_metrics:
+    dataset_id: "6745d9ae4524d845d2138193"
+    data_folder: back/data/communities/scrapped_data/geo_metrics
+
   postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+    dataset_id: "545b55e1c751df52de9b6045"
+    data_folder: back/data/communities/scrapped_data/postal_code
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
@@ -79,6 +84,13 @@ sirene:
   data_folder: back/tests/data/sirene
   combined_filename: back/tests/data/sirene/sirene.parquet
   url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
+  xls_urls_naf:
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n2.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n3.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n4.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n5.xls"
+  xls_urls_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
 
 datagouv_api:
   organization_folder: back/tests/data/datagouv_api/organizations
