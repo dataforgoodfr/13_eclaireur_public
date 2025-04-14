@@ -11,9 +11,9 @@ from back.scripts.utils.dataframe_operation import (
     normalize_column_names,
     normalize_identifiant,
 )
+from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
-from back.scripts.utils.datagouv_api import DataGouvAPI
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,6 +36,9 @@ class CommunitiesSelector:
     def __init__(self, main_config):
         self.main_config = main_config
         self.config = main_config[self.get_config_key()]
+
+        self.data_folder = Path(self.config["data_folder"])
+        self.data_folder.mkdir(parents=True, exist_ok=True)
 
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
@@ -104,15 +107,13 @@ class CommunitiesSelector:
         Adds postal code information to the communities DataFrame by fetching
         the latest version from data.gouv.fr using the dataset ID.
         """
-        dataset_id = self.config["postal_code"]["dataset_id"]
-        cache_dir = Path(self.config["postal_code"]["data_folder"])
-        cache_file = cache_dir / "postal_code.parquet"
-
-        # Try to load from cache first
-        if cache_file.exists():
+        postal_code_filename = self.data_folder / "postal_code.parquet"
+        if postal_code_filename.exists():
             LOGGER.info("Loading postal code dataset from local cache")
-            postal_code_df = pd.read_parquet(cache_file)
+            postal_code_df = pd.read_parquet(postal_code_filename)
             return frame.merge(postal_code_df, on="code_insee", how="left")
+
+        dataset_id = self.config["postal_code_dataset_id"]
 
         resources_df = DataGouvAPI.dataset_resources(dataset_id)
         if resources_df.empty:
@@ -134,13 +135,11 @@ class CommunitiesSelector:
             .rename(
                 columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
             )
-            .drop_duplicates(subset=["code_insee"])
+            .drop_duplicates(subset=["code_insee"])[["code_insee", "code_postal"]]
         )
 
-        # Save to cache
         LOGGER.info("Saving postal code dataset to local cache")
-        cache_dir.mkdir(exist_ok=True, parents=True)
-        postal_code_df.to_parquet(cache_file)
+        postal_code_df.to_parquet(postal_code_filename)
 
         return frame.merge(postal_code_df, on="code_insee", how="left")
 
@@ -150,15 +149,13 @@ class CommunitiesSelector:
         Adds area (superficie) and density information to the communities DataFrame by fetching
         the latest version from data.gouv.fr using the dataset_id.
         """
-        dataset_id = self.config["geo_metrics"]["dataset_id"]
-        cache_dir = Path(self.config["geo_metrics"]["data_folder"])
-        cache_file = cache_dir / "geo_metrics.parquet"
-
-        # Try to load from cache first
-        if cache_file.exists():
+        geo_metrics_filename = self.data_folder / "geo_metrics.parquet"
+        if geo_metrics_filename.exists():
             LOGGER.info("Loading geometrics dataset from local cache")
-            geo_metrics_df = pd.read_parquet(cache_file)
+            geo_metrics_df = pd.read_parquet(geo_metrics_filename)
             return frame.merge(geo_metrics_df, on="code_insee", how="left")
+
+        dataset_id = self.config["geo_metrics_dataset_id"]
 
         resources_df = DataGouvAPI.dataset_resources(dataset_id)
         if resources_df.empty:
@@ -172,18 +169,18 @@ class CommunitiesSelector:
             BaseLoader.loader_factory(
                 resource_url,
                 dtype={"code_insee": str},
-                usecols=["code_insee", "superficie_km2", "densite"],
+                usecols=["code_insee", "superficie_km2"],
             )
             .load()
-            .drop_duplicates(subset=["code_insee"])
+            .drop_duplicates(subset=["code_insee"])[["code_insee", "superficie_km2"]]
         )
 
-        # Save to cache
         LOGGER.info("Saving geometrics dataset to local cache")
-        cache_dir.mkdir(exist_ok=True, parents=True)
-        geo_metrics_df.to_parquet(cache_file)
+        geo_metrics_df.to_parquet(geo_metrics_filename)
 
-        return frame.merge(geo_metrics_df, on="code_insee", how="left")
+        return frame.merge(geo_metrics_df, on="code_insee", how="left").assign(
+            densite=lambda df: df["population"].div(df["superficie_km2"])
+        )
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
