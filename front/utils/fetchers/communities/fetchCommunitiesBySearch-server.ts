@@ -17,24 +17,20 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const limit = page * ROWS_PER_PAGE;
   const exactQuery = query;
   const partialQuery = `%${query}%`;
-  const values = [exactQuery, exactQuery, partialQuery, partialQuery, limit];
+  const values = [exactQuery, partialQuery, limit];
+
   const querySQL = `
-    SELECT nom, code_postal, type, siren
+    SELECT nom, code_postal, type, siren,
+           SIMILARITY(LOWER(nom), LOWER($1)) AS similarity_score
     FROM ${TABLE_NAME}
-    WHERE unaccent(nom) ILIKE $3
-      OR code_postal::text ILIKE $4
-    ORDER BY
-      CASE
-        WHEN unaccent(nom) = $1 THEN 1
-        WHEN code_postal::text = $2 THEN 2
-        ELSE 3
-      END,
-      unaccent(nom) ASC
-    LIMIT $5
+    WHERE nom ILIKE $2
+       OR code_postal::text ILIKE $2
+    ORDER BY similarity_score DESC
+    LIMIT $3;
   `;
+
   return [querySQL, values];
 }
-
 /**
  * Fetch the communities (SSR) by query search
  * @param query
