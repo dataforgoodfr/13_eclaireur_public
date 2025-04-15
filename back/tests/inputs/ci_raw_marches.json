@@ -22,8 +22,8 @@
       "acheteur.id": "13000548100010",
       "source": "data.gouv.fr_aife",
       "lieuExecution": {
-        "code": "22",
-        "typeCode": "CODE DEPARTEMENT",
+        "code": "22000",
+        "typeCode": "CODE Postal",
         "nom": "(22) Côtes-d'Armor"
       }
     },
@@ -76,8 +76,8 @@
       "acheteur.id": "26420030400014",
       "source": "data.gouv.fr_aife",
       "lieuExecution": {
-        "code": "42",
-        "typeCode": "CODE DEPARTEMENT",
+        "code": "42000",
+        "typeCode": "CODE Commune",
         "nom": "(42) Loire"
       }
     }
