@@ -102,7 +102,12 @@ class MarchesPublicsEnricher(BaseEnricher):
     @staticmethod
     def type_identifiant_titulaire_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         """
-        Normalize titulaire_typeIdentifiant column from titulaire_typeIdentifiant and titulaire_id.
+        1 - Normalize titulaire_typeIdentifiant column from titulaire_typeIdentifiant
+        - "HORS_UE"                becomes  "HORS-UE",
+        - "TVA_INTRACOMMUNAUTAIRE" becomes  "TVA",
+        - "FRW"                    becomes  "FRWF",
+        - "UE"                     becomes  "TVA",
+        2 - Then we fill in titulaire_typeIdentifiant from titulaire_id if titulaire_id is like a SIRET, SIREN or TVA.
         """
 
         # TODO : Il y a encore environ 600 titulaire_typeIdentifiant avec des titulaire_id non null qui sont null
@@ -116,21 +121,20 @@ class MarchesPublicsEnricher(BaseEnricher):
             "FRW": "FRWF",
             "UE": "TVA",
         }
-        marches = marches
 
-        marches = (
+        return (
             marches.with_columns(
                 pl.when(pl.col("titulaire_typeIdentifiant").is_not_null()).then(
-                    pl.col("titulaire_typeIdentifiant").replace_strict(
-                        mapping, default=pl.col("titulaire_typeIdentifiant")
-                    )
+                    pl.col("titulaire_typeIdentifiant")
+                    .replace_strict(mapping, default=pl.col("titulaire_typeIdentifiant"))
+                    .alias("titulaire_typeIdentifiant")
                 )
             )
             .with_columns(
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
                     & pl.col("titulaire_id").is_not_null()
-                    & pl.col("titulaire_id").str.contains(SIRET_REGEX)
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIRET_REGEX)
                 )
                 .then(pl.lit("SIRET"))
                 .otherwise(pl.col("titulaire_typeIdentifiant"))
@@ -140,7 +144,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
                     & pl.col("titulaire_id").is_not_null()
-                    & pl.col("titulaire_id").str.contains(SIREN_REGEX)
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIREN_REGEX)
                 )
                 .then(pl.lit("SIREN"))
                 .otherwise(pl.col("titulaire_typeIdentifiant"))
@@ -150,7 +154,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
                     & pl.col("titulaire_id").is_not_null()
-                    & pl.col("titulaire_id").str.contains(TVA_REGEX)
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(TVA_REGEX)
                 )
                 .then(pl.lit("TVA"))
                 .otherwise(pl.col("titulaire_typeIdentifiant"))
@@ -158,5 +162,3 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .drop("titulaire_typeIdentifiant")
         )
-
-        return marches
