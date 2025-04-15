@@ -24,7 +24,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandGroup>
             {suggestions?.map((suggestion) => (
               <CommandItem key={suggestion.siren} onSelect={(e) => onSelect(suggestion)}>
-                <Suggestion code_postal={suggestion.code_postal} nom={suggestion.nom} />
+                <Suggestion {...suggestion} />
               </CommandItem>
             ))}
           </CommandGroup>
