@@ -250,6 +250,7 @@ class MarchesPublicsEnricher(BaseEnricher):
         )
 
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
+        print("types : ", types)
 
         return (
             df.with_columns(
