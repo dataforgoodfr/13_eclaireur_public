@@ -44,3 +44,11 @@ export type TreeNode = {
 };
 
 export type TreeData = TreeNode | TreeLeaf;
+
+export type TooltipProps = {
+  visible?: boolean;
+  x: number;
+  y: number;
+  name: string;
+  value: number;
+};

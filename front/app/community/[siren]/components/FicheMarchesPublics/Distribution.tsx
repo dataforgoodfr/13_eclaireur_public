@@ -106,10 +106,8 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed && (
-        <SectorTable data={formattedData}/>
-      )}
-      {/* {!tableDisplayed && <Treemap data={filteredData} />} */}
+      {tableDisplayed && <SectorTable data={formattedData} />}
+      {!tableDisplayed && <Treemap data={formattedData} />}
     </>
   );
 }
