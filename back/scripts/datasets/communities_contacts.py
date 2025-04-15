@@ -6,6 +6,8 @@ from io import StringIO
 from pathlib import Path
 
 import pandas as pd
+import polars as pl
+from polars import col
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.utils.config import get_project_base_path
@@ -38,6 +40,8 @@ class CommunitiesContact:
         self.extracted_dir = self.data_folder / "extracted"
 
     def run(self):
+        print(self.output_filename)
+        print(self.output_filename.exists())
         if self.output_filename.exists():
             return
         if not self.interm_filename.exists():
@@ -54,9 +58,29 @@ class CommunitiesContact:
         with open(self.extracted_dir / filename, "r") as f:
             content = json.load(f)["service"]
             print(type(content))
-            df = pd.read_json(StringIO(json.dumps(content)))
+            df = (
+                pl.from_pandas(pd.read_json(StringIO(json.dumps(content))))
+                .pipe(self.normalize_type)
+                .filter(col("type").is_not_null())
+                .with_columns(
+                    pl.col("pivot").struct[0].alias("code_insee"),
+                )
+                .with_columns(
+                    pl.when(col("code_insee").list.len() > 0).then(
+                        col("code_insee").list[0].str.zfill(5)
+                    )
+                )
+                .pipe(self.normalise_identifiants)
+                .drop(
+                    "plage_ouverture",
+                    "date_diffusion",
+                    "pivot",
+                    "copyright",
+                    "code_insee_commune",
+                )
+            )
         print(df)
-        df.to_parquet(self.output_filename)
+        df.write_parquet(self.output_filename)
 
     def _db_url(self):
         resource_id = (
@@ -71,3 +95,16 @@ class CommunitiesContact:
             .to_list()[0]
         )
         return f"https://www.data.gouv.fr/fr/datasets/r/{resource_id}"
+
+    def normalize_type(self, df: pl.DataFrame) -> pl.DataFrame:
+        matching = {"cg": "DEP", "cr": "REG", "mairie": "COM", "epci": "MET"}
+        return df.explode("pivot").with_columns(
+            pl.col("pivot").struct[1].replace_strict(matching, default=None).alias("type")
+        )
+
+    def normalise_identifiants(self, df: pl.DataFrame) -> pl.DataFrame:
+        cleaned_siren = pl.when(col("siren") != "").then(col("siren").str.zfill(9))
+        cleaned_siret = pl.when(col("siret") != "").then(col("siret").str.zfill(14))
+        return df.with_columns(
+            pl.coalesce(cleaned_siret.str.slice(0, 9), cleaned_siren).alias("siren")
+        ).drop("siret")
