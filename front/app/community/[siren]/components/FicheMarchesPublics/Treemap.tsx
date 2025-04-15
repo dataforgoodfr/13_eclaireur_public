@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { TreeData } from '@/utils/types';
 import { TooltipProps } from '@/utils/types';
 import { formatNumber } from '@/utils/utils';
-import TreemapTooltip from './TreemapTooltip';
 import * as d3 from 'd3';
+
+import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -145,12 +146,7 @@ export default function Treemap({ data }: { data: TreeData }) {
         {allShapes}
       </svg>
       {tooltip.visible && (
-        <TreemapTooltip
-          name={tooltip.name}
-          value={tooltip.value}          
-          x={tooltip.x}
-          y={tooltip.y}
-        />
+        <TreemapTooltip name={tooltip.name} value={tooltip.value} x={tooltip.x} y={tooltip.y} />
       )}
     </div>
   );

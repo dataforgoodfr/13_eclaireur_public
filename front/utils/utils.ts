@@ -38,3 +38,16 @@ export function formatNumber(number: number): string {
   return FRformattedNumber.replace(/\s?€/, "€");
 }
 
+export function formatNumberFrench(number: number): string {
+  let options = {
+    currency: "EUR" as const,
+    style: "currency" as const,
+    maximumFractionDigits: 0,
+  };
+
+  let frenchformatter = new Intl.NumberFormat("fr-FR", options);
+  let FRformattedNumber = frenchformatter.format(number);
+
+  return FRformattedNumber;
+}
+
