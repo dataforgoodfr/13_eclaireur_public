@@ -6,7 +6,6 @@ import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDow
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
 import { formatNumber } from '@/utils/utils';
-import { Contrast } from 'lucide-react';
 import {
   Bar,
   BarChart,
@@ -84,9 +83,6 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          <div className='rounded p-1 hover:bg-neutral-100'>
-            <Contrast className='text-neutral-500' />
-          </div>
           <DownloadSelector />
         </div>
       </div>

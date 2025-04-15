@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
 import Contract from './Contract';
-import Treemap from './Treemap';
+import Distribution from './Distribution';
 import Trends from './Trends';
 
 async function getMarchesPublics(siren: string) {
@@ -30,7 +30,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value='distribution'>
-            <Treemap data={marchesPublics} />
+            <Distribution data={marchesPublics} />
           </TabsContent>
           <TabsContent value='compare'>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
