@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
 import {
   Table,
@@ -28,7 +28,6 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
   const [categoriesDisplayed, setCategoriesDisplayed] = useState(false);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
-  // Selecter
   const availableYears: number[] = getAvailableYears(rawData);
 
   const filteredData =
@@ -82,8 +81,8 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
     return top10Sector;
   }
 
-  const getTop10SectorData = getTop10Sector(filteredData);
-  const getTop10ContractData = getTop10Contract(filteredData);
+  const top10SectorData = getTop10Sector(filteredData);
+  const top10ContractData = getTop10Contract(filteredData);
 
   return (
     <>
@@ -119,13 +118,13 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
           <TableHeader>
             <TableRow>
               <TableHead className='w-[400px]'>Secteur</TableHead>
-              <TableHead className='w-[700px]'>Montant</TableHead>
-              <TableHead className=''></TableHead>
-              <TableHead className='text-right'>Part</TableHead>
+              <TableHead className='w-[500px]'></TableHead>
+              <TableHead className='text-right'>Montant (€)</TableHead>
+              <TableHead className='text-right'>Part (%)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {getTop10SectorData.map((item, index) => (
+            {top10SectorData.map((item, index) => (
               <TableRow key={index}>
                 <TableCell className='font-medium'>{item.name}</TableCell>
                 <TableCell>
@@ -136,8 +135,8 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
                     ></div>
                   </div>
                 </TableCell>
-                <TableCell>{formatNumber(Number(item.size))} €</TableCell>
-                <TableCell className='text-right'>{`${item.part}%`}</TableCell>
+                <TableCell className='text-right'>{formatNumber(Number(item.size))}</TableCell>
+                <TableCell className='text-right'>{item.part}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -149,12 +148,12 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
             <TableRow>
               <TableHead className='w-[300px]'>Titulaires</TableHead>
               <TableHead className=''>Objet</TableHead>
-              <TableHead className='w-[140px] text-right'>Montant</TableHead>
+              <TableHead className='w-[140px] text-right'>Montant (€)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {getTop10ContractData.map((item, index) => (
-              <TableRow key={index}>
+            {top10ContractData.map((item) => (
+              <TableRow key={item.id}>
                 <TableCell className='space-x-1'>
                   {formatCompanies(item.titulaires_liste_noms).map((company, index) => (
                     <span key={index} className='py-.5 rounded-md bg-neutral-200 px-2'>
@@ -162,8 +161,8 @@ export default function Top10({ rawData }: { rawData: MarchePublic[] }) {
                     </span>
                   ))}
                 </TableCell>
-                <TableCell className=''>{item.objet}</TableCell>
-                <TableCell className='text-right'>{formatNumber(Number(item.montant))} €</TableCell>
+                <TableCell>{item.objet}</TableCell>
+                <TableCell className='text-right'>{formatNumber(Number(item.montant))}</TableCell>
               </TableRow>
             ))}
           </TableBody>
