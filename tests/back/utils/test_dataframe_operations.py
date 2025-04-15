@@ -180,6 +180,7 @@ def test_normalize_date(input_value, expected_output):
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+    assert str(out["date"].dtype) == "datetime64[ns, UTC]"
 
 
 class TestIsDayFirst:

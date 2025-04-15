@@ -274,7 +274,9 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        return frame.assign(**{id_col: pd.Timestamp("NaT", tz="UTC")})
+        return frame.assign(
+            **{id_col: pd.Series([pd.NaT] * len(frame), dtype="datetime64[ns, UTC]")}
+        )
 
     if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
         dt = frame[id_col]
