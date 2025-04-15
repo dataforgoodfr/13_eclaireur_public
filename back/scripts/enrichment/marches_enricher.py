@@ -248,7 +248,6 @@ class MarchesPublicsEnricher(BaseEnricher):
                     .alias("lieu_execution_type_code")
                 )
             )
-            .drop("lieu_execution_parsed")
         )
         print(marches.select(pl.col("id"), pl.col("lieuExecution"), pl.col("lieu_execution_parsed")).head())
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
