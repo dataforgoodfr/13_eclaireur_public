@@ -1,5 +1,5 @@
 workflow:
-  save_to_db: False
+  save_to_db: True
   replace_tables: True
 
 ofgl:
