@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
+import { InterpellateFormSchema } from '@/components/Interpellate/types';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import { InterpellateFormSchema } from '@/components/Interpellate/types';
 
 export async function POST(request: Request) {
   const body: unknown = await request.json();

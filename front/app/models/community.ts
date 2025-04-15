@@ -18,6 +18,8 @@ export type Community = {
   effectifs_sup_50: boolean;
   should_publish: boolean;
   outre_mer: boolean;
+  subventions_score: string;
+  mp_score: string;
 };
 
 /** @deprecated use Community instead */
