@@ -6,7 +6,7 @@ import Suggestion from './Suggestion';
 
 type SuggestionsProps = {
   query: string;
-  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'code_postal'>) => void;
 };
 
 export default function Suggestions({ query, onSelect }: SuggestionsProps) {

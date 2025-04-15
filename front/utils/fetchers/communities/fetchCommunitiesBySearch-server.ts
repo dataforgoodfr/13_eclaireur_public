@@ -20,7 +20,7 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const values = [exactQuery, partialQuery, limit];
 
   const querySQL = `
-    SELECT nom, code_postal, type, siren,
+    SELECT nom, code_postal, siren,
            SIMILARITY(LOWER(nom), LOWER($1)) AS similarity_score
     FROM ${TABLE_NAME}
     WHERE nom ILIKE $2
@@ -42,7 +42,5 @@ export async function fetchCommunitiesBySearch(
 ): Promise<Pick<Community, 'nom' | 'siren'>[]> {
   const params = createSQLQueryParams(query, page);
 
-  return getQueryFromPool(...params) as Promise<
-    Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]
-  >;
+  return getQueryFromPool(...params) as Promise<Pick<Community, 'nom' | 'siren' | 'code_postal'>[]>;
 }
