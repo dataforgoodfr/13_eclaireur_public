@@ -28,7 +28,7 @@ class CommunitiesEnricher(BaseEnricher):
         ]
 
     @classmethod
-    def get_output_path(cls, main_config: dict, output_type: str = "communities") -> Path:
+    def get_output_path(cls, main_config: dict, output_type: str = "") -> Path:
         return (
             get_project_base_path()
             / main_config["warehouse"]["data_folder"]
