@@ -11,7 +11,7 @@ async function getSubventions(siren: string) {
   // Ville de Rodez 211202023
   // Ville de Lyon 200046977 
   // Ville de Bordeaux 243300316 
-  const subventionsResults = await fetchSubventions({attribuant_siren : "211202023"});
+  const subventionsResults = await fetchSubventions({attribuant_siren : "200046977"});
 
   return subventionsResults;
 }
@@ -19,7 +19,6 @@ async function getSubventions(siren: string) {
 export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
   console.log(subventions)
-  console.log(siren)
 
   return (
     <>
@@ -34,7 +33,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
             <TabsTrigger value='details'>Classement</TabsTrigger>
           </TabsList>
           <TabsContent value='trends'>
-            <Trends />
+            <Trends data={subventions}/>
           </TabsContent>
           <TabsContent value='distribution'>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
