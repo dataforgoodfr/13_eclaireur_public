@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { TreeData } from  "../../types/interface";;
-import { TooltipProps } from "../../types/interface";
 import { formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
+import { TreeData } from '../../types/interface';
+import { TooltipProps } from '../../types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -51,6 +51,28 @@ export default function Treemap({ data }: { data: TreeData }) {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  function handleOnMouseEnter(e: React.MouseEvent, leaf: any) {
+    setTooltip({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY - 30,
+      name: leaf.data.name,
+      value: leaf.data.value,
+    });
+  }
+
+  function handleOnMouseMove(e: React.MouseEvent) {
+    setTooltip((prev) => ({
+      ...prev,
+      x: e.clientX,
+      y: e.clientY - 30,
+    }));
+  }
+
+  function handleOnMouseLeave() {
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  }
+
   useEffect(() => {
     const resize = () => {
       if (containerRef.current) {
@@ -91,23 +113,9 @@ export default function Treemap({ data }: { data: TreeData }) {
         stroke='transparent'
         fill={colorMap[leaf.data.name]}
         className='transition-all duration-500 ease-in-out'
-        onMouseEnter={(e) => {
-          setTooltip({
-            visible: true,
-            x: e.clientX,
-            y: e.clientY - 30,
-            name: leaf.data.name,
-            value: leaf.data.value,
-          });
-        }}
-        onMouseMove={(e) => {
-          setTooltip((prev) => ({
-            ...prev,
-            x: e.clientX,
-            y: e.clientY - 30,
-          }));
-        }}
-        onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+        onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
+        onMouseMove={(e) => handleOnMouseMove(e)}
+        onMouseLeave={() => handleOnMouseLeave()}
       />
       {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
         <text
@@ -145,9 +153,7 @@ export default function Treemap({ data }: { data: TreeData }) {
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      {tooltip.visible && (
-        <TreemapTooltip {...tooltip} />
-      )}
+      {tooltip.visible && <TreemapTooltip {...tooltip} />}
     </div>
   );
 }
