@@ -32,7 +32,11 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        marches = marches.pipe(cls.forme_prix_enrich).pipe(cls.type_prix_enrich)
+        marches = (
+            marches.pipe(cls.forme_prix_enrich)
+            .pipe(cls.type_prix_enrich)
+            .pipe(cls.type_identifiant_titulaire_enrich)
+        )
 
         # do stuff with sirene
         marches_pd = (
@@ -93,4 +97,68 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .rename({"typePrix": "type_prix"})
             .drop(["typesPrix", "TypePrix"])
+        )
+
+    @staticmethod
+    def type_identifiant_titulaire_enrich(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        1 - Normalize titulaire_typeIdentifiant column from titulaire_typeIdentifiant
+        - "HORS_UE"                becomes  "HORS-UE",
+        - "TVA_INTRACOMMUNAUTAIRE" becomes  "TVA",
+        - "FRW"                    becomes  "FRWF",
+        - "UE"                     becomes  "TVA",
+        2 - Then we fill in titulaire_typeIdentifiant from titulaire_id if titulaire_id is like a SIRET, SIREN or TVA.
+        """
+
+        # TODO : Il y a encore environ 600 titulaire_typeIdentifiant avec des titulaire_id non null qui sont null
+        SIRET_REGEX = r"^\d{14}$"  # 14 chiffres uniquement
+        SIREN_REGEX = r"^\d{9}$"  # 9 chiffres uniquement
+        TVA_REGEX = r"^[A-Z]{2}\d{9,12}$"  # Ex: GB123456789 ou FR12345678912
+
+        mapping = {
+            "HORS_UE": "HORS-UE",
+            "TVA_INTRACOMMUNAUTAIRE": "TVA",
+            "FRW": "FRWF",
+            "UE": "TVA",
+        }
+
+        return (
+            marches.with_columns(
+                pl.when(pl.col("titulaire_typeIdentifiant").is_not_null()).then(
+                    pl.col("titulaire_typeIdentifiant")
+                    .replace_strict(mapping, default=pl.col("titulaire_typeIdentifiant"))
+                    .alias("titulaire_typeIdentifiant")
+                )
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIRET_REGEX)
+                )
+                .then(pl.lit("SIRET"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_typeIdentifiant")
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIREN_REGEX)
+                )
+                .then(pl.lit("SIREN"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_typeIdentifiant")
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(TVA_REGEX)
+                )
+                .then(pl.lit("TVA"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_type_identifiant")
+            )
+            .drop("titulaire_typeIdentifiant")
         )
