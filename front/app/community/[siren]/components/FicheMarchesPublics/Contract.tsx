@@ -13,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatNumber } from '@/utils/utils';
-import { YearOption } from '@/utils/types';
+import { formatCompactPrice } from '@/utils/utils';
 
+import { YearOption } from '../../types/interface';
 
 function getAvailableYears(data: MarchePublic[]) {
   return [...new Set(data.map((item) => item.datenotification_annee))].sort(
@@ -84,7 +84,9 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
                 ))}
               </TableCell>
               <TableCell className=''>{item.objet}</TableCell>
-              <TableCell className='text-right'>{formatNumber(parseFloat(item.montant))}</TableCell>
+              <TableCell className='text-right'>
+                {formatCompactPrice(parseFloat(item.montant))}
+              </TableCell>
               <TableCell className='text-right'>{item.datenotification_annee}</TableCell>
             </TableRow>
           ))}

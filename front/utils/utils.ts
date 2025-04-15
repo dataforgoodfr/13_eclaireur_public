@@ -30,15 +30,7 @@ function formatFrench(value: number, options?: Intl.NumberFormatOptions) {
   return formattedNumber;
 }
 
-export function formatNumber2(value: number, options?: Intl.NumberFormatOptions) {
-  const defaultOptions = {
-    maximumFractionDigits: 2,
-    ...options,
-  } as const;
-  return formatFrench(value, defaultOptions);
-}
-
-export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
+export function formatCompactPrice(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
     notation: "compact",
     currency: "EUR",
@@ -49,22 +41,6 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
 
   return formatFrench(value, defaultOptions).replace(/\s?€/, "€");
 }
-
-export function formatNumberFrench(number: number): string {
-  let options = {
-    currency: "EUR" as const,
-    style: "currency" as const,
-    maximumFractionDigits: 0,
-  };
-
-  let frenchformatter = new Intl.NumberFormat("fr-FR", options);
-  let FRformattedNumber = frenchformatter.format(number);
-
-  return FRformattedNumber;
-}
-
-
-
 
 export function formatPrice(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {

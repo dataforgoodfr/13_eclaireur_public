@@ -5,7 +5,7 @@ import { useState } from 'react';
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import { MarchePublic } from '@/app/models/marche_public';
 import { Switch } from '@/components/ui/switch';
-import { formatNumber } from '@/utils/utils';
+import { formatCompactPrice } from '@/utils/utils';
 import {
   Bar,
   BarChart,
@@ -50,7 +50,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         dominantBaseline='middle'
         fontSize='16'
       >
-        {formatNumber(value)}
+        {formatCompactPrice(value)}
       </text>
     );
   };

@@ -1,5 +1,6 @@
-import { TooltipProps } from '@/utils/types';
-import { formatNumberFrench } from '@/utils/utils';
+import { formatPrice } from '@/utils/utils';
+
+import { TooltipProps } from '../../types/interface';
 
 export default function TreemapTooltip({ visible, x, y, name, value }: TooltipProps) {
   return (
@@ -12,7 +13,7 @@ export default function TreemapTooltip({ visible, x, y, name, value }: TooltipPr
       }}
     >
       <div className='font-bold'>{name}</div>
-      <div>{formatNumberFrench(value)}</div>
+      <div>{formatPrice(value)}</div>
     </div>
   );
 }

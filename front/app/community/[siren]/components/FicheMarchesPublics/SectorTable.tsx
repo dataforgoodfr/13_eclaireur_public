@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { TreeData } from '@/utils/types';
-import { formatNumber } from '@/utils/utils';
+import { formatCompactPrice } from '@/utils/utils';
 
+import { TreeData } from '../../types/interface';
 import PercentageBarCell from './PercentageBarCell';
 
 export default function SectorTable({ data }: { data: TreeData }) {
@@ -46,24 +46,22 @@ export default function SectorTable({ data }: { data: TreeData }) {
             <TableRow key={index}>
               <TableCell className='font-medium'>{item.name}</TableCell>
               <PercentageBarCell value={Number(item.pourcentageCategoryTop1)} />
-              <TableCell>{formatNumber(Number(item.value))}</TableCell>
+              <TableCell>{formatCompactPrice(Number(item.value))}</TableCell>
               <TableCell className='text-right'>{`${item.part}%`}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {data.type === 'node' &&
-        data.children &&
-        data.children.length > 10 + 10 * linesDisplayed && (
-          <div className='flex items-center justify-center pt-6'>
-            <button
-              className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
-              onClick={() => setLinesDisplayed(linesDisplayed + 1)}
-            >
-              Voir plus
-            </button>
-          </div>
-        )}
+      {data.type === 'node' && data.children && data.children.length > 10 + 10 * linesDisplayed && (
+        <div className='flex items-center justify-center pt-6'>
+          <button
+            className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
+            onClick={() => setLinesDisplayed(linesDisplayed + 1)}
+          >
+            Voir plus
+          </button>
+        </div>
+      )}
     </>
   );
 }

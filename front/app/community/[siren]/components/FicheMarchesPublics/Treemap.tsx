@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { TreeData } from '@/utils/types';
-import { TooltipProps } from '@/utils/types';
-import { formatNumber } from '@/utils/utils';
+import { TreeData } from  "../../types/interface";;
+import { TooltipProps } from "../../types/interface";
+import { formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
 import TreemapTooltip from './TreemapTooltip';
@@ -118,7 +118,7 @@ export default function Treemap({ data }: { data: TreeData }) {
           fill='white'
           className='pointer-events-none'
         >
-          {formatNumber(leaf.data.value)}
+          {formatCompactPrice(leaf.data.value)}
         </text>
       )}
       {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
@@ -146,7 +146,7 @@ export default function Treemap({ data }: { data: TreeData }) {
         {allShapes}
       </svg>
       {tooltip.visible && (
-        <TreemapTooltip name={tooltip.name} value={tooltip.value} x={tooltip.x} y={tooltip.y} />
+        <TreemapTooltip {...tooltip} />
       )}
     </div>
   );
