@@ -60,24 +60,20 @@ class CommunitiesContact:
             print(type(content))
             df = (
                 pl.from_pandas(pd.read_json(StringIO(json.dumps(content))))
-                .pipe(self.normalize_type)
-                .filter(col("type").is_not_null())
-                .with_columns(
-                    pl.col("pivot").struct[0].alias("code_insee"),
-                )
-                .with_columns(
-                    pl.when(col("code_insee").list.len() > 0).then(
-                        col("code_insee").list[0].str.zfill(5)
-                    )
-                )
-                .pipe(self.normalise_identifiants)
-                .drop(
-                    "plage_ouverture",
-                    "date_diffusion",
+                .select(
+                    "nom",
                     "pivot",
-                    "copyright",
-                    "code_insee_commune",
+                    "siren",
+                    "siret",
+                    "sve",
+                    "adresse_courriel",
+                    "formulaire_contact",
                 )
+                .pipe(self.parse_pivot)
+                .filter(col("type").is_not_null())
+                .pipe(self.normalise_identifiants)
+                .pipe(self.normalize_contact)
+                .filter(col("contact").is_not_null())
             )
         print(df)
         df.write_parquet(self.output_filename)
@@ -96,10 +92,22 @@ class CommunitiesContact:
         )
         return f"https://www.data.gouv.fr/fr/datasets/r/{resource_id}"
 
-    def normalize_type(self, df: pl.DataFrame) -> pl.DataFrame:
+    def parse_pivot(self, df: pl.DataFrame) -> pl.DataFrame:
         matching = {"cg": "DEP", "cr": "REG", "mairie": "COM", "epci": "MET"}
-        return df.explode("pivot").with_columns(
-            pl.col("pivot").struct[1].replace_strict(matching, default=None).alias("type")
+        return (
+            df.explode("pivot")
+            .with_columns(
+                pl.col("pivot").struct[1].replace_strict(matching, default=None).alias("type")
+            )
+            .with_columns(
+                pl.col("pivot").struct[0].alias("code_insee"),
+            )
+            .with_columns(
+                pl.when(col("code_insee").list.len() > 0).then(
+                    col("code_insee").list[0].str.zfill(5)
+                )
+            )
+            .drop("pivot")
         )
 
     def normalise_identifiants(self, df: pl.DataFrame) -> pl.DataFrame:
@@ -108,3 +116,19 @@ class CommunitiesContact:
         return df.with_columns(
             pl.coalesce(cleaned_siret.str.slice(0, 9), cleaned_siren).alias("siren")
         ).drop("siret")
+
+    def normalize_contact(self, df: pl.DataFrame) -> pl.DataFrame:
+        contacts = ["sve", "adresse_courriel", "formulaire_contact"]
+        return (
+            df.with_columns(pl.concat_list(contacts).list.unique().alias("contact"))
+            .drop(contacts)
+            .explode("contact")
+            .with_columns(
+                pl.when(pl.col("contact").str.contains("@"))
+                .then(pl.lit("MAIL"))
+                .otherwise(
+                    pl.when(col("contact").str.contains("(http|www)")).then(pl.lit("WEB"))
+                )
+                .alias("type_contact")
+            )
+        )
