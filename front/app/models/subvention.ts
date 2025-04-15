@@ -27,7 +27,7 @@ export type Subvention = {
   nombre_subventions: number;
 };
 
-/** @deprecated use Community instead */
+/** @deprecated use Subvention instead */
 export type SubventionV0 = {
   id_postgre: number;
   /** Primary key [char9] */
