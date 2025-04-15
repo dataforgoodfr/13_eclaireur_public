@@ -12,14 +12,14 @@ export type ChoroplethDataSource = {
   dataName: string;
 };
 
-const choroplethDataSource: Record<string, ChoroplethDataSource> = {
+export const choroplethDataSource: Record<string, ChoroplethDataSource> = {
   subventions_score: {
     name: 'Subventions Score',
     dataName: 'subventions_score',
   },
   mp_score: {
     name: 'Marches Public Score',
-    dataName: 'mp_scrore',
+    dataName: 'mp_score',
   },
 };
 
@@ -130,6 +130,12 @@ export default function MapLayout() {
             territories={territories}
             selectedTerritory={selectedTerritory}
             onSelectTerritory={setSelectedTerritory}
+          />
+        </div>
+        <div>
+          <MapDataControls
+            selectedDataSource={selectedDataSource}
+            setSelectedDataSource={setSelectedDataSource}
           />
         </div>
       </div>

@@ -206,6 +206,7 @@ export default function FranceMap({
         mapInstance.setFeatureState(
           { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
           {
+            mp_score: enrichedFeature.mp_score,
             subventions_score: enrichedFeature.subventions_score,
             population: enrichedFeature.population,
           },
