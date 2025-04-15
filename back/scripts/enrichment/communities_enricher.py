@@ -39,8 +39,26 @@ class CommunitiesEnricher(BaseEnricher):
     def enrich(cls, main_config: dict) -> None:
         inputs = list(map(pl.read_parquet, cls.get_input_paths(main_config)))
         communities, bareme = cls._clean_and_enrich(inputs)
-        communities.write_parquet(cls.get_output_path(main_config, output_type=""))
+
+        communities = communities.join(
+            (
+                bareme.filter(
+                    pl.col("scoreSubventions").is_not_null()
+                )  # on vire les lignes inutiles
+                .sort("annee", descending=True)
+                .group_by("siren")
+                .agg(
+                    [
+                        pl.first("scoreSubventions").alias("scoreSubventions"),
+                        pl.first("annee").alias("anneeScoreSub"),
+                    ]
+                )
+            ),
+            on="siren",
+            how="left",
+        )
         bareme.write_parquet(cls.get_output_path(main_config, output_type="_bareme"))
+        communities.write_parquet(cls.get_output_path(main_config, output_type=""))
 
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
@@ -169,7 +187,7 @@ class CommunitiesEnricher(BaseEnricher):
         # Construction du DataFrame final
         tauxPubDict = pl.DataFrame(
             tauxPublication,
-            schema=["nom", "siren", "annee", "subSpent", "subBudg", "taux", "score"],
+            schema=["nom", "siren", "annee", "subSpent", "subBudg", "taux", "scoreSubventions"],
             orient="row",
         ).sort(["siren", "annee"])
 
