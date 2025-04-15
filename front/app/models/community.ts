@@ -9,6 +9,8 @@ export type Community = {
   code_insee_region: string;
   categorie: string;
   population: number;
+  latitude: number | null;
+  longitude: number | null;
   siren_epci: string;
   naf8: string;
   tranche_effectif: number;

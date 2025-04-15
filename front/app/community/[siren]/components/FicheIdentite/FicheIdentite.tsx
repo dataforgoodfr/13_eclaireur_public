@@ -3,6 +3,7 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 
 import { CommunityDetails } from '../CommunityDetails';
 import { FicheCard } from '../FicheCard';
+import NeighboursMap from '../NeighboursMap/NeighboursMap';
 import { TransparencyScores } from '../TransparencyScores/TransparencyScores';
 
 type FicheIdentiteProps = {
@@ -22,8 +23,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
     <FicheCard title={ficheTitle} displayCopyUrl={true}>
       <div className='mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
         <CommunityDetails community={community} />
-        {/** TODO - Add back when lat/long are added in data */}
-        {/* <NeighboursMap community={community} /> */}
+        <NeighboursMap community={community} />
       </div>
       <TransparencyScores scores={scores} trends={trends} />
     </FicheCard>

@@ -1,7 +1,9 @@
-import { CommunityV0 } from '@/app/models/community';
+import { Community } from '@/app/models/community';
 import { getQueryFromPool } from '@/utils/db';
 
-// TODO - replace 'public.selected_communitiestest_indices' by communities table when lat lont are added
+import { DataTable } from '../constants';
+
+const TABLE = DataTable.Communities;
 
 /**
  *
@@ -18,14 +20,14 @@ export function createSQLQueryParams(
   const values = [latitude, longitude, radius * 1000];
 
   const querySQL = `
-  with temp_test as (select cast(REPLACE(latitude, ',', '.') as numeric(10,6))::float as latitude, cast(REPLACE(longitude, ',', '.') as numeric(10,6))::float as longitude, nom
-FROM public.selected_communitiestest_indices
-where not siren = 248500415 and not siren = 0)
+  with temp as (select latitude, longitude, nom
+FROM ${TABLE}
+)
 select latitude, longitude, nom, earth_distance(
         ll_to_earth(latitude, longitude),
         ll_to_earth($1, $2)
     ) as dist
-from temp_test
+from temp
 where earth_distance(
         ll_to_earth(latitude, longitude),
         ll_to_earth($1, $2)
@@ -45,8 +47,10 @@ export async function fetchCommunitiesByRadius(
   latitude: number,
   longitude: number,
   radius: number,
-): Promise<CommunityV0[]> {
+): Promise<Pick<Community, 'nom' | 'latitude' | 'longitude'>[]> {
   const params = createSQLQueryParams(latitude, longitude, radius);
 
-  return getQueryFromPool(...params) as Promise<CommunityV0[]>;
+  return getQueryFromPool(...params) as Promise<
+    Pick<Community, 'nom' | 'latitude' | 'longitude'>[]
+  >;
 }
