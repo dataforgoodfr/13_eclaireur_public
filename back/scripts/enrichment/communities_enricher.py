@@ -42,9 +42,7 @@ class CommunitiesEnricher(BaseEnricher):
 
         communities = communities.join(
             (
-                bareme.filter(
-                    pl.col("scoreSubventions").is_not_null()
-                )  # on vire les lignes inutiles
+                bareme.filter(pl.col("scoreSubventions").is_not_null())
                 .sort("annee", descending=True)
                 .group_by("siren")
                 .agg(
