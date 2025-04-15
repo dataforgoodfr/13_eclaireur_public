@@ -13,7 +13,6 @@ from back.scripts.datasets.constants import (
     TOPIC_IGNORE_EXTRA_REGEX,
 )
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.dataframe_operation import (
@@ -116,30 +115,6 @@ class TopicAggregator(DatasetAggregator):
             .set_index("original_name")["official_name"]
             .to_dict()
         )
-
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
-        """
-        Read a saved raw dataset and transform its columns and type
-        to fit into the official schema.
-
-        Automatically load a dataset into a pandas dataframe, whatever the initial format.
-        A mixture of explicit matching and keyword matching identify the columns of interest
-        and adapt their name.
-        Ensure the correct data type.
-
-        If the process raises an exception, the file is skipped, a message is logged,
-        and the error is added to the errors.csv tracking file.
-        """
-        opts = {"dtype": str} if file_metadata.format == "csv" else {}
-        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
-        try:
-            df = loader.load()
-            if not isinstance(df, pd.DataFrame):
-                LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
-                raise RuntimeError("Unable to load file into a DataFrame")
-            return df.pipe(self._normalize_frame, file_metadata)
-        except Exception as e:
-            self.errors[str(e)].append(raw_filename.parent.name)
 
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """

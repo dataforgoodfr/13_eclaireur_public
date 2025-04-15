@@ -11,6 +11,7 @@ from back.scripts.utils.dataframe_operation import (
     normalize_column_names,
     normalize_identifiant,
 )
+from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
 
@@ -36,6 +37,9 @@ class CommunitiesSelector:
         self.main_config = main_config
         self.config = main_config[self.get_config_key()]
 
+        self.data_folder = Path(self.config["data_folder"])
+        self.data_folder.mkdir(parents=True, exist_ok=True)
+
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
 
@@ -52,7 +56,7 @@ class CommunitiesSelector:
             .pipe(self.add_epci_infos)
             .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
-            .pipe(self.add_postal_code)
+            .pipe(self.add_geo_and_postal_metrics)
             .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
@@ -97,24 +101,45 @@ class CommunitiesSelector:
         )
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def add_geo_and_postal_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
-        Adds postal code information to the communities DataFrame.
+        Adds area (superficie), density and postal code to the communities DataFrame by fetching
+        the latest version from data.gouv.fr using the dataset_id.
         """
-        postal_code_df = (
-            pd.read_csv(
-                self.config["postal_code"]["url"],
-                delimiter=";",
-                encoding="latin1",
-                usecols=["#Code_commune_INSEE", "Code_postal"],
+        geo_metrics_filename = self.data_folder / "geo_metrics.parquet"
+        if geo_metrics_filename.exists():
+            LOGGER.info("Loading geometrics dataset from local cache")
+            geo_metrics_df = pd.read_parquet(geo_metrics_filename)
+            return frame.merge(geo_metrics_df, on="code_insee", how="left")
+
+        dataset_id = self.config["geo_metrics_dataset_id"]
+
+        resources_df = DataGouvAPI.dataset_resources(dataset_id)
+        if resources_df.empty:
+            raise ValueError(f"No resources found for dataset ID {dataset_id}")
+
+        resource_url = resources_df.loc[
+            resources_df["format"].str.lower() == "csv", "resource_url"
+        ].iloc[0]
+
+        geo_metrics_df = (
+            BaseLoader.loader_factory(
+                resource_url,
+                dtype={"code_insee": str},
+                usecols=["code_insee", "superficie_km2"],
             )
-            .rename(
-                columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
-            )
-            .drop_duplicates(subset=["code_insee"])
+            .load()
+            .drop_duplicates(subset=["code_insee"])[
+                ["code_insee", "superficie_km2", "code_postal"]
+            ]
         )
 
-        return frame.merge(postal_code_df, on="code_insee", how="left")
+        LOGGER.info("Saving geometrics dataset to local cache")
+        geo_metrics_df.to_parquet(geo_metrics_filename)
+
+        return frame.merge(geo_metrics_df, on="code_insee", how="left").assign(
+            densite=lambda df: df["population"].div(df["superficie_km2"])
+        )
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (

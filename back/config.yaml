@@ -8,9 +8,10 @@ ofgl:
   combined_filename: back/data/ofgl/ofgl.parquet
 
 communities:
+  data_folder: back/data/communities
   combined_filename: back/data/communities/communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
-  odf_url: file:./back/scripts/datasets/odf.csv
+  odf_url: file:back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
@@ -19,8 +20,8 @@ communities:
     temp_folder:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
-  postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
+
+  geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
 
 
 datagouv_search:
@@ -38,12 +39,9 @@ datagouv_search:
     - subvention.*association
     - subv.*asso
 
-  postal_code:
-    url: https://www.data.gouv.fr/fr/datasets/r/170ec28c-cd4a-4ce4-bac5-f1d8243cd7bb
-
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
-  url: .back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
+  url: ./back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
 search:
   subventions:
@@ -89,7 +87,14 @@ sirene:
   data_folder: back/data/sirene
   combined_filename:  back/data/sirene/sirene.parquet
   url: https://files.data.gouv.fr/insee-sirene/StockUniteLegale_utf8.zip
-
+  xls_urls_naf:
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n2.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n3.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n4.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n5.xls"
+  xls_urls_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
+  
 datagouv_api:
   organization_folder: back/data/datagouv_api/organizations
 
