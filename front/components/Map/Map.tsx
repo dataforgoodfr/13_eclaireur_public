@@ -277,7 +277,8 @@ export default function FranceMap({
             </div>
             <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
             <div className='text-xs text-gray-400'>Code: {data.code_insee}</div>
-            <div className='text-xs text-gray-400'>subventions_score: {data.subventions_score}</div>
+            <div className='text-xs text-gray-400'>Subventions score: {data.subventions_score}</div>
+            <div className='text-xs text-gray-400'>Marches Public score: {data.mp_score}</div>
           </>
         ) : (
           <>
