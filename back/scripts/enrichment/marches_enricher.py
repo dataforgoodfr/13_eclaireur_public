@@ -167,6 +167,17 @@ class MarchesPublicsEnricher(BaseEnricher):
         )
 
     @staticmethod
+    def safe_json_load(x):
+        """Parse le JSON et retourne {} en cas d'erreur."""
+        try:
+            if x and isinstance(x, str) and x.strip() != "":
+                return json.loads(x)
+        except json.JSONDecodeError:
+            # Retourne un dictionnaire vide si le JSON n'est pas valide.
+            return {}
+        return {}
+
+    @staticmethod
     def lieu_execution_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         """
         1 - Parse lieuExecution en 3 champs code, type code et nom
@@ -185,9 +196,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.with_columns(
                 pl.col("lieuExecution")
                 .map_elements(
-                    lambda x: (
-                        json.loads(x) if x and isinstance(x, str) and x.strip() != "" else {}
-                    ),
+                    MarchesPublicsEnricher.safe_json_load,
                     return_dtype=pl.Object,
                 )
                 .alias("lieu_execution_parsed")
