@@ -8,7 +8,7 @@ const enrichFeatureWithData = (feature: any, communityMaps: any) => {
 
   const population = Number.parseInt(enrichedFeature.properties.population);
   const subventions_score = scoreLetterToNumber(enrichedFeature.properties.subventions_score);
-  const mp_score = scoreLetterToNumber(enrichedFeature.properties.mp_score)
+  const mp_score = scoreLetterToNumber(enrichedFeature.properties.mp_score);
 
   return { ...enrichedFeature, population, subventions_score, mp_score };
 };
