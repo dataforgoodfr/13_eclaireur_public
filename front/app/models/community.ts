@@ -18,6 +18,7 @@ export type Community = {
   effectifs_sup_50: boolean;
   should_publish: boolean;
   outre_mer: boolean;
+  code_postal: number | null;
 };
 
 /** @deprecated use Community instead */
