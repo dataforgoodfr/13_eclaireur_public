@@ -21,8 +21,14 @@ class CPVUtils:
         cpv_2_labels, cpv_8_labels = cls._get_cpv_2_and_8_labels(cpv_labels)
         return (
             frame.with_columns(
-                cpv_2=pl.col(column).str.extract(cls._CPV_LEVEL_2_PATTERN),
-                cpv_8=pl.col(column).str.extract(cls._CPV_LEVEL_8_PATTERN),
+                pl.col(column)
+                .cast(pl.Utf8)
+                .str.extract(cls._CPV_LEVEL_2_PATTERN)
+                .alias("cpv_2"),
+                pl.col(column)
+                .cast(pl.Utf8)
+                .str.extract(cls._CPV_LEVEL_8_PATTERN)
+                .alias("cpv_8"),
             )
             .join(cpv_2_labels, how="left", on="cpv_2")
             .join(cpv_8_labels, how="left", on="cpv_8")
