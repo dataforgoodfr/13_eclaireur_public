@@ -1,4 +1,5 @@
 import { Community } from '@/app/models/community';
+import { formatNumber } from '@/utils/utils';
 import { BadgeEuro, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';
@@ -19,13 +20,17 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
       <TinyCard title={collectivitesLabel} description={community.type} icon={<Layers />} />
       <TinyCard
         title={populationLabel}
-        description={`${community.population.toLocaleString()} ${populationUnit}`}
+        description={`${formatNumber(community.population)} ${populationUnit}`}
         icon={<Users />}
       />
-      <TinyCard title={agentsLabel} description={`TODO ${agentsUnit}`} icon={<Landmark />} />
+      <TinyCard
+        title={agentsLabel}
+        description={`${formatNumber(community.tranche_effectif)}  ${agentsUnit}`}
+        icon={<Landmark />}
+      />
       <TinyCard
         title={totalBudgetLabel}
-        description={`${community.population.toLocaleString()} ${populationUnit}`}
+        description={`TODO ${populationUnit}`}
         icon={<BadgeEuro />}
       />
       <TinyCard title={obligationPublicationText} icon={<FileText />} />
