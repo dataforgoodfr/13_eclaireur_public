@@ -1,9 +1,11 @@
-from back.scripts.datasets.marches import MarchesPublicsWorkflow
-from pathlib import Path
-from back.scripts.utils.config_manager import ConfigManager
 import os
+from pathlib import Path
+
 import pandas as pd
 import pandas.testing as pdtesting
+
+from back.scripts.datasets.marches import MarchesPublicsWorkflow
+from back.scripts.utils.config_manager import ConfigManager
 
 FIXTURES_DIRECTORY = Path(__file__).parent / "fixtures"
 CONFIG_TEST_FILEPATH = "back/config-test.yaml"
@@ -41,7 +43,7 @@ def test_marches_public_dataframes():
         direct_df["montant"], pd.Series([500, 40, 40], name="montant")
     )
     pdtesting.assert_series_equal(
-        direct_df["countTitulaires"], pd.Series([1, 2, 2], name="countTitulaires")
+        direct_df["count_titulaires"], pd.Series([1, 2, 2], name="count_titulaires")
     )
     # Remove the interim.json file created by mp workflow
     os.remove(FIXTURES_DIRECTORY / "interim.json")
@@ -59,7 +61,7 @@ def test_marches_public_dataframes():
         nested_df["montant"], pd.Series([200, 20, 20], name="montant")
     )
     pdtesting.assert_series_equal(
-        nested_df["countTitulaires"], pd.Series([1, 2, 2], name="countTitulaires")
+        nested_df["count_titulaires"], pd.Series([1, 2, 2], name="count_titulaires")
     )
     # Remove the interim.json file created by mp workflow
     os.remove(FIXTURES_DIRECTORY / "interim.json")
