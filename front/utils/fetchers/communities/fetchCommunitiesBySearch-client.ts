@@ -10,7 +10,7 @@ const API_ROUTE = '/api/communities_search';
 export async function fetchCommunitiesBySearch(
   query: string,
   page = 1,
-): Promise<Pick<Community, 'nom' | 'siren' | 'type'>[]> {
+): Promise<Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]> {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const url = new URL(API_ROUTE, baseURL);
@@ -24,5 +24,5 @@ export async function fetchCommunitiesBySearch(
     throw new Error('Failed to fetch communities with query ' + query);
   }
 
-  return (await res.json()) as Promise<Pick<Community, 'nom' | 'siren' | 'type'>[]>;
+  return (await res.json()) as Promise<Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]>;
 }
