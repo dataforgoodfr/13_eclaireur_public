@@ -17,6 +17,8 @@ import { formatCompactPrice } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
 
+const ROWS_COUNT = 10;
+
 function getAvailableYears(data: MarchePublic[]) {
   return [...new Set(data.map((item) => item.datenotification_annee))].sort(
     (a: number, b: number) => a - b,
@@ -44,8 +46,8 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
   function getTopContract(data: any[]) {
     const sortedContracts = data.sort((a, b) => Number(b.montant) - Number(a.montant));
     const topContract =
-      sortedContracts.length > 10 + 10 * linesDisplayed
-        ? sortedContracts.slice(0, 10 + 10 * linesDisplayed)
+      sortedContracts.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed
+        ? sortedContracts.slice(0, ROWS_COUNT + ROWS_COUNT * linesDisplayed)
         : sortedContracts;
 
     return topContract;
@@ -92,7 +94,7 @@ export default function Top10({ data }: { data: MarchePublic[] }) {
           ))}
         </TableBody>
       </Table>
-      {filteredData.length > 10 + 10 * linesDisplayed && (
+      {filteredData.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed && (
         <div className='flex items-center justify-center pt-6'>
           <button
             className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
