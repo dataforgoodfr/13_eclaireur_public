@@ -129,6 +129,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .with_columns(
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
                     & pl.col("titulaire_id").str.contains(SIRET_REGEX)
                 )
                 .then(pl.lit("SIRET"))
@@ -138,6 +139,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .with_columns(
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
                     & pl.col("titulaire_id").str.contains(SIREN_REGEX)
                 )
                 .then(pl.lit("SIREN"))
@@ -147,6 +149,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .with_columns(
                 pl.when(
                     pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
                     & pl.col("titulaire_id").str.contains(TVA_REGEX)
                 )
                 .then(pl.lit("TVA"))
