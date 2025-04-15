@@ -65,8 +65,8 @@ export default function MapWithCityMarkers({ center, cities }: MapWithCityMarker
       ref={mapRef}
       initialViewState={{
         ...initialViewState,
-        longitude: center[0],
-        latitude: center[1],
+        latitude: center[0],
+        longitude: center[1],
       }}
       mapStyle={MAP_STYLE_URL}
       style={style}
