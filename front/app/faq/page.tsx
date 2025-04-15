@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+
+export const metadata: Metadata = {
+  title: 'FAQ',
+  description: 'Foire aux questions',
+};
 
 export default function page() {
   return (
