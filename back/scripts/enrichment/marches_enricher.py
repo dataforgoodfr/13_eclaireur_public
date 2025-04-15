@@ -192,6 +192,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             "franche-comte": "code departement",
         }
 
+        print(marches.select(pl.col("id"), pl.col("lieuExecution")).head())
+
         df = (
             marches.with_columns(
                 pl.col("lieuExecution")
@@ -251,7 +253,7 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
         print("types : ", types)
-
+        
         return (
             df.with_columns(
                 [
