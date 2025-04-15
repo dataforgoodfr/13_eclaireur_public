@@ -168,7 +168,7 @@ class TestExpandJsonColumns:
             datetime(2020, 2, 1, tzinfo=timezone.utc),
         ),
         ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
-        ("06/07/0983", pd.NaT),
+        ("06/07/0983", None),
         (None, None),
         ("", None),
     ],
