@@ -14,13 +14,23 @@ const tabs = {
 };
 
 async function getMarchesPublics(siren: string) {
-  const marchesPublicsResults = await fetchMarchesPublics({ filters: { acheteur_siren: siren } });
+  const marchesPublicsResults = await fetchMarchesPublics({
+    filters: { acheteur_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 10,
+  });
 
   return marchesPublicsResults;
 }
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
+  const test = await fetchMarchesPublics({
+    filters: { acheteur_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 10,
+    orderBy: { direction: 'asc', column: 'montant' },
+  });
 
   return (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
