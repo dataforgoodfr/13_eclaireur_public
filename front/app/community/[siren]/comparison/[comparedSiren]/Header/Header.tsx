@@ -7,7 +7,7 @@ type FicheHeaderProps = {
   community2: Community;
 };
 
-const decriptionText = `Comparer les dernières données de dépenses publiques de vos collectivités locales.`;
+const descriptionText = `Comparer les dernières données de dépenses publiques de vos collectivités locales.`;
 
 export function Header({ community, community2 }: FicheHeaderProps) {
   // TODO - get and show postal code
@@ -21,7 +21,7 @@ export function Header({ community, community2 }: FicheHeaderProps) {
       <div className='flex-1 text-center'>
         <p className='text-xl font-bold'>{title}</p>
         <p className='mb-4 text-gray-500'>{lastUpdateText}</p>
-        <p>{decriptionText}</p>
+        <p>{descriptionText }</p>
       </div>
     </div>
   );
