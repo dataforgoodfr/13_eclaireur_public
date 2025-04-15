@@ -11,6 +11,9 @@ import {
 import { Sector, TreeData } from '@/utils/types';
 import { formatNumber } from '@/utils/utils';
 
+import PercentageBarCell from './PercentageBarCell';
+import { TestContext } from 'node:test';
+
 type SectorTableProps = {
   topSectors: Sector[];
   formattedData: TreeData;
@@ -39,14 +42,7 @@ export default function SectorTable({
           {topSectors.map((item, index) => (
             <TableRow key={index}>
               <TableCell className='font-medium'>{item.name}</TableCell>
-              <TableCell>
-                <div className='relative h-2 w-full rounded-md'>
-                  <div
-                    className='h-2 rounded-md bg-blue-500'
-                    style={{ width: `${item.pourcentageCategoryTop1}%` }}
-                  ></div>
-                </div>
-              </TableCell>
+              <PercentageBarCell value={item.pourcentageCategoryTop1} />
               <TableCell>{formatNumber(Number(item.size))}</TableCell>
               <TableCell className='text-right'>{`${item.part}%`}</TableCell>
             </TableRow>

@@ -23,17 +23,6 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-export function formatNumber1(number: number): string {
-  if (number >= 1000_000_000) {
-    return (number / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + ' Md€';
-  } else if (number >= 1_000_000) {
-    return (number / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' M€';
-  } else if (number >= 1_000) {
-    return (number / 1_000).toFixed(1).replace(/\.0$/, '') + ' k€';
-  } else {
-    return number.toLocaleString('fr-FR') + ' €';
-  }
-}
 
 export function formatNumber(number: number): string {
   let options = {
@@ -46,6 +35,6 @@ export function formatNumber(number: number): string {
   let frenchformatter = new Intl.NumberFormat("fr-FR", options);
   let FRformattedNumber = frenchformatter.format(number);
 
-  return FRformattedNumber;
+  return FRformattedNumber.replace(/\s?€/, "€");
 }
 
