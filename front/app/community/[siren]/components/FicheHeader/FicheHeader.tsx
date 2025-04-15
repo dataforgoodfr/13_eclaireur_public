@@ -11,7 +11,7 @@ const decriptionText = `Visualiser les dernières données de dépenses publique
 
 export function FicheHeader({ community }: FicheHeaderProps) {
   // TODO - get and show postal code
-  const title = `${community.nom} XXXXX`;
+  const title = `${community.nom} ${community.code_postal ? community.code_postal : ''}`;
   // TODO - get and show last update date
   const lastUpdateText = `Dernière mise à jour le XX/XX/XX`;
 
