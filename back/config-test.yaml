@@ -8,6 +8,7 @@ ofgl:
   combined_filename: back/tests/data/ofgl/ofgl.parquet
 
 communities:
+  data_folder: back/tests/data/communities
   combined_filename: back/tests/data/communities/communities.parquet
   epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
   odf_url: file:./back/scripts/datasets/odf.csv
@@ -20,13 +21,7 @@ communities:
       path: back/tests/data/geolocator/
       filename: cities_to_geolocate.csv
 
-  geo_metrics:
-    dataset_id: "6745d9ae4524d845d2138193"
-    data_folder: back/data/communities/scrapped_data/geo_metrics
-
-  postal_code:
-    dataset_id: "545b55e1c751df52de9b6045"
-    data_folder: back/data/communities/scrapped_data/postal_code
+  geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
