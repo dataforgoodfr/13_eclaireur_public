@@ -154,13 +154,21 @@ class TestExpandJsonColumns:
 @pytest.mark.parametrize(
     "input_value,expected_output",
     [
-        (datetime(2020, 1, 1), datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        (datetime(2020, 2, 1, tzinfo=timezone.utc), datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
+        (None, None),
+        ("", None),
+        (datetime(1900, 1, 1), None),
+        (2020, datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        ("2020", datetime(2020, 1, 1, tzinfo=timezone.utc)),
+        (1900, None),
         (
             datetime(2020, 1, 1, tzinfo=timezone.utc),
             datetime(2020, 1, 1, tzinfo=timezone.utc),
         ),
-        ("2020-01-01", datetime(2020, 1, 1, tzinfo=timezone.utc)),
-        ("06/07/2019", datetime(2019, 7, 6, tzinfo=timezone.utc)),
+        ("2020-02-01", datetime(2020, 2, 1, tzinfo=timezone.utc)),
+        ("06/07/0983", None),
         (None, None),
         ("", None),
         (datetime(1900, 1, 1), None),
@@ -175,11 +183,12 @@ class TestExpandJsonColumns:
 )
 def test_normalize_date(input_value, expected_output):
     df = pd.DataFrame({"date": [input_value]})
+    out = normalize_date(df, "date")
     if not pd.isna(expected_output):
-        out = normalize_date(df, "date")
         assert out["date"].iloc[0] == expected_output
     else:
         assert pd.isna(normalize_date(df, "date")["date"].iloc[0])
+    assert str(out["date"].dtype) == "datetime64[ns, UTC]"
 
 
 class TestIsDayFirst:

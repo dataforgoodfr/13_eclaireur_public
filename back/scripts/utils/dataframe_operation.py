@@ -274,29 +274,30 @@ def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
     if frame[id_col].isnull().all():
-        return frame.assign(**{id_col: None})
-    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        return frame
+        return frame.assign(
+            **{id_col: pd.Series([pd.NaT] * len(frame), dtype="datetime64[ns, UTC]")}
+        )
 
-    if str(frame[id_col].dtype) == "datetime64[ns]":
+    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
+        dt = frame[id_col]
+    elif str(frame[id_col].dtype) == "datetime64[ns]":
         dt = frame[id_col].dt.tz_localize("UTC")
     else:
-        col = frame[id_col]
-        col_str = col.astype(str)
-        # Détecte les float/int convertibles
-        col_numeric = pd.to_numeric(col, errors="coerce")
-        float_mask = col_numeric.notna() & (col_numeric % 1 == 0)
-        col_str.loc[float_mask] = col_numeric.loc[float_mask].astype("Int64").astype(str)
-        year_only = col_str.str.fullmatch(r"\d{4}")
-        col_str.loc[year_only] += "-01-01"
-        dt = pd.to_datetime(col_str, dayfirst=is_dayfirst(col_str), errors="coerce", utc=True)
+        dt = frame[id_col].astype(str).where(frame[id_col].notnull())
 
-    # Filtrer les dates avant 2000
+        year_only = pd.to_numeric(dt, errors="coerce")
+        if year_only.notna().any():
+            year_only = year_only.fillna(0).astype(int).astype(str)
+            dt = year_only + "-01-01"
+
+        dt = pd.to_datetime(dt, dayfirst=is_dayfirst(dt), errors="coerce", utc=True)
+
     dt = dt.where(dt.dt.year >= 2000)
 
-    # Localiser en UTC si pas encore fait
     if dt.dt.tz is None:
         dt = dt.dt.tz_localize("UTC")
+    else:
+        dt = dt.dt.tz_convert("UTC")
 
     return frame.assign(**{id_col: dt})
 
