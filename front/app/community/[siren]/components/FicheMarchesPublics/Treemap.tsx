@@ -146,7 +146,7 @@ export default function Treemap({ data }: { data: TreeData }) {
         {allShapes}
       </svg>
       {tooltip.visible && (
-        <TreemapTooltip {...tooltip} />
+        <TreemapTooltip name={tooltip.name} value={tooltip.value} x={tooltip.x} y={tooltip.y} />
       )}
     </div>
   );
