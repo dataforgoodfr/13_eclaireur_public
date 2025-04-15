@@ -1,12 +1,15 @@
-from pathlib import Path
+import json
 import typing
+from pathlib import Path
+
 import polars as pl
+from inflection import underscore as to_snake_case
+
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import normalize_montant
-import json
 
 
 class MarchesPublicsEnricher(BaseEnricher):
@@ -39,7 +42,11 @@ class MarchesPublicsEnricher(BaseEnricher):
                 montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1)
             )  # distribute montant evenly when more than one contractor
         )
-        return pl.from_pandas(marches_pd).pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
+        return (
+            pl.from_pandas(marches_pd)
+            .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
+            .rename(to_snake_case)
+        )
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -50,7 +57,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .then(pl.lit(None))
             .otherwise(pl.col("formePrix"))
             .alias("forme_prix")
-        )
+        ).drop("formePrix")
 
     @staticmethod
     def safe_typePrix_json_load(x):
