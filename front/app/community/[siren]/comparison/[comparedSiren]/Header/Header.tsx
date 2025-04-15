@@ -1,17 +1,17 @@
 import { Community } from '@/app/models/community';
 
-import GoBack from '../GoBack';
-import { FicheComparisonInput } from './FicheComparisonInput';
+import GoBack from '../../../components/GoBack';
 
 type FicheHeaderProps = {
   community: Community;
+  community2: Community;
 };
 
-const decriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
+const decriptionText = `Comparer les dernières données de dépenses publiques de vos collectivités locales.`;
 
-export function FicheHeader({ community }: FicheHeaderProps) {
+export function Header({ community, community2 }: FicheHeaderProps) {
   // TODO - get and show postal code
-  const title = `${community.nom} XXXXX`;
+  const title = `Comparaison entre ${community.nom} et ${community2.nom}`;
   // TODO - get and show last update date
   const lastUpdateText = `Dernière mise à jour le XX/XX/XX`;
 
@@ -23,7 +23,6 @@ export function FicheHeader({ community }: FicheHeaderProps) {
         <p className='mb-4 text-gray-500'>{lastUpdateText}</p>
         <p>{decriptionText}</p>
       </div>
-      <FicheComparisonInput community={community} />
     </div>
   );
 }
