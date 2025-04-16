@@ -1,4 +1,4 @@
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
@@ -8,6 +8,7 @@ export type MarchesPublicsParams = {
   selectors?: (keyof MarchePublic)[];
   filters?: Partial<Pick<MarchePublic, 'acheteur_siren' | 'acheteur_type'>>;
   limit?: number;
+  orderBy?: { direction: 'asc' | 'desc'; column: keyof MarchePublic };
 };
 
 const TABLE_NAME = DataTable.MarchesPublicsStaging;
@@ -27,7 +28,7 @@ export function createSQLQueryParams(options?: MarchesPublicsParams) {
     return [query, values] as const;
   }
 
-  const { filters, limit } = options;
+  const { filters, limit, orderBy } = options;
 
   const whereConditions: string[] = [];
 
@@ -49,8 +50,13 @@ export function createSQLQueryParams(options?: MarchesPublicsParams) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
+  if (orderBy) {
+    query += ` ORDER BY $${values.length + 1} $${values.length + 2}`;
+    values.push(...[orderBy.column, orderBy.direction]);
+  }
+
   if (limit) {
-    query += ` LIMIT ${values.length + 1}`;
+    query += ` LIMIT $${values.length + 1}`;
     values.push(limit);
   }
 

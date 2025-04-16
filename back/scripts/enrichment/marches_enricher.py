@@ -1,7 +1,7 @@
 import json
 import typing
 from pathlib import Path
-
+import pandas as pd
 import polars as pl
 from inflection import underscore as to_snake_case
 
@@ -9,7 +9,10 @@ from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
-from back.scripts.utils.dataframe_operation import normalize_montant
+from back.scripts.utils.dataframe_operation import (
+    normalize_date,
+    normalize_montant,
+)
 
 
 class MarchesPublicsEnricher(BaseEnricher):
@@ -32,16 +35,22 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        marches = marches.pipe(cls.forme_prix_enrich).pipe(cls.type_prix_enrich)
-
-        # do stuff with sirene
+        marches = (
+            marches.pipe(cls.forme_prix_enrich)
+            .pipe(cls.type_prix_enrich)
+            .pipe(cls.type_identifiant_titulaire_enrich)
+        )
         marches_pd = (
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
-            .assign(
-                montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1)
-            )  # distribute montant evenly when more than one contractor
+            .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "datePublicationDonnees")
+            .pipe(normalize_date, "dateNotification")
+            .pipe(cls._add_metadata)
+            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
+        # do stuff with sirene
+
         return (
             pl.from_pandas(marches_pd)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
@@ -93,4 +102,84 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .rename({"typePrix": "type_prix"})
             .drop(["typesPrix", "TypePrix"])
+        )
+
+    @staticmethod
+    def type_identifiant_titulaire_enrich(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        1 - Normalize titulaire_typeIdentifiant column from titulaire_typeIdentifiant
+        - "HORS_UE"                becomes  "HORS-UE",
+        - "TVA_INTRACOMMUNAUTAIRE" becomes  "TVA",
+        - "FRW"                    becomes  "FRWF",
+        - "UE"                     becomes  "TVA",
+        2 - Then we fill in titulaire_typeIdentifiant from titulaire_id if titulaire_id is like a SIRET, SIREN or TVA.
+        """
+
+        # TODO : Il y a encore environ 600 titulaire_typeIdentifiant avec des titulaire_id non null qui sont null
+        SIRET_REGEX = r"^\d{14}$"  # 14 chiffres uniquement
+        SIREN_REGEX = r"^\d{9}$"  # 9 chiffres uniquement
+        TVA_REGEX = r"^[A-Z]{2}\d{9,12}$"  # Ex: GB123456789 ou FR12345678912
+
+        mapping = {
+            "HORS_UE": "HORS-UE",
+            "TVA_INTRACOMMUNAUTAIRE": "TVA",
+            "FRW": "FRWF",
+            "UE": "TVA",
+        }
+
+        return (
+            marches.with_columns(
+                pl.when(pl.col("titulaire_typeIdentifiant").is_not_null()).then(
+                    pl.col("titulaire_typeIdentifiant")
+                    .replace_strict(mapping, default=pl.col("titulaire_typeIdentifiant"))
+                    .alias("titulaire_typeIdentifiant")
+                )
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIRET_REGEX)
+                )
+                .then(pl.lit("SIRET"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_typeIdentifiant")
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(SIREN_REGEX)
+                )
+                .then(pl.lit("SIREN"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_typeIdentifiant")
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("titulaire_typeIdentifiant").is_null()
+                    & pl.col("titulaire_id").is_not_null()
+                    & pl.col("titulaire_id").cast(pl.Utf8).str.contains(TVA_REGEX)
+                )
+                .then(pl.lit("TVA"))
+                .otherwise(pl.col("titulaire_typeIdentifiant"))
+                .alias("titulaire_type_identifiant")
+            )
+            .drop("titulaire_typeIdentifiant")
+        )
+
+    @classmethod
+    def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
+        return df.assign(
+            anneeNotification=df["dateNotification"].dt.year.astype("Int64"),
+            anneePublicationDonnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
+            obligation_publication=pd.cut(
+                df["montant"],
+                bins=[0, 40000, float("inf")],
+                labels=["Optionnel", "Obligatoire"],
+                right=False,
+            ),
+            delaiPublicationJours=(
+                df["datePublicationDonnees"] - df["dateNotification"]
+            ).dt.days,
         )
