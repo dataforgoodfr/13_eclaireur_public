@@ -13,7 +13,6 @@ const tabs = {
   details: 'details',
 };
 
-
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({ filters: { acheteur_siren: siren } });
 

@@ -23,7 +23,6 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-
 function formatFrench(value: number, options?: Intl.NumberFormatOptions) {
   const formatter = new Intl.NumberFormat('fr-FR', options);
   const formattedNumber = formatter.format(value);
@@ -51,3 +50,11 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
   } as const;
   return formatFrench(value, defaultOptions);
 }
+
+export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+  maximumFractionDigits: 2,
+  ...options,
+  } as const;
+  
+  return formatFrench(value, defaultOptions)};
