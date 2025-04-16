@@ -180,8 +180,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             if x and isinstance(x, str) and x.strip() != "":
                 return json.loads(x)
         except json.JSONDecodeError:
-            # Retourne un dictionnaire vide si le JSON n'est pas valide.
-            print("Failed to parse")
             return {}
         return {}
 
@@ -199,8 +197,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             "bourgogne": "code departement",
             "franche-comte": "code departement",
         }
-
-        print(marches.select(pl.col("id"), pl.col("lieuExecution")).head())
 
         df = (
             marches.with_columns(
@@ -258,9 +254,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .drop("lieu_execution_parsed")
         )
-        # print(df.select(pl.col("id"), pl.col("lieuExecution"), pl.col("lieu_execution_parsed")).head())
+        
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
-        print("types : ", types)
 
         return (
             df.with_columns(
