@@ -41,7 +41,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.pipe(cls.forme_prix_enrich)
             .pipe(cls.type_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
-            .pipe(cls.lieu_execution_enrich)
         )
         marches_pd = (
             marches.to_pandas()
@@ -56,6 +55,7 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return (
             pl.from_pandas(marches_pd)
+            .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
         )
@@ -171,7 +171,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             .drop("titulaire_typeIdentifiant")
         )
 
-
     @staticmethod
     def safe_json_load(x):
         """Parse le JSON et retourne {} en cas d'erreur."""
@@ -257,8 +256,9 @@ class MarchesPublicsEnricher(BaseEnricher):
                     .alias("lieu_execution_type_code")
                 )
             )
+            .drop("lieu_execution_parsed")
         )
-        print(df.select(pl.col("id"), pl.col("lieuExecution"), pl.col("lieu_execution_parsed")).head())
+        # print(df.select(pl.col("id"), pl.col("lieuExecution"), pl.col("lieu_execution_parsed")).head())
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
         print("types : ", types)
 
@@ -288,7 +288,8 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .otherwise(pl.col("lieu_execution_code_departement"))
                 .alias("lieu_execution_code_departement")
             )
-            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"]))
+            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"])
+        )
 
     @classmethod
     def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
