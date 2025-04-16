@@ -1,38 +1,45 @@
-// Interface pour typer les données de communauté
-import fetchCommunityBySiren from '@/utils/fetchers/fetchCommunityBySiren';
+import { Suspense } from 'react';
 
-interface Community {
-  siren: string;
-  nom: string;
-  type: string;
-  population: number;
-  longitude: number;
-  latitude: number;
+import type { Metadata } from 'next';
+
+import Loading from '@/components/ui/Loading';
+import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { FicheHeader } from './components/FicheHeader/FicheHeader';
+import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
+import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
+
+// TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
+export const metadata: Metadata = {
+  title: 'Collectivité',
+  description: 'Détail d’une collectivité',
+};
+
+type CommunityPageProps = { params: Promise<{ siren: string }> };
+
+async function getCommunity(siren: string) {
+  const communitiesResults = await fetchCommunities({ filters: { siren } });
+
+  if (communitiesResults.length === 0) {
+    throw new Error(`Community doesnt exist with siren ${siren}`);
+  }
+
+  return communitiesResults[0];
 }
 
-export default async function CommunityPage({ params }: { params: Promise<{ siren: string }> }) {
+export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
-  const community: Community = await fetchCommunityBySiren(siren);
-  return (
-    <div className='community-page'>
-      <h1>{community.nom}</h1>
+  const community = await getCommunity(siren);
 
-      <div className='community-details'>
-        <p>
-          <strong>SIREN:</strong> {community.siren}
-        </p>
-        <p>
-          <strong>Type:</strong> {community.type}
-        </p>
-        <p>
-          <strong>Population:</strong> {community.population.toLocaleString()} habitants
-        </p>
-        <p>
-          <strong>Coordonnées géographiques:</strong> {community.latitude.toFixed(6)},{' '}
-          {community.longitude.toFixed(6)}
-        </p>
-      </div>
-    </div>
+  return (
+    <Suspense key={community.siren} fallback={<Loading />}>
+      <FicheHeader community={community} />
+      <FicheIdentite community={community} />
+      <ErrorBoundary>
+        <FicheMarchesPublics siren={siren} />
+      </ErrorBoundary>
+    </Suspense>
   );
 }

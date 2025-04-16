@@ -22,7 +22,7 @@ export default function Footer() {
               Télécharger les données
             </div>
             <a
-              href='mailto:'
+              href='/contact'
               className='flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800'
             >
               Contact

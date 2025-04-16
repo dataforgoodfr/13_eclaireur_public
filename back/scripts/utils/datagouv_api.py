@@ -1,26 +1,12 @@
 import json
 import logging
-import re
 from itertools import chain
 from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import retry_session
-
-FORMATS_PATTERNS = {
-    r"\bcsv\b": "csv",
-    r"\bjson\b": "json",
-    r"\bxml\b": "xml",
-    r"\bhtml\b": "html",
-    r"\bzip\b": "zip",
-    r"\bexcel\b": "excel",
-    r"\bxlsx\b": "excel",
-    r"\bxls\b": "excel",
-    r"\bparquet\b": "parquet",
-}
-IMPLEMENTED_FORMATS = sorted(set(FORMATS_PATTERNS.values()))
+from back.scripts.loaders.base_loader import BaseLoader, retry_session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,6 +14,10 @@ LOGGER = logging.getLogger(__name__)
 class DataGouvAPI:
     def __init__(self):
         raise Exception("Utility class.")
+
+    @staticmethod
+    def get_stable_file_url(file_id: str) -> str:
+        return f"https://www.data.gouv.fr/fr/datasets/r/{file_id}"
 
     @staticmethod
     def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
@@ -93,42 +83,45 @@ class DataGouvAPI:
         url = "https://www.data.gouv.fr/api/1/datasets/"
         params = {"organization": organization_id}
         datasets = []
-        while url:
-            orga_datasets, url = __class__._next_page(url, params)
-            datasets.append(
-                [
-                    {
-                        "organization_id": metadata["organization"]["id"],
-                        "organization": metadata["organization"]["name"],
-                        "title": metadata["title"],
-                        "description": metadata["description"],
-                        "dataset_id": metadata["id"],
-                        "frequency": metadata["frequency"],
-                        "created_at": resource["created_at"],
-                    }
-                    | __class__._resource_infos(resource)
-                    for metadata in orga_datasets
-                    for resource in metadata["resources"]
-                ]
-            )
-        datasets = pd.DataFrame(
-            list(chain.from_iterable(datasets)),
-            columns=[
-                "organization_id",
-                "organization",
-                "title",
-                "description",
-                "dataset_id",
-                "frequency",
-                "format",
-                "url",
-                "created_at",
-                "resource_description",
-                "deleted_dataset",
-                "resource_id",
-                "resource_url",
-            ],
-        )
+        output_columns = [
+            "organization_id",
+            "organization",
+            "title",
+            "description",
+            "dataset_id",
+            "frequency",
+            "format",
+            "url",
+            "created_at",
+            "resource_description",
+            "deleted_dataset",
+            "resource_id",
+            "resource_url",
+        ]
+        try:
+            while url:
+                orga_datasets, url = __class__._next_page(url, params)
+                datasets.append(
+                    [
+                        {
+                            "organization_id": metadata["organization"]["id"],
+                            "organization": metadata["organization"]["name"],
+                            "title": metadata["title"],
+                            "description": metadata["description"],
+                            "dataset_id": metadata["id"],
+                            "frequency": metadata["frequency"],
+                            "created_at": resource["created_at"],
+                        }
+                        | __class__._resource_infos(resource)
+                        for metadata in orga_datasets
+                        for resource in metadata["resources"]
+                    ]
+                )
+        except Exception:
+            LOGGER.error("Error while downloading file from %s", url)
+            return pd.DataFrame(columns=output_columns)
+
+        datasets = pd.DataFrame(list(chain.from_iterable(datasets)), columns=output_columns)
         if savedir:
             datasets.to_parquet(organisation_datasets_filename)
         return datasets
@@ -167,28 +160,12 @@ class DataGouvAPI:
         return data.get("data", data), data.get("next_page")
 
 
-def normalize_formats_description(formats: pd.Series) -> str:
-    """
-    Classify with regex the various description of formats available on data.gouv into a set of fixed categories.
-    See `FORMATS_PATTERNS`for the list of patterns.
-
-    For example : "file:///srv/udata/ftype/csv" will be transformed into "csv".
-    """
-    matching = {
-        source: target
-        for pat, target in FORMATS_PATTERNS.items()
-        for source in formats.dropna().unique()
-        if re.search(pat, source.lower())
-    }
-    return formats.map(matching).fillna(formats)
-
-
 def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
     """
     Select datasets for which we implemented a reader for their formats.
     Log formats to be added.
     """
-    valid_formats = df["format"].isin(IMPLEMENTED_FORMATS)
+    valid_formats = df["format"].isin(BaseLoader.valid_extensions())
     incorrects = df.loc[~valid_formats, "format"].dropna().value_counts().to_dict()
     LOGGER.info("Non implemented file formats: %s", incorrects)
     return df[valid_formats]

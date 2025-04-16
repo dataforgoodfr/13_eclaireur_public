@@ -1,23 +1,20 @@
-import HomepageHeader from '@/components/HomepageHeader';
+import HomePageHeader from '@/components/HomePageHeader';
+import FranceMap from '@/components/Map/open-tiles';
+import ProjectDescription from '@/components/ProjectDescription';
 import CtaGroup from '@/components/cta/CtaGroup';
-import db from '@/utils/db';
-
-async function getCommunities() {
-  const client = await db.connect();
-  try {
-    const { rows } = await client.query('SELECT * FROM selected_communities');
-    return rows;
-  } finally {
-    client.release();
-  }
-}
 
 export default async function Home() {
-  const communities = await getCommunities();
   return (
     <>
-      <HomepageHeader communities={communities} />
+      <HomePageHeader />
       <CtaGroup />
+      <ProjectDescription />
+      <div className='global-margin mx-auto my-20 flex w-full items-center justify-between'>
+        <div className='place-self-start'>
+          <h3 className='text-2xl font-semibold'>Explorer par région</h3>
+        </div>
+        <FranceMap />
+      </div>
     </>
   );
 }

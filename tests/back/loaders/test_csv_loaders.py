@@ -7,8 +7,8 @@ import pytest
 import responses
 
 from back.scripts.loaders.csv_loader import (
-    CSVLoader,
-)  # Assuming the class is in a file named csv_loader.py
+    CSVLoader,  # Assuming the class is in a file named csv_loader.py
+)
 
 
 class TestCSVLoader:
@@ -17,15 +17,16 @@ class TestCSVLoader:
     SEMICOLON_CSV = "name;age;city\nJohn;30;New York\nAnna;25;Los Angeles\nPeter;45;Chicago"
     TAB_CSV = "name\tage\tcity\nJohn\t30\tNew York\nAnna\t25\tLos Angeles\nPeter\t45\tChicago"
     PIPE_CSV = "name|age|city\nJohn|30|New York\nAnna|25|Los Angeles\nPeter|45|Chicago"
+    EMPTY_FIRST_LINE_CSV = (
+        "\n\r\nname,age,city\n,30,New York\nJohn,25,Los Angeles\nPeter,45,Chicago"
+    )
+    WINDOWS_NEW_LINES = "name;age;city\r;30;New York\r\nJohn;25;Los Angeles\r\nPeter;45;Chicago"
 
     # CSV with different encoding
     UTF8_CSV = "name,age,city\nJosé,30,São Paulo\nMarie,25,Köln\nPierre,45,Montréal"
     LATIN1_CSV = (
         "name,age,city\nJos\xe9,30,S\xe3o Paulo\nMarie,25,K\xf6ln\nPierre,45,Montr\xe9al"
     )
-
-    # CSV with no header
-    NO_HEADER_CSV = "John,30,New York\nAnna,25,Los Angeles\nPeter,45,Chicago"
 
     # Bad CSV with inconsistent columns
     BAD_CSV = "name,age,city\nJohn,30,New York\nAnna,Los Angeles\nPeter,45,Chicago,USA"
@@ -42,8 +43,9 @@ class TestCSVLoader:
                 "tab.csv": self.TAB_CSV,
                 "pipe.csv": self.PIPE_CSV,
                 "utf8.csv": self.UTF8_CSV,
-                "no_header.csv": self.NO_HEADER_CSV,
                 "bad.csv": self.BAD_CSV,
+                "empty_first_line.csv": self.EMPTY_FIRST_LINE_CSV,
+                "windows_newlines.csv": self.WINDOWS_NEW_LINES,
             }
 
             for filename, data in files_data.items():
@@ -105,9 +107,9 @@ class TestCSVLoader:
         responses.add(responses.GET, url, status=404)
 
         loader = CSVLoader(url)
-        df = loader.load()
 
-        assert df is None
+        with pytest.raises(RuntimeError):
+            loader.load()
 
     def test_load_from_file_comma(self, setup_temp_csv_files):
         """Test loading a comma-delimited CSV from a file."""
@@ -187,7 +189,7 @@ class TestCSVLoader:
         """Test loading only specific columns."""
         file_path = setup_temp_csv_files["comma.csv"]
 
-        loader = CSVLoader(file_path, columns_to_keep=["name", "city"])
+        loader = CSVLoader(file_path, columns=["name", "city"])
         df = loader.load()
 
         assert df is not None
@@ -207,18 +209,33 @@ class TestCSVLoader:
         assert isinstance(df, pd.DataFrame)
         assert df["age"].dtype == object  # str columns are object dtype in pandas
 
-    def test_no_header_csv(self, setup_temp_csv_files):
-        """Test loading a CSV with no header."""
-        file_path = setup_temp_csv_files["no_header.csv"]
+    def test_open_csv_with_empty_first_line(self, setup_temp_csv_files):
+        file_path = setup_temp_csv_files["empty_first_line.csv"]
 
-        loader = CSVLoader(file_path)
+        loader = CSVLoader(file_path, dtype={"age": str})
         df = loader.load()
+        expected = pd.DataFrame(
+            {
+                "name": [None, "John", "Peter"],
+                "age": ["30", "25", "45"],
+                "city": ["New York", "Los Angeles", "Chicago"],
+            }
+        )
+        pd.testing.assert_frame_equal(df, expected)
 
-        assert df is not None
-        assert isinstance(df, pd.DataFrame)
-        assert df.shape == (3, 3)
-        # The first row should be treated as data, not header
-        assert "John" in df.values
+    def test_windows_newlines(self, setup_temp_csv_files):
+        file_path = setup_temp_csv_files["windows_newlines.csv"]
+
+        loader = CSVLoader(file_path, dtype={"age": str})
+        df = loader.load()
+        expected = pd.DataFrame(
+            {
+                "name": [None, "John", "Peter"],
+                "age": ["30", "25", "45"],
+                "city": ["New York", "Los Angeles", "Chicago"],
+            }
+        )
+        pd.testing.assert_frame_equal(df, expected)
 
     def test_bad_csv(self, setup_temp_csv_files):
         """Test loading a CSV with inconsistent columns."""

@@ -1,12 +1,13 @@
 ﻿original_name;official_name
 Conditions de versement;conditionsVersement
 conditionVersement;conditionsVersement
+datedecision;dateConvention
 Date de la convention;dateConvention
 datedeconvention;dateConvention
 Date de signature de la convention;dateConvention
 Date de la convention de subvention;dateConvention
 DATE CONVENTION;dateConvention
-Date(s) ou période(s) de versement;datesPeriodeVersement
+Date(s) ou periode(s) de versement;datesPeriodeVersement
 dateSoldeVersement;datesPeriodeVersement
 datePeriodeVersement;datesPeriodeVersement
 dateperiodedversement;datesPeriodeVersement
@@ -21,55 +22,98 @@ SIRET;idAttribuant
 identifiant_attribuant;idAttribuant
 N° SIRET;idBeneficiaire
 numero_siret;idBeneficiaire
-idBénéficiaire;idBeneficiaire
+idBeneficiaire;idBeneficiaire
 ID_BENEFICIAIRE;idBeneficiaire
 identification_du_beneficiaire;idBeneficiaire
 Identification SIRET du beneficiaire;idBeneficiaire
-Identification du bénéficiaire;idBeneficiaire
+Identification du beneficiaire;idBeneficiaire
 code_siren_siret;idBeneficiaire
 idBeneficiare;idBeneficiaire
 beneficiaire_code;idBeneficiaire
 code_tiers_beneficiaire;idBeneficiaire
-N° unique de référencement au RAE;idRAE
+N° unique de referencement au RAE;idRAE
 Identification IRAE de l'aide attribuee;idRAE
-Numéro unique de référencement au RAE;idRAE
-Montant total de la subvention;montant
-montant_vote;montant
- montant ;montant
-montant_total_de_la_subvention;montant
-Montant  total de la subvention;montant
-Montant de la subvention;montant
-montant_attribue;montant
-montantpret;montant
-montant_budgetaire_liquide;montant
-montant_subvention_vote;montant
-montant_euros;montant
-Nature de la subvention;nature
-nature_de_la_subvention;nature
+Numero unique de referencement au RAE;idRAE
 Nom de l'attribuant;nomAttribuant
 nom_de_l_attribuant;nomAttribuant
 Nom de l’attributaire;nomAttribuant
-Nom de l'association;nomAttribuant
-NOM COLLECTIVITÉ;nomAttribuant
+NOM COLLECTIVITe;nomAttribuant
 nom_attribuant;nomAttribuant
-NOM Bénéficiaire;nomBeneficiaire
+NOM Beneficiaire;nomBeneficiaire
 nom_beneficiaire;nomBeneficiaire
-nomBénéficiaire;nomBeneficiaire
+nomBeneficiaire;nomBeneficiaire
 NOM_BENEFICIAIRE;nomBeneficiaire
 Nom du beneficiaire;nomBeneficiaire
-Nom du bénéficiaire;nomBeneficiaire
+Nom du beneficiaire;nomBeneficiaire
 beneficiaire_nom;nomBeneficiaire
 beneficiaire;nomBeneficiaire
 designation_du_beneficiaire;nomBeneficiaire
-Aide d'Etat (ou pas) notifiée à l'UE;notificationUE
+Aide d'Etat (ou pas) notifiee à l'UE;notificationUE
 Notification a l'Union Europeenne;notificationUE
-Aide d’Etat notifié à la Commission européenne;notificationUE
+Aide d’Etat notifie à la Commission europeenne;notificationUE
 Objet de la subvention;objet
 objet_du_dossier;objet
-Objet ;objet
+Objet;objet
 objet_de_la_subvention;objet
-% du mt de la subvention attribuée au bénéficiaire;pourcentageSubvention
+% du mt de la subvention attribuee au beneficiaire;pourcentageSubvention
 Pourcentage Subvention;pourcentageSubvention
-Pourcentage du montant de la subvention attribuée au bénéficiaire;pourcentageSubvention
-Référence de la décision;referenceDecision
+Pourcentage du montant de la subvention attribuee au beneficiaire;pourcentageSubvention
 Raison sociale (SIRENE);rnaBeneficiaire
+section;categoryUsage
+type_de_subvention;categoryUsage
+tiers;nomBeneficiaire
+montant_des_avantages_en_nature;montant
+type_d_avantage;nature
+annze;dateConvention
+reference administrative (demande);referenceDecision
+numero_complet_engagement;referenceDecision
+cscollnom;nomAttribuant
+coll_siret;idAttribuant
+attrib_siret;idBeneficiaire
+coll_nom;nomAttribuant
+attrib_nom;nomBeneficiaire
+acte_date;dateConvention
+acte_ref;referenceDecision
+rae_num;idRAE
+subv_versement;conditionsVersement
+nom_structure;nomBeneficiaire
+exercice;dateConvention
+type;categoryUsage
+annee_subv;dateConvention
+pourentagesubvention;pourcentageSubvention
+identification irae de l'aide attribuee;idRAE
+liborgabenef;nomBeneficiaire
+mtsubv;montant
+codarticle;referenceDecision
+montant des avantages en nature;montant
+gestion;nomAttribuant
+identifiant_unique;referenceDecision
+libelle tiers;nomBeneficiaire
+objet;nature
+libelle cdpaie;datesPeriodeVersement
+date de signature de la convention;dateConvention
+identification de l'attributaire (siret);idAttribuant
+pourcentage du montant de la subvention attribuee au beneficiaire;pourcentageSubvention
+type de subvention;categoryUsage
+anne;dateConvention
+type de subvention;categoryUsage
+type d avantage;nature
+decision_ref;referenceDecision
+attribuant_id;idAttribuant
+beneficiaires_id;idBeneficiaire
+date de la convention de subvention;dateConvention
+datevote;dateConvention
+beneficiaires;nomBeneficiaire
+attribution_nouvelles 2019;montant
+dates_versement;datePeriodeVersement
+date de deliberation;dateConvention
+idattribuant_0;idAttribuant
+referenceconvention_0;referenceDecision
+idbeneficiaire_0;idBeneficiaire
+dateconvention_0;dateConvention
+notificationue_0;notificationUE
+nomattribuant_0;nomAttribuant
+nombeneficiaire_0;nomBeneficiaire
+section_nature;categoryUsage
+date_de_la_convention_de_subvention;dateConvention
+nature_de_la_subvention;nature

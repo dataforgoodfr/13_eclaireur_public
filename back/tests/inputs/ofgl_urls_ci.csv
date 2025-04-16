@@ -1,0 +1,5 @@
+type;url;format;code
+regions;file:./back/tests/inputs/ofgl-base-region.test.csv;csv;REG
+departements;file:./back/tests/inputs/ofgl-base-departement.test.csv;csv;DEP
+groupements_fiscalite_propre;file:./back/tests/inputs/ofgl-base-epci.test.csv;csv;MET
+communes;file:./back/tests/inputs/ofgl-base-communes-consolidee.test.csv;csv;COM

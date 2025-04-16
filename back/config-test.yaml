@@ -1,39 +1,17 @@
 workflow:
   save_to_db: True
+  replace_tables: True
+
+ofgl:
+  data_folder: back/tests/data/ofgl
+  urls_csv: back/tests/inputs/ofgl_urls_ci.csv
+  combined_filename: back/tests/data/ofgl/ofgl.parquet
 
 communities:
-  processed_data:
-    path: back/tests/data/communities/
-    all_communities_file: all_communities_data.parquet
-    selected_communities_file: selected_communities_data.parquet
-
-  ofgl:
-    url:
-      regions: https://data.ofgl.fr/explore/dataset/ofgl-base-regions-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.agregat=true&refine.agregat=D%C3%A9penses+totales&refine.exer=2020&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      departements: https://data.ofgl.fr/explore/dataset/ofgl-base-departements-consolidee/download/?format=csv&disjunctive.reg_name=true&disjunctive.dep_tranche_population=true&disjunctive.dep_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-      communes: file:./back/tests/inputs/ofgl-base-communes-consolidee.test.csv
-      intercos: https://data.ofgl.fr/explore/dataset/ofgl-base-gfp-consolidee/download/?format=csv&disjunctive.dep_name=true&disjunctive.gfp_tranche_population=true&disjunctive.nat_juridique=true&disjunctive.mode_financement=true&disjunctive.gfp_tranche_revenu_imposable_par_habitant=true&disjunctive.epci_name=true&disjunctive.agregat=true&refine.exer=2020&refine.agregat=D%C3%A9penses+totales&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B
-    dtype:
-      Code Insee 2023 Région: str
-      Code Insee 2023 Département: str
-      Code Insee 2023 Commune: str
-    processed_data:
-      path: back/tests/data/ofgl/
-      filename: ofgl_data.csv
-
-    epci:
-      file: back/data/communities/scrapped_data/gouv_colloc/epcicom2023.xlsx
-      dtype:
-        siren: str
-        siren_membre: str
-
-  odf:
-    url: https://static.data.gouv.fr/resources/donnees-de-lobservatoire-open-data-des-territoires-edition-2022/20230202-112356/indicateurs-odater-organisations-2022-12-31-.csv
-    dtype:
-      siren: str
-    processed_data:
-      path: back/tests/data/odf/
-      filename: odf_data.csv
+  data_folder: back/tests/data/communities
+  combined_filename: back/tests/data/communities/communities.parquet
+  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
     epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
@@ -43,65 +21,42 @@ communities:
       path: back/tests/data/geolocator/
       filename: cities_to_geolocate.csv
 
-datagouv:
-  datasets:
-    url: https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3
-    columns:
-      - "id"
-      - "title"
-      - "url"
-      - "description"
-      - "organization"
-      - "organization_id"
-      - "frequency"
-  datafiles:
-    url: "file:./back/tests/inputs/datagouv-datafiles-10000.csv"
-  paths:
-    root: back/tests/data/datagouv_search
-    organization_datasets: organization_datasets
-  files:
-    catalog: datagouv_catalog.parquet
-    catalog_metadata: catalog_metadata.parquet
-    datasets: datagouv_datasets.parquet
+  geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
+
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: ./back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
 search:
   subventions:
-    source: "multiple"
-    title_filter: (?:conventions de subvention|subv.*asso|subvention.*association|Subventions du Conseil Régional|Interventions de la Région des Pays de la Loire|SCDL - Subventions)
-    description_filter: (?:conventions de subvention|subvention.*association|subv.*asso)
-    api:
-      testIds:
-        - 534fffa7a3a7292c64a780c5
-        - 534fffada3a7292c64a780f9
-      url: "https://www.data.gouv.fr/api/1/datasets/"
-      title:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      description:
-        - "association"
-        - "subvention"
-        - "intervention"
-        - "aide"
-        - "versement"
-      columns:
-        - "montant"
     schema:
       url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
     single_urls_file: back/tests/inputs/single_urls_2.csv
     schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
-  marches_publics:
-    source: "single"
-    unified_dataset:
-      url: "file:./back/tests/inputs/decp-2019-10000.json"
-      root: "marches"
-    schema:
-      url: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
-      name: "marche"
+
+marches_publics:
+  schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
+  data_folder: back/tests/data/marches_publics
+  combined_filename: back/tests/data/marches_publics/marches_publics.parquet
+  test_urls:
+    - url: file:./tests/back/loaders/fixtures/reduced_decp_2019.json
+    - format: json
+
+datagouv_catalog:
+  data_folder: back/tests/data/datagouv_catalog
+  combined_filename: back/tests/data/datagouv_catalog/catalog.parquet
+  catalog_url: file:./back/tests/inputs/datagouv_catalog.csv
+
+datagouv_search:
+  data_folder: back/tests/data/datagouv_search
+  combined_filename: back/tests/data/datagouv_search/datagouv_datasets.parquet
+  title_filter:
+    - subventions
+  description_filter: null
 
 datafile_loader:
+  data_folder: 'back/tests/data/datasets/%(topic)s'
+  combined_filename: 'back/tests/data/datasets/%(topic)s.parquet'
   file_info_columns:
     - "siren"
     - "organization"
@@ -122,7 +77,15 @@ elected_officials:
 
 sirene:
   data_folder: back/tests/data/sirene
+  combined_filename: back/tests/data/sirene/sirene.parquet
   url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
+  xls_urls_naf:
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n2.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n3.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n4.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n5.xls"
+  xls_urls_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
 
 datagouv_api:
   organization_folder: back/tests/data/datagouv_api/organizations
@@ -131,8 +94,15 @@ declarations_interet:
   data_folder: back/tests/data/declarations_interet
   url:  file:./tests/back/datasets/fixtures/declaration.xml
 
-outputs_csv:
-  path: 'back/tests/data/datasets/%(topic)s/outputs'
+financial_accounts:
+  data_folder: back/tests/data/financial_accounts
+  files_csv: back/tests/inputs/ci_communities_financial_accounts.csv
+  columns_mapping: back/scripts/datasets/normalization_financial_account_columns.csv
+  combined_filename: back/tests/data/financial_accounts/financial_accounts.parquet
+
+
+warehouse:
+  data_folder: back/tests/data/warehouse
 
 logging:
   version: 1
@@ -149,7 +119,8 @@ logging:
       class: logging.FileHandler
       level: DEBUG
       formatter: simple
-      filename: back/data/logs/log.txt
-  root:
-    level: DEBUG
-    handlers: [console, file]
+      filename: back/tests/data/logs/log.txt
+  loggers:
+    back:
+      level: INFO
+      handlers: [console, file]

@@ -14,7 +14,7 @@ readme = "README.md"
 poetry-plugin-export = ">=1.8"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.13"
 openpyxl = "^3.1.2"
 pandas = "^2.1.4"
 python-dotenv = "^1.0.0"
@@ -35,6 +35,9 @@ polars = "^1.23.0"
 beautifulsoup4 = "^4.13.3"
 lxml = "^5.3.1"
 responses = "^0.25.6"
+ijson = "^3.3.0"
+fastexcel = "^0.13.0"
+inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.20.0"
