@@ -40,24 +40,16 @@ class CommunitiesContact:
         self.extracted_dir = self.data_folder / "extracted"
 
     def run(self):
-        print(self.output_filename)
-        print(self.output_filename.exists())
         if self.output_filename.exists():
             return
-        if not self.interm_filename.exists():
-            url = self._db_url()
-            urllib.request.urlretrieve(url, self.interm_filename)
-
-        if not self.extracted_dir.exists():
-            with tarfile.open(self.interm_filename, "r:bz2") as tar:
-                tar.extractall(path=self.extracted_dir)
+        self._download_targz()
+        self._extract_targz()
 
         filename = [fn for fn in os.listdir(self.extracted_dir) if Path(fn).suffix == ".json"][
             0
         ]
         with open(self.extracted_dir / filename, "r") as f:
             content = json.load(f)["service"]
-            print(type(content))
             df = (
                 pl.from_pandas(pd.read_json(StringIO(json.dumps(content))))
                 .select(
@@ -75,8 +67,19 @@ class CommunitiesContact:
                 .pipe(self.normalize_contact)
                 .filter(col("contact").is_not_null())
             )
-        print(df)
         df.write_parquet(self.output_filename)
+
+    def _download_targz(self):
+        if self.interm_filename.exists():
+            return
+        url = self._db_url()
+        urllib.request.urlretrieve(url, self.interm_filename)
+
+    def _extract_targz(self):
+        if self.extracted_dir.exists():
+            return
+        with tarfile.open(self.interm_filename, "r:bz2") as tar:
+            tar.extractall(path=self.extracted_dir)
 
     def _db_url(self):
         resource_id = (
