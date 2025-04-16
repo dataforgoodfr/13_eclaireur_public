@@ -170,10 +170,13 @@ class MarchesPublicsEnricher(BaseEnricher):
     def safe_json_load(x):
         """Parse le JSON et retourne {} en cas d'erreur."""
         try:
+            if isinstance(x, dict):
+                return x
             if x and isinstance(x, str) and x.strip() != "":
                 return json.loads(x)
         except json.JSONDecodeError:
             # Retourne un dictionnaire vide si le JSON n'est pas valide.
+            print("Failed to parse")
             return {}
         return {}
 
