@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import type { Metadata } from 'next';
+
 import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
@@ -8,6 +10,12 @@ import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
 import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
+
+// TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
+export const metadata: Metadata = {
+  title: 'Collectivité',
+  description: 'Détail d’une collectivité',
+};
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
