@@ -17,7 +17,7 @@ async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
     filters: { acheteur_siren: siren },
     // TODO - Remove limit when api to calculate data is done
-    limit: 10,
+    limit: 100,
   });
 
   return marchesPublicsResults;
@@ -28,7 +28,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const test = await fetchMarchesPublics({
     filters: { acheteur_siren: siren },
     // TODO - Remove limit when api to calculate data is done
-    limit: 10,
+    limit: 100,
     orderBy: { direction: 'asc', column: 'montant' },
   });
 
