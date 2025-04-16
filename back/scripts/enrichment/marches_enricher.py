@@ -1,7 +1,7 @@
 import json
 import typing
 from pathlib import Path
-
+import pandas as pd
 import polars as pl
 from inflection import underscore as to_snake_case
 
@@ -9,7 +9,10 @@ from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
-from back.scripts.utils.dataframe_operation import normalize_montant
+from back.scripts.utils.dataframe_operation import (
+    normalize_date,
+    normalize_montant,
+)
 
 
 class MarchesPublicsEnricher(BaseEnricher):
@@ -37,15 +40,17 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.type_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
         )
-
-        # do stuff with sirene
         marches_pd = (
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
-            .assign(
-                montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1)
-            )  # distribute montant evenly when more than one contractor
+            .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "datePublicationDonnees")
+            .pipe(normalize_date, "dateNotification")
+            .pipe(cls._add_metadata)
+            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
+        # do stuff with sirene
+
         return (
             pl.from_pandas(marches_pd)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
@@ -161,4 +166,20 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .alias("titulaire_type_identifiant")
             )
             .drop("titulaire_typeIdentifiant")
+        )
+
+    @classmethod
+    def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
+        return df.assign(
+            anneeNotification=df["dateNotification"].dt.year.astype("Int64"),
+            anneePublicationDonnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
+            obligation_publication=pd.cut(
+                df["montant"],
+                bins=[0, 40000, float("inf")],
+                labels=["Optionnel", "Obligatoire"],
+                right=False,
+            ),
+            delaiPublicationJours=(
+                df["datePublicationDonnees"] - df["dateNotification"]
+            ).dt.days,
         )
