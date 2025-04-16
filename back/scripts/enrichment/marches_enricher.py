@@ -208,42 +208,32 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .alias("lieu_execution_parsed")
             )
             .with_columns(
-                [
-                    pl.col("lieu_execution_parsed")
-                    .map_elements(
-                        lambda d: str(d.get("code")).lower()
-                        if d.get("code") is not None
-                        else None,
-                        return_dtype=pl.Utf8,
-                    )
-                    .str.to_lowercase()
-                    .alias("lieu_execution_code"),
-                    pl.col("lieu_execution_parsed")
-                    .map_elements(
-                        lambda d: str(d.get("typeCode")).lower()
-                        if d.get("typeCode") is not None
-                        else None,
-                        return_dtype=pl.Utf8,
-                    )
-                    .str.to_lowercase()
-                    .alias("lieu_execution_type_code"),
-                    pl.col("lieu_execution_parsed")
-                    .map_elements(
-                        lambda d: str(d.get("nom")).lower()
-                        if d.get("nom") is not None
-                        else None,
-                        return_dtype=pl.Utf8,
-                    )
-                    .str.to_lowercase()
-                    .alias("lieu_execution_nom"),
-                ]
+                pl.col("lieu_execution_parsed")
+                .map_elements(
+                    lambda d: str(d.get("code")) if d.get("code") is not None else None,
+                    return_dtype=pl.Utf8,
+                )
+                .str.to_lowercase()
+                .alias("lieu_execution_code"),
+                pl.col("lieu_execution_parsed")
+                .map_elements(
+                    lambda d: str(d.get("typeCode")) if d.get("typeCode") is not None else None,
+                    return_dtype=pl.Utf8,
+                )
+                .str.to_lowercase()
+                .alias("lieu_execution_type_code"),
+                pl.col("lieu_execution_parsed")
+                .map_elements(
+                    lambda d: str(d.get("nom")) if d.get("nom") is not None else None,
+                    return_dtype=pl.Utf8,
+                )
+                .str.to_lowercase()
+                .alias("lieu_execution_nom"),
             )
             .with_columns(
-                [
-                    pl.col("lieu_execution_type_code")
-                    .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
-                    .alias("lieu_execution_type_code"),
-                ]
+                pl.col("lieu_execution_type_code")
+                .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
+                .alias("lieu_execution_type_code")
             )
             .with_columns(
                 pl.when(pl.col("lieu_execution_type_code").is_not_null()).then(
