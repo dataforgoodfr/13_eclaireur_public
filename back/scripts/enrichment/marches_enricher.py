@@ -3,7 +3,9 @@ import typing
 from pathlib import Path
 import pandas as pd
 import polars as pl
+from unidecode import unidecode
 from inflection import underscore as to_snake_case
+
 
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
@@ -53,6 +55,7 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return (
             pl.from_pandas(marches_pd)
+            .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
         )
@@ -166,6 +169,121 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .alias("titulaire_type_identifiant")
             )
             .drop("titulaire_typeIdentifiant")
+        )
+
+    @staticmethod
+    def safe_json_load(x):
+        """Parse le JSON et retourne {} en cas d'erreur."""
+        try:
+            if isinstance(x, dict):
+                return x
+            if x and isinstance(x, str) and x.strip() != "":
+                return json.loads(x)
+        except json.JSONDecodeError:
+            return {}
+        return {}
+
+    @staticmethod
+    def lieu_execution_enrich(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        1 - Parse lieuExecution en 3 champs code, type code et nom
+        2 - Extrait le tout en code commune, code postal, code departement etc
+        """
+
+        # TODO : Il y a beaucoup de nettoyage à faire dans les différents champs
+
+        # Cas spécifiques où lieu_execution_type_code est soit bourgogne, soit franche-comte
+        mapping = {
+            "bourgogne": "code departement",
+            "franche-comte": "code departement",
+        }
+
+        df = (
+            marches.with_columns(
+                pl.col("lieuExecution")
+                .map_elements(
+                    MarchesPublicsEnricher.safe_json_load,
+                    return_dtype=pl.Object,
+                )
+                .alias("lieu_execution_parsed")
+            )
+            .with_columns(
+                [
+                    pl.col("lieu_execution_parsed")
+                    .map_elements(
+                        lambda d: str(d.get("code")).lower()
+                        if d.get("code") is not None
+                        else None,
+                        return_dtype=pl.Utf8,
+                    )
+                    .str.to_lowercase()
+                    .alias("lieu_execution_code"),
+                    pl.col("lieu_execution_parsed")
+                    .map_elements(
+                        lambda d: str(d.get("typeCode")).lower()
+                        if d.get("typeCode") is not None
+                        else None,
+                        return_dtype=pl.Utf8,
+                    )
+                    .str.to_lowercase()
+                    .alias("lieu_execution_type_code"),
+                    pl.col("lieu_execution_parsed")
+                    .map_elements(
+                        lambda d: str(d.get("nom")).lower()
+                        if d.get("nom") is not None
+                        else None,
+                        return_dtype=pl.Utf8,
+                    )
+                    .str.to_lowercase()
+                    .alias("lieu_execution_nom"),
+                ]
+            )
+            .with_columns(
+                [
+                    pl.col("lieu_execution_type_code")
+                    .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
+                    .alias("lieu_execution_type_code"),
+                ]
+            )
+            .with_columns(
+                pl.when(pl.col("lieu_execution_type_code").is_not_null()).then(
+                    pl.col("lieu_execution_type_code")
+                    .replace_strict(mapping, default=pl.col("lieu_execution_type_code"))
+                    .alias("lieu_execution_type_code")
+                )
+            )
+            .drop("lieu_execution_parsed")
+        )
+
+        types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
+
+        return (
+            df.with_columns(
+                [
+                    pl.when(pl.col("lieu_execution_type_code") == type_code)
+                    .then(pl.col("lieu_execution_code"))
+                    .otherwise(None)
+                    .alias("lieu_execution_" + type_code.replace(" ", "_"))
+                    for type_code in types
+                ]
+            )
+            .with_columns(
+                pl.when(
+                    pl.col("lieu_execution_code_departement").is_null()
+                    & (
+                        pl.col("lieu_execution_code_postal").is_not_null()
+                        | pl.col("lieu_execution_code_commune").is_not_null()
+                    )
+                )
+                .then(
+                    pl.coalesce(
+                        "lieu_execution_code_postal", "lieu_execution_code_commune"
+                    ).str.slice(0, 2)
+                )
+                .otherwise(pl.col("lieu_execution_code_departement"))
+                .alias("lieu_execution_code_departement")
+            )
+            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"])
         )
 
     @classmethod
