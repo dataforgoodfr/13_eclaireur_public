@@ -28,7 +28,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Recherche avancée',
-    href: '/',
+    href: '/advanced-search',
     description: 'Quelles sont les dépenses publiques dans ma collectivité ?',
   },
   {
