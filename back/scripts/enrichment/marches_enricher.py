@@ -288,7 +288,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .otherwise(pl.col("lieu_execution_code_departement"))
                 .alias("lieu_execution_code_departement")
             )
-            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"])
+            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"]))
 
     @classmethod
     def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
