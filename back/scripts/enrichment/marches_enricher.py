@@ -254,7 +254,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .drop("lieu_execution_parsed")
         )
-        
+
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
 
         return (
