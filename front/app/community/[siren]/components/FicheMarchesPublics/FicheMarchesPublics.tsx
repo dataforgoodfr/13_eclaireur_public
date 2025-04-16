@@ -1,9 +1,10 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
-import { MarchePublic } from '@/app/models/marchePublic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
-import Top10 from './Top10';
+import Contract from './Contract';
+import Distribution from './Distribution';
+import Trends from './Trends';
 
 const tabs = {
   trends: 'trends',
@@ -21,10 +22,6 @@ async function getMarchesPublics(siren: string) {
 
   return marchesPublicsResults;
 }
-
-type FicheMarchesPublics = {
-  marchesPublics: MarchePublic[];
-};
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
@@ -44,13 +41,13 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>
             <TabsTrigger value={tabs.distribution}>Répartition</TabsTrigger>
             <TabsTrigger value={tabs.comparison}>Comparaison</TabsTrigger>
-            <TabsTrigger value={tabs.details}>Classement</TabsTrigger>
+            <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
           </TabsList>
-          <TabsContent value={tabs.trends}>{/*   <Trends data={marchesPublics} /> */}</TabsContent>
+          <TabsContent value={tabs.trends}>
+            <Trends data={marchesPublics} />
+          </TabsContent>
           <TabsContent value={tabs.distribution}>
-            <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-              Treemap en construction
-            </div>
+            <Distribution data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
@@ -58,7 +55,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             </div>
           </TabsContent>
           <TabsContent value={tabs.details}>
-            <Top10 rawData={marchesPublics} />
+            <Contract data={marchesPublics} />
           </TabsContent>
         </Tabs>
       ) : (
