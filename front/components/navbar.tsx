@@ -51,12 +51,12 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Méthodologie',
-    href: '/methodology',
+    href: '/methodologie',
     description: 'Comment sont évalués les scores de transparence et tendance de mes collectivités',
   },
   {
     title: 'Cadre réglementaire',
-    href: '/',
+    href: '/cadre-reglementaire',
     description: 'Quelles sont les obligations des collectivités ? ',
   },
 ];
@@ -82,12 +82,12 @@ const partagereMenus: { title: string; href: string; description: string }[] = [
 const aProposMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Le projet',
-    href: '/',
+    href: '/le-projet',
     description: 'Qui sommes-nous ?',
   },
   {
     title: 'Aide aux élus',
-    href: '/',
+    href: '/aide-aux-elus',
     description: 'Comment améliorer la transparence dans ma collectivité ?',
   },
   {
@@ -97,7 +97,7 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
   },
   {
     title: 'Contact',
-    href: '/',
+    href: '/contact',
     description: '',
   },
 ];
