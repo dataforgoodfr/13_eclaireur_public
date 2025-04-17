@@ -39,8 +39,16 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         marches = (
             marches.pipe(cls.forme_prix_enrich)
-            .pipe(cls.type_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
+            .pipe(
+                cls.generic_json_column_enrich,
+                "considerationsEnvironnementales",
+                "considerationEnvironnementale",
+            )
+            .pipe(cls.generic_json_column_enrich, "modaliteExecution", "modaliteExecution")
+            .pipe(cls.generic_json_column_enrich, "technique", "technique")
+            .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
+            .pipe(cls.type_prix_enrich)
         )
         marches_pd = (
             marches.to_pandas()
@@ -72,30 +80,9 @@ class MarchesPublicsEnricher(BaseEnricher):
         ).drop("formePrix")
 
     @staticmethod
-    def safe_typePrix_json_load(x):
-        try:
-            parsed = json.loads(x)
-            if isinstance(parsed, list) and parsed:
-                return parsed[0]
-            elif isinstance(parsed, dict):
-                type_prix = parsed.get("typePrix")
-                if isinstance(type_prix, list) and type_prix:
-                    return type_prix[0]
-                if isinstance(type_prix, str):
-                    return type_prix
-            return None
-        except (json.JSONDecodeError, TypeError):
-            return None
-
-    @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
         return (
             marches.with_columns(
-                pl.col("typesPrix").map_elements(
-                    MarchesPublicsEnricher.safe_typePrix_json_load, return_dtype=pl.Utf8
-                )
-            )
-            .with_columns(
                 pl.coalesce(pl.col(["typesPrix", "typePrix", "TypePrix"])).alias("typePrix")
             )
             .with_columns(
@@ -290,4 +277,43 @@ class MarchesPublicsEnricher(BaseEnricher):
             delaiPublicationJours=(
                 df["datePublicationDonnees"] - df["dateNotification"]
             ).dt.days,
+        )
+
+    @classmethod
+    def concat_list(cls, lst):
+        if len(lst) > 0:
+            return " et ".join(sorted(set(lst)))
+        return None
+
+    @classmethod
+    def safe_json_load_of_dict_or_list_or_str(cls, x, dict_key):
+        try:
+            parsed = json.loads(x)
+            if isinstance(parsed, list) and parsed:
+                return MarchesPublicsEnricher.concat_list(parsed)
+            elif isinstance(parsed, dict):
+                dct = parsed.get(dict_key)
+                if isinstance(dct, list) and dct:
+                    return MarchesPublicsEnricher.concat_list(dct)
+                if isinstance(dct, str):
+                    return dct
+            return None
+        except (json.JSONDecodeError, TypeError):
+            if isinstance(x, str) and (x != ""):
+                return x
+            return None
+
+    @classmethod
+    def generic_json_column_enrich(
+        cls, marches: pl.DataFrame, col_name: str, dict_key: str
+    ) -> pl.DataFrame:
+        return marches.with_columns(
+            pl.col(col_name)
+            .map_elements(
+                lambda x: MarchesPublicsEnricher.safe_json_load_of_dict_or_list_or_str(
+                    x, dict_key
+                ),
+                return_dtype=pl.Utf8,
+            )
+            .alias(col_name)
         )
