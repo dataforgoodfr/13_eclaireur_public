@@ -1,7 +1,6 @@
 import { CommunityType } from '@/utils/types';
 
 export type MarchePublic = {
-  id_postgre: number;
   /** Primary key [char9] */
   acheteur_siren: string;
   /** Primary key */

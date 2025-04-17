@@ -5,5 +5,5 @@ export enum DataTable {
   CommunitiesTest = 'selected_communitiestest_indices',
   Communities = 'collectivites',
   Subventions = 'subventions',
-  MarchesPublics = 'marches_public',
+  MarchesPublics = 'marches_publics',
 }

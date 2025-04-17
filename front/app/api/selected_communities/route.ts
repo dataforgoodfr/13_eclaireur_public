@@ -46,7 +46,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid SIREN format' }, { status: 400 });
     }
 
-    const data = await getDataFromPool({ filters: { type, limit, siren } });
+    const data = await getDataFromPool({ filters: { type, siren }, limit });
 
     return NextResponse.json(data);
   } catch (error) {

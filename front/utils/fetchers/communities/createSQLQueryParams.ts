@@ -2,25 +2,15 @@ import { Community } from '@/app/models/community';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
+import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type CommunitiesOptions = {
   selectors?: (keyof Community)[];
-  filters?: Partial<Pick<Community, 'siren' | 'type'>> & {
-    limit?: number;
-  };
+  filters?: Partial<Pick<Community, 'siren' | 'type'>>;
+  limit?: number;
 };
 
 const TABLE_NAME = DataTable.Communities;
-
-function stringifySelectors(options: CommunitiesOptions): string {
-  const { selectors } = options;
-
-  if (selectors == null) {
-    return '*';
-  }
-
-  return selectors.join(', ');
-}
 
 /**
  * Create the sql query for the marches publics
@@ -30,22 +20,20 @@ function stringifySelectors(options: CommunitiesOptions): string {
 export function createSQLQueryParams(options?: CommunitiesOptions) {
   let values: (CommunityType | number | string)[] = [];
 
-  if (options === undefined) {
-    return [`SELECT * FROM ${TABLE_NAME}`, values] as const;
-  }
-
-  const selectorsStringified = stringifySelectors(options);
+  const selectorsStringified = stringifySelectors(options?.selectors);
   let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
 
-  const { filters } = options;
+  if (options === undefined) {
+    return [query, values] as const;
+  }
 
-  const { limit, ...restFilters } = filters ?? { limit: undefined };
+  const { filters, limit } = options;
 
   const whereConditions: string[] = [];
 
-  const keys = Object.keys(restFilters) as unknown as (keyof typeof filters)[];
+  const keys = filters && (Object.keys(filters) as unknown as (keyof typeof filters)[]);
 
-  keys.forEach((key) => {
+  keys?.forEach((key) => {
     const option = filters?.[key];
     if (option == null) {
       console.error(`${key} with value is null or undefined in the query ${query}`);

@@ -10,7 +10,7 @@ import { Input } from '../ui/input';
 import Suggestions from './SearchSuggestions';
 
 type SearchBarProps = {
-  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function SearchBar({ onSelect }: SearchBarProps) {

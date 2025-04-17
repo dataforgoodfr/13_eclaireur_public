@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import Stepper from '@/components/Interpellate/Stepper';
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -15,9 +18,7 @@ export default function Page() {
 
   return (
     <section id='interpellation-step1-nocommunity' className='my-16'>
-      <div id='stepper'>
-        <img src='placeholder-stepper.png' width='794' height='84' alt='' />
-      </div>
+      <Stepper currentStep={1} />
       <article className='my-6 flex flex-col justify-start'>
         <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
         <div className='ml-16 min-w-[400] self-center'>

@@ -1,13 +1,17 @@
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
+import { stringifySelectors } from '../functions/stringifySelectors';
 
-export type MarchesPublicsParams = Partial<
-  Pick<MarchePublic, 'acheteur_siren' | 'acheteur_type'>
-> & {
+export type MarchesPublicsParams = {
+  selectors?: (keyof MarchePublic)[];
+  filters?: Partial<Pick<MarchePublic, 'acheteur_siren' | 'acheteur_type'>>;
   limit?: number;
+  orderBy?: { direction: 'asc' | 'desc'; column: keyof MarchePublic };
 };
+
+const TABLE_NAME = DataTable.MarchesPublicsStaging;
 
 /**
  * Create the sql query for the marches publics
@@ -15,21 +19,23 @@ export type MarchesPublicsParams = Partial<
  * @returns
  */
 export function createSQLQueryParams(options?: MarchesPublicsParams) {
-  let query = `SELECT * FROM ${DataTable.MarchesPublicsStaging}`;
   let values: (CommunityType | number | string)[] = [];
+
+  const selectorsStringified = stringifySelectors(options?.selectors);
+  let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
 
   if (options === undefined) {
     return [query, values] as const;
   }
 
-  const { limit, ...restOptions } = options;
+  const { filters, limit, orderBy } = options;
 
   const whereConditions: string[] = [];
 
-  const keys = Object.keys(restOptions) as unknown as (keyof typeof options)[];
+  const keys = filters && (Object.keys(filters) as unknown as (keyof typeof filters)[]);
 
-  keys.forEach((key) => {
-    const option = options[key];
+  keys?.forEach((key) => {
+    const option = filters?.[key];
     if (option == null) {
       throw new Error(
         `${key} with value ${option} is null or undefined and blocks the query ${query}`,
@@ -44,8 +50,13 @@ export function createSQLQueryParams(options?: MarchesPublicsParams) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
+  if (orderBy) {
+    query += ` ORDER BY $${values.length + 1} $${values.length + 2}`;
+    values.push(...[orderBy.column, orderBy.direction]);
+  }
+
   if (limit) {
-    query += ` LIMIT ${values.length + 1}`;
+    query += ` LIMIT $${values.length + 1}`;
     values.push(limit);
   }
 

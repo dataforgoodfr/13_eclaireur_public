@@ -273,17 +273,32 @@ def normalize_identifiant(
 def normalize_date(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     if id_col not in frame.columns:
         return frame
-    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
-        return frame
-
-    if str(frame[id_col].dtype) == "datetime64[ns]":
-        dt = frame[id_col].dt.tz_localize("UTC")
-    elif "datetime64" in str(frame[id_col].dtype):
-        dt = frame[id_col].dt.tz_convert("UTC")
-    else:
-        dt = pd.to_datetime(frame[id_col], dayfirst=is_dayfirst(frame[id_col])).dt.tz_localize(
-            "UTC"
+    if frame[id_col].isnull().all():
+        return frame.assign(
+            **{id_col: pd.Series([pd.NaT] * len(frame), dtype="datetime64[ns, UTC]")}
         )
+
+    if str(frame[id_col].dtype) == "datetime64[ns, UTC]":
+        dt = frame[id_col]
+    elif str(frame[id_col].dtype) == "datetime64[ns]":
+        dt = frame[id_col].dt.tz_localize("UTC")
+    else:
+        dt = frame[id_col].astype(str).where(frame[id_col].notnull())
+
+        year_only = pd.to_numeric(dt, errors="coerce")
+        if year_only.notna().any():
+            year_only = year_only.fillna(0).astype(int).astype(str)
+            dt = year_only + "-01-01"
+
+        dt = pd.to_datetime(dt, dayfirst=is_dayfirst(dt), errors="coerce", utc=True)
+
+    dt = dt.where(dt.dt.year >= 2000)
+
+    if dt.dt.tz is None:
+        dt = dt.dt.tz_localize("UTC")
+    else:
+        dt = dt.dt.tz_convert("UTC")
+
     return frame.assign(**{id_col: dt})
 
 

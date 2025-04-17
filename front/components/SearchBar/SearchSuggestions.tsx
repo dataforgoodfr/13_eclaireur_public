@@ -2,10 +2,11 @@ import { Community } from '@/app/models/community';
 import { useCommunitiesBySearch } from '@/utils/hooks/useCommunitiesSearch';
 
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
+import Suggestion from './Suggestion';
 
 type SuggestionsProps = {
   query: string;
-  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function Suggestions({ query, onSelect }: SuggestionsProps) {
@@ -23,7 +24,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandGroup>
             {suggestions?.map((suggestion) => (
               <CommandItem key={suggestion.siren} onSelect={(e) => onSelect(suggestion)}>
-                {suggestion.nom} - {suggestion.type} - {suggestion.siren}
+                <Suggestion {...suggestion} />
               </CommandItem>
             ))}
           </CommandGroup>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { ArrowLeft } from 'lucide-react';
 
-export default function FicheGoBack() {
+export default function GoBack() {
   const router = useRouter();
 
   return (
