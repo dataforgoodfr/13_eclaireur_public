@@ -16,8 +16,8 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
   // TODO - get and add the last update date
   const lastUpdateText = `Derniere mise a jour`;
   // TODO - retrieve scores
-  const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
-  const trends = { subventions: 1, marchesPublics: 0.01 };
+  const scores = { globalScore: TransparencyScore.B };
+  const trends = { globalScore: 1 };
 
   return (
     <FicheCard title={ficheTitle} displayCopyUrl={true}>
@@ -25,7 +25,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
         <CommunityDetails community={community} />
         <NeighboursMap community={community} />
       </div>
-      <TransparencyScores scores={scores} trends={trends} />
+      <TransparencyScores score={scores} trend={trends} />
     </FicheCard>
   );
 }
