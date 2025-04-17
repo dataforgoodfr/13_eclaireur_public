@@ -94,6 +94,10 @@ financial_accounts:
   columns_mapping: back/scripts/datasets/normalization_financial_account_columns.csv
   combined_filename: back/tests/data/financial_accounts/financial_accounts.parquet
 
+collectivites_aggregees:
+  data_folder: back/tests/data/collectivites_aggregees
+  combined_filename: back/tests/data/financial_accounts/collectivites_aggregees.parquet
+
 
 warehouse:
   data_folder: back/tests/data/warehouse

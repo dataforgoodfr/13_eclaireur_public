@@ -1,47 +1,48 @@
-from pathlib import Path
 import pandas as pd
 
-from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES
+# from back.scripts.workflow.data_warehouse import DataWarehouseWorkflow
+from back.scripts.utils.config import get_project_base_path
 
 
 class AggregateCommunityTable:
 
     @classmethod
-    def get_output_path(cls) -> str:
-        return "collectivites_aggregees"
+    def get_config_key(cls) -> str:
+        return "declarations_interet"
 
 
-    def __init__(self, config):
-        self.config = config
+    @classmethod
+    def get_output_path(cls, main_config) -> str:
+        return (
+            get_project_base_path()
+            / main_config[cls.get_config_key()]["data_folder"]
+            / "collectivites_aggregees.parquet"
+        )
 
-    def aggregate_data(self):
+    @classmethod
+    def aggregate_data(self, main_config: dict):
         print("Running AggregateCommunityTable...")
-        df_communities = pd.read_parquet(self.config["communities"]["combined_filename"])
-        df_financial_accounts = pd.read_parquet(self.config["financial_accounts"]["combined_filename"])
-        # print(df_communities.columns)
-        df_financial_accounts["code_insee"] = df_financial_accounts["region"].combine_first(df_financial_accounts["dept"])
-        df_financial_accounts["code_insee"] = df_financial_accounts["code_insee"].str.lstrip('0')
-        df_financial_accounts = df_financial_accounts[["exercice", "code_insee", "subventions"]]
-        df_communities = df_communities.merge(df_financial_accounts, on="code_insee", how="left")
+        df_communities = pd.read_parquet(main_config["communities"]["combined_filename"])
         print(df_communities)
-        return df_communities
+        print(df_communities.columns)
+        df_financial_accounts = pd.read_parquet(
+            main_config["financial_accounts"]["combined_filename"]
+        )
+        raise
+        print(df_financial_accounts)
+        print(df_financial_accounts.columns)
+        df_financial_accounts["code_insee"] = df_financial_accounts["region"].combine_first(
+            df_financial_accounts["dept"]
+        )
+        df_financial_accounts["code_insee"] = df_financial_accounts["code_insee"].str.lstrip(
+            "0"
+        )
+        df_financial_accounts = df_financial_accounts[["exercice", "code_insee", "subventions"]]
+        df = df_communities.merge(
+            df_financial_accounts, on="code_insee", how="left"
+        )
+        print(df)
+        df.write_parquet(self.get_output_path(main_config))
 
 
-from back.scripts.utils.argument_parser import ArgumentParser
-from back.scripts.utils.config_manager import ConfigManager
-from back.scripts.utils.logger_manager import LoggerManager
 
-from back.scripts.utils.config import project_config
-
-if __name__ == "__main__":
-    # Parse arguments, load config and configure logger
-    args = ArgumentParser.parse_args("Gestionnaire du projet LocalOuvert")
-
-    # Load config file
-    config = ConfigManager.load_config(args.filename)
-
-    # Load project configuration instance
-    project_config.load(config)
-
-    LoggerManager.configure_logger(config)
-    AggregateCommunityTable(config).aggregate_data()

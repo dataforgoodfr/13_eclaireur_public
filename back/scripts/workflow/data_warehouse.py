@@ -3,6 +3,7 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
+from back.scripts.datasets.aggregate_community_table import AggregateCommunityTable
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
@@ -10,7 +11,6 @@ from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.utils.psql_connector import PSQLConnector
-from back.scripts.datasets.aggregate_community_table import AggregateCommunityTable
 
 
 class DataWarehouseWorkflow:
@@ -26,15 +26,15 @@ class DataWarehouseWorkflow:
             "comptes_collectivites": FinancialAccounts.get_output_path(config),
             "elus": ElectedOfficialsWorkflow.get_output_path(config),
             "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
-            # "collectivites_aggregees": AggregateCommunityTable.get_output_path(config),
+            "collectivites_aggregees": AggregateCommunityTable.get_output_path(config),
         }
 
     def run(self) -> None:
         CommunitiesEnricher.enrich(self._config)
         SubventionsEnricher.enrich(self._config)
         MarchesPublicsEnricher.enrich(self._config)
-        # AggregateCommunityTable.aggregate_data(self._config)
-        self._send_to_postgres()
+        AggregateCommunityTable.aggregate_data(self._config)
+        # self._send_to_postgres()
 
     def _send_to_postgres(self):
         if not self._config["workflow"]["save_to_db"]:
@@ -59,3 +59,28 @@ class DataWarehouseWorkflow:
                         conn.execute(text(f"TRUNCATE {table_name}"))
 
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
+
+
+
+from back.scripts.utils.argument_parser import ArgumentParser
+from back.scripts.utils.config_manager import ConfigManager
+from back.scripts.utils.logger_manager import LoggerManager
+
+from back.scripts.utils.config import project_config
+
+if __name__ == "__main__":
+    # Parse arguments, load config and configure logger
+    args = ArgumentParser.parse_args("Gestionnaire du projet LocalOuvert")
+
+    # Load config file
+    config = ConfigManager.load_config(args.filename)
+
+    # Load project configuration instance
+    project_config.load(config)
+
+    LoggerManager.configure_logger(config)
+
+
+    data_warehouse_manager = DataWarehouseWorkflow(config)
+    data_warehouse_manager.run()
+

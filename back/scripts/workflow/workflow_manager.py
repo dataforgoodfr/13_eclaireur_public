@@ -27,7 +27,6 @@ from back.scripts.utils.dataframe_operation import (
 from back.scripts.utils.datagouv_api import select_implemented_formats
 
 
-
 class WorkflowManager:
     def __init__(self, args, config):
         self.args = args
