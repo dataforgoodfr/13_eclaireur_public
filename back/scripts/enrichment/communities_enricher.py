@@ -7,6 +7,7 @@ from datetime import datetime
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
+from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.utils.config import get_project_base_path
 
@@ -25,7 +26,7 @@ class CommunitiesEnricher(BaseEnricher):
             CommunitiesSelector.get_output_path(main_config),
             SubventionsEnricher.get_output_path(main_config),
             FinancialAccounts.get_output_path(main_config),
-            #  MarchesPublicsEnricher.get_output_path(main_config),
+            MarchesPublicsEnricher.get_output_path(main_config),
         ]
 
     @classmethod
@@ -43,13 +44,13 @@ class CommunitiesEnricher(BaseEnricher):
 
         communities = communities.join(
             (
-                bareme.filter(pl.col("scoreSubventions").is_not_null())
+                bareme.filter(pl.col("subventions_score").is_not_null())
                 .sort("annee", descending=True)
                 .group_by("siren")
                 .agg(
                     [
-                        pl.first("scoreSubventions").alias("scoreSubventions"),
-                        pl.first("annee").alias("anneeScoreSub"),
+                        pl.first("subventions_score").alias("subventions_score"),
+                        pl.first("mp_score").alias("mp_score"),
                     ]
                 )
             ),
@@ -61,13 +62,18 @@ class CommunitiesEnricher(BaseEnricher):
 
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
-        communities, subventions, financial = inputs
+        communities, subventions, financial, marches_publics = inputs
 
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
 
-        taux = cls.bareme_subventions(subventions, financial, communities)
-        bareme = bareme.join(taux, on=["siren", "annee"], how="left")
+        barem_sub = cls.bareme_subventions(subventions, financial, communities)
+        barem_mp = cls.bareme_marchespublics(marches_publics, communities)
+        bareme = bareme.join(
+            barem_sub[["siren", "annee", "subventions_score"]],
+            on=["siren", "annee"],
+            how="left",
+        ).join(barem_mp, on=["siren", "annee"], how="left")
 
         return communities, bareme
 
@@ -132,10 +138,11 @@ class CommunitiesEnricher(BaseEnricher):
         )
 
         # Manip particulière : pas de correspondance entre les valeurs des financial_accounts et de communities, on le fait à la main
-
+        all_sirens = communities.select("siren").unique().to_series().to_list()
         financialFiltred = cls.transform_siren(financialFiltred)
         tauxPublication = []
-        years = subventionsFiltred.select("annee").unique().to_series().to_list()
+        current_year = datetime.now().year
+        years = list(range(2017, current_year))
 
         for year in years:
             yearly_df = subventionsFiltred.filter(pl.col("annee") == year)
@@ -144,17 +151,16 @@ class CommunitiesEnricher(BaseEnricher):
             grouped = yearly_df.group_by("id_attribuant").agg(
                 pl.col("montant").sum().alias("total_subSpent")
             )
-            for row in grouped.iter_rows(named=True):
-                siren = row["id_attribuant"]
-                subSpent = row["total_subSpent"]
+            sub_dict = {
+                row["id_attribuant"]: row["total_subSpent"]
+                for row in grouped.iter_rows(named=True)
+            }
+            for siren in all_sirens:
+                subSpent = sub_dict.get(siren, 0.0)
 
-                # Récupération du nom de la collectivité
-                collec = (
-                    yearly_df.filter(pl.col("id_attribuant") == siren)
-                    .select("nom_attribuant")
-                    .get_column("nom_attribuant")
-                    .first()
-                )
+                # for row in grouped.iter_rows(named=True):
+                #     siren = row["id_attribuant"]
+                #     subSpent = row["total_subSpent"]
                 # Récupération du budget correspondant
                 budget_row = financialFiltred.filter(
                     (pl.col("annee") == year) & (pl.col("siren") == siren)
@@ -173,7 +179,6 @@ class CommunitiesEnricher(BaseEnricher):
                     score = "E"
                 tauxPublication.append(
                     [
-                        collec,
                         siren,
                         year,
                         f"{subSpent:1.2e}",
@@ -186,10 +191,10 @@ class CommunitiesEnricher(BaseEnricher):
         # Construction du DataFrame final
         tauxPubDict = pl.DataFrame(
             tauxPublication,
-            schema=["nom", "siren", "annee", "subSpent", "subBudg", "taux", "scoreSubventions"],
+            schema=["siren", "annee", "subSpent", "subBudg", "taux", "subventions_score"],
             orient="row",
         ).sort(["siren", "annee"])
-
+        print(tauxPubDict.head())
         return tauxPubDict
 
     @classmethod
@@ -348,6 +353,7 @@ class CommunitiesEnricher(BaseEnricher):
                 return None
             return series.median()
 
+        print(_merge["delai_publication_jours"])
         bareme = (
             _merge.groupby(["siren", "annee"])
             .agg(
@@ -404,7 +410,9 @@ class CommunitiesEnricher(BaseEnricher):
             lambda x: 1 if x > 0 else 0
         )
         bareme["B"] = colonnes_completude.all(axis=1).map(int)
-        bareme["A"] = bareme["delai_publication_jours"].map(lambda x: 1 if x <= 60 else 0)
+        bareme["A"] = bareme["delai_publication_jours"].map(
+            lambda x: 1 if x is not None and x <= 60 else 0
+        )
 
         def score_total(row):
             if row["E"] == 0:

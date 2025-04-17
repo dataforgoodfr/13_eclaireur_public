@@ -14,6 +14,8 @@ from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import (
     normalize_date,
     normalize_montant,
+    normalize_identifiant,
+    IdentifierFormat,
 )
 
 
@@ -42,12 +44,14 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.type_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
         )
+        print(marches.columns)
         marches_pd = (
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
             .pipe(normalize_date, "dateNotification")
+            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
             .pipe(cls._add_metadata)
             .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
@@ -279,8 +283,8 @@ class MarchesPublicsEnricher(BaseEnricher):
     @classmethod
     def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
         return df.assign(
-            anneeNotification=df["dateNotification"].dt.year.astype("Int64"),
-            anneePublicationDonnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
+            annee_notification=df["dateNotification"].dt.year.astype("Int64"),
+            annee_publication_donnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
             obligation_publication=pd.cut(
                 df["montant"],
                 bins=[0, 40000, float("inf")],
