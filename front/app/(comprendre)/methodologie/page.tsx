@@ -166,9 +166,66 @@ export default function page() {
         L'architecture d'information et l'expérience utilisateur
       </h3>
       <p className='my-6 text-lg'>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis quam cumque optio quod vero
-        iusto voluptatem aspernatur placeat, dignissimos necessitatibus iure minima ipsum similique
-        distinctio expedita pariatur temporibus tempora mollitia.
+        Notre démarche s’appuie sur des principes agiles et centrés sur l’utilisateur, tout en
+        adoptant une approche transparente, collaborative et progressive, dans le but de rendre
+        accessibles à tous les citoyens les données publiques essentielles liées à la gestion des
+        collectivités locales.
+      </p>
+      <h4 className='my-6 text-base font-bold'>Design Thinking</h4>
+      <p className='my-6 text-lg'>
+        Nous avons appliqué la méthodologie Design Thinking pour comprendre en profondeur les
+        besoins des utilisateurs. Cela a permis de définir des solutions innovantes en prenant en
+        compte l’expérience utilisateur, l’accessibilité des données publiques et l’engagement des
+        citoyens.
+      </p>
+      <h4 className='my-6 text-base font-bold'>Personas et Identification des utilisateurs</h4>
+      <p className='my-6 text-lg'>
+        Nous avons créé des personas basés sur les différents profils d’utilisateurs (citoyens,
+        élus, chercheurs, journalistes) afin de comprendre leurs attentes et leurs parcours. Cette
+        étape nous a permis de mieux définir les fonctionnalités et d’orienter le design de manière
+        pertinente.
+      </p>
+      <h4 className='my-6 text-base font-bold'>Story Mapping</h4>
+      <p className='my-6 text-lg'>
+        En utilisant la technique de Story Mapping, nous avons découpé les fonctionnalités en
+        thématique et user stories pour prioriser les éléments clés à développer. Cela a facilité la
+        gestion de notre backlog et permis de structurer les sprints de développement pour répondre
+        au mieux aux besoins des utilisateurs.
+      </p>
+      <h4 className='my-6 text-base font-bold'>User Flow, Arborescence et Wireframing</h4>
+      <p className='my-6 text-lg'>
+        À partir des User Flows et de l’arborescence du site, nous avons conçu des wireframes
+        (maquette basse fidélité) pour tester les interactions et le parcours utilisateur de manière
+        simple et intuitive. Cela a permis de valider les principales interactions avant de passer à
+        la conception visuelle détaillée (maquette haute définition) à partir de la charte graphique
+        élaborer par l’équipe design.
+      </p>
+      <h4 className='my-6 text-base font-bold'>Prototypage et Développement Agile</h4>
+      <p className='my-6 text-lg'>
+        Le prototypage a évolué en designs haute fidélité. Nous avons opté pour une approche agile
+        et itérative, permettant des ajustements réguliers et une prise en compte des retours
+        (association et membre du projet) à chaque étape du projet. Le développement a avancé
+        parallèlement à la création des maquettes. Chaque fonctionnalité a été intégrée au fur et à
+        mesure, avec un focus sur les sections principales (consultation des données, interpellation
+        des élus, etc.).
+      </p>
+      <h4 className='my-6 text-base font-bold'>Conception de la recherche et de la comparaison</h4>
+      <p className='my-6 text-lg'>
+        Nous avons conçu des outils de recherche avancée et de comparaison des collectivités, afin
+        de permettre aux utilisateurs de filtrer et analyser les données en fonction de critères
+        spécifiques (population, budget, score de transparence).
+      </p>
+      <h4 className='my-6 text-base font-bold'>Tests Utilisateurs et Itérations</h4>
+      <p className='my-6 text-lg'>
+        Bien que les tests utilisateurs formels aient été limités, nous avons procédé à des tests
+        informels au fil de l’avancement pour ajuster l’interface en fonction des retours internes.
+      </p>
+      <h4 className='my-6 text-base font-bold'>Mise en Production et Suivi</h4>
+      <p className='my-6 text-lg'>
+        Le lancement de la version MVP permettra de tester l’outil en conditions réelles, avec une
+        attention particulière portée aux retours des utilisateurs pour des améliorations continues.
+        Cela nous permet de garantir une expérience fluide et intuitive, tout en restant flexible
+        pour apporter des améliorations continues à la plateforme Éclaireur Public.
       </p>
       <h3 className='my-6 text-lg font-bold'>Le développement</h3>
       <p className='my-6 text-lg'>
