@@ -13,7 +13,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
   const { data: suggestions, isPending, isError } = useCommunitiesBySearch(query);
 
   return (
-    <div className='absolute mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md'>
+    <div className='absolute z-10 mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md'>
       <Command>
         <CommandList>
           <CommandEmpty>
