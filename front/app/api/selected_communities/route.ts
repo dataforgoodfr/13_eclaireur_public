@@ -19,7 +19,7 @@ function mapCommunityType(type: string | null) {
 }
 
 async function getDataFromPool(options: CommunitiesOptions, pagination?: Pagination) {
-  const params = createSQLQueryParams(options);
+  const params = createSQLQueryParams(options, pagination);
 
   return getQueryFromPool(...params);
 }

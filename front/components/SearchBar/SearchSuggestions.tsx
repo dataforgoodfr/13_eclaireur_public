@@ -1,5 +1,5 @@
 import { Community } from '@/app/models/community';
-import { useCommunitiesBySearch } from '@/utils/hooks/useCommunitiesSearch';
+import { useCommunitiesBySearch } from '@/utils/hooks/useCommunitiesBySearch';
 
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
 

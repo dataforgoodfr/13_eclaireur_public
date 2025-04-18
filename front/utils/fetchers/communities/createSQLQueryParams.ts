@@ -22,7 +22,10 @@ export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: 
   let values: (CommunityType | number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
-  let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
+  let query = `
+    SELECT ${selectorsStringified}, count(*) OVER() AS full_count
+    FROM ${TABLE_NAME}
+   `;
 
   if (options === undefined) {
     return [query, values] as const;
@@ -48,10 +51,6 @@ export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: 
 
   if (whereConditions.length > 0) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
-  }
-
-  if (pagination) {
-    query;
   }
 
   if (limit && !pagination) {
