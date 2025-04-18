@@ -2,7 +2,8 @@ import { TransparencyScoreBar } from '@/components/TransparencyScore/Transparenc
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { Badge } from '@/components/ui/badge';
 import { Trophy } from 'lucide-react';
-import TooltipScore from './TooltipScore';
+
+import TooltipScore from "./TooltipScore"
 
 const mainTitle = 'Score de transparence agrégé';
 // const globalScore = 'Score global';
@@ -36,13 +37,13 @@ type TransparencyScoreProps = {
   trend: number;
 };
 
-export function TransparencyScoreWithTrend ({ score, trend }: TransparencyScoreProps) {
+export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
   return (
     <div className='mx-auto flex max-w-screen-md flex-col items-center justify-between'>
       <div className='flex items-center gap-4 text-xl font-bold'>
         <Trophy />
         <p>{mainTitle}</p>
-        <TooltipScore/>
+        <TooltipScore />
       </div>
       <div className='mt-6 flex flex-col justify-between md:flex-row'>
         <div className='flex flex-col items-center gap-y-2'>

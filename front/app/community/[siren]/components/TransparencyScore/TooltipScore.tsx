@@ -1,6 +1,5 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Trophy } from 'lucide-react';
-
+import { Info } from 'lucide-react';
 
 export default function TooltipScore() {
   return (
