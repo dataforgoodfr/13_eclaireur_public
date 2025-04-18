@@ -3,10 +3,9 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { Badge } from '@/components/ui/badge';
 import { Trophy } from 'lucide-react';
 
-import TooltipScore from "./TooltipScore"
+import TooltipScore from './TooltipScore';
 
 const mainTitle = 'Score de transparence agrégé';
-// const globalScore = 'Score global';
 
 function trendToText(trend: number, margin = 0.01) {
   if (trend <= margin && trend >= -margin) return '= Transparence inchangée';
