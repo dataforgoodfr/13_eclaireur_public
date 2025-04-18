@@ -161,7 +161,7 @@ function NavigationMenuGroup(
     <NavigationMenuItem>
       <NavigationMenuTrigger>{headMenuTitle}</NavigationMenuTrigger>
       <NavigationMenuContent>
-        <ul className='grid w-[400px] gap-3 p-4 md:w-[496px]'>
+        <ul className='grid w-[400px] gap-3 p-4 md:w-[494px]'>
           {menus.map((menu) => (
             <ListItem key={menu.title} title={menu.title} href={menu.href}>
               {menu.description}

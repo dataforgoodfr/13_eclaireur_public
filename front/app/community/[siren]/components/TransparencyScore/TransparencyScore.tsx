@@ -1,8 +1,8 @@
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
+import TooltipScore from './TooltipScore';
 
 const mainTitle = 'Score de transparence agrégé';
 // const globalScore = 'Score global';
@@ -31,43 +31,23 @@ function TrendBadge({ value, margin }: TrendBadgeProps) {
   );
 }
 
-type TransparencyScoresProps = {
-  score: {
-    globalScore: TransparencyScore;
-  };
-  trend: {
-    globalScore: number;
-  };
+type TransparencyScoreProps = {
+  score: TransparencyScore;
+  trend: number;
 };
 
-export function TransparencyScores({ score, trend }: TransparencyScoresProps) {
+export function TransparencyScoreWithTrend ({ score, trend }: TransparencyScoreProps) {
   return (
     <div className='mx-auto flex max-w-screen-md flex-col items-center justify-between'>
       <div className='flex items-center gap-4 text-xl font-bold'>
         <Trophy />
         <p>{mainTitle}</p>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <Info className='-ml-2 mt-1 h-4 w-4' />
-            </TooltipTrigger>
-            <TooltipContent side='bottom' sideOffset={10}>
-              <div className='p-2'>
-                <h4>Explication du score de transparence agrégé :</h4>
-                <ul className='ml-4 mt-2 list-disc'>
-                  <li>Les données sont bien formattées</li>
-                  <li>Les données sont complètes</li>
-                  <li>Les données sont à jour</li>
-                </ul>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <TooltipScore/>
       </div>
       <div className='mt-6 flex flex-col justify-between md:flex-row'>
         <div className='flex flex-col items-center gap-y-2'>
-          <TransparencyScoreBar score={score.globalScore} />
-          <TrendBadge value={trend.globalScore} />
+          <TransparencyScoreBar score={score} />
+          <TrendBadge value={trend} />
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityDetails } from '../CommunityDetails';
 import { FicheCard } from '../FicheCard';
 import NeighboursMap from '../NeighboursMap/NeighboursMap';
-import { TransparencyScores } from '../TransparencyScores/TransparencyScores';
+import { TransparencyScoreWithTrend } from '../TransparencyScore/TransparencyScore';
 
 type FicheIdentiteProps = {
   community: Community;
@@ -16,8 +16,8 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
   // TODO - get and add the last update date
   const lastUpdateText = `Derniere mise a jour`;
   // TODO - retrieve scores
-  const scores = { globalScore: TransparencyScore.B };
-  const trends = { globalScore: 1 };
+  const score = TransparencyScore.B;
+  const trend = 1;
 
   return (
     <FicheCard title={ficheTitle} displayCopyUrl={true}>
@@ -25,7 +25,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
         <CommunityDetails community={community} />
         <NeighboursMap community={community} />
       </div>
-      <TransparencyScores score={scores} trend={trends} />
+      <TransparencyScoreWithTrend score={score} trend={trend} />
     </FicheCard>
   );
 }
