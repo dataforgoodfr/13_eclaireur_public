@@ -1,18 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-
 export const metadata: Metadata = {
   title: 'Le cadre règlementaire',
   description: 'La loi pour une République Numérique, décryptage par Éclaireur Public',
 };
-export default function page() {
+export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>Le cadre règlementaire</h1>

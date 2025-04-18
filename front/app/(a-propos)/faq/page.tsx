@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'Un doute ? une interrogation ? Éclaireur Public répond à toutes les questions que vous vous posez (fréquemment)',
 };
 
-export default function page() {
+export default function Page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>
       <h1 className='text-3xl font-bold'>Foire Aux Questions - FAQ</h1>
@@ -190,6 +190,7 @@ export default function page() {
             ?
           </AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. A incidunt voluptatum
             recusandae officia earum itaque inventore minima, cupiditate delectus, accusantium ex
             iusto exercitationem ullam et!
@@ -201,6 +202,7 @@ export default function page() {
             pourquoi ?
           </AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint quisquam rerum odit
             placeat dolorum eos consectetur animi harum quibusdam corrupti, quam, dignissimos
             tenetur eaque numquam.

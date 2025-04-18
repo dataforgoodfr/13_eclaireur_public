@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: "La méthodologie ou les dessous de l'outil Éclaireur Public",
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
     'Comment réunir savoir-faire, technologies dernier cri et bonnes volontés pour la transparence des données publiques, revue de détails',
 };
 
-export default function page() {
+export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>
@@ -16,7 +17,6 @@ export default function page() {
         Comment réunir savoir-faire, technologies dernier cri et bonnes volontés pour la
         transparence des données publiques, revue de détails
       </h2>
-
       <p className='my-6 text-lg'>
         Eclaireur Public a vocation à éclairer les citoyens sur les données publiques, et
         particulièrement sur les subventions et marchés publics des différentes strates composant
@@ -36,7 +36,9 @@ export default function page() {
         Un pré-travail de défrichage des données (via un pipeline de scraping automatisé) avait été
         mis en place grâce à un script en langage Python pour récupérer les données spécifiquement
         sur data.gouv.fr. L’algorithme est disponible en open source à l’adresse suivante :<br />
-        https://github.com/m4xim1nus/LocalOuvert
+        <Link href='https://github.com/m4xim1nus/LocalOuvert' className='border-b-2 border-black'>
+          https://github.com/m4xim1nus/LocalOuvert
+        </Link>
       </p>
       <p className='my-6 text-lg'>
         Décision est prise fin 2024 par TIF et Anticor de faire appel au réseau de bénévolat Data
@@ -44,10 +46,15 @@ export default function page() {
         d’envergure au service du bien public.
       </p>
       <p className='my-6 text-lg'>
-        Fin février, le projet, parmi 11 autres, est présenté aux bénévoles sur la chaîne YouTube de
-        Data For Good.
+        Fin février, le projet, parmi 11 autres, est présenté aux bénévoles sur la chaîne{' '}
+        <Link
+          href='https://www.youtube.com/watch?v=pwBhVAz8_uY'
+          className='border-b-2 border-black'
+        >
+          YouTube de Data For Good
+        </Link>
+        .
       </p>
-
       <h2 className='my-12 text-2xl font-bold'>La collecte des données</h2>
       <p className='my-6 text-lg'>
         En théorie, les données sur les subventions et les marchés publics sont toutes disponibles
@@ -70,7 +77,6 @@ export default function page() {
         <li className='my-6 text-lg'>OFGL Intercommunalités</li>
         <li className='my-6 text-lg'>OFGL Départements</li>
       </ul>
-
       <h2 className='my-12 text-xl font-bold'>
         L’élaboration d’un indice de transparence des collectivités
       </h2>
@@ -82,7 +88,6 @@ export default function page() {
         Anticor a finalement élaboré 3 indices de transparence, calqué sur une notation allant de A
         à E (comme le nutriscore) :
       </p>
-
       <ul className='list-inside list-disc'>
         <li className='my-6 text-lg'>l’indice de transparence des subventions</li>
         <li className='my-6 text-lg'>l’indice de transparence des marchés publics</li>
@@ -148,7 +153,6 @@ export default function page() {
         L'indice de transparence globale, pour une année N, est la moyenne des indice des
         subventions et indice des marchés publics, arrondi à l'échelon supérieur en cas de virgule.
       </p>
-
       <h2 className='my-12 text-xl font-bold'>L’organisation du projet</h2>
       <h3 className='my-6 text-lg font-bold'>L'ingénierie de données</h3>
       <p className='my-6 text-lg'>

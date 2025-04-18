@@ -46,7 +46,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
 const comprendreMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Contexte',
-    href: '/',
+    href: '/contexte',
     description: 'Quels sont les enjeux de la transparence des dépenses publiques ?',
   },
   {
@@ -114,7 +114,7 @@ export default function Navbar() {
           {NavigationMenuGroup('Visualiser', visualiserMenus)}
           {NavigationMenuGroup('Comprendre', comprendreMenus)}
           <NavigationMenuItem>
-            <Link href='/' legacyBehavior passHref>
+            <Link href='/telecharger' legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                 Télécharger
               </NavigationMenuLink>
@@ -137,7 +137,7 @@ export default function Navbar() {
               <Accordion type='single' collapsible className='w-full'>
                 {AccordionMenu('Visualiser', visualiserMenus)}
                 {AccordionMenu('Comprendre', comprendreMenus)}
-                <Link href='/'>
+                <Link href='/telecharger'>
                   <p className='border-b py-4 text-left text-lg font-bold hover:underline'>
                     Télécharger
                   </p>

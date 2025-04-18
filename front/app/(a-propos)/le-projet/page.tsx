@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     'Éclaireur Public a deux objectifs principaux : ouvrir les données des collectivités locales, éclairer et informer les citoyens sur les enjeux locaux',
 };
-export default function page() {
+export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>Le projet</h1>

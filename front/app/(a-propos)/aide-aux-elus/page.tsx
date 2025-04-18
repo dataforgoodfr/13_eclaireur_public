@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     'Ma collectivité a une mauvaise note de transparence, pas de panique ! Éclaireur Public vous aide à améliorer la transparence des collectivités',
 };
-export default function page() {
+export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>Aide aux élus</h1>
@@ -99,6 +99,7 @@ export default function page() {
         <AccordionItem value='item-1'>
           <AccordionTrigger>Pourquoi ma collectivité a une mauvaise note de transparence ?</AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
             eveniet impedit sed aspernatur.
           </AccordionContent>
@@ -106,6 +107,7 @@ export default function page() {
         <AccordionItem value='item-2'>
           <AccordionTrigger>Que puis-je faire pour améliorer la transparence de ma collectivité ?</AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
             eveniet impedit sed aspernatur.
           </AccordionContent>
@@ -113,6 +115,7 @@ export default function page() {
         <AccordionItem value='item-3'>
           <AccordionTrigger>Combien ça coûte d'ouvrir les données au grand public ?</AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
             eveniet impedit sed aspernatur.
           </AccordionContent>
@@ -121,6 +124,7 @@ export default function page() {
           <AccordionTrigger>Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment les
         faire corriger ?</AccordionTrigger>
           <AccordionContent>
+            {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
             eveniet impedit sed aspernatur.
           </AccordionContent>
