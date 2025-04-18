@@ -60,7 +60,12 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
           <PaginationPrevious onClick={handlePreviousPage} />
         </ShacCNPaginationItem>
         {firstVisiblePages.map((page) => (
-          <PaginationItem page={page} activePage={activePage} onPageChange={onPageChange} />
+          <PaginationItem
+            key={page}
+            page={page}
+            activePage={activePage}
+            onPageChange={onPageChange}
+          />
         ))}
         {activePage > MAX_PAGE_COUNT_ON_SIDES + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE + 1 && (
           <ShacCNPaginationItem>
@@ -68,7 +73,12 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
           </ShacCNPaginationItem>
         )}
         {middleVisiblePages.map((page) => (
-          <PaginationItem page={page} activePage={activePage} onPageChange={onPageChange} />
+          <PaginationItem
+            key={page}
+            page={page}
+            activePage={activePage}
+            onPageChange={onPageChange}
+          />
         ))}
         {activePage < totalPage - (MAX_PAGE_COUNT_ON_SIDES + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE) && (
           <ShacCNPaginationItem>
@@ -76,7 +86,12 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
           </ShacCNPaginationItem>
         )}
         {lastVisiblePages.map((page) => (
-          <PaginationItem page={page} activePage={activePage} onPageChange={onPageChange} />
+          <PaginationItem
+            key={page}
+            page={page}
+            activePage={activePage}
+            onPageChange={onPageChange}
+          />
         ))}
         <ShacCNPaginationItem>
           <PaginationNext className='cursor-pointer' onClick={handleNextPage} />
