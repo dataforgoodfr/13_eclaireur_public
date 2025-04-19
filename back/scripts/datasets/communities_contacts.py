@@ -82,6 +82,10 @@ class CommunitiesContact:
             tar.extractall(path=self.extracted_dir)
 
     def _db_url(self):
+        url = self.config["url"]
+        if url:
+            return url
+
         resource_id = (
             pd.read_parquet(DataGouvCatalog.get_output_path(self.main_config))
             .pipe(

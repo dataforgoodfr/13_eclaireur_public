@@ -45,6 +45,7 @@ cpv_labels:
 
 communities_contacts:
   data_folder: back/data/communities_contacts
+  url: null
 
 search:
   subventions:
