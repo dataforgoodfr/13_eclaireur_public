@@ -93,8 +93,8 @@ export default function Navbar() {
       <NavigationMenu className='flex h-16 items-center py-2'>
         {/* Desktop */}
         <NavigationMenuList className='max-md:hidden'>
-          {NavigationMenuGroup('Visualiser', visualiserMenus)}
-          {NavigationMenuGroup('Comprendre', comprendreMenus)}
+          <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
+          <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
           <NavigationMenuItem>
             <Link href='/' legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -102,7 +102,7 @@ export default function Navbar() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          {NavigationMenuGroup('À propos', aProposMenus)}
+          <NavigationMenuGroup title='À propos' menus={aProposMenus} />
         </NavigationMenuList>
 
         {/* Mobile */}
@@ -116,14 +116,14 @@ export default function Navbar() {
                 <SheetTitle>Éclaireur Public</SheetTitle>
               </SheetHeader>
               <Accordion type='single' collapsible className='w-full'>
-                {AccordionMenu('Visualiser', visualiserMenus)}
-                {AccordionMenu('Comprendre', comprendreMenus)}
+                <AccordionMenu title='Visualiser' menus={visualiserMenus} />
+                <AccordionMenu title='Comprendre' menus={comprendreMenus} />
                 <Link href='/'>
                   <p className='border-b py-4 text-left text-lg font-bold hover:underline'>
                     Télécharger
                   </p>
                 </Link>
-                {AccordionMenu('À propos', aProposMenus)}
+                <AccordionMenu title='À propos' menus={aProposMenus} />
               </Accordion>
             </SheetContent>
           </Sheet>
@@ -153,13 +153,17 @@ const ListItem = React.forwardRef<React.ComponentRef<'a'>, React.ComponentPropsW
 );
 ListItem.displayName = 'ListItem';
 
-function NavigationMenuGroup(
-  headMenuTitle: string,
-  menus: { title: string; href: string; description: string }[],
-) {
+type MenuProps = { title: string; href: string; description: string };
+
+type NavigationMenuGroupProps = {
+  title: string;
+  menus: MenuProps[];
+};
+
+function NavigationMenuGroup({ title, menus }: NavigationMenuGroupProps) {
   return (
     <NavigationMenuItem>
-      <NavigationMenuTrigger>{headMenuTitle}</NavigationMenuTrigger>
+      <NavigationMenuTrigger>{title}</NavigationMenuTrigger>
       <NavigationMenuContent>
         <ul className='grid w-[500px] gap-3 p-4'>
           {menus.map((menu) => (
@@ -173,13 +177,15 @@ function NavigationMenuGroup(
   );
 }
 
-function AccordionMenu(
-  headMenuTitle: string,
-  menus: { title: string; href: string; description: string }[],
-) {
+type AccordionMenuProps = {
+  title: string;
+  menus: MenuProps[];
+};
+
+function AccordionMenu({ title, menus }: AccordionMenuProps) {
   return (
-    <AccordionItem value={headMenuTitle}>
-      <AccordionTrigger className='font-bold'>{headMenuTitle}</AccordionTrigger>
+    <AccordionItem value={title}>
+      <AccordionTrigger className='font-bold'>{title}</AccordionTrigger>
       <AccordionContent className='pl-3'>
         <ul className='space-y-3 divide-y divide-gray-200'>
           {menus.map((menu) => (

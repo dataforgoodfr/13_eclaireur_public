@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import Navbar from '@/components/Navbar';
 import Footer from '@/components/footer';
-import Navbar from '@/components/navbar';
 import { Toaster } from '@/components/ui/toaster';
 
 import Providers from './Providers';
