@@ -26,7 +26,7 @@ communities:
 
 communities_contacts:
   data_folder: back/tests/data/communities_contacts
-  url: file:./back/tests/inputs/communities_contact.tar.gz
+  url: file:./back/tests/inputs/communities_contact.tar.bz2
 
 cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
