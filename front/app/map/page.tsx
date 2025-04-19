@@ -15,8 +15,6 @@ export default function MapPage() {
     limit: 100,
   });
 
-  console.log({ data });
-
   return (
     <div className='global-margin my-20 flex flex-row gap-x-10'>
       <div className='min-h-screen'>

@@ -1,3 +1,5 @@
+import { downloadURL } from '@/utils/downloader/downloadURL';
+
 import { DataTable } from '../constants';
 
 const API_ROUTE = 'api/csv-stream';
@@ -10,7 +12,7 @@ export type CSVParams<T extends Record<string, any>> = {
   fileName?: string;
 };
 
-function objectToURLSearchParams(obj?: Record<string, any>, prefix?: string): URLSearchParams {
+function objectToURLSearchParams(obj?: Record<string, any>): URLSearchParams {
   const searchParams = new URLSearchParams();
 
   for (const key in obj) {
@@ -49,10 +51,5 @@ export async function fetchCSV<T extends Record<string, any>>(params: CSVParams<
 export function downloadCSV<T extends Record<string, any>>(params: CSVParams<T>) {
   const url = createCSVDownloadingLink(params);
 
-  const link = document.createElement('a');
-  link.setAttribute('href', url.toString());
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadURL(url);
 }

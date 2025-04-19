@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import db from '@/utils/db';
 import { DataTable } from '@/utils/fetchers/constants';
-import { nodeStreamToStream } from '@/utils/nodeStreamToStream';
-import { to } from 'pg-copy-streams';
+
+import { getCopyStream } from './utils';
 
 const DEFAULT_FILE_NAME = 'default_file_name.csv';
 
@@ -60,27 +59,15 @@ function createSQLQueryParams<T extends Record<string, any>>(params: CSVParams<T
   return [query, values] as const;
 }
 
-async function getQueryCopyFromPool(queryText: string) {
-  const client = await db.connect();
-  try {
-    const stream = client.query(to(queryText));
-    return stream;
-  } finally {
-    client.release();
-  }
-}
-
 /**
- * Get copy of table from db
+ * Get streamed copy of table from db
  * @param params
  * @returns
  */
-async function getCSV<T extends Record<string, any>>(params: CSVParams<T>) {
-  const [tableQuery] = createSQLQueryParams(params);
+async function getStream<T extends Record<string, any>>(params: CSVParams<T>) {
+  const queryParams = createSQLQueryParams(params);
 
-  const query = `COPY (${tableQuery}) TO STDOUT`;
-
-  return await getQueryCopyFromPool(query);
+  return await getCopyStream(...queryParams);
 }
 
 export async function GET(request: Request) {
@@ -96,26 +83,23 @@ export async function GET(request: Request) {
       throw new Error('The table chosen does not exist - ' + table);
     }
 
-    const stream = await getCSV<Record<string, any>>({
+    const stream = await getStream<Record<string, any>>({
       table: table as DataTable,
       columns,
       filters,
       limit,
     });
 
-    const readableStream: ReadableStream = nodeStreamToStream(stream);
-
     const headers = new Headers({
       'Content-Disposition': `attachment; filename=${fileName}`,
       'Content-Type': 'text/csv',
     });
 
-    return new NextResponse(readableStream, {
+    return new NextResponse(stream, {
       status: 200,
       headers,
     });
   } catch (error) {
-    console.error('Database error: ', error);
     return NextResponse.json(
       { error: 'Internal Server Error while fetching CSV' },
       { status: 500 },

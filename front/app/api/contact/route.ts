@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-// export async function POST(request: NextRequest, response: NextResponse) {
 export async function POST(request: NextRequest) {
   try {
     const res = await request.json();
@@ -22,17 +21,12 @@ export async function POST(request: NextRequest) {
       });
       return newResponse;
     }
-    // res.status(201).json({ message: 'Message envoyé!' })
     const newResponse = new NextResponse(JSON.stringify(res), {
       status: 201,
     });
-    // console.log('success response => ', newResponse)
 
     const transport = nodemailer.createTransport({
-      // service: 'gmail',
       host: 'mail.gmx.com',
-      // port: 587,
-      // secure: false,
       port: 465,
       secure: true,
       auth: {
@@ -66,9 +60,7 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       return NextResponse.json({ error: err }, { status: 500 });
     }
-    // return newResponse
   } catch (error) {
-    // console.log('catch error branch')
     return new NextResponse(JSON.stringify({ error: 'Error processing request' }), {
       status: 500,
     });

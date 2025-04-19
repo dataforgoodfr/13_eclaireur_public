@@ -28,7 +28,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Recherche avancée',
-    href: '/',
+    href: '/advanced-search',
     description: 'Quelles sont les dépenses publiques dans ma collectivité ?',
   },
   {
@@ -96,7 +96,7 @@ export default function Navbar() {
           {NavigationMenuGroup('Visualiser', visualiserMenus)}
           {NavigationMenuGroup('Comprendre', comprendreMenus)}
           <NavigationMenuItem>
-            <Link href='/' legacyBehavior passHref>
+            <Link href='/advanced-search' legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                 Télécharger
               </NavigationMenuLink>

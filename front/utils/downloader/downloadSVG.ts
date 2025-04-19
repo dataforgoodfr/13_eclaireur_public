@@ -40,7 +40,7 @@ export default async function downloadSVG(svg: SVGSVGElement | null, options?: O
     finalURL = await SVGToPNG(finalURL, size);
   }
 
-  downloadURL(finalURL, fileName, extension);
+  downloadURL(finalURL, { fileName, extension });
 }
 
 function convertSVGElementToURL(svg: SVGSVGElement) {

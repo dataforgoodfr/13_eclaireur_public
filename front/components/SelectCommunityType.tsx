@@ -15,7 +15,7 @@ type SelectCommunityTypeProps = {
 };
 
 export default function SelectCommunityType({ onChange }: SelectCommunityTypeProps) {
-  const types = Object.values(CommunityType) as CommunityType[];
+  const types = Object.values(CommunityType);
 
   return (
     <Select onValueChange={onChange}>

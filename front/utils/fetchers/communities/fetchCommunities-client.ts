@@ -1,5 +1,6 @@
 import { Community } from '@/app/models/community';
 
+import { Pagination } from '../types';
 import { CommunitiesOptions } from './createSQLQueryParams';
 
 const API_ROUTE = '/api/selected_communities';
@@ -9,7 +10,10 @@ const API_ROUTE = '/api/selected_communities';
  * @param options
  * @returns
  */
-export async function fetchCommunities(options?: CommunitiesOptions): Promise<Community[]> {
+export async function fetchCommunities(
+  options?: CommunitiesOptions,
+  pagination?: Pagination,
+): Promise<Community[]> {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const limit = options?.limit;
@@ -18,7 +22,11 @@ export async function fetchCommunities(options?: CommunitiesOptions): Promise<Co
   const url = new URL(API_ROUTE, baseURL);
 
   if (type) url.searchParams.append('type', type);
-  if (limit) url.searchParams.append('limit', limit.toString());
+  if (!pagination && limit) url.searchParams.append('limit', limit.toString());
+  if (pagination) {
+    url.searchParams.append('page', pagination.page.toString());
+    url.searchParams.append('limit', pagination.limit.toString());
+  }
 
   const res = await fetch(url.toString(), { method: 'get' });
 

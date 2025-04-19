@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+const linkClassName =
+  'flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800';
+
 export default function Footer() {
   return (
     <div className='w-full bg-neutral-400'>
@@ -12,25 +15,16 @@ export default function Footer() {
         </div>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10'>
           <div className='col-span-1 grid grid-cols-2 gap-1 text-center text-sm md:text-base'>
-            <Link
-              href={'/methodology'}
-              className='flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800'
-            >
+            <Link href={'/methodology'} className={linkClassName}>
               Méthodologie
             </Link>
-            <div className='flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800'>
+            <Link href={'/advanced-search'} className={linkClassName}>
               Télécharger les données
-            </div>
-            <a
-              href='/contact'
-              className='flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800'
-            >
+            </Link>
+            <a href='/contact' className={linkClassName}>
               Contact
             </a>
-            <Link
-              href={'/faq'}
-              className='flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800'
-            >
+            <Link href={'/faq'} className={linkClassName}>
               FAQ
             </Link>
           </div>
@@ -88,5 +82,5 @@ export default function Footer() {
         </div>
       </div>
     </div>
-  )
+  );
 }
