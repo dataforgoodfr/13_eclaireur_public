@@ -252,7 +252,7 @@ def normalize_identifiant(
         **{
             id_col: frame[id_col]
             .astype(str)
-            .where(frame[id_col].notnull())
+            .where(frame[id_col].notnull() & (frame[id_col] != ""))
             .str.strip()
             .str.replace(".0", "")
             .str.replace(r"[\xa0 ]", "", regex=True)

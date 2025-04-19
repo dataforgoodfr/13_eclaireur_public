@@ -3,6 +3,7 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
+from back.scripts.datasets.communities_contacts import CommunitiesContact
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
@@ -25,6 +26,7 @@ class DataWarehouseWorkflow:
             "comptes_collectivites": FinancialAccounts.get_output_path(config),
             "elus": ElectedOfficialsEnricher.get_output_path(config),
             "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
+            "communties_contacts": CommunitiesContact.get_output_path(config),
         }
 
     def run(self) -> None:
