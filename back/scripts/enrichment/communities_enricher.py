@@ -44,8 +44,7 @@ class CommunitiesEnricher(BaseEnricher):
 
         communities = communities.join(
             (
-                bareme.filter(pl.col("subventions_score").is_not_null())
-                .sort("annee", descending=True)
+                bareme.sort("annee", descending=True)
                 .group_by("siren")
                 .agg(
                     [
@@ -67,14 +66,16 @@ class CommunitiesEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
 
-        barem_sub = cls.bareme_subventions(subventions, financial, communities)
-        barem_mp = cls.bareme_marchespublics(marches_publics, communities)
+        bareme_sub = cls.bareme_subventions(subventions, financial, communities)
+        bareme_mp = cls.bareme_marchespublics(marches_publics, communities)
+        print(bareme_mp.columns)
         bareme = bareme.join(
-            barem_sub[["siren", "annee", "subventions_score"]],
+            bareme_sub[["siren", "annee", "subventions_score", "subSpent", "subBudg"]],
             on=["siren", "annee"],
             how="left",
-        ).join(barem_mp, on=["siren", "annee"], how="left")
-
+        ).join(bareme_mp, on=["siren", "annee"], how="left")
+        bareme = cls.enrich_with_means(bareme, communities)
+        print(bareme.columns)
         return communities, bareme
 
     @classmethod
@@ -194,7 +195,7 @@ class CommunitiesEnricher(BaseEnricher):
             schema=["siren", "annee", "subSpent", "subBudg", "taux", "subventions_score"],
             orient="row",
         ).sort(["siren", "annee"])
-        print(tauxPubDict.head())
+
         return tauxPubDict
 
     @classmethod
@@ -426,6 +427,121 @@ class CommunitiesEnricher(BaseEnricher):
             return "A"
 
         bareme["mp_score"] = bareme.apply(score_total, axis=1)
-        bareme = bareme.filter(items=["siren", "annee", "mp_score"])
+        #  bareme = bareme.filter(items=["siren", "annee", "mp_score","montant"]).rename({"montant": "montant_total_mp"})
+        print(bareme.columns)
+        return pl.from_pandas(
+            bareme.loc[:, ["siren", "annee", "mp_score", "montant"]].rename(
+                columns={"montant": "montant_total_mp"}
+            )
+        )
+        # pl.from_pandas(bareme)
 
-        return pl.from_pandas(bareme)
+    @classmethod
+    def enrich_with_means(cls, bareme: pl.DataFrame, communities: pl.DataFrame) -> pl.DataFrame:
+        # Fusionner les deux DataFrames sur 'siren'
+        df = bareme.join(
+            communities[["siren", "type", "code_insee_dept", "code_insee_region"]],
+            on="siren",
+            how="left",
+        )
+        df = df.with_columns(
+            pl.col("subSpent").cast(pl.Float64), pl.col("subBudg").cast(pl.Float64)
+        )
+        # Moyennes par année, type et code_insee_region/code_insee_dept
+        # -------------------------
+        # Moyennes départementales et régionales pour les années
+        # -------------------------
+
+        # Filtrer pour les 'COM' et 'DEP'
+        com = df.filter(pl.col("type") == "COM")
+        dep = df.filter(pl.col("type") == "DEP")
+        print(df.head())
+        print(df.select(pl.col("subSpent").is_null().sum().alias("null_count")).to_pandas())
+        com_dept_mean = (
+            com.filter(pl.col("subSpent").is_not_null())
+            .group_by(["code_insee_dept", "type", "annee"])
+            .agg([pl.col("subSpent").mean().alias("subSpent_dept_mean")])
+        )
+
+        print(com_dept_mean.head())
+        # Moyennes départementales pour les 'COM' sur code_insee_dept et année
+        com_dept_mean = (
+            com.filter(
+                pl.col("subSpent").is_not_null()
+                & pl.col("subBudg").is_not_null()
+                & pl.col("montant_total_mp").is_not_null()
+            )
+            .group_by(["code_insee_dept", "type", "annee"])
+            .agg(
+                [
+                    pl.col("subSpent").mean().alias("subSpent_dept_mean"),
+                    pl.col("subBudg").mean().alias("subBudg_dept_mean"),
+                    pl.col("montant_total_mp").mean().alias("montant_total_mp_dept_mean"),
+                ]
+            )
+        )
+
+        # Moyennes départementales pour les 'DEP' sur code_insee_region et année
+        dep_dept_mean = (
+            dep.filter(
+                pl.col("subSpent").is_not_null()
+                & pl.col("subBudg").is_not_null()
+                & pl.col("montant_total_mp").is_not_null()
+            )
+            .group_by(["code_insee_region", "type", "annee"])
+            .agg(
+                [
+                    pl.col("subSpent").mean().alias("subSpent_dept_mean"),
+                    pl.col("subBudg").mean().alias("subBudg_dept_mean"),
+                    pl.col("montant_total_mp").mean().alias("montant_total_mp_dept_mean"),
+                ]
+            )
+        )
+
+        # Calcul des moyennes par région pour les 'COM' et 'DEP' sur code_insee_region et année
+        com_region_mean = (
+            com.filter(
+                pl.col("subSpent").is_not_null()
+                & pl.col("subBudg").is_not_null()
+                & pl.col("montant_total_mp").is_not_null()
+            )
+            .group_by(["code_insee_region", "type", "annee"])
+            .agg(
+                [
+                    pl.col("subSpent").mean().alias("subSpent_region_mean"),
+                    pl.col("subBudg").mean().alias("subBudg_region_mean"),
+                    pl.col("montant_total_mp").mean().alias("montant_total_mp_region_mean"),
+                ]
+            )
+        )
+
+        # Calcul des moyennes nationales par année pour chaque type
+        national_mean = (
+            df.filter(
+                pl.col("subSpent").is_not_null()
+                & pl.col("subBudg").is_not_null()
+                & pl.col("montant_total_mp").is_not_null()
+            )
+            .group_by(["type", "annee"])
+            .agg(
+                [
+                    pl.col("subSpent").mean().alias("subSpent_national_mean"),
+                    pl.col("subBudg").mean().alias("subBudg_national_mean"),
+                    pl.col("montant_total_mp").mean().alias("montant_total_mp_national_mean"),
+                ]
+            )
+        )
+
+        # Joindre toutes les moyennes calculées aux données originales
+        df_combined = df.join(
+            com_dept_mean, on=["code_insee_dept", "type", "annee"], how="left"
+        )
+        df_combined = df_combined.join(
+            dep_dept_mean, on=["code_insee_region", "type", "annee"], how="left"
+        )
+        df_combined = df_combined.join(
+            com_region_mean, on=["code_insee_region", "type", "annee"], how="left"
+        )
+        df_combined = df_combined.join(national_mean, on=["type", "annee"], how="left")
+        print(df_combined.head())
+        return df_combined
