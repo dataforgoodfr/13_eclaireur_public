@@ -96,7 +96,7 @@ export default function Navbar() {
           {NavigationMenuGroup('Visualiser', visualiserMenus)}
           {NavigationMenuGroup('Comprendre', comprendreMenus)}
           <NavigationMenuItem>
-            <Link href='/' legacyBehavior passHref>
+            <Link href='/advanced-search' legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                 Télécharger
               </NavigationMenuLink>
