@@ -2,7 +2,6 @@
 
 import { PureComponent, useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import { Subvention } from '@/app/models/subvention';
 import { Switch } from '@/components/ui/switch';
 import { formatCompactPrice, formatNumber } from '@/utils/utils';
@@ -16,6 +15,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
+import DownloadButton from './DownloadButton';
 
 type FormattedDataTrends = {
   annee: number;
@@ -114,12 +115,12 @@ export default function Trends({ data }: { data: Subvention[] }) {
   const formattedData = trends(data);
   console.log(formattedData);
 
-
   return (
     <>
-      <div className='flex items-center justify-between'>
+      {/* VERSION 1 */}
+      {/* <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Évolution des subventions au cours du temps</h3>
+          <h3 className='py-2 text-2xl font-medium'>Évolution des subventions au cours du temps</h3>
           <div className='flex items-baseline gap-2'>
             <div
               onClick={() => setSubventionsCountDisplayed(false)}
@@ -142,9 +143,47 @@ export default function Trends({ data }: { data: Subvention[] }) {
         <div className='flex items-center gap-2'>
           <DownloadSelector />
         </div>
+      </div> */}
+      {/* VERSION 2 */}
+      {/* <div>
+        <h3 className='pb-8 pt-10 text-center text-2xl font-medium'>
+          Évolution des subventions au cours du temps
+        </h3>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-start gap-2'>
+            <div
+              className={`rounded-md px-3 py-2 text-sm shadow hover:cursor-pointer hover:bg-black hover:text-white ${!subventionsCountDisplayed && 'bg-black text-white'}`}
+              onClick={() => setSubventionsCountDisplayed(false)}
+            >
+              Montants des subventions versées
+            </div>
+            <div
+              className={`rounded-md px-3 py-2 text-sm shadow hover:cursor-pointer hover:bg-black hover:text-white ${subventionsCountDisplayed && 'bg-black text-white'}`}
+              onClick={() => setSubventionsCountDisplayed(true)}
+            >
+              Nombre de subventions attribuées
+            </div>
+          </div>
+          <div className='flex items-center gap-2'>
+            <DownloadButton label='CSV'/>
+            <DownloadButton label='PNG'/>
+          </div>
+        </div>
+      </div> */}
+      {/* VERSION 3 */}
+      <div className='flex items-baseline justify-between'>
+        <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
+          Évolution des subventions au cours du temps
+        </h3>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <DownloadButton label='CSV' />
+            <DownloadButton label='PNG' />
+          </div>
+        </div>
       </div>
       {!subventionsCountDisplayed && (
-        <div className='border p-4'>
+        <div className='p-4'>
           <ResponsiveContainer width='100%' height={600}>
             <BarChart
               width={500}
@@ -165,6 +204,8 @@ export default function Trends({ data }: { data: Subvention[] }) {
                 cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
               />
               <Legend
+                verticalAlign='bottom'
+                align='center'
                 formatter={(value) => {
                   const legendLabels: Record<string, string> = {
                     montant: 'Subventions publiées (€)',
@@ -182,7 +223,7 @@ export default function Trends({ data }: { data: Subvention[] }) {
         </div>
       )}
       {subventionsCountDisplayed && (
-        <div className='border p-4'>
+        <div className='p-4'>
           <ResponsiveContainer width='100%' height={600}>
             <BarChart
               width={500}
@@ -218,6 +259,20 @@ export default function Trends({ data }: { data: Subvention[] }) {
           </ResponsiveContainer>
         </div>
       )}
+      <div className='flex items-center justify-center gap-2 pt-2'>
+        <div
+          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${!subventionsCountDisplayed && 'bg-black text-white'}`}
+          onClick={() => setSubventionsCountDisplayed(false)}
+        >
+          Montants des subventions versées
+        </div>
+        <div
+          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${subventionsCountDisplayed && 'bg-black text-white'}`}
+          onClick={() => setSubventionsCountDisplayed(true)}
+        >
+          Nombre de subventions attribuées
+        </div>
+      </div>
     </>
   );
 }
