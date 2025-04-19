@@ -11,6 +11,7 @@ from polars import col
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 
 
 class CommunitiesContact:
@@ -45,25 +46,30 @@ class CommunitiesContact:
         self._download_targz()
         self._extract_targz()
 
-        filename = [fn for fn in os.listdir(self.extracted_dir) if Path(fn).suffix == ".json"][
-            0
-        ]
+        filename = [
+            fn
+            for fn in os.listdir(self.extracted_dir)
+            if Path(fn).suffix == ".json" and not fn.startswith("._")
+        ][0]
         with open(self.extracted_dir / filename, "r") as f:
             content = json.load(f)["service"]
             df = (
-                pl.from_pandas(pd.read_json(StringIO(json.dumps(content))))
+                pd.read_json(StringIO(json.dumps(content)))
+                .pipe(normalize_identifiant, "siren", format=IdentifierFormat.SIRET)
+                .pipe(normalize_identifiant, "siret", format=IdentifierFormat.SIRET)
+            )
+            df = (
+                pl.from_pandas(df)
                 .select(
                     "nom",
                     "pivot",
-                    "siren",
-                    "siret",
+                    col("siret").fill_null(col("siren")).alias("siret"),
                     "sve",
                     "adresse_courriel",
                     "formulaire_contact",
                 )
                 .pipe(self.parse_pivot)
                 .filter(col("type").is_not_null())
-                .pipe(self.normalise_identifiants)
                 .pipe(self.normalize_contact)
                 .filter(col("contact").is_not_null())
             )
@@ -116,13 +122,6 @@ class CommunitiesContact:
             )
             .drop("pivot")
         )
-
-    def normalise_identifiants(self, df: pl.DataFrame) -> pl.DataFrame:
-        cleaned_siren = pl.when(col("siren") != "").then(col("siren").str.zfill(9))
-        cleaned_siret = pl.when(col("siret") != "").then(col("siret").str.zfill(14))
-        return df.with_columns(
-            pl.coalesce(cleaned_siret.str.slice(0, 9), cleaned_siren).alias("siren")
-        ).drop("siret")
 
     def normalize_contact(self, df: pl.DataFrame) -> pl.DataFrame:
         contacts = ["sve", "adresse_courriel", "formulaire_contact"]
