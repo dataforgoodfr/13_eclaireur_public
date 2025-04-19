@@ -11,10 +11,9 @@ export default function MapPage() {
   const [communityType, setCommunityType] = useState(CommunityType.Region);
 
   const { isLoading, data } = useCommunities({
-    filters: { type: communityType, limit: 100, siren: undefined },
+    filters: { type: communityType, siren: undefined },
+    limit: 100,
   });
-
-  console.log({ data });
 
   return (
     <div className='global-margin my-20 flex flex-row gap-x-10'>
