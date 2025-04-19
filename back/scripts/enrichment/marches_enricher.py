@@ -52,6 +52,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
         )
+        print(marches.columns)
         marches_pd = (
             marches.to_pandas()
             .pipe(normalize_montant, "montant")
@@ -269,8 +270,8 @@ class MarchesPublicsEnricher(BaseEnricher):
     @classmethod
     def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
         return df.assign(
-            anneeNotification=df["dateNotification"].dt.year.astype("Int64"),
-            anneePublicationDonnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
+            annee_notification=df["dateNotification"].dt.year.astype("Int64"),
+            annee_publication_donnees=df["datePublicationDonnees"].dt.year.astype("Int64"),
             obligation_publication=pd.cut(
                 df["montant"],
                 bins=[0, 40000, float("inf")],
