@@ -42,6 +42,7 @@
     "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
     "pg-copy-streams": "^6.0.6",
+    "pg-promise": "^11.13.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",

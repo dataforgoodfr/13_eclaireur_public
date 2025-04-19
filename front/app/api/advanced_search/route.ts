@@ -8,6 +8,10 @@ import {
 } from '@/utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
 import { Pagination } from '@/utils/fetchers/types';
 import { CommunityType } from '@/utils/types';
+import { parseNumber } from '@/utils/utils';
+
+const DEFAULT_LIMIT = 10;
+const DEFAULT_PAGE = 1;
 
 async function getDataFromPool(filters: CommunitiesAdvancedSearchFilters, pagination: Pagination) {
   const params = createSQLQueryParams(filters, pagination);
@@ -18,8 +22,8 @@ async function getDataFromPool(filters: CommunitiesAdvancedSearchFilters, pagina
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = Number(searchParams.get('page'));
-    const limit = Number(searchParams.get('limit'));
+    const page = parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE;
+    const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
 
     const filters = {
       type: (searchParams.get('type') as CommunityType) ?? undefined,
