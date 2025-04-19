@@ -108,6 +108,12 @@ financial_accounts:
   columns_mapping: back/scripts/datasets/normalization_financial_account_columns.csv
   combined_filename: back/data/financial_accounts/financial_accounts.parquet
 
+
+collectivites_aggregees:
+  data_folder: back/data/collectivites_aggregees
+  combined_filename: back/data/collectivites_aggregees/collectivites_aggregees.parquet
+
+
 outputs_csv:
   path: 'back/data/datasets/%(topic)s/outputs'
 

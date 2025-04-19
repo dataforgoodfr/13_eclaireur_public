@@ -20,22 +20,22 @@ class DataWarehouseWorkflow:
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
         self.send_to_db = {
-            "collectivites": CommunitiesEnricher.get_output_path(config),
-            "marches_publics": MarchesPublicsEnricher.get_output_path(config),
-            "subventions": SubventionsEnricher.get_output_path(config),
-            "comptes_collectivites": FinancialAccounts.get_output_path(config),
-            "elus": ElectedOfficialsEnricher.get_output_path(config),
-            "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
+            # "collectivites": CommunitiesEnricher.get_output_path(config),
+            # "marches_publics": MarchesPublicsEnricher.get_output_path(config),
+            # "subventions": SubventionsEnricher.get_output_path(config),
+            # "comptes_collectivites": FinancialAccounts.get_output_path(config),
+            # "elus": ElectedOfficialsEnricher.get_output_path(config),
+            # "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
             "collectivites_aggregees": AggregateCommunityTable.get_output_path(config),
         }
 
     def run(self) -> None:
-        ElectedOfficialsEnricher.enrich(self._config)
-        CommunitiesEnricher.enrich(self._config)
-        SubventionsEnricher.enrich(self._config)
-        MarchesPublicsEnricher.enrich(self._config)
+        # ElectedOfficialsEnricher.enrich(self._config)
+        # CommunitiesEnricher.enrich(self._config)
+        # SubventionsEnricher.enrich(self._config)
+        # MarchesPublicsEnricher.enrich(self._config)
         AggregateCommunityTable.aggregate_data(self._config)
-        # self._send_to_postgres()
+        self._send_to_postgres()
 
     def _send_to_postgres(self):
         if not self._config["workflow"]["save_to_db"]:
@@ -50,6 +50,10 @@ class DataWarehouseWorkflow:
         with connector.engine.connect() as conn:
             for table_name, filename in self.send_to_db.items():
                 df = pl.read_parquet(filename)
+                import pandas as pd
+                df1= pd.read_parquet(filename)
+                df1.to_sql(table_name,conn, if_exists=if_table_exists)
+                print()
 
                 if if_table_exists == "append":
                     table_exists_query = text(

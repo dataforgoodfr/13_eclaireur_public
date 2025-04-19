@@ -103,7 +103,7 @@ financial_accounts:
 
 collectivites_aggregees:
   data_folder: back/tests/data/collectivites_aggregees
-  combined_filename: back/tests/data/financial_accounts/collectivites_aggregees.parquet
+  combined_filename: back/tests/data/collectivites_aggregees/collectivites_aggregees.parquet
 
 
 warehouse:
