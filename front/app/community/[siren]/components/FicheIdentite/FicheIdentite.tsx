@@ -10,8 +10,6 @@ type FicheIdentiteProps = {
   community: Community;
 };
 
-const ficheTitle = `Fiche identité`;
-
 export function FicheIdentite({ community }: FicheIdentiteProps) {
   // TODO - get and add the last update date
   const lastUpdateText = `Derniere mise a jour`;
@@ -20,7 +18,7 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
   const trend = 1;
 
   return (
-    <FicheCard title={ficheTitle} displayCopyUrl={true}>
+    <FicheCard>
       <div className='mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
         <CommunityDetails community={community} />
         <NeighboursMap community={community} />

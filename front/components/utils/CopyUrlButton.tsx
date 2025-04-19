@@ -5,7 +5,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardCopy } from 'lucide-react';
 
-export default function CopyUrlButton() {
+const DEFAULT_LABEL = 'Partager';
+
+type CopyUrlButtonProps = {
+  label?: string;
+};
+
+export default function CopyUrlButton({ label = DEFAULT_LABEL }: CopyUrlButtonProps) {
   const { toast } = useToast();
 
   async function copyToClipboard() {
@@ -21,7 +27,7 @@ export default function CopyUrlButton() {
         <TooltipTrigger asChild>
           <Button variant='outline' size='sm' onClick={copyToClipboard} className='ms-3'>
             <ClipboardCopy />
-            Partager
+            {label}
           </Button>
         </TooltipTrigger>
         <TooltipContent>
@@ -29,19 +35,5 @@ export default function CopyUrlButton() {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-}
-
-type ChiffreCleProps = {
-  value: string;
-  description: string;
-};
-
-function ChiffreCle({ value, description }: ChiffreCleProps) {
-  return (
-    <div className='h-48 w-64 content-center border px-6'>
-      <p className='text-2xl font-bold'>{value}</p>
-      <p className=''>{description}</p>
-    </div>
   );
 }

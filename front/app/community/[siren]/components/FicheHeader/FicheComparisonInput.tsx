@@ -17,7 +17,7 @@ export function FicheComparisonInput({ community }: FicheComparisonInput) {
   }
 
   return (
-    <div className='flex flex-1 flex-col items-center gap-2'>
+    <div className='flex flex-1 flex-col items-center gap-2' style={{ border: '1px solid red' }}>
       <p>{searchLabel}</p>
       <SearchBar onSelect={(option) => goToComparison(option.siren)} />
     </div>
