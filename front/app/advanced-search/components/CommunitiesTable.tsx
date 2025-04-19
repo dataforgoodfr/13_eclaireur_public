@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatNumber } from '@/utils/utils';
+import { formatNumber, stringifyCommunityType } from '@/utils/utils';
 
 import { usePaginationFromSearchParams } from '../hooks/usePaginationFromSearchParams';
 import { Pagination } from './Pagination';
@@ -40,7 +40,7 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
           {communities.map((community) => (
             <TableRow key={community.siren + community.type}>
               <TableCell className='font-medium'>{community.nom}</TableCell>
-              <TableCell>{community.type}</TableCell>
+              <TableCell>{stringifyCommunityType(community.type)}</TableCell>
               <TableCell className='text-right'>{formatNumber(community.population)}</TableCell>
               <TableCell className='text-right'>TODO</TableCell>
               <TableCell>TODO</TableCell>
