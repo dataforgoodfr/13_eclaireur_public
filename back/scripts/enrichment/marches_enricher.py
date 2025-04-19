@@ -280,15 +280,15 @@ class MarchesPublicsEnricher(BaseEnricher):
         )
 
     @classmethod
-    def concat_list(cls, lst):
+    def concat_list(cls, lst: str):
         if len(lst) > 0:
             return " et ".join(sorted(set(lst)))
         return None
 
     @classmethod
-    def safe_json_load_of_dict_or_list_or_str(cls, x, dict_key):
+    def safe_json_load_of_dict_or_list_or_str(cls, col_value: str, dict_key: str):
         try:
-            parsed = json.loads(x)
+            parsed = json.loads(col_value)
             if isinstance(parsed, list) and parsed:
                 return MarchesPublicsEnricher.concat_list(parsed)
             elif isinstance(parsed, dict):
@@ -299,8 +299,8 @@ class MarchesPublicsEnricher(BaseEnricher):
                     return dct
             return None
         except (json.JSONDecodeError, TypeError):
-            if isinstance(x, str) and (x != ""):
-                return x
+            if isinstance(col_value, str) and (col_value != ""):
+                return col_value
             return None
 
     @classmethod
