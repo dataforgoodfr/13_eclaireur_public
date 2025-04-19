@@ -12,6 +12,8 @@ export type Community = {
   code_insee_region: string;
   categorie: string;
   population: number;
+  latitude: number | null;
+  longitude: number | null;
   mp_score: TransparencyScore;
   subventions_score: TransparencyScore;
   siren_epci: string;
@@ -23,6 +25,7 @@ export type Community = {
   effectifs_sup_50: boolean;
   should_publish: boolean;
   outre_mer: boolean;
+  code_postal: number | null;
 };
 
 /** @deprecated use Community instead */

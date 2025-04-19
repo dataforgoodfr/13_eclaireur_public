@@ -34,8 +34,41 @@ export function parseNumber(value: string | null) {
   return parsedValued;
 }
 
-export function formatNumber(number: number): string {
-  return number.toLocaleString('fr-FR');
+function formatFrench(value: number, options?: Intl.NumberFormatOptions) {
+  const formatter = new Intl.NumberFormat('fr-FR', options);
+  const formattedNumber = formatter.format(value);
+  return formattedNumber;
+}
+
+export function formatCompactPrice(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+    notation: 'compact',
+    currency: 'EUR',
+    style: 'currency',
+    maximumFractionDigits: 1,
+    ...options,
+  } as const;
+
+  return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
+}
+
+export function formatPrice(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+    ...options,
+  } as const;
+  return formatFrench(value, defaultOptions);
+}
+
+export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+    maximumFractionDigits: 2,
+    ...options,
+  } as const;
+
+  return formatFrench(value, defaultOptions);
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
