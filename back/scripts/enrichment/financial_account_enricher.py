@@ -40,7 +40,36 @@ class FinancialEnricher(BaseEnricher):
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, financial = inputs
+        financial_filtred = cls._prepare_financial_data(financial)
+        communities = cls.transform_codes(communities)
+        financial_filtred = cls.enrich_siren(
+            financial_filtred, communities, "REG", "region", "code_insee_region_clean", "reg"
+        )
+        financial_filtred = cls.enrich_siren(
+            financial_filtred, communities, "DEP", "dept", "code_insee_dept_clean", "dept"
+        )
+        financial_filtred = cls.enrich_siren(
+            financial_filtred, communities, "COM", "insee_commune", "code_insee", "com"
+        )
 
+        financial_filtred = financial_filtred.with_columns(
+            [
+                pl.coalesce(["siren_com", "siren_dept", "siren_reg"]).alias("siren"),
+                pl.coalesce(["nom_com", "nom_dept", "nom_reg"]).alias("nom"),
+            ]
+        )
+
+        financial_filtred = financial_filtred.drop(
+            ["siren_com", "siren_dept", "siren_reg", "nom_com", "nom_dept", "nom_reg"]
+        )
+
+        # Manip particulière : pas de correspondance entre les valeurs des financial_accounts et de communities, on le fait à la main
+        financial_filtred = cls.transform_siren(financial_filtred)
+
+        return financial_filtred
+
+    @classmethod
+    def _prepare_financial_data(cls, financial: pl.DataFrame) -> pl.DataFrame:
         financial_filtred = financial.filter(pl.col("annee") > 2016)
 
         required_cols = ["region", "dept", "insee_commune"]
@@ -66,31 +95,6 @@ class FinancialEnricher(BaseEnricher):
             .otherwise(pl.lit("COM"))
             .alias("type")
         )
-
-        communities = cls.transform_codes(communities)
-        financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "REG", "region", "code_insee_region_clean", "reg"
-        )
-        financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "DEP", "dept", "code_insee_dept_clean", "dept"
-        )
-        financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "COM", "insee_commune", "code_insee", "com"
-        )
-
-        financial_filtred = financial_filtred.with_columns(
-            [
-                pl.coalesce(["siren_com", "siren_dept", "siren_reg"]).alias("siren"),
-                pl.coalesce(["nom_com", "nom_dept", "nom_reg"]).alias("nom"),
-            ]
-        )
-
-        financial_filtred = financial_filtred.drop(
-            ["siren_com", "siren_dept", "siren_reg", "nom_com", "nom_dept", "nom_reg"]
-        )
-
-        # Manip particulière : pas de correspondance entre les valeurs des financial_accounts et de communities, on le fait à la main
-        financial_filtred = cls.transform_siren(financial_filtred)
 
         return financial_filtred
 
