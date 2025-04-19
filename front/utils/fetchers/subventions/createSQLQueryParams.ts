@@ -8,6 +8,7 @@ export type SubventionsParams = {
   selectors?: (keyof Subvention)[];
   filters?: Partial<Pick<Subvention, 'attribuant_siren' | 'attribuant_type'>>;
   limit?: number;
+  orderBy?: { direction: 'asc' | 'desc'; column: keyof Subvention };
 };
 
 const TABLE_NAME = DataTable.SubventionsStaging;
@@ -27,7 +28,7 @@ export function createSQLQueryParams(options?: SubventionsParams) {
     return [query, values] as const;
   }
 
-  const { filters, limit } = options;
+  const { filters, limit, orderBy } = options;
 
   const whereConditions: string[] = [];
 
@@ -49,8 +50,13 @@ export function createSQLQueryParams(options?: SubventionsParams) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
 
+  if (orderBy) {
+    query += ` ORDER BY $${values.length + 1} $${values.length + 2}`;
+    values.push(...[orderBy.column, orderBy.direction]);
+  }
+
   if (limit) {
-    query += ` LIMIT ${values.length + 1}`;
+    query += ` LIMIT $${values.length + 1}`;
     values.push(limit);
   }
 
