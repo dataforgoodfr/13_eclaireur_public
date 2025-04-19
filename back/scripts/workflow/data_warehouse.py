@@ -9,6 +9,8 @@ from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
+from back.scripts.enrichment.bareme_enricher import BaremeEnricher
+
 from back.scripts.utils.psql_connector import PSQLConnector
 
 
@@ -25,6 +27,7 @@ class DataWarehouseWorkflow:
             "comptes_collectivites": FinancialAccounts.get_output_path(config),
             "elus": ElectedOfficialsEnricher.get_output_path(config),
             "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
+            "bareme": BaremeEnricher.get_output_path(config),
         }
 
     def run(self) -> None:
@@ -32,7 +35,7 @@ class DataWarehouseWorkflow:
         CommunitiesEnricher.enrich(self._config)
         SubventionsEnricher.enrich(self._config)
         MarchesPublicsEnricher.enrich(self._config)
-
+        BaremeEnricher.enrich(self._config)
         self._send_to_postgres()
 
     def _send_to_postgres(self):
