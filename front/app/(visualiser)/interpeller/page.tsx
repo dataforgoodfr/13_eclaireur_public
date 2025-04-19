@@ -11,7 +11,6 @@ import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
 export default function Page() {
-
   const router = useRouter();
   const goToStep1 = async (siren: string) => {
     router.push(`/interpeller/${siren}/step1`);
