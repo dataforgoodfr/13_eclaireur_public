@@ -7,15 +7,15 @@ export default function CtaGroup() {
   const CtaInfo = [
     {
       title: 'Cartographie',
-      caption: 'Quelles sont les collectivités les plus transparentes ?',
+      caption: 'Explorer la carte pour voir quelles sont les collectivités les plus transparentes.',
       image: carteImage,
-      buttonText: 'Filtrer par indicateur',
+      buttonText: 'Naviguer sur la carte',
       href: '/map',
     },
 
     {
-      title: 'Portrait',
-      caption: 'Comment ma collectivité dépense-t-elle ?',
+      title: 'Recherche avancée',
+      caption: 'Personnaliser votre recherche pour trouver les collectivités qui vous intéressent.',
       image: placeHolderImage,
       buttonText: 'Filtrer par collectivité',
       href: '/',
@@ -23,7 +23,7 @@ export default function CtaGroup() {
 
     {
       title: 'Interpeller',
-      caption: 'Ma collectivité est-elle transparente ?',
+      caption: "Interpeller les élus pour améliorer la transparence dans votre collectivité.",
       image: placeHolderImage,
       buttonText: 'Engagement citoyen',
       href: '/',
