@@ -56,6 +56,7 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         # Deduplicate à pipe avec la ligne au dessus quand ce sera prêt
         marches = marches.pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
+        marches = marches.pipe(cls.drop_sous_traitance_duplicates)
 
         # do stuff with sirene
         marches_pd = (
@@ -384,3 +385,14 @@ class MarchesPublicsEnricher(BaseEnricher):
             .filter(pl.col("is_duplicate") == 0)
             .drop(["is_duplicate", "rank", "priority", "source_is_null"])
         )
+    
+    def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
+        # Déplucate les MP identiques qui ont des actes de SousTraitance différents. 
+        # On garde la ligne avec le plus d'actes de sousTraitance
+
+        return (
+            marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(subset=["id", "titulaire_id","objet"], keep="first")
+        )
+
+
+
