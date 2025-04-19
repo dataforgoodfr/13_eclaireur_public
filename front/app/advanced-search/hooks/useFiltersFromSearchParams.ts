@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Community } from '@/app/models/community';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
+import { parseNumber } from '@/utils/utils';
 
 import { DEFAULT_PAGE } from './usePaginationFromSearchParams';
 
@@ -45,13 +46,4 @@ export function useFiltersParams(): ReturnType {
   };
 
   return { filters, setFilter };
-}
-
-function parseNumber(value: string | null) {
-  if (value == null) return undefined;
-
-  const parsedValued = Number(value);
-  if (isNaN(parsedValued)) return undefined;
-
-  return parsedValued;
 }

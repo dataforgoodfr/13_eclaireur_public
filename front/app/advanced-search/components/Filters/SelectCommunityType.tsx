@@ -38,7 +38,7 @@ export function SelectCommunityType() {
     <Selector
       options={options}
       value={type ?? null}
-      label='Type de collectivite'
+      label='Type de collectivité'
       placeholder='Choisissez un type'
       onChange={handleChange}
       getOptionLabel={stringifyType}

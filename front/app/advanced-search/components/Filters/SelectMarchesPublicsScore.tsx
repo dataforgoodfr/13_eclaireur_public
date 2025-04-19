@@ -17,7 +17,7 @@ export function SelectMarchesPublicsScore() {
 
   return (
     <Selector
-      label='Marches Publics'
+      label='Marchés Publics'
       placeholder='Choisissez un score'
       options={options}
       value={mp_score ?? null}

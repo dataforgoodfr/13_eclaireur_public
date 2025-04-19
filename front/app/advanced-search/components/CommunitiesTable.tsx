@@ -28,11 +28,11 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-[100px]'>Collectivite</TableHead>
+            <TableHead className='w-[200px]'>Collectivité</TableHead>
             <TableHead>Type</TableHead>
             <TableHead className='text-right'>Population</TableHead>
             <TableHead className='text-right'>Budget total</TableHead>
-            <TableHead>Score Marches Publics</TableHead>
+            <TableHead>Score Marchés Publics</TableHead>
             <TableHead>Score Subventions</TableHead>
           </TableRow>
         </TableHeader>

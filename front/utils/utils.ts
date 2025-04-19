@@ -23,6 +23,15 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
+export function parseNumber(value: string | null) {
+  if (value === null) return undefined;
+
+  const parsedValued = Number(value);
+  if (isNaN(parsedValued)) return undefined;
+
+  return parsedValued;
+}
+
 export function formatNumber(number: number): string {
   return number.toLocaleString('fr-FR');
 }
