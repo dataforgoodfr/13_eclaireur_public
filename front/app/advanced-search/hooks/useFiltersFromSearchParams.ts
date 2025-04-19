@@ -39,10 +39,19 @@ export function useFiltersParams(): ReturnType {
 
   const filters: Filters = {
     type: searchParams.get('type') as CommunityType,
-    population: Number(searchParams.get('population')),
+    population: parseNumber(searchParams.get('population')),
     mp_score: searchParams.get('mp_score') as TransparencyScore,
     subventions_score: searchParams.get('subventions_score') as TransparencyScore,
   };
 
   return { filters, setFilter };
+}
+
+function parseNumber(value: string | null) {
+  if (value == null) return undefined;
+
+  const parsedValued = Number(value);
+  if (isNaN(parsedValued)) return undefined;
+
+  return parsedValued;
 }

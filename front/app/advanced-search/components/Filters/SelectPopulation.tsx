@@ -1,5 +1,9 @@
+import { formatNumber } from '@/utils/utils';
+
 import { useFiltersParams } from '../../hooks/useFiltersFromSearchParams';
 import { Selector } from './Selector';
+
+const options = [2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 2_000_000];
 
 export function SelectPopulation() {
   const {
@@ -11,7 +15,10 @@ export function SelectPopulation() {
     setFilter('population', value?.toString() ?? null);
   }
 
-  const options = [2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 2_000_000];
+  function formatNullNumber(value: number | null) {
+    if (value == null) return 'Tout';
+    return formatNumber(value);
+  }
 
   return (
     <Selector
@@ -20,6 +27,7 @@ export function SelectPopulation() {
       options={options}
       value={population ?? null}
       onChange={handleChange}
+      getOptionLabel={formatNullNumber}
     />
   );
 }
