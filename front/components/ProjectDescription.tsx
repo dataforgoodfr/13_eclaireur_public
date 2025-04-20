@@ -52,7 +52,7 @@ export default async function ProjectDescription() {
             value={communitiesTotalCount}
             description='Collectivités recensées sur le site'
           />
-          <ChiffreCle value='XMd€' description='Budget national des collectivités' />
+          <ChiffreCle value='XMd€' description='Budget total des collectivités' />
           <ChiffreCle value='XXX' description='XXX' />
         </div>
       </div>
