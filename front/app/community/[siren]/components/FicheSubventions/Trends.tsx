@@ -113,64 +113,9 @@ export default function Trends({ data }: { data: Subvention[] }) {
   }
 
   const formattedData = trends(data);
-  console.log(formattedData);
 
   return (
     <>
-      {/* VERSION 1 */}
-      {/* <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-2xl font-medium'>Évolution des subventions au cours du temps</h3>
-          <div className='flex items-baseline gap-2'>
-            <div
-              onClick={() => setSubventionsCountDisplayed(false)}
-              className={`cursor-pointer ${!subventionsCountDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              (Montants annuels
-            </div>
-            <Switch
-              checked={subventionsCountDisplayed}
-              onCheckedChange={() => setSubventionsCountDisplayed((prev) => !prev)}
-            />
-            <div
-              onClick={() => setSubventionsCountDisplayed(true)}
-              className={`cursor-pointer ${subventionsCountDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              Nombre de subventions)
-            </div>
-          </div>
-        </div>
-        <div className='flex items-center gap-2'>
-          <DownloadSelector />
-        </div>
-      </div> */}
-      {/* VERSION 2 */}
-      {/* <div>
-        <h3 className='pb-8 pt-10 text-center text-2xl font-medium'>
-          Évolution des subventions au cours du temps
-        </h3>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center justify-start gap-2'>
-            <div
-              className={`rounded-md px-3 py-2 text-sm shadow hover:cursor-pointer hover:bg-black hover:text-white ${!subventionsCountDisplayed && 'bg-black text-white'}`}
-              onClick={() => setSubventionsCountDisplayed(false)}
-            >
-              Montants des subventions versées
-            </div>
-            <div
-              className={`rounded-md px-3 py-2 text-sm shadow hover:cursor-pointer hover:bg-black hover:text-white ${subventionsCountDisplayed && 'bg-black text-white'}`}
-              onClick={() => setSubventionsCountDisplayed(true)}
-            >
-              Nombre de subventions attribuées
-            </div>
-          </div>
-          <div className='flex items-center gap-2'>
-            <DownloadButton label='CSV'/>
-            <DownloadButton label='PNG'/>
-          </div>
-        </div>
-      </div> */}
-      {/* VERSION 3 */}
       <div className='flex items-baseline justify-between'>
         <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
           Évolution des subventions au cours du temps
