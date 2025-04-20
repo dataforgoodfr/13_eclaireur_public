@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice } from '@/utils/utils';
+import { formatCompactPrice, firstLetterUppercase } from '@/utils/utils';
 import * as d3 from 'd3';
 
 import { TreeData } from '../../types/interface';
@@ -138,7 +138,7 @@ export default function Treemap({ data }: { data: TreeData }) {
           fill='white'
           className='pointer-events-none'
         >
-          {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
+          {wrapText(firstLetterUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map((line, i) => (
             <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
               {line}
             </tspan>

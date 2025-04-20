@@ -2,24 +2,23 @@ import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
 
-// import Top10 from './Top10';
-// import Treemap from './Treemap';
+import Distribution from './Distribution';
 import Trends from './Trends';
 
 async function getSubventions(siren: string) {
   // Ville de Rodez 211202023
   // Métropole de Lyon 200046977
   // Ville de Bordeaux 243300316
-  const subventionsResults = await fetchSubventions({ filters: { attribuant_siren: siren }, limit: 100 });
+  const subventionsResults = await fetchSubventions({
+    filters: { attribuant_siren: siren },
+    limit: 100,
+  });
 
   return subventionsResults;
 }
 
 export async function FicheSubventions({ siren }: { siren: string }) {
-  const subventions = await getSubventions("200046977");
-  console.log(siren);
-  console.log(subventions);
-  console.log(subventions.length);
+  const subventions = await getSubventions('200046977');
 
   return (
     <>
@@ -37,9 +36,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
               <Trends data={subventions} />
             </TabsContent>
             <TabsContent value='distribution'>
-              <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-                En construction
-              </div>
+              <Distribution data={subventions} />
             </TabsContent>
             <TabsContent value='compare'>
               <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>

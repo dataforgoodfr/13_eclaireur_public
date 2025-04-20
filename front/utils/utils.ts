@@ -58,3 +58,7 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
   } as const;
   
   return formatFrench(value, defaultOptions)};
+
+export function firstLetterUppercase(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}

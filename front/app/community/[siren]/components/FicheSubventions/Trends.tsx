@@ -113,7 +113,6 @@ export default function Trends({ data }: { data: Subvention[] }) {
   }
 
   const formattedData = trends(data);
-  console.log(formattedData);
 
   return (
     <>
