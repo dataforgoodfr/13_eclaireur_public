@@ -41,6 +41,18 @@ class FinancialEnricher(BaseEnricher):
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, financial = inputs
         financial_filtred = cls._add_financial_type(financial)
+
+        financial_filtred = financial_filtred.with_columns(
+            [
+                (pl.col("total_produits") * 1000).alias("total_produits"),
+                (pl.col("total_charges") * 1000).alias("total_charges"),
+                (pl.col("resultat") * 1000).alias("resultat"),
+                (pl.col("subventions") * 1000).alias("subventions"),
+                (pl.col("ressources_invest") * 1000).alias("ressources_invest"),
+                (pl.col("emploi_invest") * 1000).alias("emploi_invest"),
+                (pl.col("dette") * 1000).alias("dette"),
+            ]
+        )
         financial_filtred = cls.clean_region_and_dep_columns(financial_filtred)
 
         financial_filtred = cls.enrich_siren(
