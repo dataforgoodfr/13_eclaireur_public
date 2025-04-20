@@ -84,7 +84,7 @@ const renderLabel = (props: any) => {
 export default function Trends({ data }: { data: Subvention[] }) {
   const [subventionsCountDisplayed, setSubventionsCountDisplayed] = useState(false);
 
-  function trends(data: Subvention[]) {
+  function calculateTrends (data: Subvention[]) {
     const subventionsByYear: FormattedDataTrends[] = Object.values(
       data.reduce<Record<string, FormattedDataTrends>>((acc, item) => {
         const year = item.year;
@@ -112,7 +112,7 @@ export default function Trends({ data }: { data: Subvention[] }) {
     return formattedData;
   }
 
-  const formattedData = trends(data);
+  const formattedData = calculateTrends(data);
 
   return (
     <>
