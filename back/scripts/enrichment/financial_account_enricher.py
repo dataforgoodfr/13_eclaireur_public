@@ -14,7 +14,7 @@ class FinancialEnricher(BaseEnricher):
 
     @classmethod
     def get_dataset_name(cls) -> str:
-        return "financial"
+        return "financial_accounts"
 
     @classmethod
     def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
@@ -40,37 +40,51 @@ class FinancialEnricher(BaseEnricher):
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, financial = inputs
-        financial_filtred = cls._prepare_financial_data(financial)
-        communities = cls.transform_codes(communities)
+        financial_filtred = cls._add_financial_type(financial)
+        financial_filtred = cls.clean_region_and_dep_columns(financial_filtred)
+
         financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "REG", "region", "code_insee_region_clean", "reg"
+            financial_filtred, communities, "REG", "region_clean", "code_insee_region", "reg"
         )
         financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "DEP", "dept", "code_insee_dept_clean", "dept"
+            financial_filtred, communities, "DEP", "dep_clean", "code_insee_dept", "dept"
         )
         financial_filtred = cls.enrich_siren(
-            financial_filtred, communities, "COM", "insee_commune", "code_insee", "com"
+            financial_filtred, communities, "COM", "insee_commune_clean", "code_insee", "com"
         )
 
         financial_filtred = financial_filtred.with_columns(
             [
-                pl.coalesce(["siren_com", "siren_dept", "siren_reg"]).alias("siren"),
-                pl.coalesce(["nom_com", "nom_dept", "nom_reg"]).alias("nom"),
+                pl.when(pl.col("type") == "COM")
+                .then(pl.lit(None).cast(pl.Utf8))
+                .otherwise(pl.col("siren_dept"))
+                .alias("siren_dept"),
+                pl.when(pl.col("type") == "COM")
+                .then(pl.lit(None).cast(pl.Utf8))
+                .otherwise(pl.col("siren_reg"))
+                .alias("siren_reg"),
             ]
         )
 
-        financial_filtred = financial_filtred.drop(
-            ["siren_com", "siren_dept", "siren_reg", "nom_com", "nom_dept", "nom_reg"]
-        )
-
-        # Manip particulière : pas de correspondance entre les valeurs des financial_accounts et de communities, on le fait à la main
-        financial_filtred = cls.transform_siren(financial_filtred)
+        financial_filtred = financial_filtred.with_columns(
+            [
+                pl.coalesce(["siren_group", "siren_com", "siren_dept", "siren_reg"]).alias(
+                    "siren"
+                ),
+            ]
+        ).drop(["siren_com", "siren_dept", "siren_reg", "siren_group"])
 
         return financial_filtred
 
     @classmethod
-    def _prepare_financial_data(cls, financial: pl.DataFrame) -> pl.DataFrame:
+    def _add_financial_type(cls, financial: pl.DataFrame) -> pl.DataFrame:
         financial_filtred = financial.filter(pl.col("annee") > 2016)
+        if "siren" in financial_filtred.columns:
+            financial_filtred = financial_filtred.rename({"siren": "siren_group"})
+        else:
+            financial_filtred = financial_filtred.with_columns(
+                pl.lit(None).cast(pl.Utf8).alias("siren_group")
+            )
 
         required_cols = ["region", "dept", "insee_commune"]
         for col in required_cols:
@@ -78,9 +92,10 @@ class FinancialEnricher(BaseEnricher):
                 financial_filtred = financial_filtred.with_columns(
                     pl.lit(None, dtype=pl.Utf8).alias(col)
                 )
-
         financial_filtred = financial_filtred.with_columns(
-            pl.when(
+            pl.when(pl.col("siren_group").is_not_null())
+            .then(pl.lit("GROUP"))
+            .when(
                 pl.col("region").is_not_null()
                 & pl.col("dept").is_null()
                 & pl.col("insee_commune").is_null()
@@ -120,64 +135,45 @@ class FinancialEnricher(BaseEnricher):
             left_on=left_key,
             right_on=right_key,
             how="left",
-        )
-
-    @classmethod
-    def transform_siren(cls, df: pl.DataFrame) -> pl.DataFrame:
-        all_siren_dict = {
-            "Dep": {
-                "02A": 200076958,  # Collectivité de Corse
-                "02B": 172020018,  # Haute-Corse
-                "067": 226700011,  # Collectivité européenne d'Alsace
-                "068": 226800019,  # Haut-Rhin
-                "101": 229710017,  # CTU Guadeloupe
-                "102": 200052678,  # CTU Guyane
-                "104": 229740014,  # CTU Réunion
-                "106": 229850003,  # CTU Mayotte
-            }
-        }
-        # Remplacer les valeurs dans la colonne 'siren' en fonction de la colonne 'dept'
-        for dept_code, siren_value in all_siren_dict["Dep"].items():
-            df = df.with_columns(
-                pl.when(pl.col("dept") == dept_code)
-                .then(pl.lit(siren_value).cast(pl.Utf8))
-                .otherwise(pl.col("siren"))
-                .alias("siren")
+        ).with_columns(
+            pl.coalesce([pl.col(f"siren_{suffix}"), pl.lit(None).cast(pl.Utf8)]).alias(
+                f"siren_{suffix}"
             )
-        return df
+        )
 
     @classmethod
-    def transform_codes(cls, df: pl.DataFrame) -> pl.DataFrame:
-        # Création des colonnes 'code_insee_region_clean' et 'code_insee_dept_clean' avec les valeurs initiales
+    def clean_region_and_dep_columns(cls, df: pl.DataFrame) -> pl.DataFrame:
         df = df.with_columns(
             [
-                pl.col("code_insee_region").alias("code_insee_region_clean"),
-                pl.col("code_insee_dept").alias("code_insee_dept_clean"),
+                pl.col("region").str.slice(-2).alias("region_clean"),
+                pl.col("dept").str.slice(-2).alias("dep_clean_temp"),
+            ]
+        )
+        df = df.with_columns(
+            [
+                pl.when(
+                    (pl.col("dept").str.len_chars() == 3)
+                    & (pl.col("dept").str.slice(0, 1) == "1")
+                )
+                .then(pl.lit("97"))
+                .otherwise(pl.col("dep_clean_temp"))
+                .alias("dep_clean")
             ]
         )
 
-        # Application des transformations pour les régions et départements
         df = df.with_columns(
             [
-                pl.when((pl.col("type") == "REG") | (pl.col("type") == "CTU"))
+                pl.when(pl.col("dep_clean") == "97")
                 .then(
-                    pl.when(pl.col("code_insee_region").str.len_chars() == 1)
-                    .then(pl.lit("10") + pl.col("code_insee_region"))
-                    .when(pl.col("code_insee_region").str.len_chars() == 2)
-                    .then(pl.lit("0") + pl.col("code_insee_region"))
-                    .otherwise(pl.col("code_insee_region"))
+                    pl.concat_str(
+                        [pl.col("dep_clean"), pl.col("insee_commune").str.replace("^0+", "")]
+                    )
                 )
-                .alias("code_insee_region_clean"),
-                pl.when((pl.col("type") == "DEP") | (pl.col("type") == "CTU"))
-                .then(
-                    pl.when(pl.col("code_insee_dept").str.len_chars() == 1)
-                    .then(pl.lit("10") + pl.col("code_insee_dept"))
-                    .when(pl.col("code_insee_dept").str.len_chars() < 3)
-                    .then(pl.lit("0") + pl.col("code_insee_dept"))
-                    .otherwise(pl.col("code_insee_dept"))
-                )
-                .alias("code_insee_dept_clean"),
+                .otherwise(pl.concat_str([pl.col("dep_clean"), pl.col("insee_commune")]))
+                .alias("insee_commune_clean")
             ]
         )
+
+        df = df.drop("dep_clean_temp")
 
         return df
