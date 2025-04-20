@@ -60,7 +60,6 @@ class BaremeEnricher(BaseEnricher):
         """
         Create a notation per community for marches publics
         """
-        # On transforme les données en pandas pour le traitement
         marches_pd = marches_publics.to_pandas()
         communities_pd = communities.to_pandas()
 
@@ -101,13 +100,6 @@ class BaremeEnricher(BaseEnricher):
             right_on=["acheteur_siren", "annee_notification"],
         )
 
-        # Groupement par siren (collectivité) et année
-        def median_delay(series):
-            """Custom aggregation function to avoid warning when slice contains only NaN values"""
-            if all(series.isna()):
-                return None
-            return series.median()
-
         bareme = (
             _merge.groupby(["siren", "annee"])
             .agg(
@@ -115,7 +107,7 @@ class BaremeEnricher(BaseEnricher):
                     "id": pd.Series.count,
                     "obligation_publication_bool": pd.Series.sum,
                     "montant": pd.Series.sum,
-                    "delai_publication_jours": median_delay,
+                    "delai_publication_jours": cls.median_delay,
                     "date_notification": pd.Series.count,
                     "cpv_8": pd.Series.count,
                     "lieu_execution.type_code": pd.Series.count,
@@ -168,18 +160,26 @@ class BaremeEnricher(BaseEnricher):
             lambda x: 1 if x is not None and x <= 60 else 0
         )
 
-        def score_total(row):
-            if row["E"] == 0:
-                return "E"
-            if row["D"] == 0:
-                return "D"
-            if row["C"] == 0:
-                return "C"
-            if row["B"] == 0:
-                return "B"
-            return "A"
-
-        bareme["mp_score"] = bareme.apply(score_total, axis=1)
+        bareme["mp_score"] = bareme.apply(cls.score_total, axis=1)
         bareme = bareme.filter(items=["siren", "annee", "mp_score"])
 
         return pl.from_pandas(bareme)
+
+    @staticmethod
+    def score_total(row):
+        if row["E"] == 0:
+            return "E"
+        if row["D"] == 0:
+            return "D"
+        if row["C"] == 0:
+            return "C"
+        if row["B"] == 0:
+            return "B"
+        return "A"
+
+    @staticmethod
+    def median_delay(series):
+        """Custom aggregation function to avoid warning when slice contains only NaN values"""
+        if all(series.isna()):
+            return None
+        return series.median()
