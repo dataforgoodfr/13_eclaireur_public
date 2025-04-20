@@ -31,13 +31,13 @@ export default function SectorTable({ data }: { data: TreeData }) {
   const topSectors = getTopSectors(data);
 
   return (
-    <>
-      <Table className='min-h-[600px]'>
+    <div className='min-h-[600px]'>
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead className='w-[400px]'>Secteur</TableHead>
-            <TableHead className='w-[700px]'>Montant</TableHead>
-            <TableHead className=''></TableHead>
+            <TableHead className='w-[700px]'></TableHead>
+            <TableHead className=''>Montant</TableHead>
             <TableHead className='text-right'>Part</TableHead>
           </TableRow>
         </TableHeader>
@@ -64,6 +64,6 @@ export default function SectorTable({ data }: { data: TreeData }) {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

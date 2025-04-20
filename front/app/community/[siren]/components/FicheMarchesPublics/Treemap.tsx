@@ -33,12 +33,13 @@ function generateColorMap(names: string[]): Record<string, string> {
   const total = names.length;
 
   names.forEach((name, index) => {
-    const hue = Math.round((360 / total) * index);
-    colorMap[name] = `hsl(${hue}, 65%, 55%)`;
+    const lightness = Math.min(Math.round((80 / total) * index), 50); 
+    colorMap[name] = `hsl(0, 0%, ${lightness+20}%)`;
   });
 
   return colorMap;
 }
+
 
 export default function Treemap({ data }: { data: TreeData }) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
