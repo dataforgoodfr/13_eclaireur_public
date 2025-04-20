@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
     const filters = {
       type: (searchParams.get('type') as CommunityType) ?? undefined,
-      population: Number(searchParams.get('population')) ?? undefined,
+      population: parseNumber(searchParams.get('population')) ?? undefined,
       mp_score: (searchParams.get('mp_score') as TransparencyScore) ?? undefined,
       subventions_score: (searchParams.get('subventions_score') as TransparencyScore) ?? undefined,
     };
