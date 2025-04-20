@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { formatNumber, stringifyCommunityType } from '@/utils/utils';
 
-import { usePaginationFromSearchParams } from '../hooks/usePaginationFromSearchParams';
+import { usePaginationParams } from '../hooks/usePaginationParams';
 import { Pagination } from './Pagination';
 
 type CommunitiesTableProps = {
@@ -19,7 +19,7 @@ type CommunitiesTableProps = {
 };
 
 export function CommunitiesTable({ communities }: CommunitiesTableProps) {
-  const { pagination, setPage } = usePaginationFromSearchParams();
+  const { pagination, setPage } = usePaginationParams();
 
   const totalPage = Math.ceil(communities[0].total_row_count / pagination.limit);
 

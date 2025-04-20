@@ -1,7 +1,7 @@
 import { CommunityType } from '@/utils/types';
 import { stringifyCommunityType } from '@/utils/utils';
 
-import { useFiltersParams } from '../../hooks/useFiltersFromSearchParams';
+import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Selector } from './Selector';
 
 const options = Object.values(CommunityType);

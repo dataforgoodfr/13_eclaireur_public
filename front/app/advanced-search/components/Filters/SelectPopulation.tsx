@@ -1,6 +1,6 @@
 import { formatNumber } from '@/utils/utils';
 
-import { useFiltersParams } from '../../hooks/useFiltersFromSearchParams';
+import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Selector } from './Selector';
 
 const options = [2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 2_000_000];

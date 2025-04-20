@@ -10,7 +10,7 @@ import { parseNumber } from '@/utils/utils';
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 10;
 
-export function usePaginationFromSearchParams() {
+export function usePaginationParams() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

@@ -10,12 +10,12 @@ import DownloadingButton from './components/DownloadingButton';
 import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
 import { NoResults } from './components/NoResults';
-import { useFiltersParams } from './hooks/useFiltersFromSearchParams';
-import { usePaginationFromSearchParams } from './hooks/usePaginationFromSearchParams';
+import { useFiltersParams } from './hooks/useFiltersParams';
+import { usePaginationParams } from './hooks/usePaginationParams';
 
 export default function Page() {
   const { filters } = useFiltersParams();
-  const { pagination } = usePaginationFromSearchParams();
+  const { pagination } = usePaginationParams();
 
   const { data } = useAdvancedSearch(filters, pagination);
 
