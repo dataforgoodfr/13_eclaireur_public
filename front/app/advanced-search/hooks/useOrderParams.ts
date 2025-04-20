@@ -7,10 +7,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Order } from '@/utils/fetchers/types';
 import { parseDirection } from '@/utils/utils';
 
-export type AdvancedSearchOrder = Order<'type' | 'population' | 'mp_score' | 'subventions_score'>;
+export type AdvancedSearchOrder = Order<
+  'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'
+>;
 
 export const DEFAULT_ORDER: AdvancedSearchOrder = {
-  by: 'type',
+  by: 'nom',
   direction: 'ASC',
 };
 
