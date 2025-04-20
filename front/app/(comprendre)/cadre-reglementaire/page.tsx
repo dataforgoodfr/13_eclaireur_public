@@ -12,14 +12,13 @@ export default function Page() {
       <h2 className='my-12 text-xl font-bold'>
         L'open data des collectivités locales : un enjeu de transparence et de démocratie
       </h2>
-
+      Page(
       <p className='my-6 text-lg'>
         Depuis 2016, la loi pour une République numérique a instauré de nouvelles obligations pour
         les collectivités locales en matière d'ouverture des données publiques, aussi appelée "open
         data". Cette démarche vise à rendre accessibles à tous les citoyens les informations
         essentielles concernant l'action des pouvoirs publics.
       </p>
-
       <h2 className='my-12 text-xl font-bold'>Quelles collectivités sont concernées ?</h2>
       <p className='my-6 text-lg'>
         Les organisations qui emploient plus de cinquante personnes en équivalents temps plein, à
@@ -43,7 +42,6 @@ export default function Page() {
         Par exemple : budgets, subventions, marchés publics, délibérations du conseil municipal,
         etc.
       </p>
-
       <p className='my-6 text-lg'>
         À noter que certaines informations ne peuvent pas être publiées en open data (notamment les
         données personnelles, les documents couverts par des secrets protégés par la loi, les
@@ -55,7 +53,6 @@ export default function Page() {
         publics, subventions...), d'autres sujets concernant les collectivités peuvent être soumis à
         cette obligation de transparence sans être spécifiquement désignés par la loi.
       </p>
-
       <h2 className='my-12 text-xl font-bold'>Quels sont les bénéfices pour les citoyens ?</h2>
       <p className='my-6 text-lg'>L'open data a plusieurs objectifs :</p>
       <ul className='list-inside list-disc'>
@@ -68,7 +65,6 @@ export default function Page() {
           Un regard et une participation citoyens accrus aux décisions locales
         </li>
       </ul>
-
       <h2 className='my-12 text-xl font-bold'>Comment les données sont-elles publiées ?</h2>
       <p className='my-6 text-lg'>
         Les données doivent être publiées dans un format ouvert, facilement réutilisable par des
@@ -80,7 +76,6 @@ export default function Page() {
         </Link>{' '}
         dans le but d’augmenter la qualité des données publiées.
       </p>
-
       <h2 className='my-12 text-xl font-bold'>
         Et si ma collectivité ne respecte pas ces obligations ?
       </h2>
@@ -102,7 +97,6 @@ export default function Page() {
         accompagner dans cette démarche d'ouverture. N'hésitez pas à consulter nos données pour voir
         où en est votre collectivité !
       </p>
-
       <h2 className='my-12 text-xl font-bold'>Aller plus loin</h2>
       <h3 className='my-6 text-lg font-bold'>Cadre légal général</h3>
       <ul className='list-inside list-disc'>
@@ -134,7 +128,6 @@ export default function Page() {
         les données répondant aux exigences du cadre général sur tous thèmes concernés; la loi ne
         fixe pas de liste nominative ou exhaustive des données entrant dans son périmètre.
       </p>
-
       <h3 className='my-6 text-lg font-bold'>Dispositions spécifiques aux subventions</h3>
       <ul className='list-inside list-disc'>
         <li className='my-6 text-lg'>
@@ -248,7 +241,6 @@ export default function Page() {
         de concession doivent être publiées par les acheteurs et les autorités concédantes
         directement sur data.gouv.fr
       </p>
-
       <h4 className='my-6 text-base font-bold'>
         Cadre légal antérieur au Code de la commande publique (jusqu'en 2019)
       </h4>
@@ -299,7 +291,6 @@ export default function Page() {
         </li>
       </ul>
       <h4 className='my-6 text-base font-bold'>Synthèse des évolutions du cadre légal</h4>
-
       <table className='table-fixed border-collapse border-spacing-2 border border-gray-400'>
         <caption>évolutions du cadre légal</caption>
         <thead>
@@ -355,7 +346,6 @@ export default function Page() {
           </tr>
         </tbody>
       </table>
-
       <h4 className='my-6 text-base font-bold'>
         Les guides officiels publiés pour aider les collectivités
       </h4>
@@ -379,7 +369,6 @@ export default function Page() {
           , datagouv.fr
         </li>
       </ul>
-
       <h4 className='my-6 text-base font-bold'>Les principaux sites de publications nationaux</h4>
       <ul className='list-inside list-disc'>
         <li className='my-6 text-lg'>

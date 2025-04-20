@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata }Page( 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {

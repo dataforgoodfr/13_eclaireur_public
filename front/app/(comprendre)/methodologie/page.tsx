@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Comment réunir savoir-faire, technologies dernier cri et bonnes volontés pour la transparence des données publiques, revue de détails',
 };
-
+Page(
 export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
