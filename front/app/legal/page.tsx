@@ -5,7 +5,11 @@ export const metadata: Metadata = {
   description: 'Mentions légales',
 };
 
+<<<<<<< HEAD
 export default function Page() {
+=======
+export default function page() {
+>>>>>>> main
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>
       <h1 className='my-6 text-3xl font-bold'>Mentions légales</h1>
