@@ -18,7 +18,7 @@ import {
 
 import DownloadButton from './DownloadButton';
 
-type FormattedDataTrends = {
+type Trends = {
   annee: number;
   montant: number;
   nombre: number;
@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className='rounded-lg border border-gray-200 bg-white p-4 shadow-lg'>
         <p className='font-semibold text-gray-900'>{label}</p>
         <div className='mt-2 space-y-1'>
-          {!isNan(tauxPublication) && (
+          {!isNaN(Number(tauxPublication)) && (
             <div className='flex items-center gap-2 pt-1'>
               <span className='text-sm text-gray-600'>Taux de publication</span>
               <span className='text-sm font-medium text-gray-900'>{tauxPublication}%</span>
@@ -81,12 +81,25 @@ const renderLabel = (props: any) => {
   );
 };
 
+const LEGEND_LABELS: Record<string, string> = {
+  montant: 'Subventions publiées (€)',
+  stackedBudget: 'Budget des subventions (€)',
+};
+
+function getLegendFormatter(value: string): string {
+  const label = LEGEND_LABELS[value];
+  if (!label) {
+    throw new Error(`Clé de légende inconnue : "${value}".`);
+  }
+  return label;
+}
+
 export default function Trends({ data }: { data: Subvention[] }) {
   const [subventionsCountDisplayed, setSubventionsCountDisplayed] = useState(false);
 
-  function calculateTrends (data: Subvention[]) {
-    const subventionsByYear: FormattedDataTrends[] = Object.values(
-      data.reduce<Record<string, FormattedDataTrends>>((acc, item) => {
+  function calculateTrends(data: Subvention[]) {
+    const subventionsByYear: Trends[] = Object.values(
+      data.reduce<Record<string, Trends>>((acc, item) => {
         const year = item.year;
 
         if (!acc[year]) {
@@ -148,17 +161,7 @@ export default function Trends({ data }: { data: Subvention[] }) {
                 animationDuration={300}
                 cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
               />
-              <Legend
-                verticalAlign='bottom'
-                align='center'
-                formatter={(value) => {
-                  const legendLabels: Record<string, string> = {
-                    montant: 'Subventions publiées (€)',
-                    stackedBudget: 'Budget des subventions (€)',
-                  };
-                  return legendLabels[value] || value;
-                }}
-              />
+              <Legend verticalAlign='bottom' align='center' formatter={getLegendFormatter} />
               <Bar dataKey='montant' stackId='a' fill='#525252' barSize={120}></Bar>
               <Bar dataKey='stackedBudget' stackId='a' fill='#a3a3a3' radius={[10, 10, 0, 0]}>
                 <LabelList content={renderLabel} />
