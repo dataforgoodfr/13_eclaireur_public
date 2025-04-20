@@ -73,14 +73,14 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
-  if (type === CommunityType.CA) return `Communaute d'agglomerations`;
-  if (type === CommunityType.CC) return 'Communaute de communes';
-  if (type === CommunityType.CTU) return 'Collectivite territoriale unique';
+  if (type === CommunityType.CA) return `Communauté d'agglomeration`;
+  if (type === CommunityType.CC) return 'Communauté de communes';
+  if (type === CommunityType.CTU) return 'Collectivité territoriale unique';
   if (type === CommunityType.Commune) return 'Commune';
-  if (type === CommunityType.Departement) return 'Departement';
-  if (type === CommunityType.EPT) return 'Etablissement public territorial';
-  if (type === CommunityType.Metropole) return 'Metropole';
-  if (type === CommunityType.Region) return 'Region';
+  if (type === CommunityType.Departement) return 'Département';
+  if (type === CommunityType.EPT) return 'Établissement public territorial';
+  if (type === CommunityType.Metropole) return 'Métropole';
+  if (type === CommunityType.Region) return 'Région';
 
   throw new Error(`Type ${type} not supported`);
 }
