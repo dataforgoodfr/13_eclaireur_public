@@ -59,7 +59,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Database error: ', error);
     return NextResponse.json({ error: 'Internal Server Error with query search' }, { status: 500 });
   }
 }
