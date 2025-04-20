@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className='rounded-lg border border-gray-200 bg-white p-4 shadow-lg'>
         <p className='font-semibold text-gray-900'>{label}</p>
         <div className='mt-2 space-y-1'>
-          {tauxPublication !== 'NaN' && (
+          {!isNan(tauxPublication) && (
             <div className='flex items-center gap-2 pt-1'>
               <span className='text-sm text-gray-600'>Taux de publication</span>
               <span className='text-sm font-medium text-gray-900'>{tauxPublication}%</span>
