@@ -1,3 +1,4 @@
+import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
 import { AdvancedSearchCommunity } from '@/app/models/community';
 
 import { Pagination } from '../types';
@@ -14,6 +15,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 export async function fetchCommunitiesAdvancedSearch(
   filters: CommunitiesAdvancedSearchFilters,
   pagination: Pagination,
+  order: AdvancedSearchOrder,
 ): Promise<AdvancedSearchCommunity[]> {
   const { type, population, mp_score, subventions_score } = filters;
 
@@ -26,6 +28,9 @@ export async function fetchCommunitiesAdvancedSearch(
 
   url.searchParams.append('page', pagination.page.toString());
   url.searchParams.append('limit', pagination.limit.toString());
+
+  url.searchParams.append('by', order.by);
+  url.searchParams.append('direction', order.direction);
 
   const res = await fetch(url.toString(), { method: 'get' });
 

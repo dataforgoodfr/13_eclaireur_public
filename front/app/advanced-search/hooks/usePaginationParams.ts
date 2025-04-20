@@ -26,8 +26,8 @@ export function usePaginationParams() {
     [pathname, router, searchParams],
   );
 
-  const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
   const page = parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE;
+  const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
 
   const pagination: Pagination = {
     page,

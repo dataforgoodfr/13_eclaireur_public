@@ -1,3 +1,4 @@
+import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
 import { AdvancedSearchCommunity, Community } from '@/app/models/community';
 import { getQueryFromPool } from '@/utils/db';
 import { CommunityType } from '@/utils/types';
@@ -5,8 +6,6 @@ import { CommunityType } from '@/utils/types';
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
 import { Pagination } from '../types';
-
-type CurrentSelectors = 'type' | 'population' | 'mp_score' | 'subventions_score';
 
 /**
  * Fetch the communities (SSR) by advanced search
@@ -16,8 +15,9 @@ type CurrentSelectors = 'type' | 'population' | 'mp_score' | 'subventions_score'
 export async function fetchCommunitiesAdvancedSearch(
   filters: CommunitiesAdvancedSearchFilters,
   pagination: Pagination,
+  order: AdvancedSearchOrder,
 ): Promise<AdvancedSearchCommunity[]> {
-  const params = createSQLQueryParams(filters, pagination);
+  const params = createSQLQueryParams(filters, pagination, order);
 
   return getQueryFromPool(...params) as Promise<AdvancedSearchCommunity[]>;
 }
@@ -44,9 +44,11 @@ export type CommunitiesAdvancedSearchFilters = Partial<
 export function createSQLQueryParams(
   filters: CommunitiesAdvancedSearchFilters,
   pagination: Pagination,
+  order: AdvancedSearchOrder,
 ) {
   const { type, population, mp_score, subventions_score } = filters;
   const { page, limit } = pagination;
+  const { by, direction } = order;
   const values: (CommunityType | number | string | undefined)[] = [];
 
   const selectorsStringified = stringifySelectors(SELECTORS);
@@ -77,6 +79,8 @@ export function createSQLQueryParams(
   if (whereConditions.length > 0) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;
   }
+
+  query += ` ORDER BY ${by} ${direction}`;
 
   query += ` LIMIT $${values.length + 1} OFFSET ($${values.length + 2} - 1) * $${values.length + 1}`;
   values.push(...[limit, page]);

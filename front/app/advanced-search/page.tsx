@@ -11,13 +11,15 @@ import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
 import { NoResults } from './components/NoResults';
 import { useFiltersParams } from './hooks/useFiltersParams';
+import { useOrderParams } from './hooks/useOrderParams';
 import { usePaginationParams } from './hooks/usePaginationParams';
 
 export default function Page() {
   const { filters } = useFiltersParams();
   const { pagination } = usePaginationParams();
+  const { order } = useOrderParams();
 
-  const { data } = useAdvancedSearch(filters, pagination);
+  const { data } = useAdvancedSearch(filters, pagination, order);
 
   return (
     <Suspense>

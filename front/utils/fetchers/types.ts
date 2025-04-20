@@ -8,3 +8,10 @@ export type Pagination = {
   page: number;
   limit: number;
 };
+
+export type Direction = 'ASC' | 'DESC';
+
+export type Order<By extends string> = {
+  by: By;
+  direction: Direction;
+};

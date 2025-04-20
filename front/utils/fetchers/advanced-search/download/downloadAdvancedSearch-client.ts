@@ -1,3 +1,4 @@
+import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
 import { downloadURL } from '@/utils/downloader/downloadURL';
 
 import { Pagination } from '../../types';
@@ -6,9 +7,10 @@ import { CommunitiesAdvancedSearchFilters } from '../fetchCommunitiesAdvancedSea
 const API_ROUTE = '/api/advanced_search/download';
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export function createAdvancedSearchDownloadingLink(
+export function createAdvancedSearchDownloadingURL(
   filters: CommunitiesAdvancedSearchFilters,
   pagination: Pagination,
+  order: AdvancedSearchOrder,
 ): URL {
   const { type, population, mp_score, subventions_score } = filters;
 
@@ -19,6 +21,9 @@ export function createAdvancedSearchDownloadingLink(
   if (mp_score) url.searchParams.append('mp_score', mp_score);
   if (subventions_score) url.searchParams.append('subventions_score', subventions_score);
 
+  url.searchParams.append('by', order.by);
+  url.searchParams.append('direction', order.direction);
+
   url.searchParams.append('page', pagination.page.toString());
   url.searchParams.append('limit', pagination.limit.toString());
 
@@ -28,8 +33,9 @@ export function createAdvancedSearchDownloadingLink(
 export function downloadAdvancedSearchCSV(
   filters: CommunitiesAdvancedSearchFilters,
   pagination: Pagination,
+  order: AdvancedSearchOrder,
 ) {
-  const url = createAdvancedSearchDownloadingLink(filters, pagination);
+  const url = createAdvancedSearchDownloadingURL(filters, pagination, order);
 
   downloadURL(url);
 }

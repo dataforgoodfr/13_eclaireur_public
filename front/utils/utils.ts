@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { Direction } from './fetchers/types';
 import { CommunityType } from './types';
 
 export function cn(...inputs: ClassValue[]) {
@@ -82,4 +83,12 @@ export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.Region) return 'Region';
 
   throw new Error(`Type ${type} not supported`);
+}
+
+export function parseDirection(value: string | null): Direction | undefined {
+  if (value === null) return undefined;
+  if (value === 'ASC') return 'ASC';
+  if (value === 'DESC') return 'DESC';
+
+  return undefined;
 }

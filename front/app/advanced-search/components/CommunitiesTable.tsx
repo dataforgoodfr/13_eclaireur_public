@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { formatNumber, stringifyCommunityType } from '@/utils/utils';
 
+import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
 import { Pagination } from './Pagination';
 
@@ -20,6 +21,14 @@ type CommunitiesTableProps = {
 
 export function CommunitiesTable({ communities }: CommunitiesTableProps) {
   const { pagination, setPage } = usePaginationParams();
+  const { order, setOrder } = useOrderParams();
+
+  function handleHeadClick(orderBy: AdvancedSearchOrder['by']) {
+    setOrder({
+      by: orderBy,
+      direction: order.direction === 'ASC' ? 'DESC' : 'ASC',
+    });
+  }
 
   const totalPage = Math.ceil(communities[0].total_row_count / pagination.limit);
 
@@ -29,11 +38,15 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead className='w-[200px]'>Collectivité</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead className='text-right'>Population</TableHead>
+            <TableHead onClick={() => handleHeadClick('type')}>Type</TableHead>
+            <TableHead className='text-right' onClick={() => handleHeadClick('population')}>
+              Population
+            </TableHead>
             <TableHead className='text-right'>Budget total</TableHead>
-            <TableHead>Score Marchés Publics</TableHead>
-            <TableHead>Score Subventions</TableHead>
+            <TableHead onClick={() => handleHeadClick('mp_score')}>Score Marchés Publics</TableHead>
+            <TableHead onClick={() => handleHeadClick('subventions_score')}>
+              Score Subventions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
