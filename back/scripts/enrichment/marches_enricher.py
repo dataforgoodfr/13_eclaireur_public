@@ -41,15 +41,15 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         # dédoublonnage des modifications à faire avant appliquer_modifications Johann
 
-        df_MP_brut = marches.to_pandas()
+        marches = marches.to_pandas()
 
-        df_modifs = df_MP_brut[df_MP_brut['modifications'].str.len() > 2]
-        df_unique = df_modifs.drop_duplicates(subset='modifications', keep='first')
-        df_unique = pd.concat([df_unique, df_MP_brut[df_MP_brut['modifications'].str.len() <= 2]], axis=0)
+        df_modifs = marches[marches['modifications'].str.len() > 2]
+        df_modifs = df_modifs.drop_duplicates(subset='modifications', keep='first')
+        marches = pd.concat([df_modifs, marches[marches['modifications'].str.len() <= 2]], axis=0)
 
 
         marches_pd = (
-            marches.to_pandas()
+            marches
             .apply(cls.appliquer_modifications, axis=1)
             .pipe(
                 cls.correction_types_colonnes_str,
