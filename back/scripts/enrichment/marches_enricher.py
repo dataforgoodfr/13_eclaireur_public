@@ -39,10 +39,11 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
+        # dédoublonnage des modifications à faire avant appliquer_modifications Johann
+
         marches_pd = (
             marches.to_pandas()
-            #dédoublonnage des modifications à faire ici Johann 
-            #.apply(cls.appliquer_modifications, axis=1)
+            .apply(cls.appliquer_modifications, axis=1)
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
             .pipe(normalize_date, "dateNotification")
@@ -64,7 +65,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "technique", "technique")
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
-            .pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
+            .pipe(cls.set_unique_id)
+            .pipe(cls.drop_source_duplicates)
             .pipe(cls.drop_sous_traitance_duplicates)
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
@@ -378,18 +380,17 @@ class MarchesPublicsEnricher(BaseEnricher):
             .filter(pl.col("is_duplicate") == 0)
             .drop(["is_duplicate", "rank", "priority", "source_is_null"])
         )
-    
+
     def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
-        # Déplucate les MP identiques qui ont des actes de SousTraitance différents. 
+        # Déplucate les MP identiques qui ont des actes de SousTraitance différents.
         # On garde la ligne avec le plus d'actes de sousTraitance
 
-        return (
-            marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(subset=["id", "titulaire_id","objet"], keep="first")
+        return marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(
+            subset=["id", "titulaire_id", "objet"], keep="first"
         )
 
     @staticmethod
     def appliquer_modifications(row):
-
         try:
             modifications_raw = row["modifications"]
             modifications_list = json.loads(modifications_raw)
@@ -398,8 +399,8 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         # Si ce n'est pas une liste (ex: un dict direct ou None), on ignore
         if not isinstance(modifications_list, list):
-            #modifications_invalides += 1  # 61 lignes invalides !!!  donc potentiellement non traitées mais je ne sais pas vraiment ce qui bloque 
-            #exemples.append(row.get("modifications"))
+            # modifications_invalides += 1  # 61 lignes invalides !!!  donc potentiellement non traitées mais je ne sais pas vraiment ce qui bloque
+            # exemples.append(row.get("modifications"))
             return row
 
         # Extraire proprement les dicts de modification (cas [{"modification": {...}}, ...])
@@ -423,7 +424,6 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         for modif in modifs_sorted:
             for key, value in modif.items():
-
                 # Gestion spéciale de 'id'
                 if key == "id":
                     if isinstance(value, int):
@@ -443,9 +443,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                             row[base_key] = float(value)
                         else:
                             row[base_key] = value
-                    except:
+                    except (ValueError, TypeError):
                         row[base_key] = value
 
         return row
-
-
