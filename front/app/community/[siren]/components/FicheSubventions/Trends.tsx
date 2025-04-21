@@ -4,8 +4,8 @@ import { PureComponent, useState } from 'react';
 
 import { Subvention } from '@/app/models/subvention';
 import DownloadButton from './DownloadButton';
-import SubventionTrendsBarChart from './SubventionTrendsBarChart';
-import StackedBarCharts from './StackedBarCharts';
+import SubventionTrendsStackedBarCharts from './SubventionTrendsStackedBarCharts';
+import StackedBarCharts from './SubventionTrendsStackedBarCharts';
 
 type Trends = {
   annee: number;
@@ -65,7 +65,7 @@ export default function Trends({ data }: { data: Subvention[] }) {
         <StackedBarCharts data={formattedData} />
       )}
       {subventionsCountDisplayed && (
-        <SubventionTrendsBarChart data={formattedData} />
+        <SubventionTrendsStackedBarCharts data={formattedData} />
       )}
       <div className='flex items-center justify-center gap-2 pt-2'>
         <div

@@ -88,7 +88,7 @@ type ChartData = {
   tauxPublication?: number;
 };
 
-export default function StackedBarCharts({ data }: { data: ChartData[] }) {
+export default function SubventionTrendsStackedBarCharts({ data }: { data: ChartData[] }) {
   return (
     <div>
       <ResponsiveContainer width='100%' height={600} className='p-4'>
