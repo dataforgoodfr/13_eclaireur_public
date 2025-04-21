@@ -44,6 +44,21 @@ class MarchesPublicsEnricher(BaseEnricher):
         marches_pd = (
             marches.to_pandas()
             .apply(cls.appliquer_modifications, axis=1)
+            .pipe(
+                cls.correction_types_colonnes_str,
+                [
+                    "id",
+                    "acheteur_id",
+                    "nature",
+                    "codeCPV",
+                    "objet",
+                    "procedure",
+                    "attributionAvance",
+                    "offresRecues",
+                    "marcheInnovant",
+                    "ccag",
+                ],
+            )
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
             .pipe(normalize_date, "dateNotification")
@@ -390,6 +405,17 @@ class MarchesPublicsEnricher(BaseEnricher):
         )
 
     @staticmethod
+    def tri_modification(mod):
+        # Tri personnalisé sans convertir les id entiers en chaînes
+        return (
+            mod.get("datePublicationDonneesModification")
+            or mod.get("dateNotificationModification")
+            or mod.get("dateSignatureModification")
+            or mod.get("updated_at")
+            or (mod.get("id") if isinstance(mod.get("id"), str) else "")
+        )
+
+    @staticmethod
     def appliquer_modifications(row):
         try:
             modifications_raw = row["modifications"]
@@ -400,7 +426,6 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Si ce n'est pas une liste (ex: un dict direct ou None), on ignore
         if not isinstance(modifications_list, list):
             # modifications_invalides += 1  # 61 lignes invalides !!!  donc potentiellement non traitées mais je ne sais pas vraiment ce qui bloque
-            # exemples.append(row.get("modifications"))
             return row
 
         # Extraire proprement les dicts de modification (cas [{"modification": {...}}, ...])
@@ -410,17 +435,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             for mod in modifications_list
         ]
 
-        # Tri personnalisé sans convertir les id entiers en chaînes
-        def tri_modification(mod):
-            return (
-                mod.get("datePublicationDonneesModification")
-                or mod.get("dateNotificationModification")
-                or mod.get("dateSignatureModification")
-                or mod.get("updated_at")
-                or (mod.get("id") if isinstance(mod.get("id"), str) else "")
-            )
-
-        modifs_sorted = sorted(modifs, key=tri_modification)
+        modifs_sorted = sorted(modifs, key=MarchesPublicsEnricher.tri_modification)
 
         for modif in modifs_sorted:
             for key, value in modif.items():
@@ -447,3 +462,12 @@ class MarchesPublicsEnricher(BaseEnricher):
                         row[base_key] = value
 
         return row
+
+    @staticmethod
+    def correction_types_colonnes_str(
+        marches: pd.DataFrame, colonnes_a_convertir_en_str: list
+    ) -> pl.DataFrame:
+        # Corrige les types des colonnes avant la conversion en polars
+        marches[colonnes_a_convertir_en_str] = marches[colonnes_a_convertir_en_str].astype(str)
+        marches.drop(["modifications"], axis=1, inplace=True)
+        return marches
