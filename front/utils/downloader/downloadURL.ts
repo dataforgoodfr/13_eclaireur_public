@@ -1,9 +1,13 @@
 import { Extension } from './types';
 
-export function downloadURL(url: URL | string, fileName: string, extension: Extension) {
+export function downloadURL(
+  url: URL | string,
+  options?: { fileName: string; extension: Extension },
+) {
   const link = document.createElement('a');
   link.setAttribute('href', url.toString());
-  link.setAttribute('download', `${fileName}.${extension}`);
+  if (options) link.setAttribute('download', `${options.fileName}.${options.extension}`);
+
   link.style.visibility = 'hidden';
 
   document.body.appendChild(link);

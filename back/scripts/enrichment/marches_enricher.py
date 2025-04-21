@@ -14,6 +14,8 @@ from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import (
     normalize_date,
     normalize_montant,
+    normalize_identifiant,
+    IdentifierFormat,
 )
 
 
@@ -56,6 +58,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
             .pipe(normalize_date, "dateNotification")
+            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
             .pipe(cls._add_metadata)
             .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
