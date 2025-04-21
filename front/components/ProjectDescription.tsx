@@ -1,9 +1,17 @@
 import Link from 'next/link';
 
-import { Description } from '@radix-ui/react-dialog';
+import { fetchCommunitiesTotalCount } from '@/utils/fetchers/kpis/fetchCommunitiesTotalCount';
+import { fetchPublishedSubventionsTotal } from '@/utils/fetchers/kpis/fetchPublishedSubventionsTotal';
+import { fetchSubventionsTotalBudget } from '@/utils/fetchers/kpis/fetchSubventionsTotalBudget';
 import { ArrowRight } from 'lucide-react';
 
-export default function ProjectDescription() {
+const KPIS_YEAR = 2023;
+
+export default async function ProjectDescription() {
+  const communitiesTotalCount = await fetchCommunitiesTotalCount();
+  const publishedSubventionsTotal = await fetchPublishedSubventionsTotal(KPIS_YEAR);
+  const subventionsTotalBudget = await fetchSubventionsTotalBudget(KPIS_YEAR);
+
   return (
     <main className='px-20 py-16'>
       <article>
@@ -42,12 +50,14 @@ export default function ProjectDescription() {
               <ArrowRight />
             </Link>
           </div>
-          <div className='grid grid-cols-1 justify-items-center gap-4 xl:grid-cols-2 2xl:px-20'>
-            <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
-            <ChiffreCle value='XXX' description='Collectivités recensées sur le site' />
-            <ChiffreCle value='XMd€' description='Budget national des collectivités' />
-            <ChiffreCle value='XXX' description='XXX' />
-          </div>
+        <div className='grid grid-cols-1 justify-items-center gap-4 xl:grid-cols-2 2xl:px-20'>
+          <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
+          <ChiffreCle
+            value={communitiesTotalCount}
+            description='Collectivités recensées sur le site'
+          />
+          <ChiffreCle value='XMd€' description='Budget total des collectivités' />
+          <ChiffreCle value='XXX' description='XXX' />
         </div>
       </article>
     </main>
@@ -55,7 +65,7 @@ export default function ProjectDescription() {
 }
 
 type ChiffreCleProps = {
-  value: string;
+  value: string | number;
   description: string;
 };
 
