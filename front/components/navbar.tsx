@@ -88,9 +88,9 @@ export default function Navbar() {
   return (
     <div className='mx-10 flex flex-row items-center justify-between'>
       <Link className='mr-6' href='/'>
-        <h1 className='text-lg font-bold'>Éclaireur Public</h1>
+        <h1 className='font-bold text-white bg-black w-[120px] py-1 px-2 uppercase'>Éclaireur Public</h1>
       </Link>
-      <NavigationMenu className='flex h-16 items-center py-2'>
+      <NavigationMenu className='flex h-18 items-center py-2'>
         {/* Desktop */}
         <NavigationMenuList className='max-md:hidden'>
           {NavigationMenuGroup('Visualiser', visualiserMenus)}
