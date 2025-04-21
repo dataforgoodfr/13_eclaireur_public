@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
 
 import Trends from './Trends';
+import Ranking from './Ranking';
 
 async function getSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
@@ -15,6 +16,7 @@ async function getSubventions(siren: string) {
 
 export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
+  console.log(subventions)
 
   return (
     <>
@@ -42,9 +44,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
               </div>
             </TabsContent>
             <TabsContent value='details'>
-              <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-                En construction
-              </div>
+              <Ranking data={subventions} />
             </TabsContent>
           </Tabs>
         ) : (
