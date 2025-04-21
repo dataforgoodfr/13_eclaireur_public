@@ -45,16 +45,16 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
     );
 
     const sortedGroupedData = Object.entries(groupedData)
-      .map(([name, size]) => ({ name, size }))
-      .sort((a, b) => Number(b.size) - Number(a.size));
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => Number(b.value) - Number(a.value));
 
     const total = data.reduce((acc, item) => acc + parseFloat(String(item.montant)), 0);
-    const top1 = Number(sortedGroupedData.slice(0, 1)[0].size);
+    const top1 = Number(sortedGroupedData.slice(0, 1)[0].value);
 
     const sortedGroupedDataPlusTotal = sortedGroupedData.map((item) => ({
       ...item,
-      part: Math.round((Number(item.size) / total) * 100 * 10) / 10,
-      pourcentageCategoryTop1: Math.round((Number(item.size) / top1) * 100 * 10) / 10,
+      part: Math.round((Number(item.value) / total) * 100 * 10) / 10,
+      pourcentageCategoryTop1: Math.round((Number(item.value) / top1) * 100 * 10) / 10,
     }));
 
     const formattedData: TreeData = {
@@ -64,7 +64,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
       children: sortedGroupedDataPlusTotal.map((item) => ({
         type: 'leaf',
         name: item.name,
-        value: Number(item.size),
+        value: Number(item.value),
         part: item.part,
         pourcentageCategoryTop1: item.pourcentageCategoryTop1,
       })),
