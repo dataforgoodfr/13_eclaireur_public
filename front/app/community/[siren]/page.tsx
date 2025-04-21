@@ -9,6 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
+import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
 
 // TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
 export const metadata: Metadata = {
@@ -40,6 +41,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         <FicheIdentite community={community} />
         <ErrorBoundary>
           <FicheMarchesPublics siren={siren} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <FicheSubventions siren={siren} />
         </ErrorBoundary>
       </div>
     </Suspense>
