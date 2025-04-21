@@ -39,8 +39,21 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        marches = (
-            marches.pipe(cls.forme_prix_enrich)
+        marches_pd = (
+            marches.to_pandas()
+            #dédoublonnage des modifications à faire ici Johann 
+            #.apply(cls.appliquer_modifications, axis=1)
+            .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "datePublicationDonnees")
+            .pipe(normalize_date, "dateNotification")
+            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
+            .pipe(cls._add_metadata)
+            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
+        )
+
+        return (
+            pl.from_pandas(marches_pd)
+            .pipe(cls.forme_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
             .pipe(
                 cls.generic_json_column_enrich,
@@ -51,28 +64,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "technique", "technique")
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
-        )
-        marches = marches.pipe(cls.forme_prix_enrich).pipe(cls.type_prix_enrich)
-
-        # Deduplicate à pipe avec la ligne au dessus quand ce sera prêt
-        marches = marches.pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
-        marches = marches.pipe(cls.drop_sous_traitance_duplicates)
-
-        # do stuff with sirene
-        marches_pd = (
-            marches.to_pandas()
-            .pipe(normalize_montant, "montant")
-            .pipe(normalize_montant, "montant")
-            .pipe(normalize_date, "datePublicationDonnees")
-            .pipe(normalize_date, "dateNotification")
-            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
-            .pipe(cls._add_metadata)
-            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
-        )
-        # do stuff with sirene
-
-        return (
-            pl.from_pandas(marches_pd)
+            .pipe(cls.set_unique_id).pipe(cls.drop_source_duplicates)
+            .pipe(cls.drop_sous_traitance_duplicates)
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
@@ -394,5 +387,65 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(subset=["id", "titulaire_id","objet"], keep="first")
         )
 
+    @staticmethod
+    def appliquer_modifications(row):
+
+        try:
+            modifications_raw = row["modifications"]
+            modifications_list = json.loads(modifications_raw)
+        except (json.JSONDecodeError, TypeError):
+            return row  # on ignore si la valeur est vide ou mal formée
+
+        # Si ce n'est pas une liste (ex: un dict direct ou None), on ignore
+        if not isinstance(modifications_list, list):
+            #modifications_invalides += 1  # 61 lignes invalides !!!  donc potentiellement non traitées mais je ne sais pas vraiment ce qui bloque 
+            #exemples.append(row.get("modifications"))
+            return row
+
+        # Extraire proprement les dicts de modification (cas [{"modification": {...}}, ...])
+        #  En l'adaptant, potentiellement réutilisable pour l'extraction des listes de dicts des titulaires
+        modifs = [
+            mod["modification"] if isinstance(mod, dict) and "modification" in mod else mod
+            for mod in modifications_list
+        ]
+
+        # Tri personnalisé sans convertir les id entiers en chaînes
+        def tri_modification(mod):
+            return (
+                mod.get("datePublicationDonneesModification")
+                or mod.get("dateNotificationModification")
+                or mod.get("dateSignatureModification")
+                or mod.get("updated_at")
+                or (mod.get("id") if isinstance(mod.get("id"), str) else "")
+            )
+
+        modifs_sorted = sorted(modifs, key=tri_modification)
+
+        for modif in modifs_sorted:
+            for key, value in modif.items():
+
+                # Gestion spéciale de 'id'
+                if key == "id":
+                    if isinstance(value, int):
+                        continue  # On ignore les id techniques
+                    elif isinstance(value, str):
+                        row["id"] = value  # Appliquer le vrai identifiant
+                        continue
+
+                # Normalisation du nom de la clé
+                base_key = (
+                    key.replace("Modification", "") if key.endswith("Modification") else key
+                )
+
+                if base_key in row:
+                    try:
+                        if isinstance(row[base_key], (float, int)):
+                            row[base_key] = float(value)
+                        else:
+                            row[base_key] = value
+                    except:
+                        row[base_key] = value
+
+        return row
 
 
