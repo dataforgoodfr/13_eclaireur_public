@@ -15,10 +15,7 @@ const descriptionText = `Visualiser les dernières données de dépenses publiqu
 
 export function FicheHeader({ community }: FicheHeaderProps) {
   const isOpen = useIsOpen();
-  // TODO - get and show postal code
   const title = `${community.nom} ${community.code_postal ? community.code_postal : ''}`;
-  // TODO - get and show last update date
-  const lastUpdateText = `Dernière mise à jour le XX/XX/XX`;
 
   if (!isOpen) return null;
 
@@ -32,7 +29,6 @@ export function FicheHeader({ community }: FicheHeaderProps) {
             <div>
               <CopyUrlButton label='Partager la fiche' />
             </div>
-            <p className='col-span-2 mb-4 text-gray-500'>{lastUpdateText}</p>
           </div>
           <p>{descriptionText}</p>
         </div>
