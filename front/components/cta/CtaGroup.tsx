@@ -11,27 +11,30 @@ export default function CtaGroup() {
       image: carteImage,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
+      color:"#ffeccf"
     },
 
     {
       title: 'Recherche avancée',
-      caption: 'Personnaliser votre recherche pour trouver les collectivités qui vous intéressent.',
+      caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
       image: placeHolderImage,
       buttonText: 'Filtrer par collectivité',
       href: '/',
+      color:"#cfe8ff"
     },
 
     {
       title: 'Interpeller',
-      caption: "Interpeller les élus pour améliorer la transparence dans votre collectivité.",
+      caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
       image: placeHolderImage,
       buttonText: 'Engagement citoyen',
       href: '/',
+      color:"#b1b2b5"
     },
   ];
 
   return (
-    <div className='box-border flex w-full flex-wrap items-stretch justify-center gap-2 p-2'>
+    <div className='mx-auto my-6 flex max-w-screen-lg justify-center space-x-6'>
       {CtaInfo.map((item) => (
         <CtaCard
           key={item.title}
@@ -40,6 +43,7 @@ export default function CtaGroup() {
           image={item.image}
           buttonText={item.buttonText}
           href={item.href}
+          color={item.color}
         />
       ))}
     </div>

@@ -8,22 +8,27 @@ interface CtaCardProps {
   image: StaticImageData;
   buttonText: string;
   href: string;
+  color?: string;
 }
 
-export default function CtaCard({ title, caption, image, buttonText, href }: CtaCardProps) {
+export default function CtaCard({ title, caption, image, buttonText, href, color }: CtaCardProps) {
   return (
-    <a href={href}>
-      <div className='box-border flex h-full w-64 flex-col items-center gap-3 rounded-md bg-neutral-300 p-4'>
-        <h3 className='text-lg font-bold'>{title}</h3>
-        <p>{caption}</p>
-        <div className='relative aspect-square w-full'>
-          <Image className='rounded-sm' fill={true} src={image} alt='Card illustration image' />
-        </div>
-        <div className='flex w-full justify-around rounded-sm bg-neutral-600 p-2 text-white'>
-          <span>{buttonText}</span>
-          <ArrowRight />
-        </div>
+    <div
+      className='box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md'
+      style={{ backgroundColor: color }}
+    >
+      <h3 className='text-3xl font-bold'>{title}</h3>
+      <p>{caption}</p>
+      <div className='relative aspect-square w-full'>
+        <Image className='rounded-sm' fill={true} src={image} alt='Card illustration image' />
       </div>
-    </a>
+      <a
+        href={href}
+        className='group flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 text-white hover:bg-neutral-700'
+      >
+        <span>{buttonText}</span>
+        <ArrowRight className='transition-transform duration-300 group-hover:translate-x-1' />
+      </a>
+    </div>
   );
 }
