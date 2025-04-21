@@ -59,7 +59,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <Navbar />
-          {children}
+          <div className='relative pt-[80px]'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />

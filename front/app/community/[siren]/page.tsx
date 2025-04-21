@@ -36,10 +36,12 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <Suspense key={community.siren} fallback={<Loading />}>
       <FicheHeader community={community} />
-      <FicheIdentite community={community} />
-      <ErrorBoundary>
-        <FicheMarchesPublics siren={siren} />
-      </ErrorBoundary>
+      <div className='mt-[140px]'>
+        <FicheIdentite community={community} />
+        <ErrorBoundary>
+          <FicheMarchesPublics siren={siren} />
+        </ErrorBoundary>
+      </div>
     </Suspense>
   );
 }

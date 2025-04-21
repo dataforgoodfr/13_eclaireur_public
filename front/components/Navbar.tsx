@@ -86,7 +86,7 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
 
 export default function Navbar() {
   return (
-    <div className='mx-10 flex flex-row items-center justify-between'>
+    <div className='fixed z-50 flex h-[80px] w-full flex-row items-center justify-between bg-primary-foreground px-10'>
       <Link className='mr-6' href='/'>
         <h1 className='text-lg font-bold'>Éclaireur Public</h1>
       </Link>
