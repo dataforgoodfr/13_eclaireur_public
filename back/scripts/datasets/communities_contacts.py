@@ -55,7 +55,7 @@ class CommunitiesContact:
             content = json.load(f)["service"]
             df = (
                 pd.read_json(StringIO(json.dumps(content)))
-                .pipe(normalize_identifiant, "siren", format=IdentifierFormat.SIRET)
+                .pipe(normalize_identifiant, "siren", format=IdentifierFormat.SIREN)
                 .pipe(normalize_identifiant, "siret", format=IdentifierFormat.SIRET)
             )
             df = (
@@ -63,7 +63,7 @@ class CommunitiesContact:
                 .select(
                     "nom",
                     "pivot",
-                    col("siret").fill_null(col("siren")).alias("siret"),
+                    col("siren").fill_null(col("siret").str.slice(0, 9)).alias("siren"),
                     "sve",
                     "adresse_courriel",
                     "formulaire_contact",
