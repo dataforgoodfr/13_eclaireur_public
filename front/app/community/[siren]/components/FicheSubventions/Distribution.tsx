@@ -70,7 +70,7 @@ export default function Distribution({ data }: { data: Subvention[] }) {
     return formattedData;
   }
 
-  const formattedData = getTopSectors(filteredData) as TreeData;
+  const formattedData = getTopSectors(filteredData);
 
   return (
     <>
