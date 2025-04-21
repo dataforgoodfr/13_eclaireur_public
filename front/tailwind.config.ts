@@ -10,7 +10,7 @@ export default {
   theme: {
   	extend: {
   		backgroundImage: {
-  			'homepage-header': 'url("/transparency.jpg")'
+  			'homepage-header': 'url("/transparency.png")'
   		},
   		colors: {
   			background: 'hsl(var(--background))',

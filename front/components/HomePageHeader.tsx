@@ -12,16 +12,13 @@ export default function HomePageHeader() {
   }
 
   return (
-    <div className='h-[600px] bg-homepage-header bg-cover object-cover'>
-      <div className='global-margin flex h-full flex-col items-center justify-center gap-y-12'>
-        <div className='flex flex-col items-center justify-center'>
-          <h1 className='text-3xl font-semibold'>Éclaireur Public</h1>
-          <h2 className='text-xl font-semibold'>Pour une transparence des dépenses</h2>
-          <p className='text-base italic'>Dernière mise-à-jour: le 24 Février 2025</p>
-        </div>
-        <div className='flex h-72 w-3/5 flex-col items-center justify-center rounded-2xl border border-black bg-gray-500'>
+    <div className='h-[600px] bg-homepage-header bg-cover bg-center object-cover'>
+      <div className='global-margin flex h-full items-center justify-center drop-shadow-[0px_0px_20px_rgba(0,0,0,0.4)] backdrop-blur-sm'>
+        <div className='flex h-72 w-4/5 flex-col items-center justify-center rounded-2xl bg-[#fec04e]'>
+          <h1 className='my-4 text-7xl font-bold text-white'>ÉCLAIREUR PUBLIC</h1>
           <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
-            Comment les dépenses publiques sont-elles réparties autour de chez vous ?
+            La plateforme citoyenne pour rendre transparentes et accessibles les dépenses publiques
+            des collectivités locales.
           </h2>
           <SearchBar onSelect={({ siren }) => navigateToCommunityPage(siren)} />
         </div>
