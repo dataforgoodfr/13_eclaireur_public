@@ -52,11 +52,6 @@ class MarchesPublicsEnricher(BaseEnricher):
                     "nature",
                     "codeCPV",
                     "objet",
-                    "procedure",
-                    "attributionAvance",
-                    "offresRecues",
-                    "marcheInnovant",
-                    "ccag",
                 ],
             )
             .pipe(normalize_montant, "montant")
