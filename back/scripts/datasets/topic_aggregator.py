@@ -269,10 +269,25 @@ class TopicAggregator(DatasetAggregator):
         return frame.rename(columns=matching)
 
     def _add_date_from_metadata(self, df: pd.DataFrame, file_metadata: tuple) -> pd.DataFrame:
-        pat = re.compile(r"\b(\d{4})\b")
-        title_year = pat.search(file_metadata.dataset_title)
-        if title_year and len(title_year.groups()) == 1:
+        metadata_year = self.year_from_metadata(file_metadata)
+        if metadata_year:
             return df.assign(
-                dateConvention=pd.to_datetime(title_year.group(1), format="%Y", utc=True)
+                dateConvention=pd.to_datetime(metadata_year, format="%Y", utc=True)
             )
         return df
+
+    @staticmethod
+    def year_from_metadata(file_metadata: tuple) -> pd.DataFrame:
+        pat = re.compile(r"\b(20\d{2})\b")
+
+        title = file_metadata.dataset_title or ""
+        title_year = pat.search(title.replace("_", " "))
+        if title_year and len(title_year.groups()) == 1:
+            return title_year.group(1)
+
+        title = file_metadata.title or ""
+        title_year = pat.search(title.replace("_", " "))
+        if title_year and len(title_year.groups()) == 1:
+            return title_year.group(1)
+
+        return None
