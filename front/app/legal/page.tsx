@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Mentions légales',
 };
 
-export default function page() {
+export default function Page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>
       <h1 className='my-6 text-3xl font-bold'>Mentions légales</h1>
