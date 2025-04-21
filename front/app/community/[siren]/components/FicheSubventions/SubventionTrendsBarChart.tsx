@@ -1,13 +1,25 @@
 import { formatNumber } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
+const LEGEND_LABELS: Record<string, string> = {
+  nombre: 'Nombre de subventions publiées (€)',
+};
+
+function getLegendFormatter(value: string): string {
+  const label = LEGEND_LABELS[value];
+  if (!label) {
+    throw new Error(`Clé de légende inconnue : "${value}".`);
+  }
+  return label;
+}
+
 type ChartData = {
   annee: number;
   montant: number;
   nombre: number;
 };
 
-export default function BarCharts({ data }: { data: ChartData[] }) {
+export default function SubventionTrendsBarChart({ data }: { data: ChartData[] }) {
   return (
     <div className='p-4'>
       <ResponsiveContainer width='100%' height={600}>
@@ -25,12 +37,7 @@ export default function BarCharts({ data }: { data: ChartData[] }) {
           <XAxis dataKey='annee' axisLine={true} tickLine={true} />
           <YAxis />
           <Legend
-            formatter={(value) => {
-              const legendLabels: Record<string, string> = {
-                nombre: 'Nombre de subventions',
-              };
-              return legendLabels[value] || value;
-            }}
+            formatter={getLegendFormatter}
           />
           <Bar dataKey='nombre' stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
             <LabelList position='top' formatter={(value: number) => formatNumber(value)} />
