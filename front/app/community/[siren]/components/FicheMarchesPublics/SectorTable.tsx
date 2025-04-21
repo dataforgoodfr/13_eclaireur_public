@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { firstLetterUppercase, formatCompactPrice } from '@/utils/utils';
+import { formatFirstLetterToUppercase, formatCompactPrice } from '@/utils/utils';
 
 import { TreeData } from '../../types/interface';
 import PercentageBarCell from './PercentageBarCell';
@@ -44,7 +44,7 @@ export default function SectorTable({ data }: { data: TreeData }) {
         <TableBody>
           {topSectors?.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='font-medium'>{firstLetterUppercase(item.name)}</TableCell>
+              <TableCell className='font-medium'>{formatFirstLetterToUppercase(item.name)}</TableCell>
               <PercentageBarCell value={Number(item.pourcentageCategoryTop1)} />
               <TableCell>{formatCompactPrice(Number(item.value))}</TableCell>
               <TableCell className='text-right'>{`${item.part}%`}</TableCell>

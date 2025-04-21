@@ -1,4 +1,4 @@
-import { firstLetterUppercase, formatPrice } from '@/utils/utils';
+import { formatFirstLetterToUppercase, formatPrice } from '@/utils/utils';
 
 import { TooltipProps } from '../../types/interface';
 
@@ -12,7 +12,7 @@ export default function TreemapTooltip({ visible, x, y, name, value }: TooltipPr
         transform: 'translateY(-50%)',
       }}
     >
-      <div>{firstLetterUppercase(name)}</div>
+      <div>{formatFirstLetterToUppercase(name)}</div>
       <div>{formatPrice(value)}</div>
     </div>
   );

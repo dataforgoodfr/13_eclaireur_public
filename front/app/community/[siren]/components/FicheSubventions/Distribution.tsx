@@ -12,14 +12,14 @@ import SectorTable from '../FicheMarchesPublics/SectorTable';
 import Treemap from '../FicheMarchesPublics/Treemap';
 
 function getAvailableYears(data: Subvention[]) {
-  return [...new Set(data.map((item) => item.year && item.montant && item.year))].sort(
-    (a: number, b: number) => a - b,
-  );
+  return [
+    ...new Set(data.filter((item) => item.year && item.montant).map((item) => item.year)),
+  ].sort((a, b) => a - b);
 }
 
 export default function Distribution({ data }: { data: Subvention[] }) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
-  const [tableDisplayed, setTableDisplayed] = useState(false);
+  const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   const availableYears: number[] = getAvailableYears(data);
 
@@ -80,26 +80,26 @@ export default function Distribution({ data }: { data: Subvention[] }) {
           <div className='flex items-baseline gap-2'>
             <div
               onClick={() => {
-                setTableDisplayed(false);
+                setIsTableDisplayed(false);
               }}
-              className={`cursor-pointer ${!tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+              className={`cursor-pointer ${!isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               (graphique
-            </div>{' '}
+            </div>
             <Switch
-              checked={tableDisplayed}
+              checked={isTableDisplayed}
               onCheckedChange={() => {
-                setTableDisplayed((prev) => !prev);
+                setIsTableDisplayed((prev) => !prev);
               }}
             />
             <div
               onClick={() => {
-                setTableDisplayed(true);
+                setIsTableDisplayed(true);
               }}
-              className={`cursor-pointer ${tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+              className={`cursor-pointer ${isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               tableau)
-            </div>{' '}
+            </div>
           </div>
         </div>
         <div className='flex items-center gap-2'>
@@ -107,8 +107,8 @@ export default function Distribution({ data }: { data: Subvention[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed && <SectorTable data={formattedData} />}
-      {!tableDisplayed && <Treemap data={formattedData} />}
+      {isTableDisplayed && <SectorTable data={formattedData} />}
+      {!isTableDisplayed && <Treemap data={formattedData} />}
     </>
   );
 }
