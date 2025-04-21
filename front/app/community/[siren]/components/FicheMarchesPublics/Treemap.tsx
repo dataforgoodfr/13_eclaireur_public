@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
-import { TreeData } from '../../types/interface';
-import { TooltipProps } from '../../types/interface';
+import { TooltipProps, TreeData } from '../../types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -139,7 +138,7 @@ export default function Treemap({ data }: { data: TreeData }) {
           className='pointer-events-none'
         >
           {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
-            <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+            <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
               {line}
             </tspan>
           ))}
