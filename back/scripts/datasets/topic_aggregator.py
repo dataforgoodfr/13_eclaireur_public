@@ -1,5 +1,6 @@
 import copy
 import logging
+import re
 import ssl
 from collections import Counter
 from pathlib import Path
@@ -174,6 +175,10 @@ class TopicAggregator(DatasetAggregator):
         optional_features = {}
         if "idAttribuant" not in df.columns:
             optional_features["idAttribuant"] = str(file_metadata.siren).zfill(9) + "0" * 5
+
+        if "dateConvention" not in df.columns:
+            df = self._add_date_from_metadata(df, file_metadata)
+
         if "dateConvention" in df.columns:
             optional_features["annee"] = df["dateConvention"].dt.year
         return df.assign(
@@ -262,3 +267,12 @@ class TopicAggregator(DatasetAggregator):
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
+
+    def _add_date_from_metadata(self, df: pd.DataFrame, file_metadata: tuple) -> pd.DataFrame:
+        pat = re.compile(r"\b(\d{4})\b")
+        title_year = pat.search(file_metadata.dataset_title)
+        if title_year and len(title_year.groups()) == 1:
+            return df.assign(
+                dateConvention=pd.to_datetime(title_year.group(1), format="%Y", utc=True)
+            )
+        return df
