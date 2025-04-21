@@ -54,10 +54,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(
                 cls.correction_types_colonnes_str,
                 [
-                    "id",
-                    "acheteur_id",
-                    "nature",
-                    "codeCPV",
                     "objet",
                 ],
             )
