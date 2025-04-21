@@ -46,17 +46,17 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
 const comprendreMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Contexte',
-    href: '/',
+    href: '/contexte',
     description: 'Quels sont les enjeux de la transparence des dépenses publiques ?',
   },
   {
     title: 'Méthodologie',
-    href: '/methodology',
+    href: '/methodologie',
     description: 'Comment sont évalués les scores de transparence et tendance de mes collectivités',
   },
   {
     title: 'Cadre réglementaire',
-    href: '/',
+    href: '/cadre-reglementaire',
     description: 'Quelles sont les obligations des collectivités ? ',
   },
 ];
@@ -64,12 +64,12 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
 const aProposMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Le projet',
-    href: '/',
+    href: '/le-projet',
     description: 'Qui sommes-nous ?',
   },
   {
     title: 'Aide aux élus',
-    href: '/',
+    href: '/aide-aux-elus',
     description: 'Comment améliorer la transparence dans ma collectivité ?',
   },
   {
@@ -118,7 +118,7 @@ export default function Navbar() {
               <Accordion type='single' collapsible className='w-full'>
                 {AccordionMenu('Visualiser', visualiserMenus)}
                 {AccordionMenu('Comprendre', comprendreMenus)}
-                <Link href='/'>
+                <Link href='/telecharger'>
                   <p className='border-b py-4 text-left text-lg font-bold hover:underline'>
                     Télécharger
                   </p>
