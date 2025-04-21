@@ -11,7 +11,7 @@ type FicheHeaderProps = {
   community: Community;
 };
 
-const decriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
+const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
 
 export function FicheHeader({ community }: FicheHeaderProps) {
   const isOpen = useIsOpen();
@@ -34,7 +34,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
             </div>
             <p className='col-span-2 mb-4 text-gray-500'>{lastUpdateText}</p>
           </div>
-          <p>{decriptionText}</p>
+          <p>{descriptionText}</p>
         </div>
       </div>
       <FicheComparisonInput community={community} />
