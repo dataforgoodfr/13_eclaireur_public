@@ -16,7 +16,7 @@ type Trends = {
 };
 
 export default function Trends({ data }: { data: Subvention[] }) {
-  const [subventionsCountDisplayed, setSubventionsCountDisplayed] = useState(false);
+  const [isSubventionsCountDisplayed, setIsSubventionsCountDisplayed] = useState(false);
 
   function calculateTrends(data: Subvention[]) {
     const subventionsByYear: Trends[] = Object.values(
@@ -61,18 +61,18 @@ export default function Trends({ data }: { data: Subvention[] }) {
           </div>
         </div>
       </div>
-      {!subventionsCountDisplayed && <SubventionTrendsStackedBarChart data={formattedData} />}
-      {subventionsCountDisplayed && <SubventionTrendsBarChart data={formattedData} />}
+      {!isSubventionsCountDisplayed && <SubventionTrendsStackedBarChart data={formattedData} />}
+      {isSubventionsCountDisplayed && <SubventionTrendsBarChart data={formattedData} />}
       <div className='flex items-center justify-center gap-2 pt-2'>
         <div
-          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${!subventionsCountDisplayed && 'bg-black text-white'}`}
-          onClick={() => setSubventionsCountDisplayed(false)}
+          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${!isSubventionsCountDisplayed && 'bg-black text-white'}`}
+          onClick={() => setIsSubventionsCountDisplayed(false)}
         >
           Montants des subventions versées
         </div>
         <div
-          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${subventionsCountDisplayed && 'bg-black text-white'}`}
-          onClick={() => setSubventionsCountDisplayed(true)}
+          className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${isSubventionsCountDisplayed && 'bg-black text-white'}`}
+          onClick={() => setIsSubventionsCountDisplayed(true)}
         >
           Nombre de subventions attribuées
         </div>
