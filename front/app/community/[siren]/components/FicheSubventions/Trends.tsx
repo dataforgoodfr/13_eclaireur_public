@@ -3,9 +3,10 @@
 import { PureComponent, useState } from 'react';
 
 import { Subvention } from '@/app/models/subvention';
+
 import DownloadButton from './DownloadButton';
+import SubventionTrendsBarChart from './SubventionTrendsBarChart';
 import SubventionTrendsStackedBarChart from './SubventionTrendsStackedBarChart';
-import StackedBarCharts from './SubventionTrendsStackedBarChart';
 
 type Trends = {
   annee: number;
@@ -13,7 +14,6 @@ type Trends = {
   nombre: number;
   budget?: number;
 };
-
 
 export default function Trends({ data }: { data: Subvention[] }) {
   const [subventionsCountDisplayed, setSubventionsCountDisplayed] = useState(false);
@@ -61,12 +61,8 @@ export default function Trends({ data }: { data: Subvention[] }) {
           </div>
         </div>
       </div>
-      {!subventionsCountDisplayed && (
-        <StackedBarCharts data={formattedData} />
-      )}
-      {subventionsCountDisplayed && (
-        <SubventionTrendsStackedBarChart data={formattedData} />
-      )}
+      {!subventionsCountDisplayed && <SubventionTrendsStackedBarChart data={formattedData} />}
+      {subventionsCountDisplayed && <SubventionTrendsBarChart data={formattedData} />}
       <div className='flex items-center justify-center gap-2 pt-2'>
         <div
           className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${!subventionsCountDisplayed && 'bg-black text-white'}`}

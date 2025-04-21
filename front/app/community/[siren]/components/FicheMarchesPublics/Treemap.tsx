@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice, firstLetterUppercase } from '@/utils/utils';
+import { firstLetterUppercase, formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
-import { TreeData } from '../../types/interface';
-import { TooltipProps } from '../../types/interface';
+import { TooltipProps, TreeData } from '../../types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -33,13 +32,12 @@ function generateColorMap(names: string[]): Record<string, string> {
   const total = names.length;
 
   names.forEach((name, index) => {
-    const lightness = Math.min(Math.round((80 / total) * index), 50); 
-    colorMap[name] = `hsl(0, 0%, ${lightness+20}%)`;
+    const lightness = Math.min(Math.round((80 / total) * index), 50);
+    colorMap[name] = `hsl(0, 0%, ${lightness + 20}%)`;
   });
 
   return colorMap;
 }
-
 
 export default function Treemap({ data }: { data: TreeData }) {
   const [tooltip, setTooltip] = useState<TooltipProps>({

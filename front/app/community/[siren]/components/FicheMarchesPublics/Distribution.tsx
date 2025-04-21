@@ -6,15 +6,19 @@ import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDow
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
-import { TreeData, YearOption } from "../../types/interface";
 
+import { TreeData, YearOption } from '../../types/interface';
 import SectorTable from './SectorTable';
 import Treemap from './Treemap';
 
 function getAvailableYears(data: MarchePublic[]) {
-  return [...new Set(data.map((item) => item.datenotification_annee))].sort(
-    (a: number, b: number) => a - b,
-  );
+  return [
+    ...new Set(
+      data.map(
+        (item) => item.datenotification_annee && item.montant && item.datenotification_annee,
+      ),
+    ),
+  ].sort((a: number, b: number) => a - b);
 }
 
 export default function Distribution({ data }: { data: MarchePublic[] }) {

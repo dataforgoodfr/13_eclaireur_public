@@ -68,16 +68,11 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
     maximumFractionDigits: 2,
     ...options,
   } as const;
-<<<<<<< HEAD
   
   return formatFrench(value, defaultOptions)};
 
 export function firstLetterUppercase(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
-=======
-
-  return formatFrench(value, defaultOptions);
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
@@ -100,4 +95,3 @@ export function parseDirection(value: string | null): Direction | undefined {
 
   return undefined;
 }
->>>>>>> main

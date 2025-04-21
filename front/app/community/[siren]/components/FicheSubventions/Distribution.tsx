@@ -12,7 +12,9 @@ import SectorTable from '../FicheMarchesPublics/SectorTable';
 import Treemap from '../FicheMarchesPublics/Treemap';
 
 function getAvailableYears(data: Subvention[]) {
-  return [...new Set(data.map((item) => item.year))].sort((a: number, b: number) => a - b);
+  return [...new Set(data.map((item) => item.year && item.montant && item.year))].sort(
+    (a: number, b: number) => a - b,
+  );
 }
 
 export default function Distribution({ data }: { data: Subvention[] }) {
@@ -24,10 +26,10 @@ export default function Distribution({ data }: { data: Subvention[] }) {
   const filteredData =
     selectedYear === 'All' ? data : data.filter((item) => item.year === selectedYear);
 
-  function getTopSectors(data: any[]) {
+  function getTopSectors(data: Subvention[]) {
     const groupedData = data.reduce(
       (acc, { section_naf, montant }) => {
-        if (section_naf === null) {
+        if (!section_naf || !montant) {
           return acc;
         }
         if (!acc[section_naf]) {
