@@ -28,7 +28,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Recherche avancée',
-    href: '/',
+    href: '/advanced-search',
     description: 'Quelles sont les dépenses publiques dans ma collectivité ?',
   },
   {
@@ -46,17 +46,17 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
 const comprendreMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Contexte',
-    href: '/',
+    href: '/contexte',
     description: 'Quels sont les enjeux de la transparence des dépenses publiques ?',
   },
   {
     title: 'Méthodologie',
-    href: '/methodology',
+    href: '/methodologie',
     description: 'Comment sont évalués les scores de transparence et tendance de mes collectivités',
   },
   {
     title: 'Cadre réglementaire',
-    href: '/',
+    href: '/cadre-reglementaire',
     description: 'Quelles sont les obligations des collectivités ? ',
   },
 ];
@@ -64,12 +64,12 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
 const aProposMenus: { title: string; href: string; description: string }[] = [
   {
     title: 'Le projet',
-    href: '/',
+    href: '/le-projet',
     description: 'Qui sommes-nous ?',
   },
   {
     title: 'Aide aux élus',
-    href: '/',
+    href: '/aide-aux-elus',
     description: 'Comment améliorer la transparence dans ma collectivité ?',
   },
   {
@@ -96,7 +96,7 @@ export default function Navbar() {
           <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
           <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
           <NavigationMenuItem>
-            <Link href='/' legacyBehavior passHref>
+            <Link href='/advanced-search' legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                 Télécharger
               </NavigationMenuLink>
