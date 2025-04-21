@@ -50,6 +50,7 @@ export default async function ProjectDescription() {
               <ArrowRight />
             </Link>
           </div>
+        </div>
         <div className='grid grid-cols-1 justify-items-center gap-4 xl:grid-cols-2 2xl:px-20'>
           <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
           <ChiffreCle
