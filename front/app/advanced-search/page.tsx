@@ -2,8 +2,6 @@
 
 import { Suspense } from 'react';
 
-import { Metadata } from 'next';
-
 import Loading from '@/components/ui/Loading';
 import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
 
@@ -15,11 +13,6 @@ import { NoResults } from './components/NoResults';
 import { useFiltersParams } from './hooks/useFiltersParams';
 import { useOrderParams } from './hooks/useOrderParams';
 import { usePaginationParams } from './hooks/usePaginationParams';
-
-export const metadata: Metadata = {
-  title: 'Télécharger',
-  description: "Éclaireur Public met à disposition l'ensemble des données utilisées sur le site",
-};
 
 export default function Page() {
   const { filters } = useFiltersParams();

@@ -1,27 +1,37 @@
+'use client';
+
 import { Community } from '@/app/models/community';
+import CopyUrlButton from '@/components/utils/CopyUrlButton';
 
 import GoBack from '../GoBack';
 import { FicheComparisonInput } from './FicheComparisonInput';
+import { useIsOpen } from './hooks/useIsOpen';
 
 type FicheHeaderProps = {
   community: Community;
 };
 
-const decriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
+const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
 
 export function FicheHeader({ community }: FicheHeaderProps) {
-  // TODO - get and show postal code
+  const isOpen = useIsOpen();
   const title = `${community.nom} ${community.code_postal ? community.code_postal : ''}`;
-  // TODO - get and show last update date
-  const lastUpdateText = `Dernière mise à jour le XX/XX/XX`;
+
+  if (!isOpen) return null;
 
   return (
-    <div className='flex w-full flex-col justify-stretch gap-6 bg-gray-200 p-6 md:flex-row'>
+    <div className='fixed z-50 flex h-[140px] w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
       <GoBack />
-      <div className='flex-1 text-center'>
-        <p className='text-xl font-bold'>{title}</p>
-        <p className='mb-4 text-gray-500'>{lastUpdateText}</p>
-        <p>{decriptionText}</p>
+      <div className='flex flex-1 justify-center'>
+        <div className='w-fit text-center'>
+          <div className='grid min-w-0 grid-cols-3 gap-2'>
+            <p className='col-span-2 text-xl font-bold'>{title}</p>
+            <div>
+              <CopyUrlButton label='Partager la fiche' />
+            </div>
+          </div>
+          <p>{descriptionText}</p>
+        </div>
       </div>
       <FicheComparisonInput community={community} />
     </div>

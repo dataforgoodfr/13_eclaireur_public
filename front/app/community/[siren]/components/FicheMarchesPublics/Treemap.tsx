@@ -138,7 +138,7 @@ export default function Treemap({ data }: { data: TreeData }) {
           className='pointer-events-none'
         >
           {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map((line, i) => (
-            <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+            <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
               {line}
             </tspan>
           ))}
