@@ -25,17 +25,11 @@ async function getMarchesPublics(siren: string) {
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  const test = await fetchMarchesPublics({
-    filters: { acheteur_siren: siren },
-    // TODO - Remove limit when api to calculate data is done
-    limit: 100,
-    orderBy: { direction: 'asc', column: 'montant' },
-  });
 
   return (
     <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
-      {[''].length > 0 ? (
+      {marchesPublics.length > 0 ? (
         <Tabs defaultValue={tabs.trends}>
           <TabsList>
             <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>

@@ -8,6 +8,7 @@ import Trends from './Trends';
 async function getSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
     filters: { attribuant_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
     limit: 100,
   });
 
@@ -49,7 +50,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
         ) : (
           <NoData />
         )}
-      </div>{' '}
+      </div>
     </>
   );
 }

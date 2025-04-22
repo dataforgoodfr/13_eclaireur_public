@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatFirstLetterToUppercase, formatCompactPrice } from '@/utils/utils';
+import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
 import * as d3 from 'd3';
 
 import { TooltipProps, TreeData } from '../../types/interface';
@@ -50,7 +50,8 @@ export default function Treemap({ data }: { data: TreeData }) {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function handleOnMouseEnter(e: React.MouseEvent, leaf: any) {
+  function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
+    console.log({ leaf });
     setTooltip({
       visible: true,
       x: e.clientX,
@@ -102,7 +103,7 @@ export default function Treemap({ data }: { data: TreeData }) {
   const colorMap = generateColorMap(leafNames);
 
   const allShapes = root.leaves().map((leaf) => (
-    <g key={leaf.id}>
+    <g key={leaf?.id ?? '' + leaf.data.name}>
       <rect
         x={leaf.x0}
         y={leaf.y0}
@@ -137,11 +138,13 @@ export default function Treemap({ data }: { data: TreeData }) {
           fill='white'
           className='pointer-events-none'
         >
-          {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map((line, i) => (
-            <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
-              {line}
-            </tspan>
-          ))}
+          {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map(
+            (line, i) => (
+              <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+                {line}
+              </tspan>
+            ),
+          )}
         </text>
       )}
     </g>

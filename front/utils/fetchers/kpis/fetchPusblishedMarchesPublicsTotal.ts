@@ -15,7 +15,7 @@ export function createSQLQueryParams(year: number): [string, (string | number)[]
             LEFT(acheteur_id,9) AS acheteur_siren,
             montant,
         FROM ${MP_TABLE} mp
-        WHERE DATE_PART('year', dateNotification::date) = $1
+        WHERE annee_notification = $1
     )
     SELECT SUM(mps.montant)
     FROM mp_siren AS mps
