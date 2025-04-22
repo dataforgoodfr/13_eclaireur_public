@@ -1,6 +1,6 @@
-import carteImage from '@/public/carte-image.png';
-import advanced_search from "@/public/advanced_search.png"
-import interpellate from "@/public/interpellate.png"
+import carteImg from '@/public/carteImg.png';
+import advancedSearchImg from "@/public/advancedSearchImg.png"
+import interpellateImg from "@/public/interpellateImg.png"
 
 import CtaCard from './CtaCard';
 
@@ -9,7 +9,7 @@ export default function CtaGroup() {
     {
       title: 'Cartographie',
       caption: 'Explorer la carte pour voir quelles sont les collectivités les plus transparentes.',
-      image: carteImage,
+      image: carteImg,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
       color:"#ffeccf"
@@ -18,7 +18,7 @@ export default function CtaGroup() {
     {
       title: 'Recherche avancée',
       caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
-      image: advanced_search,
+      image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
       href: '/',
       color:"#cfe8ff"
@@ -27,7 +27,7 @@ export default function CtaGroup() {
     {
       title: 'Interpeller',
       caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
-      image: interpellate,
+      image: interpellateImg,
       buttonText: 'Engagement citoyen',
       href: '/',
       color:"#b1b2b5"
