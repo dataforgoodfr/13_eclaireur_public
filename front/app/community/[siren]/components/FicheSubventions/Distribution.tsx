@@ -26,7 +26,7 @@ export default function Distribution({ data }: { data: Subvention[] }) {
   const filteredData =
     selectedYear === 'All' ? data : data.filter((item) => item.year === selectedYear);
 
-  function getTopSectors(data: Subvention[]) {
+  function getTopSectors(data: Subvention[]): TreeData {
     const groupedData = data.reduce(
       (acc, { section_naf, montant }) => {
         if (!section_naf || !montant) {
@@ -89,8 +89,7 @@ export default function Distribution({ data }: { data: Subvention[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {isTableDisplayed && <SectorTable data={formattedData} />}
-      {!isTableDisplayed && <Treemap data={formattedData} />}
+      {isTableDisplayed ? <SectorTable data={formattedData} /> : <Treemap data={formattedData} />}
     </>
   );
 }

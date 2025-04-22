@@ -32,7 +32,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
       ? data
       : data.filter((item) => item.datenotification_annee === selectedYear);
 
-  function getTopSectors(data: any[]) {
+  function getTopSectors(data: MarchePublic[]): TreeData {
     const groupedData = data.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
@@ -73,7 +73,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
     return formattedData;
   }
 
-  const formattedData = getTopSectors(filteredData) as TreeData;
+  const formattedData = getTopSectors(filteredData);
 
   return (
     <>
@@ -92,8 +92,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {isTableDisplayed && <SectorTable data={formattedData} />}
-      {!isTableDisplayed && <Treemap data={formattedData} />}
+      {isTableDisplayed ? <SectorTable data={formattedData} /> : <Treemap data={formattedData} />}
     </>
   );
 }

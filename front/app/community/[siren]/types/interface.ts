@@ -11,8 +11,8 @@ export type TreeLeaf = {
   type: 'leaf';
   name: string;
   value: number;
-  part?:number;
-  pourcentageCategoryTop1?:number;
+  part?: number;
+  pourcentageCategoryTop1?: number;
 };
 
 export type TreeNode = {
@@ -20,8 +20,8 @@ export type TreeNode = {
   value: number;
   name: string;
   children: TreeData[];
-  part?:number;
-  pourcentageCategoryTop1?:number;
+  part?: number;
+  pourcentageCategoryTop1?: number;
 };
 
 export type TreeData = TreeNode | TreeLeaf;
