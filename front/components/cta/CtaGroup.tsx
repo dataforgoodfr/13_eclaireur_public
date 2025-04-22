@@ -31,7 +31,7 @@ export default function CtaGroup() {
   ];
 
   return (
-    <div className='box-border flex w-full flex-wrap items-stretch justify-center gap-2 p-2'>
+    <section className='my-6 box-border flex w-full flex-wrap items-stretch justify-around gap-8 p-2'>
       {CtaInfo.map((item) => (
         <CtaCard
           key={item.title}
@@ -42,6 +42,6 @@ export default function CtaGroup() {
           href={item.href}
         />
       ))}
-    </div>
+    </section>
   );
 }
