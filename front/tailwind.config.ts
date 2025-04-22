@@ -22,7 +22,8 @@ export default {
             foreground: {
               '1': 'var(--card-secondary-foreground-1)',
               '2': 'var(--card-secondary-foreground-2)',
-              '3': 'var(--card-secondary-background-3)',
+              '3': 'var(--card-secondary-foreground-3)',
+              '4': 'var(--card-secondary-foreground-4)',
             },
           },
   			},

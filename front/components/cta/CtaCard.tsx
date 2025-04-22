@@ -8,14 +8,13 @@ interface CtaCardProps {
   image: StaticImageData;
   buttonText: string;
   href: string;
-  color?: string;
+  colorClassName?: string;
 }
 
-export default function CtaCard({ title, caption, image, buttonText, href, color }: CtaCardProps) {
+export default function CtaCard({ title, caption, image, buttonText, href, colorClassName }: CtaCardProps) {
   return (
     <div
-      className='box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md'
-      style={{ backgroundColor: `var(--${color})` }}
+      className={`box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md ${colorClassName}`}
     >
       <h3 className='text-3xl font-bold'>{title}</h3>
       <p>{caption}</p>

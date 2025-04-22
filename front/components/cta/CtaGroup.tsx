@@ -12,7 +12,7 @@ export default function CtaGroup() {
       image: carteImg,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
-colorClassName: 'bg-card-secondary-foreground-1',
+      colorClassName: 'bg-card-secondary-foreground-2',
     },
 
     {
@@ -21,7 +21,7 @@ colorClassName: 'bg-card-secondary-foreground-1',
       image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
       href: '/',
-colorClassName: 'bg-card-secondary-foreground-2',
+      colorClassName: 'bg-card-secondary-foreground-3',
     },
 
     {
@@ -30,7 +30,7 @@ colorClassName: 'bg-card-secondary-foreground-2',
       image: interpellateImg,
       buttonText: 'Engagement citoyen',
       href: '/',
-colorClassName: 'bg-card-secondary-foreground-3',
+      colorClassName: 'bg-card-secondary-foreground-4',
     },
   ];
 
@@ -44,7 +44,7 @@ colorClassName: 'bg-card-secondary-foreground-3',
           image={item.image}
           buttonText={item.buttonText}
           href={item.href}
-          color={item.color}
+          colorClassName={item.colorClassName}
         />
       ))}
     </div>
