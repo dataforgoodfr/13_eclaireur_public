@@ -41,7 +41,9 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         marches_pd = (
             marches.to_pandas()
-            .pipe(cls.set_unique_id)
+            .pipe(cls.set_unique_mp_id)
+            .pipe(cls.set_unique_mp_titulaire_id)
+            .drop(["id", "uid", "uuid"], axis=1)
             .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
             .pipe(
@@ -107,14 +109,24 @@ class MarchesPublicsEnricher(BaseEnricher):
             return
 
     @staticmethod
-    def set_unique_id(marches: pd.DataFrame) -> pd.DataFrame:
-        # Concaténation en ignorant les NaN
-        marches["id"] = (
-            marches[["id", "uid", "uuid", "dateNotification", "codeCPV", "titulaire_id"]]
+    def set_unique_mp_id(marches: pd.DataFrame) -> pd.DataFrame:
+        # Créé un id unique par MP
+        marches["id_mp"] = (
+            marches[["id", "uid", "uuid", "dateNotification", "codeCPV"]]
             .astype(str)
             .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
         )
-        return marches.drop(["uid", "uuid"], axis=1)
+        return marches
+
+    @staticmethod
+    def set_unique_mp_titulaire_id(marches: pd.DataFrame) -> pd.DataFrame:
+        # Créé un id unique par MP + titulaire
+        marches["id_mp_titulaire"] = (
+            marches[["id_mp", "titulaire_id"]]
+            .astype(str)
+            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
+        )
+        return marches
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -378,7 +390,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                 [
                     pl.col("priority")
                     .rank("dense", descending=False)
-                    .over("id")
+                    .over("id_mp_titulaire")
                     .alias("rank")
                 ]
             )
@@ -392,7 +404,7 @@ class MarchesPublicsEnricher(BaseEnricher):
         # On garde la ligne avec le plus d'actes de sousTraitance
 
         return marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(
-            subset=["id", "titulaire_id", "objet"], keep="first"
+            subset=["id_mp_titulaire", "titulaire_id", "objet"], keep="first"
         )
 
     @staticmethod
@@ -468,20 +480,22 @@ class MarchesPublicsEnricher(BaseEnricher):
         # On garde par MP la ligne avec le plus de modifications
         marches["modifications_length"] = marches["modifications"].fillna("").str.len()
         marches = marches.sort_values(
-            ["id", "modifications_length"], ascending=False
+            ["id_mp_titulaire", "modifications_length"], ascending=False
         )
-        marches = marches.drop_duplicates(subset="id", keep="first")
+        marches = marches.drop_duplicates(subset="id_mp_titulaire", keep="first")
         marches = marches.drop(columns="modifications_length")
         return marches
-    
+
     @staticmethod
     def generate_new_id(marches: pl.DataFrame) -> pl.DataFrame:
         # Génère un nouvel id unique, entier, pour chaque MP
 
         id_mapping = (
-            marches.select("id")
+            marches.select("id_mp")
             .unique()
-            .with_row_count(name="id_clean")  # génère l'entier par valeur unique
+            .with_row_count(name="id")  # génère l'entier par valeur unique
         )
 
-        return marches.join(id_mapping, on="id", how="left").drop("id").rename({"id_clean": "id"})
+        return marches.join(id_mapping, on="id_mp", how="left").drop(
+            ["id_mp", "id_mp_titulaire"]
+        )
