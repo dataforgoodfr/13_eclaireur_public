@@ -15,10 +15,13 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
-				primaryyellow: '#fec04e',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				foreground: 'hsl(var(--card-foreground))',
+					foreground1: 'var(--card-foreground-1)',
+					foreground2: 'var(--card-foreground-2)',
+					foreground3: 'var(--card-foreground-3)',
+					foreground4: 'var(--card-foreground-4)',
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',

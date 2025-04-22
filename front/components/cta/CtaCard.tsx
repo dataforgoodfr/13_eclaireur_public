@@ -15,7 +15,7 @@ export default function CtaCard({ title, caption, image, buttonText, href, color
   return (
     <div
       className='box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md'
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: `var(--${color})` }}
     >
       <h3 className='text-3xl font-bold'>{title}</h3>
       <p>{caption}</p>
@@ -24,7 +24,7 @@ export default function CtaCard({ title, caption, image, buttonText, href, color
       </div>
       <a
         href={href}
-        className='group flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 mt-8 mb-4 text-white hover:bg-neutral-700'
+        className='group mb-4 mt-8 flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 text-white hover:bg-neutral-700'
       >
         <span>{buttonText}</span>
         <ArrowRight className='transition-transform duration-300 group-hover:translate-x-1' />

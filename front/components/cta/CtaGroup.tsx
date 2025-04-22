@@ -1,6 +1,6 @@
+import advancedSearchImg from '@/public/advancedSearchImg.png';
 import carteImg from '@/public/carteImg.png';
-import advancedSearchImg from "@/public/advancedSearchImg.png"
-import interpellateImg from "@/public/interpellateImg.png"
+import interpellateImg from '@/public/interpellateImg.png';
 
 import CtaCard from './CtaCard';
 
@@ -12,7 +12,7 @@ export default function CtaGroup() {
       image: carteImg,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
-      color:"#ffeccf"
+      color: 'card-foreground-2',
     },
 
     {
@@ -21,7 +21,7 @@ export default function CtaGroup() {
       image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
       href: '/',
-      color:"#cfe8ff"
+      color: 'card-foreground-3',
     },
 
     {
@@ -30,7 +30,7 @@ export default function CtaGroup() {
       image: interpellateImg,
       buttonText: 'Engagement citoyen',
       href: '/',
-      color:"#b1b2b5"
+      color: 'card-foreground-4',
     },
   ];
 
