@@ -1,5 +1,4 @@
 import carteImage from '@/public/carte-image.png';
-import placeHolderImage from '@/public/placeholder.jpg';
 import advanced_search from "@/public/advanced_search.png"
 import interpellate from "@/public/interpellate.png"
 
