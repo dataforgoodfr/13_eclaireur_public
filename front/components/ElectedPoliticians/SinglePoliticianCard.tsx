@@ -1,23 +1,19 @@
-import Image from 'next/image';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { User } from 'lucide-react';
 
-type ElectedPolitician = {
+type ElectedPoliticianProps = {
   name: string;
   photoSrc?: string;
   fonction: string;
   email: string;
 };
 
-export default function ElectedPolician({ name, photoSrc, fonction, email }: ElectedPolitician) {
+export default function ElectedPolician({
+  name,
+  photoSrc,
+  fonction,
+  email,
+}: ElectedPoliticianProps) {
   return (
     <Card className='text-center'>
       <CardHeader>
