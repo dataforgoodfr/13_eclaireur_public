@@ -8,7 +8,7 @@ from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
-from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.datasets.financial_account_enricher import FinancialEnricher
 from back.scripts.utils.config import get_project_base_path
 
 
@@ -25,7 +25,7 @@ class BaremeEnricher(BaseEnricher):
         return [
             CommunitiesSelector.get_output_path(main_config),
             SubventionsEnricher.get_output_path(main_config),
-            FinancialAccounts.get_output_path(main_config),
+            FinancialEnricher.get_output_path(main_config),
             MarchesPublicsEnricher.get_output_path(main_config),
         ]
 
@@ -43,6 +43,8 @@ class BaremeEnricher(BaseEnricher):
 
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
+        # barem_sub = cls.bareme_subventions(marches_publics, communities)
+
         barem_mp = cls.bareme_marchespublics(marches_publics, communities)
         bareme = bareme.join(barem_mp, on=["siren", "annee"], how="left")
 
@@ -63,10 +65,7 @@ class BaremeEnricher(BaseEnricher):
         marches_pd = marches_publics.to_pandas()
         communities_pd = communities.to_pandas()
 
-        # Calcul du siren acheteur
-        marches_pd["acheteur_siren"] = marches_pd["acheteur_id"]
-        # Suppression des lignes sans acheteur_id
-        marches_pd = marches_pd.dropna(subset=["acheteur_siren"])
+        marches_pd = marches_pd.dropna(subset=["acheteur_id"])
 
         # Mapping de obligation_publication vers (0 = pas d'obligation de publication, 1 = obligation de publication)
         marches_pd["obligation_publication_bool"] = (
@@ -77,8 +76,6 @@ class BaremeEnricher(BaseEnricher):
 
         # suppression de toutes les lignes dont les dates sont inférieures à 2018 (date de début de l'obligation de publication)
         marches_pd = marches_pd[marches_pd["annee_notification"] >= 2018]
-
-        # Merge avec les collectivités
 
         # Création d'un dataframe coll_years_df avec collectivité et années
         coll_df = communities_pd[["siren"]].copy()
@@ -97,7 +94,7 @@ class BaremeEnricher(BaseEnricher):
             marches_pd,
             how="left",
             left_on=["siren", "annee"],
-            right_on=["acheteur_siren", "annee_notification"],
+            right_on=["acheteur_id", "annee_notification"],
         )
 
         bareme = (

@@ -11,7 +11,6 @@ from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsE
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.enrichment.bareme_enricher import BaremeEnricher
-
 from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
 
 from back.scripts.utils.psql_connector import PSQLConnector
