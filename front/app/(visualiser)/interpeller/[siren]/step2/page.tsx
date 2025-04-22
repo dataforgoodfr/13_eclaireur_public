@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ElectedPolician from '@/components/ElectedPoliticians/SinglePoliticianCard';
 import Stepper from '@/components/Interpellate/Stepper';
 import { buttonVariants } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default async function InterpellateStep2({
   params,
