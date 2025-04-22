@@ -5,7 +5,6 @@ from sqlalchemy import text
 
 
 from back.scripts.datasets.communities_contacts import CommunitiesContact
-from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsEnricher
