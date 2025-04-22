@@ -14,10 +14,10 @@
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
-    --card-foreground-1: #fec04e;
-    --card-foreground-2: #ffeccf;
-    --card-foreground-3: #cfe8ff;
-    --card-foreground-4: #b1b2b5;
+    --card-secondary-foreground-1: #fec04e;
+    --card-secondary-foreground-2: #ffeccf;
+    --card-secondary-foreground-3: #cfe8ff;
+    --card-secondary-foreground-4: #b1b2b5;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 240 5.9% 10%;
