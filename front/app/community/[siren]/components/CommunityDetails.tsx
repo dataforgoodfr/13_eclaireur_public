@@ -1,6 +1,6 @@
 import { Community } from '@/app/models/community';
 import { formatNumber, stringifyCommunityType } from '@/utils/utils';
-import { BadgeEuro, FileText, Landmark, Layers, Users } from 'lucide-react';
+import { BadgeEuro, CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';
 const populationLabel = 'Population';
@@ -9,6 +9,7 @@ const agentsLabel = "Nombre d'agents administratifs";
 const agentsUnit = 'agents';
 const totalBudgetLabel = 'Budget total';
 const obligationPublicationText = `Soumise à l'obligation de publication`;
+const pasObligationPublicationText = `Non soumise à l'obligation de publication`;
 
 type CommunityDetailsProps = {
   community: Community;
@@ -37,7 +38,11 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
         description={`TODO ${populationUnit}`}
         icon={<BadgeEuro />}
       />
-      <TinyCard title={obligationPublicationText} icon={<FileText />} />
+      {community.should_publish ? (
+        <TinyCard title={obligationPublicationText} icon={<FileText />} />
+      ) : (
+        <TinyCard title={pasObligationPublicationText} icon={<CircleX />} />
+      )}
     </div>
   );
 }
