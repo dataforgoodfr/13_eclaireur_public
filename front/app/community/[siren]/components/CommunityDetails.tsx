@@ -1,5 +1,5 @@
 import { Community } from '@/app/models/community';
-import { formatNumber } from '@/utils/utils';
+import { formatNumber, stringifyCommunityType } from '@/utils/utils';
 import { BadgeEuro, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';
@@ -17,7 +17,11 @@ type CommunityDetailsProps = {
 export function CommunityDetails({ community }: CommunityDetailsProps) {
   return (
     <div className='flex flex-col gap-2'>
-      <TinyCard title={collectivitesLabel} description={community.type} icon={<Layers />} />
+      <TinyCard
+        title={collectivitesLabel}
+        description={stringifyCommunityType(community.type)}
+        icon={<Layers />}
+      />
       <TinyCard
         title={populationLabel}
         description={`${formatNumber(community.population)} ${populationUnit}`}
