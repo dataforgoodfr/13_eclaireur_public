@@ -1,5 +1,7 @@
 import carteImage from '@/public/carte-image.png';
 import placeHolderImage from '@/public/placeholder.jpg';
+import advanced_search from "@/public/advanced_search.png"
+import interpellate from "@/public/interpellate.png"
 
 import CtaCard from './CtaCard';
 
@@ -17,7 +19,7 @@ export default function CtaGroup() {
     {
       title: 'Recherche avancée',
       caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
-      image: placeHolderImage,
+      image: advanced_search,
       buttonText: 'Filtrer par collectivité',
       href: '/',
       color:"#cfe8ff"
@@ -26,7 +28,7 @@ export default function CtaGroup() {
     {
       title: 'Interpeller',
       caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
-      image: placeHolderImage,
+      image: interpellate,
       buttonText: 'Engagement citoyen',
       href: '/',
       color:"#b1b2b5"
@@ -34,7 +36,7 @@ export default function CtaGroup() {
   ];
 
   return (
-    <div className='mx-auto my-6 flex max-w-screen-lg justify-center space-x-6'>
+    <div className='mx-auto my-20 flex max-w-screen-lg justify-center space-x-20'>
       {CtaInfo.map((item) => (
         <CtaCard
           key={item.title}
