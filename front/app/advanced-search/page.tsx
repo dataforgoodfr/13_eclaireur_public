@@ -19,13 +19,13 @@ export default function Page() {
     <div className='global-margin my-20 flex flex-col gap-x-10 gap-y-5'>
       <GoBackHome />
       <h1 className='text-2xl font-bold'>Recherche Avancée</h1>
-      <Suspense>
+      <Suspense fallback={<Loading />}>
         <div className='flex items-end justify-between'>
           <Filters />
           <DownloadingButton />
         </div>
       </Suspense>
-      <Suspense>
+      <Suspense fallback={<Loading />}>
         <CommunitiesTableWithLoader />
       </Suspense>
     </div>
