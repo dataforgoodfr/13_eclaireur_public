@@ -62,6 +62,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             pl.from_pandas(marches_pd)
             .pipe(cls.drop_source_duplicates)
             .pipe(cls.drop_sous_traitance_duplicates)
+            .pipe(cls.generate_new_id)
             .pipe(cls.forme_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
             .pipe(
@@ -113,7 +114,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .astype(str)
             .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
         )
-        return marches
+        return marches.drop(["uid", "uuid"], axis=1)
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -472,3 +473,15 @@ class MarchesPublicsEnricher(BaseEnricher):
         marches = marches.drop_duplicates(subset="id", keep="first")
         marches = marches.drop(columns="modifications_length")
         return marches
+    
+    @staticmethod
+    def generate_new_id(marches: pl.DataFrame) -> pl.DataFrame:
+        # Génère un nouvel id unique, entier, pour chaque MP
+
+        id_mapping = (
+            marches.select("id")
+            .unique()
+            .with_row_count(name="id_clean")  # génère l'entier par valeur unique
+        )
+
+        return marches.join(id_mapping, on="id", how="left").drop("id").rename({"id_clean": "id"})
