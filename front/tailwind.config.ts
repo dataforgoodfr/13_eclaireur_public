@@ -17,11 +17,14 @@ export default {
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))',
-					foreground1: 'var(--card-foreground-1)',
-					foreground2: 'var(--card-foreground-2)',
-					foreground3: 'var(--card-foreground-3)',
-					foreground4: 'var(--card-foreground-4)',
+          foreground: 'hsl(var(--card-foreground))',
+          secondary: {
+            foreground: {
+              '1': 'var(--card-secondary-foreground-1)',
+              '2': 'var(--card-secondary-foreground-2)',
+              '3': 'var(--card-secondary-background-3)',
+            },
+          },
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
