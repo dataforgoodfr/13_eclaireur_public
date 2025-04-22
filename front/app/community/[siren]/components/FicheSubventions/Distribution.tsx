@@ -4,41 +4,38 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { MarchePublic } from '@/app/models/marchePublic';
+import { Subvention } from '@/app/models/subvention';
 import { Switch } from '@/components/ui/switch';
 
 import { TreeData, YearOption } from '../../types/interface';
-import SectorTable from './SectorTable';
-import Treemap from './Treemap';
+import SectorTable from '../FicheMarchesPublics/SectorTable';
+import Treemap from '../FicheMarchesPublics/Treemap';
 
-function getAvailableYears(data: MarchePublic[]) {
+function getAvailableYears(data: Subvention[]) {
   return [
-    ...new Set(
-      data.map(
-        (item) => item.datenotification_annee && item.montant && item.datenotification_annee,
-      ),
-    ),
-  ].sort((a: number, b: number) => a - b);
+    ...new Set(data.filter((item) => item.year && item.montant).map((item) => item.year)),
+  ].sort((a, b) => a - b);
 }
 
-export default function Distribution({ data }: { data: MarchePublic[] }) {
+export default function Distribution({ data }: { data: Subvention[] }) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
-  const [tableDisplayed, setTableDisplayed] = useState(false);
+  const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   const availableYears: number[] = getAvailableYears(data);
 
   const filteredData =
-    selectedYear === 'All'
-      ? data
-      : data.filter((item) => item.datenotification_annee === selectedYear);
+    selectedYear === 'All' ? data : data.filter((item) => item.year === selectedYear);
 
-  function getTopSectors(data: any[]) {
+  function getTopSectors(data: Subvention[]) {
     const groupedData = data.reduce(
-      (acc, { cpv_2_label, montant }) => {
-        if (!acc[cpv_2_label]) {
-          acc[cpv_2_label] = 0;
+      (acc, { section_naf, montant }) => {
+        if (!section_naf || !montant) {
+          return acc;
         }
-        acc[cpv_2_label] += parseFloat(String(montant));
+        if (!acc[section_naf]) {
+          acc[section_naf] = 0;
+        }
+        acc[section_naf] += parseFloat(String(montant));
         return acc;
       },
       {} as Record<string, number>,
@@ -48,7 +45,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => Number(b.value) - Number(a.value));
 
-    const total = data.reduce((acc, item) => acc + parseFloat(String(item.montant)), 0);
+    const total = sortedGroupedData.reduce((acc, item) => acc + Number(item.value), 0);
     const top1 = Number(sortedGroupedData.slice(0, 1)[0].value);
 
     const sortedGroupedDataPlusTotal = sortedGroupedData.map((item) => ({
@@ -73,7 +70,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
     return formattedData;
   }
 
-  const formattedData = getTopSectors(filteredData) as TreeData;
+  const formattedData = getTopSectors(filteredData);
 
   return (
     <>
@@ -83,26 +80,26 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <div className='flex items-baseline gap-2'>
             <div
               onClick={() => {
-                setTableDisplayed(false);
+                setIsTableDisplayed(false);
               }}
-              className={`cursor-pointer ${!tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+              className={`cursor-pointer ${!isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               (graphique
-            </div>{' '}
+            </div>
             <Switch
-              checked={tableDisplayed}
+              checked={isTableDisplayed}
               onCheckedChange={() => {
-                setTableDisplayed((prev) => !prev);
+                setIsTableDisplayed((prev) => !prev);
               }}
             />
             <div
               onClick={() => {
-                setTableDisplayed(true);
+                setIsTableDisplayed(true);
               }}
-              className={`cursor-pointer ${tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
+              className={`cursor-pointer ${isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               tableau)
-            </div>{' '}
+            </div>
           </div>
         </div>
         <div className='flex items-center gap-2'>
@@ -110,8 +107,8 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed && <SectorTable data={formattedData} />}
-      {!tableDisplayed && <Treemap data={formattedData} />}
+      {isTableDisplayed && <SectorTable data={formattedData} />}
+      {!isTableDisplayed && <Treemap data={formattedData} />}
     </>
   );
 }

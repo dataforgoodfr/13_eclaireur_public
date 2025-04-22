@@ -68,9 +68,15 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
     maximumFractionDigits: 2,
     ...options,
   } as const;
+  
+  return formatFrench(value, defaultOptions)};
 
-  return formatFrench(value, defaultOptions);
-}
+
+export function formatFirstLetterToUppercase(str: string): string {
+  if (!str?.trim()) return '';
+  if (str.length === 1) return str.toUpperCase();
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
 
 export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.CA) return `Communauté d'agglomeration`;

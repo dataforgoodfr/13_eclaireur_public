@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCompactPrice } from '@/utils/utils';
+import { formatFirstLetterToUppercase, formatCompactPrice } from '@/utils/utils';
 
 import { TreeData } from '../../types/interface';
 import PercentageBarCell from './PercentageBarCell';
@@ -31,20 +31,20 @@ export default function SectorTable({ data }: { data: TreeData }) {
   const topSectors = getTopSectors(data);
 
   return (
-    <>
-      <Table className='min-h-[600px]'>
+    <div className='min-h-[600px]'>
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead className='w-[400px]'>Secteur</TableHead>
-            <TableHead className='w-[700px]'>Montant</TableHead>
-            <TableHead className=''></TableHead>
+            <TableHead className='w-[700px]'></TableHead>
+            <TableHead className=''>Montant</TableHead>
             <TableHead className='text-right'>Part</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {topSectors?.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='font-medium'>{item.name}</TableCell>
+              <TableCell className='font-medium'>{formatFirstLetterToUppercase(item.name)}</TableCell>
               <PercentageBarCell value={Number(item.pourcentageCategoryTop1)} />
               <TableCell>{formatCompactPrice(Number(item.value))}</TableCell>
               <TableCell className='text-right'>{`${item.part}%`}</TableCell>
@@ -62,6 +62,6 @@ export default function SectorTable({ data }: { data: TreeData }) {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

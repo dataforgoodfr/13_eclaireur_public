@@ -2,6 +2,7 @@ import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
 
+import Distribution from './Distribution';
 import Trends from './Trends';
 
 async function getSubventions(siren: string) {
@@ -32,9 +33,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
               <Trends data={subventions} />
             </TabsContent>
             <TabsContent value='distribution'>
-              <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-                En construction
-              </div>
+              <Distribution data={subventions} />
             </TabsContent>
             <TabsContent value='compare'>
               <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
