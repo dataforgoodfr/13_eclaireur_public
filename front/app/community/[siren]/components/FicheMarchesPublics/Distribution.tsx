@@ -5,9 +5,9 @@ import { useState } from 'react';
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marchePublic';
-import { Switch } from '@/components/ui/switch';
 
 import { TreeData, YearOption } from '../../types/interface';
+import { GraphSwitch } from '../DataViz/GraphSwitch';
 import SectorTable from './SectorTable';
 import Treemap from './Treemap';
 
@@ -23,7 +23,7 @@ function getAvailableYears(data: MarchePublic[]) {
 
 export default function Distribution({ data }: { data: MarchePublic[] }) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
-  const [tableDisplayed, setTableDisplayed] = useState(false);
+  const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   const availableYears: number[] = getAvailableYears(data);
 
@@ -80,38 +80,20 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
           <h3 className='py-2 text-xl'>Répartition </h3>
-          <div className='flex items-baseline gap-2'>
-            <div
-              onClick={() => {
-                setTableDisplayed(false);
-              }}
-              className={`cursor-pointer ${!tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              (graphique
-            </div>{' '}
-            <Switch
-              checked={tableDisplayed}
-              onCheckedChange={() => {
-                setTableDisplayed((prev) => !prev);
-              }}
-            />
-            <div
-              onClick={() => {
-                setTableDisplayed(true);
-              }}
-              className={`cursor-pointer ${tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              tableau)
-            </div>{' '}
-          </div>
+          <GraphSwitch
+            isActive={isTableDisplayed}
+            onChange={setIsTableDisplayed}
+            label1='graphique'
+            label2='tableau'
+          />
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed && <SectorTable data={formattedData} />}
-      {!tableDisplayed && <Treemap data={formattedData} />}
+      {isTableDisplayed && <SectorTable data={formattedData} />}
+      {!isTableDisplayed && <Treemap data={formattedData} />}
     </>
   );
 }
