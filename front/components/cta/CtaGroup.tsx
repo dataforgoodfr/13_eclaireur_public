@@ -21,7 +21,7 @@ colorClassName: 'bg-card-secondary-foreground-1',
       image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
       href: '/',
-      color: 'card-foreground-3',
+colorClassName: 'bg-card-secondary-foreground-2',
     },
 
     {
