@@ -39,17 +39,10 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        # dédoublonnage des modifications à faire avant appliquer_modifications Johann
-
-        marches = marches.to_pandas()
-
-        df_modifs = marches[marches['modifications'].str.len() > 2]
-        df_modifs = df_modifs.drop_duplicates(subset='modifications', keep='first')
-        marches = pd.concat([df_modifs, marches[marches['modifications'].str.len() <= 2]], axis=0)
-
-
         marches_pd = (
-            marches
+            marches.to_pandas()
+            .pipe(cls.set_unique_id)
+            .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
             .pipe(
                 cls.correction_types_colonnes_str,
@@ -67,6 +60,8 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return (
             pl.from_pandas(marches_pd)
+            .pipe(cls.drop_source_duplicates)
+            .pipe(cls.drop_sous_traitance_duplicates)
             .pipe(cls.forme_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
             .pipe(
@@ -78,9 +73,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "technique", "technique")
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
-            .pipe(cls.set_unique_id)
-            .pipe(cls.drop_source_duplicates)
-            .pipe(cls.drop_sous_traitance_duplicates)
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
@@ -114,14 +106,14 @@ class MarchesPublicsEnricher(BaseEnricher):
             return
 
     @staticmethod
-    def set_unique_id(marches: pl.DataFrame) -> pl.DataFrame:
-        return marches.with_columns(
-            pl.concat_str(
-                ["id", "uid", "uuid", "dateNotification", "codeCPV", "titulaire_id"],
-                separator="-",
-                ignore_nulls=True,
-            ).alias("iduiduuiddncpvtid")
+    def set_unique_id(marches: pd.DataFrame) -> pd.DataFrame:
+        # Concaténation en ignorant les NaN
+        marches["id"] = (
+            marches[["id", "uid", "uuid", "dateNotification", "codeCPV", "titulaire_id"]]
+            .astype(str)
+            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
         )
+        return marches
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -385,7 +377,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                 [
                     pl.col("priority")
                     .rank("dense", descending=False)
-                    .over("iduiduuiddncpvtid")
+                    .over("id")
                     .alias("rank")
                 ]
             )
@@ -468,4 +460,15 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Corrige les types des colonnes avant la conversion en polars
         marches[colonnes_a_convertir_en_str] = marches[colonnes_a_convertir_en_str].astype(str)
         marches.drop(["modifications"], axis=1, inplace=True)
+        return marches
+
+    @staticmethod
+    def keep_last_modifications(marches: pd.DataFrame) -> pd.DataFrame:
+        # On garde par MP la ligne avec le plus de modifications
+        marches["modifications_length"] = marches["modifications"].fillna("").str.len()
+        marches = marches.sort_values(
+            ["id", "modifications_length"], ascending=False
+        )
+        marches = marches.drop_duplicates(subset="id", keep="first")
+        marches = marches.drop(columns="modifications_length")
         return marches
