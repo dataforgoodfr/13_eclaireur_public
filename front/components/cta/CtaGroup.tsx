@@ -30,7 +30,7 @@ colorClassName: 'bg-card-secondary-foreground-2',
       image: interpellateImg,
       buttonText: 'Engagement citoyen',
       href: '/',
-      color: 'card-foreground-4',
+colorClassName: 'bg-card-secondary-foreground-3',
     },
   ];
 
