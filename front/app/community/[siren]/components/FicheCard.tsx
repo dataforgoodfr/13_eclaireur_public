@@ -1,22 +1,15 @@
 import { PropsWithChildren } from 'react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import CopyUrlButton from '@/components/utils/CopyUrlButton';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 
 type FicheCardProps = PropsWithChildren<{
-  title: string;
   subtitle?: string;
-  displayCopyUrl?: boolean;
 }>;
 
-export function FicheCard({ title, subtitle, displayCopyUrl = false, children }: FicheCardProps) {
+export function FicheCard({ subtitle, children }: FicheCardProps) {
   return (
     <Card className='mx-auto max-w-screen-2xl'>
       <CardHeader>
-        <CardTitle className='text-center'>
-          <span>{title}</span>
-          {displayCopyUrl && <CopyUrlButton />}
-        </CardTitle>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
