@@ -1,4 +1,4 @@
-import type { Metadata }Page( 'next';
+import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     'À chaque échelon territorial son ensemble de compétences particulières, revue de détails et enjeux de la transparence',
 };
+
 export default function Page() {
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>

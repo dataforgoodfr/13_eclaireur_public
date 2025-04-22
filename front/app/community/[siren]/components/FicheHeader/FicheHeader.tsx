@@ -20,7 +20,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed z-50 flex h-[140px] w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
+    <div className='fixed z-40 flex h-[140px] w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
       <GoBack />
       <div className='flex flex-1 justify-center'>
         <div className='w-fit text-center'>
@@ -30,7 +30,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
               <CopyUrlButton label='Partager la fiche' />
             </div>
           </div>
-          <p>{descriptionText}</p>
+          <p className='mt-6'>{descriptionText}</p>
         </div>
       </div>
       <FicheComparisonInput community={community} />

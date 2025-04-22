@@ -90,8 +90,8 @@ type ChartData = {
 
 export default function SubventionTrendsStackedBarChart({ data }: { data: ChartData[] }) {
   return (
-    <div>
-      <ResponsiveContainer width='100%' height={600} className='p-4'>
+    <div className='p-4'>
+      <ResponsiveContainer width='100%' height={600}>
         <BarChart
           width={500}
           height={300}
