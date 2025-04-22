@@ -113,3 +113,65 @@ class TestTopicAggregator:
             }
         )
         pd.testing.assert_frame_equal(out, expected)
+
+    def test_fetch_date_from_metadata(self):
+        self.files_in_scope["dataset_title"] = "Subventions 2023."
+        self.files_in_scope["title"] = None
+        inp = pd.DataFrame(
+            {
+                "idAttribuant": "20004697700019",
+                "idBeneficiaire": ["47785695900010", "47787695900010"],
+                "montant": [4500, 120],
+            }
+        )
+        inp.to_csv(self.raw_filename, index=False)
+        aggregator = TopicAggregator(
+            files_in_scope=self.files_in_scope,
+            topic="subventions",
+            datafile_loader_config=self.config,
+        )
+        aggregator.run()
+        out = pd.read_parquet(self.config["combined_filename"])
+        expected = pd.DataFrame(
+            {
+                "id_attribuant": "20004697700019",
+                "id_beneficiaire": ["47785695900010", "47787695900010"],
+                "montant": [4500.0, 120],
+                "date_convention": pd.to_datetime("2023-01-01", utc=True),
+                "topic": "subventions",
+                "url": "file:" + str(self.raw_filename),
+                "coll_type": "COM",
+                "annee": np.int32(2023),
+            }
+        )
+        pd.testing.assert_frame_equal(out, expected)
+
+
+class TestYearFromMetadata:
+    def test_from_dataset_title(self):
+        files_in_scope = pd.DataFrame({"dataset_title": ["Subventions 2023."], "title": None})
+        meta = next(files_in_scope.itertuples(index=False))
+        result = TopicAggregator.year_from_metadata(meta)
+        assert result == "2023"
+
+    def test_from_title(self):
+        files_in_scope = pd.DataFrame(
+            {
+                "dataset_title": ["whatever"],
+                "title": "Subventions 2023.",
+            }
+        )
+        meta = next(files_in_scope.itertuples(index=False))
+        result = TopicAggregator.year_from_metadata(meta)
+        assert result == "2023"
+
+    def test_with_underscores(self):
+        files_in_scope = pd.DataFrame(
+            {
+                "dataset_title": ["whatever"],
+                "title": "subventions_2023_test",
+            }
+        )
+        meta = next(files_in_scope.itertuples(index=False))
+        result = TopicAggregator.year_from_metadata(meta)
+        assert result == "2023"

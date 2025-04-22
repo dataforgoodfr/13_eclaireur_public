@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice } from '@/utils/utils';
+import { formatFirstLetterToUppercase, formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
-import { TreeData } from '../../types/interface';
-import { TooltipProps } from '../../types/interface';
+import { TooltipProps, TreeData } from '../../types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -33,8 +32,8 @@ function generateColorMap(names: string[]): Record<string, string> {
   const total = names.length;
 
   names.forEach((name, index) => {
-    const hue = Math.round((360 / total) * index);
-    colorMap[name] = `hsl(${hue}, 65%, 55%)`;
+    const lightness = Math.min(Math.round((80 / total) * index), 50);
+    colorMap[name] = `hsl(0, 0%, ${lightness + 20}%)`;
   });
 
   return colorMap;
@@ -138,8 +137,8 @@ export default function Treemap({ data }: { data: TreeData }) {
           fill='white'
           className='pointer-events-none'
         >
-          {wrapText(leaf.data.name, leaf.x1 - leaf.x0 - 16).map((line, i) => (
-            <tspan key={i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+          {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map((line, i) => (
+            <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
               {line}
             </tspan>
           ))}
