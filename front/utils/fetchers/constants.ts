@@ -7,4 +7,5 @@ export enum DataTable {
   CommunitiesAccount = 'comptes_collectivites',
   Subventions = 'subventions',
   MarchesPublics = 'marches_publics',
+  Elus = 'elus',
 }
