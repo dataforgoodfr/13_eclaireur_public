@@ -32,7 +32,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
       ? data
       : data.filter((item) => item.datenotification_annee === selectedYear);
 
-  function getTopSectors(data: any[]) {
+  function getTopSectors(data: MarchePublic[]): TreeData {
     const groupedData = data.reduce(
       (acc, { cpv_2_label, montant }) => {
         if (!acc[cpv_2_label]) {
@@ -73,7 +73,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
     return formattedData;
   }
 
-  const formattedData = getTopSectors(filteredData) as TreeData;
+  const formattedData = getTopSectors(filteredData);
 
   return (
     <>
@@ -88,7 +88,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
               className={`cursor-pointer ${!tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               (graphique
-            </div>{' '}
+            </div>
             <Switch
               checked={tableDisplayed}
               onCheckedChange={() => {
@@ -102,7 +102,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
               className={`cursor-pointer ${tableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
             >
               tableau)
-            </div>{' '}
+            </div>
           </div>
         </div>
         <div className='flex items-center gap-2'>
@@ -110,8 +110,7 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed && <SectorTable data={formattedData} />}
-      {!tableDisplayed && <Treemap data={formattedData} />}
+      {tableDisplayed ? <SectorTable data={formattedData} /> : <Treemap data={formattedData} />}
     </>
   );
 }
