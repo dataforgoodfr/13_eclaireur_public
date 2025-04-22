@@ -12,7 +12,7 @@ export default function CtaGroup() {
       image: carteImg,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
-      color: 'card-foreground-2',
+colorClassName: 'bg-card-secondary-foreground-1',
     },
 
     {
