@@ -24,7 +24,7 @@ export default function CtaCard({ title, caption, image, buttonText, href, color
       </div>
       <a
         href={href}
-        className='group flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 text-white hover:bg-neutral-700'
+        className='group flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 mt-8 mb-4 text-white hover:bg-neutral-700'
       >
         <span>{buttonText}</span>
         <ArrowRight className='transition-transform duration-300 group-hover:translate-x-1' />
