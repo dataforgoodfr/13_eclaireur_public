@@ -43,15 +43,11 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.to_pandas()
             .pipe(cls.set_unique_mp_id)
             .pipe(cls.set_unique_mp_titulaire_id)
-            .drop(["id", "uid", "uuid"], axis=1)
+            .drop(columns=["id", "uid", "uuid"])
             .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
-            .pipe(
-                cls.correction_types_colonnes_str,
-                [
-                    "objet",
-                ],
-            )
+            .pipe(cls.correction_types_colonnes_str, ["objet"])
+            .drop(columns=["modifications"])
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
             .pipe(normalize_date, "dateNotification")
@@ -60,7 +56,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
 
-        return (
+        truc = (
             pl.from_pandas(marches_pd)
             .pipe(cls.drop_source_duplicates)
             .pipe(cls.drop_sous_traitance_duplicates)
@@ -80,6 +76,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
         )
+
+        return truc
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -110,7 +108,11 @@ class MarchesPublicsEnricher(BaseEnricher):
 
     @staticmethod
     def set_unique_mp_id(marches: pd.DataFrame) -> pd.DataFrame:
-        # Créé un id unique par MP
+        """
+        Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
+
+        Le but de cette fonction est de créer un id unique par MP, pour ensuite créer un id plus propre par MP.
+        """
         marches["id_mp"] = (
             marches[["id", "uid", "uuid", "dateNotification", "codeCPV"]]
             .astype(str)
@@ -120,7 +122,11 @@ class MarchesPublicsEnricher(BaseEnricher):
 
     @staticmethod
     def set_unique_mp_titulaire_id(marches: pd.DataFrame) -> pd.DataFrame:
-        # Créé un id unique par MP + titulaire
+        """
+        Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
+
+        Le but de cette fonction est de créer un id unique par MP et titulaire, pour ensuite dédoublonner par ce nouvel id.
+        """
         marches["id_mp_titulaire"] = (
             marches[["id_mp", "titulaire_id"]]
             .astype(str)
@@ -369,39 +375,39 @@ class MarchesPublicsEnricher(BaseEnricher):
 
     @staticmethod
     def drop_source_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
-        # Déplucate les MP identiques qui viennent de sources différentes.
+        """
+        Certains MP identiques viennent de sources différentes
+        On enlève un des doublons
+        """
 
         # Dataset of sources by frequency to build priority when deduplicating
         source_priority = (
-            marches.filter(pl.col("source").is_not_null())
-            .group_by("source")
-            .count()
-            .sort("count", descending=True)
+            marches["source"]
+            .value_counts(sort=True)
             .with_row_index(name="priority")
             .drop("count")
         )
 
-        # A checker a quel point ça impacte les cas avec modifications non null
         return (
-            marches.with_columns([pl.col("source").is_null().cast(int).alias("source_is_null")])
-            .join(source_priority, on="source", how="left")
-            .with_columns([pl.col("priority").fill_null(999)])
+            marches.join(source_priority, on="source", how="left")
             .with_columns(
-                [
-                    pl.col("priority")
-                    .rank("dense", descending=False)
-                    .over("id_mp_titulaire")
-                    .alias("rank")
-                ]
+                pl.col("priority")
+                .fill_null(999)
+                .rank("dense", descending=False)
+                .over("id_mp_titulaire")
+                .alias("rank")
             )
-            .with_columns([(pl.col("rank") > 1).cast(pl.Int8).alias("is_duplicate")])
+            .with_columns((pl.col("rank") > 1).cast(pl.Int8).alias("is_duplicate"))
             .filter(pl.col("is_duplicate") == 0)
-            .drop(["is_duplicate", "rank", "priority", "source_is_null"])
+            .drop(["is_duplicate", "rank", "priority"])
         )
 
     def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
-        # Déplucate les MP identiques qui ont des actes de SousTraitance différents.
-        # On garde la ligne avec le plus d'actes de sousTraitance
+        """
+        Certains MP sont en doublons mais avec la colonne actesSousTraitance différente.
+        Cette fonction sert à dédoublonner ces cas.
+        On va notamment garder la ligne avec le plus d'actes de sous traitance
+        """
 
         return marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(
             subset=["id_mp_titulaire", "titulaire_id", "objet"], keep="first"
@@ -469,22 +475,28 @@ class MarchesPublicsEnricher(BaseEnricher):
     @staticmethod
     def correction_types_colonnes_str(
         marches: pd.DataFrame, colonnes_a_convertir_en_str: list
-    ) -> pl.DataFrame:
+    ) -> pd.DataFrame:
         # Corrige les types des colonnes avant la conversion en polars
-        marches[colonnes_a_convertir_en_str] = marches[colonnes_a_convertir_en_str].astype(str)
-        marches.drop(["modifications"], axis=1, inplace=True)
+        marches[colonnes_a_convertir_en_str] = (
+            marches[colonnes_a_convertir_en_str].astype(str).replace("nan", "")
+        )
         return marches
 
     @staticmethod
     def keep_last_modifications(marches: pd.DataFrame) -> pd.DataFrame:
-        # On garde par MP la ligne avec le plus de modifications
-        marches["modifications_length"] = marches["modifications"].fillna("").str.len()
-        marches = marches.sort_values(
-            ["id_mp_titulaire", "modifications_length"], ascending=False
+        """
+        A chaque modification d'un MP, une nouvelle ligne avec les infos initiales du MP est ajoutée au dataset et le champs "modifications" est incrémenté avec les nouvelles modifications.
+        Cela produit autant de doublons que d'étapes de modifications du MP dans le dataset
+        Cette fonction ne conserve un MP qu'avec sa dernière version de modifications
+        En théorie, c'est pour chaque MP, la ligne avec le champs "modifications" le plus rempli.
+        """
+
+        return (
+            marches.assign(modifications_length=marches["modifications"].fillna("").str.len())
+            .sort_values(["id_mp_titulaire", "modifications_length"], ascending=False)
+            .drop_duplicates("id_mp_titulaire")
+            .drop(columns="modifications_length")
         )
-        marches = marches.drop_duplicates(subset="id_mp_titulaire", keep="first")
-        marches = marches.drop(columns="modifications_length")
-        return marches
 
     @staticmethod
     def generate_new_id(marches: pl.DataFrame) -> pl.DataFrame:
