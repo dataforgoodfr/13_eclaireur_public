@@ -45,7 +45,9 @@ class BaremeEnricher(BaseEnricher):
         return bareme_table
 
     @classmethod
-    def bareme_subventions(cls, subventions, financial, bareme_table) -> pl.DataFrame:
+    def bareme_subventions(
+        cls, subventions: pl.DataFrame, financial: pl.DataFrame, bareme_table: pl.DataFrame
+    ) -> pl.DataFrame:
         current_year = datetime.now().year
         valid_years = list(range(2016, current_year))
         subventionsFiltred = subventions.filter(pl.col("annee").is_in(valid_years))
@@ -112,7 +114,9 @@ class BaremeEnricher(BaseEnricher):
             return "E"
 
     @classmethod
-    def bareme_marchespublics(cls, marches_publics, communities) -> pl.DataFrame:
+    def bareme_marchespublics(
+        cls, marches_publics: pl.DataFrame, communities: pl.DataFrame
+    ) -> pl.DataFrame:
         """
         Create a notation per community for marches publics
         """
@@ -215,7 +219,7 @@ class BaremeEnricher(BaseEnricher):
         return pl.from_pandas(bareme)
 
     @staticmethod
-    def score_total(row):
+    def score_total(row: pd.Series) -> str:
         if row["E"] == 0:
             return "E"
         if row["D"] == 0:
@@ -227,7 +231,7 @@ class BaremeEnricher(BaseEnricher):
         return "A"
 
     @staticmethod
-    def median_delay(series):
+    def median_delay(series: pd.Series):
         """Custom aggregation function to avoid warning when slice contains only NaN values"""
         if all(series.isna()):
             return None
