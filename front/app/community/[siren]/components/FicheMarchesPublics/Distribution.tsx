@@ -21,13 +21,11 @@ function getAvailableYears(data: MarchePublic[]) {
   ].sort((a: number, b: number) => a - b);
 }
 
-type DistributionProps = { siren: string; data: MarchePublic[] };
+type DistributionProps = { siren: string; availableYears: number[] };
 
-export default function Distribution({ siren, data }: DistributionProps) {
+export default function Distribution({ siren, availableYears }: DistributionProps) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [tableDisplayed, setTableDisplayed] = useState(false);
-
-  const availableYears: number[] = getAvailableYears(data);
 
   return (
     <>

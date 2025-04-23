@@ -1,5 +1,6 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { fetchAvailableYears } from '@/utils/fetchers/marches-publics/fetchAvailableYears';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
 import { FicheCard } from '../FicheCard';
@@ -26,6 +27,7 @@ async function getMarchesPublics(siren: string) {
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
+  const availableYears = await fetchAvailableYears(siren);
 
   return (
     <FicheCard>
@@ -42,7 +44,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
-            <Distribution data={marchesPublics} siren={siren} />
+            <Distribution availableYears={availableYears} siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
