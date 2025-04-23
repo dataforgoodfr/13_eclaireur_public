@@ -1,10 +1,11 @@
-import { formatNumber } from '@/utils/utils';
+import { formatCompactPrice, formatNumber } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import { CHART_HEIGHT } from '../constants';
 
 const LEGEND_LABELS: Record<string, string> = {
-  nombre: 'Nombre de subventions publiées (€)',
+  nombre: 'Nombre de marchés publics publiées',
+  montant: 'Montant des marchés publics publiées (€)',
 };
 
 function getLegendFormatter(value: string): string {
@@ -15,13 +16,51 @@ function getLegendFormatter(value: string): string {
   return label;
 }
 
+const renderLabel = (props: any) => {
+  const { x, y, width, value } = props;
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 10}
+      fill='#4e4e4e'
+      textAnchor='middle'
+      dominantBaseline='middle'
+      fontSize='16'
+    >
+      {formatCompactPrice(value)}
+    </text>
+  );
+};
+
+const renderNumberLabel = (props: any) => {
+  const { x, y, width, value } = props;
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 10}
+      fill='#4e4e4e'
+      textAnchor='middle'
+      dominantBaseline='middle'
+      fontSize='16'
+    >
+      {formatNumber(value)}
+    </text>
+  );
+};
+
 type ChartData = {
   annee: number;
   montant: number;
   nombre: number;
 };
 
-export default function MarchesPublicsTrendsBarChart({ data }: { data: ChartData[] }) {
+export default function MarchesPublicsTrendsBarChart({
+  data,
+  datakey,
+}: {
+  data: ChartData[];
+  datakey: string;
+}) {
   return (
     <div className='p-4'>
       <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
@@ -37,10 +76,17 @@ export default function MarchesPublicsTrendsBarChart({ data }: { data: ChartData
           }}
         >
           <XAxis dataKey='annee' axisLine={true} tickLine={true} />
-          <YAxis />
+          <YAxis
+            tickFormatter={(value) => (datakey === 'montant' ? formatCompactPrice(value) : value)}
+          />
           <Legend formatter={getLegendFormatter} />
-          <Bar dataKey='nombre' stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
-            <LabelList position='top' formatter={(value: number) => formatNumber(value)} />
+          <Bar dataKey={datakey} stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
+            <LabelList
+              position='top'
+              content={(value) =>
+                datakey === 'montant' ? renderLabel(value) : renderNumberLabel(value)
+              }
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

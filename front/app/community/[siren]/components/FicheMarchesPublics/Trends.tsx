@@ -2,22 +2,11 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import { MarchePublic } from '@/app/models/marchePublic';
-import { formatCompactPrice } from '@/utils/utils';
-import MarchesPublicsTrendsBarChart from './MarchesPublicsTrendsBarChart';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  Legend,
-  ResponsiveContainer,
-  XAxis,
-} from 'recharts';
 
 import { GraphSwitch } from '../DataViz/GraphSwitch';
-import { CHART_HEIGHT } from '../constants';
+import DownloadButton from '../FicheSubventions/DownloadButton';
+import MarchesPublicsTrendsBarChart from './MarchesPublicsTrendsBarChart';
 
 type FormattedDataTrends = {
   annee: number;
@@ -42,29 +31,15 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     }, {}),
   );
 
-  const renderLabel = (props: any) => {
-    const { x, y, width, value } = props;
-    return (
-      <text
-        x={x + width / 2}
-        y={y - 10}
-        fill='#4e4e4e'
-        textAnchor='middle'
-        dominantBaseline='middle'
-        fontSize='16'
-      >
-        {formatCompactPrice(value)}
-      </text>
-    );
-  };
-
-  console.log(trends)
+  console.log(trends);
 
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Évolution des marchés publics au cours du temps</h3>
+      <div className='flex items-baseline justify-between'>
+        <div>
+          <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
+            Évolution des subventions au cours du temps
+          </h3>
           <GraphSwitch
             isActive={isContractDisplayed}
             onChange={setIsContractDisplayed}
@@ -72,16 +47,19 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
             label2='Nombre de contrats'
           />
         </div>
-        <div className='flex items-center gap-2'>
-          <DownloadSelector />
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <DownloadButton label='CSV' />
+            <DownloadButton label='PNG' />
+          </div>
         </div>
       </div>
-      <div className='border p-4'>
-          {!contractDisplayed && (
-            <MarchesPublicsTrendsBarChart data={trends} />
-          )}
-          {contractDisplayed && <MarchesPublicsTrendsBarChart data={trends} />}
-        {/* <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+      {!isContractDisplayed ? (
+        <MarchesPublicsTrendsBarChart data={trends} datakey='montant' />
+      ) : (
+        <MarchesPublicsTrendsBarChart data={trends} datakey='nombre' />
+      )}
+      {/* <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
           <BarChart
             width={500}
             height={300}
@@ -115,7 +93,6 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
             )}
           </BarChart>
         </ResponsiveContainer> */}
-      </div>
     </>
   );
 }

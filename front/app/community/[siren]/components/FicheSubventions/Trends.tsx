@@ -61,8 +61,11 @@ export default function Trends({ data }: { data: Subvention[] }) {
           </div>
         </div>
       </div>
-      {!isSubventionsCountDisplayed && <SubventionTrendsStackedBarChart data={formattedData} />}
-      {isSubventionsCountDisplayed && <SubventionTrendsBarChart data={formattedData} />}
+      {!isSubventionsCountDisplayed ? (
+        <SubventionTrendsStackedBarChart data={formattedData} />
+      ) : (
+        <SubventionTrendsBarChart data={formattedData} />
+      )}
       <div className='flex items-center justify-center gap-2 pt-2'>
         <div
           className={`rounded-md px-3 py-2 text-base shadow hover:cursor-pointer hover:bg-black hover:text-white ${!isSubventionsCountDisplayed && 'bg-black text-white'}`}
