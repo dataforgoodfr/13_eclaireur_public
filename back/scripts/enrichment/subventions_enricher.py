@@ -41,6 +41,7 @@ class SubventionsEnricher(BaseEnricher):
                 # Data should already be normalized to 15 caracters.
                 col("id_attribuant").str.slice(0, 9).alias("id_attribuant"),
                 col("id_beneficiaire").str.slice(0, 9).alias("id_beneficiaire"),
+                col("annee").cast(pl.Int64),
             )
             .join(
                 # Give the official sirene name to the attribuant

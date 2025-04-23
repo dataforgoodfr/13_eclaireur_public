@@ -8,8 +8,7 @@ from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
-from back.scripts.datasets.financial_account_enricher import FinancialEnricher
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
 
 
 class BaremeEnricher(BaseEnricher):
@@ -30,28 +29,13 @@ class BaremeEnricher(BaseEnricher):
         ]
 
     @classmethod
-    def get_output_path(cls, main_config: dict, output_type: str = "") -> Path:
-        return (
-            get_project_base_path()
-            / main_config["warehouse"]["data_folder"]
-            / f"{cls.get_dataset_name()}{output_type}.parquet"
-        )
-
-    @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, subventions, financial, marches_publics = inputs
-
-        # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
-        barem_sub = cls.bareme_subventions(subventions, financial, communities)
-        barem_mp = cls.bareme_marchespublics(marches_publics, communities)
-        bareme = bareme.join(
-            barem_sub[["siren", "annee", "subventions_score"]],
-            on=["siren", "annee"],
-            how="left",
-        ).join(barem_mp, on=["siren", "annee"], how="left")
-
-        return communities, bareme
+        bareme = cls.bareme_subventions(subventions, financial, bareme)
+        bareme_mp = cls.bareme_marchespublics(marches_publics, communities)
+        bareme = bareme.join(bareme_mp, on=["siren", "annee"], how="left")
+        return bareme
 
     @classmethod
     def build_bareme_table(cls, communities: pl.DataFrame) -> pl.DataFrame:
@@ -68,7 +52,7 @@ class BaremeEnricher(BaseEnricher):
 
         sub_agg = (
             subventionsFiltred.group_by(["id_attribuant", "annee"])
-            .agg(pl.col("montant").sum().alias("total_subventions_spent"))
+            .agg(pl.col("montant").sum().alias("total_subventions_declarees"))
             .rename({"id_attribuant": "siren"})
         )
 
@@ -80,9 +64,9 @@ class BaremeEnricher(BaseEnricher):
 
         bareme_table = bareme_table.with_columns(
             [
-                pl.col("total_subventions_spent").fill_null(0.0),
+                pl.col("total_subventions_declarees").fill_null(0.0),
                 pl.col("subventions").fill_null(0.0),
-                (pl.col("subventions") * 1000.0).alias("subventions_budget"),
+                (pl.col("subventions")).alias("subventions_budget"),
             ]
         )
 
@@ -90,7 +74,8 @@ class BaremeEnricher(BaseEnricher):
             [
                 pl.when(pl.col("subventions_budget") != 0)
                 .then(
-                    (pl.col("total_subventions_spent") / pl.col("subventions_budget")) * 100.0
+                    (pl.col("total_subventions_declarees") / pl.col("subventions_budget"))
+                    * 100.0
                 )
                 .otherwise(float("nan"))
                 .alias("taux_subventions")
@@ -99,9 +84,9 @@ class BaremeEnricher(BaseEnricher):
 
         bareme_table = bareme_table.with_columns(
             [
-                pl.when((pl.col("subventions_budget") != 0))
-                .then(pl.col("taux_subventions").map_elements(cls.get_score_from_tp))
-                .otherwise("E")
+                pl.col("taux_subventions")
+                .map_elements(cls.get_score_from_tp)
+                .cast(pl.Utf8)
                 .alias("score_subventions")
             ]
         )
@@ -131,6 +116,8 @@ class BaremeEnricher(BaseEnricher):
         """
         Create a notation per community for marches publics
         """
+        "TO DO : rajouter les colonnes du code de lieu d'exécution à la vérification de complétude"
+
         marches_pd = marches_publics.to_pandas()
         communities_pd = communities.to_pandas()
 
@@ -176,9 +163,7 @@ class BaremeEnricher(BaseEnricher):
                     "delai_publication_jours": cls.median_delay,
                     "date_notification": pd.Series.count,
                     "cpv_8": pd.Series.count,
-                    "lieu_execution.type_code": pd.Series.count,
-                    "lieu_execution.code": pd.Series.count,
-                    "lieu_execution.nom": pd.Series.count,
+                    "lieu_execution_nom": pd.Series.count,
                     "forme_prix": pd.Series.count,
                     "objet": pd.Series.count,
                     "nature": pd.Series.count,
@@ -199,9 +184,7 @@ class BaremeEnricher(BaseEnricher):
                 "montant",
                 "date_notification",
                 "cpv_8",
-                "lieu_execution.type_code",
-                "lieu_execution.code",
-                "lieu_execution.nom",
+                "lieu_execution_nom",
                 "forme_prix",
                 "objet",
                 "nature",
