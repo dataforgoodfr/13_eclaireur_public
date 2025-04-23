@@ -5,9 +5,9 @@ import { useState } from 'react';
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { Subvention } from '@/app/models/subvention';
-import { Switch } from '@/components/ui/switch';
 
 import { TreeData, YearOption } from '../../types/interface';
+import { GraphSwitch } from '../DataViz/GraphSwitch';
 import SectorTable from '../FicheMarchesPublics/SectorTable';
 import Treemap from '../FicheMarchesPublics/Treemap';
 
@@ -77,30 +77,12 @@ export default function Distribution({ data }: { data: Subvention[] }) {
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
           <h3 className='py-2 text-xl'>Répartition </h3>
-          <div className='flex items-baseline gap-2'>
-            <div
-              onClick={() => {
-                setIsTableDisplayed(false);
-              }}
-              className={`cursor-pointer ${!isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              (graphique
-            </div>
-            <Switch
-              checked={isTableDisplayed}
-              onCheckedChange={() => {
-                setIsTableDisplayed((prev) => !prev);
-              }}
-            />
-            <div
-              onClick={() => {
-                setIsTableDisplayed(true);
-              }}
-              className={`cursor-pointer ${isTableDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              tableau)
-            </div>
-          </div>
+          <GraphSwitch
+            isActive={isTableDisplayed}
+            onChange={setIsTableDisplayed}
+            label1='graphique'
+            label2='tableau'
+          />
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
