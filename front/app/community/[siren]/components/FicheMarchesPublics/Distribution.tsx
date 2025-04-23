@@ -7,9 +7,9 @@ import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
 
-import { TreeData, YearOption } from '../../types/interface';
-import SectorTable from './SectorTable';
-import Treemap from './Treemap';
+import { YearOption } from '../../types/interface';
+import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
+import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 
 function getAvailableYears(data: MarchePublic[]) {
   return [
@@ -21,59 +21,13 @@ function getAvailableYears(data: MarchePublic[]) {
   ].sort((a: number, b: number) => a - b);
 }
 
-export default function Distribution({ data }: { data: MarchePublic[] }) {
+type DistributionProps = { siren: string; data: MarchePublic[] };
+
+export default function Distribution({ siren, data }: DistributionProps) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [tableDisplayed, setTableDisplayed] = useState(false);
 
   const availableYears: number[] = getAvailableYears(data);
-
-  const filteredData =
-    selectedYear === 'All'
-      ? data
-      : data.filter((item) => item.datenotification_annee === selectedYear);
-
-  function getTopSectors(data: MarchePublic[]): TreeData {
-    const groupedData = data.reduce(
-      (acc, { cpv_2_label, montant }) => {
-        if (!acc[cpv_2_label]) {
-          acc[cpv_2_label] = 0;
-        }
-        acc[cpv_2_label] += parseFloat(String(montant));
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-
-    const sortedGroupedData = Object.entries(groupedData)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => Number(b.value) - Number(a.value));
-
-    const total = data.reduce((acc, item) => acc + parseFloat(String(item.montant)), 0);
-    const top1 = Number(sortedGroupedData.slice(0, 1)[0].value);
-
-    const sortedGroupedDataPlusTotal = sortedGroupedData.map((item) => ({
-      ...item,
-      part: Math.round((Number(item.value) / total) * 100 * 10) / 10,
-      pourcentageCategoryTop1: Math.round((Number(item.value) / top1) * 100 * 10) / 10,
-    }));
-
-    const formattedData: TreeData = {
-      type: 'node',
-      name: 'boss',
-      value: 0,
-      children: sortedGroupedDataPlusTotal.map((item) => ({
-        type: 'leaf',
-        name: item.name,
-        value: Number(item.value),
-        part: item.part,
-        pourcentageCategoryTop1: item.pourcentageCategoryTop1,
-      })),
-    };
-
-    return formattedData;
-  }
-
-  const formattedData = getTopSectors(filteredData);
 
   return (
     <>
@@ -110,7 +64,11 @@ export default function Distribution({ data }: { data: MarchePublic[] }) {
           <DownloadSelector />
         </div>
       </div>
-      {tableDisplayed ? <SectorTable data={formattedData} /> : <Treemap data={formattedData} />}
+      {tableDisplayed ? (
+        <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
+      ) : (
+        <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
+      )}
     </>
   );
 }

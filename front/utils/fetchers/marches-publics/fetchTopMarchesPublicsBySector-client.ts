@@ -1,6 +1,6 @@
 import { MarchePublicSector } from '@/app/models/marchePublic';
 
-const ROWS_PER_PAGE = 10;
+const ROWS_PER_PAGE = 20;
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 const API_ROUTE = '/api/marches_publics/top/sector';
@@ -12,13 +12,13 @@ const API_ROUTE = '/api/marches_publics/top/sector';
  */
 export async function fetchTopMarchesPublicsBySector(
   siren: string,
-  year: number,
+  year: number | null,
   limit = ROWS_PER_PAGE,
 ): Promise<MarchePublicSector[]> {
   const url = new URL(API_ROUTE, baseURL);
 
   url.searchParams.append('siren', siren);
-  url.searchParams.append('year', year.toString());
+  if (year !== null) url.searchParams.append('year', year.toString());
   url.searchParams.append('limit', limit.toString());
 
   const res = await fetch(url.toString(), { method: 'get' });

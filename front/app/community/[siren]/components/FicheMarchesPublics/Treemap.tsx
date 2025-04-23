@@ -24,6 +24,7 @@ function wrapText(text: string, maxWidth: number): string[] {
     }
   }
   lines.push(currentLine);
+
   return lines;
 }
 
@@ -39,7 +40,9 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
-export default function Treemap({ data }: { data: TreeData }) {
+type TreemapProps = { data: TreeData };
+
+export default function Treemap({ data }: TreemapProps) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
     visible: false,
     x: 0,
@@ -51,7 +54,6 @@ export default function Treemap({ data }: { data: TreeData }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
-    console.log({ leaf });
     setTooltip({
       visible: true,
       x: e.clientX,
@@ -103,7 +105,7 @@ export default function Treemap({ data }: { data: TreeData }) {
   const colorMap = generateColorMap(leafNames);
 
   const allShapes = root.leaves().map((leaf) => (
-    <g key={leaf?.id ?? '' + leaf.data.name}>
+    <g key={leaf.data.id}>
       <rect
         x={leaf.x0}
         y={leaf.y0}
@@ -140,7 +142,7 @@ export default function Treemap({ data }: { data: TreeData }) {
         >
           {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map(
             (line, i) => (
-              <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+              <tspan key={line + i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
                 {line}
               </tspan>
             ),

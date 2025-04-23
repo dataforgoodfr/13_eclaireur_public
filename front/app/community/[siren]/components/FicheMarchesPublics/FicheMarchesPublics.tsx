@@ -41,7 +41,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
-            <Distribution data={marchesPublics} />
+            <Distribution data={marchesPublics} siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>

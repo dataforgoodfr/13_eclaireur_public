@@ -15,11 +15,7 @@ export async function GET(request: Request) {
       throw new Error('Siren is not defined');
     }
 
-    if (year === undefined) {
-      throw new Error('Year is not defined');
-    }
-
-    const data = await fetchTopMarchesPublicsBySector(siren, year, limit);
+    const data = await fetchTopMarchesPublicsBySector(siren, year ?? null, limit);
 
     return NextResponse.json(data);
   } catch (error) {

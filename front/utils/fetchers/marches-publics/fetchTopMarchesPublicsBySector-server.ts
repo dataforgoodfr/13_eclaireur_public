@@ -14,22 +14,22 @@ const ROWS_PER_PAGE = 10;
  */
 function createSQLQueryParams(
   siren: string,
-  year: number,
+  year: number | null,
   limit: number,
 ): [string, (string | number)[]] {
-  const values = [siren, year, limit];
+  const values = year !== null ? [siren, year, limit] : [siren, limit];
 
   const querySQL = `
     SELECT 
       cpv_2, 
       cpv_2_label, 
       SUM(montant) AS montant,
-      SUM(SUM(montant)) OVER () AS total_montant
+      SUM(SUM(montant)) OVER () AS grand_total
     FROM ${TABLE_NAME}
-    WHERE acheteur_id = $1 AND annee_notification = $2
+    WHERE acheteur_id = $1${year !== null ? ' AND annee_notification = $2' : ''}
     GROUP BY cpv_2, cpv_2_label
     ORDER BY montant DESC
-    LIMIT $3;
+    LIMIT $${year !== null ? '3' : '2'}
   `;
 
   return [querySQL, values];
@@ -42,7 +42,7 @@ function createSQLQueryParams(
  */
 export async function fetchTopMarchesPublicsBySector(
   siren: string,
-  year: number,
+  year: number | null,
   limit = ROWS_PER_PAGE,
 ): Promise<MarchePublicSector[]> {
   const params = createSQLQueryParams(siren, year, limit);
