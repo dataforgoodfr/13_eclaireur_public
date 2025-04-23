@@ -37,7 +37,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <Suspense key={community.siren} fallback={<Loading />}>
       <FicheHeader community={community} />
-      <div className='mt-[140px]'>
+      <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
         <FicheIdentite community={community} />
         <ErrorBoundary>
           <FicheMarchesPublics siren={siren} />

@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 
 import { GraphSwitch } from '../DataViz/GraphSwitch';
+import { CHART_HEIGHT } from '../constants';
 
 type FormattedDataTrends = {
   annee: number;
@@ -73,7 +74,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         </div>
       </div>
       <div className='border p-4'>
-        <ResponsiveContainer width='100%' height={600}>
+        <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
           <BarChart
             width={500}
             height={300}
