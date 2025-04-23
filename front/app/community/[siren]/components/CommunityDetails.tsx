@@ -1,6 +1,6 @@
 import { Community } from '@/app/models/community';
-import { formatNumber } from '@/utils/utils';
-import { BadgeEuro, FileText, Landmark, Layers, Users } from 'lucide-react';
+import { formatNumber, stringifyCommunityType } from '@/utils/utils';
+import { CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';
 const populationLabel = 'Population';
@@ -9,6 +9,7 @@ const agentsLabel = "Nombre d'agents administratifs";
 const agentsUnit = 'agents';
 const totalBudgetLabel = 'Budget total';
 const obligationPublicationText = `Soumise à l'obligation de publication`;
+const pasObligationPublicationText = `Non soumise à l'obligation de publication`;
 
 type CommunityDetailsProps = {
   community: Community;
@@ -17,7 +18,11 @@ type CommunityDetailsProps = {
 export function CommunityDetails({ community }: CommunityDetailsProps) {
   return (
     <div className='flex flex-col gap-2'>
-      <TinyCard title={collectivitesLabel} description={community.type} icon={<Layers />} />
+      <TinyCard
+        title={collectivitesLabel}
+        description={stringifyCommunityType(community.type)}
+        icon={<Layers />}
+      />
       <TinyCard
         title={populationLabel}
         description={`${formatNumber(community.population)} ${populationUnit}`}
@@ -28,12 +33,17 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
         description={`${formatNumber(community.tranche_effectif)}  ${agentsUnit}`}
         icon={<Landmark />}
       />
-      <TinyCard
+      {/** TODO - Add back when budget is in community in db */}
+      {/* <TinyCard
         title={totalBudgetLabel}
-        description={`TODO ${populationUnit}`}
+        description={formatCompactPrice(community.budget)}
         icon={<BadgeEuro />}
-      />
-      <TinyCard title={obligationPublicationText} icon={<FileText />} />
+      /> */}
+      {community.should_publish ? (
+        <TinyCard title={obligationPublicationText} icon={<FileText />} />
+      ) : (
+        <TinyCard title={pasObligationPublicationText} icon={<CircleX />} />
+      )}
     </div>
   );
 }
