@@ -37,6 +37,12 @@ MAX_RETRIES = 3  # number of retries for failed downloads
 
 class SireneWorkflow:
     """
+    Dataset containing legal information of french entities, including communities and companies.
+    The column `siren` a the identifier of a structure.
+
+    Given the size of the file, only a subset of the columns is kept,
+    enriched with labels corresponding to the activity code.
+
     https://www.data.gouv.fr/fr/datasets/base-sirene-des-entreprises-et-de-leurs-etablissements-siren-siret/
     """
 

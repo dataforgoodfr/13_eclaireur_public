@@ -15,6 +15,12 @@ from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_i
 
 
 class CommunitiesContact:
+    """
+    Fetch from data.gouv a specific file that contains emails and contact forms for all french administrations,
+    including communities.
+    The json file is contained within a tar.bz2 file so requires multiple steps to read.
+    """
+
     DATASET_ID = "53699fe4a3a729239d206227"
 
     @classmethod

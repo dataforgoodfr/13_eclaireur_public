@@ -29,6 +29,15 @@ from back.scripts.utils.datagouv_api import select_implemented_formats
 
 
 class WorkflowManager:
+    """
+    This class manages the download and formatting of the different datasets in the project.
+    Each concept will have its own workflow, represented by a class, which will generate a single parquet file.
+    This final output may be a composite of multiple input files.
+
+    A concept workflow may be dependent on another one.
+    This dependency is only visible within the worflow by using the output file name method from the classes the worflow depends on.
+    """
+
     def __init__(self, args, config):
         self.args = args
         self.config = config
