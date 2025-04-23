@@ -5,6 +5,7 @@ import { useTopMarchesPublicsBySector } from '@/utils/hooks/useTopMarchesPublics
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
+import { CHART_HEIGHT } from '../constants';
 import SectorTable, { SectorRow } from './SectorTable';
 
 type MarchesPublicsSectortableProps = {
@@ -19,7 +20,7 @@ export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublic
   );
 
   if (isPending || isError) {
-    return <Loading />;
+    return <Loading style={{ height: CHART_HEIGHT }} />;
   }
 
   const rows: SectorRow[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({

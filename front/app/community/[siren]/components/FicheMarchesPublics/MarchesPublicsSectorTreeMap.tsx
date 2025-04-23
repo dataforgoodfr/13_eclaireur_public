@@ -4,6 +4,7 @@ import Loading from '@/components/ui/Loading';
 import { useTopMarchesPublicsBySector } from '@/utils/hooks/useTopMarchesPublics';
 
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
+import { CHART_HEIGHT } from '../constants';
 import Treemap from './Treemap';
 
 type MarchesPublicsSectorTreemapProps = {
@@ -21,7 +22,7 @@ export default function MarchesPublicsSectorTreemap({
   );
 
   if (isPending || isError) {
-    return <Loading />;
+    return <Loading style={{ height: CHART_HEIGHT }} />;
   }
 
   const treeLeaves: TreeLeaf[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({
