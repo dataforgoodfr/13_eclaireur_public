@@ -215,7 +215,7 @@ class BaremeEnricher(BaseEnricher):
 
         bareme["mp_score"] = bareme.apply(cls.score_total, axis=1)
         bareme = bareme.filter(items=["siren", "annee", "mp_score"])
-
+        print(bareme[bareme["mp_score"] != "E"])
         return pl.from_pandas(bareme)
 
     @staticmethod
