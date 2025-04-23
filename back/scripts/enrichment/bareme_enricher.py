@@ -1,7 +1,6 @@
 from pathlib import Path
 import typing
 import polars as pl
-import pandas as pd
 from datetime import datetime
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
@@ -117,122 +116,90 @@ class BaremeEnricher(BaseEnricher):
     def bareme_marchespublics(
         cls, marches_publics: pl.DataFrame, communities: pl.DataFrame
     ) -> pl.DataFrame:
-        """
-        Create a notation per community for marches publics
-        """
-        "TO DO : rajouter les colonnes du code de lieu d'exécution à la vérification de complétude"
-
-        marches_pd = marches_publics.to_pandas()
-        communities_pd = communities.to_pandas()
-
-        marches_pd = marches_pd.dropna(subset=["acheteur_id"])
-
-        # Mapping de obligation_publication vers (0 = pas d'obligation de publication, 1 = obligation de publication)
-        marches_pd["obligation_publication_bool"] = (
-            marches_pd["obligation_publication"]
-            .map({"Obligatoire": 1, "Optionnel": 0})
-            .astype(int)
+        marches = marches_publics.filter(
+            pl.col("acheteur_id").is_not_null() & (pl.col("annee_notification") >= 2018)
+        ).with_columns(
+            pl.when(pl.col("obligation_publication") == "Obligatoire")
+            .then(1)
+            .otherwise(0)
+            .alias("obligation_publication_bool")
         )
-
-        # suppression de toutes les lignes dont les dates sont inférieures à 2018 (date de début de l'obligation de publication)
-        marches_pd = marches_pd[marches_pd["annee_notification"] >= 2018]
-
-        # Création d'un dataframe coll_years_df avec collectivité et années
-        coll_df = communities_pd[["siren"]].copy()
 
         current_year = datetime.now().year
-        years = list(range(2018, current_year + 1))
-        years_df = pd.DataFrame({"annee": years}).copy()
+        years_df = pl.DataFrame({"annee": list(range(2018, current_year + 1))})
+        coll_df = communities.select(["siren"])
+        coll_years_df = coll_df.join(years_df, how="cross")
 
-        coll_df["key"] = 0
-        years_df["key"] = 0
-
-        coll_years_df = pd.merge(coll_df, years_df, on="key").drop("key", axis=1)
-
-        # Left join des marchés publics avec le dataframe coll_years_df
-        _merge = coll_years_df.merge(
-            marches_pd,
-            how="left",
+        merged = coll_years_df.join(
+            marches,
             left_on=["siren", "annee"],
             right_on=["acheteur_id", "annee_notification"],
+            how="left",
         )
 
-        bareme = (
-            _merge.groupby(["siren", "annee"])
-            .agg(
-                {
-                    "id": pd.Series.count,
-                    "obligation_publication_bool": pd.Series.sum,
-                    "montant": pd.Series.sum,
-                    "delai_publication_jours": cls.median_delay,
-                    "date_notification": pd.Series.count,
-                    "cpv_8": pd.Series.count,
-                    "lieu_execution_nom": pd.Series.count,
-                    "forme_prix": pd.Series.count,
-                    "objet": pd.Series.count,
-                    "nature": pd.Series.count,
-                    "duree_mois": pd.Series.count,
-                    "procedure": pd.Series.count,
-                    "titulaire_id": pd.Series.count,
-                }
-            )
-            .reset_index()
-        )
-
-        # Calcul du bareme
-
-        ## Listes des colonnes obligatoires pour la completude des données
-        ## (on vérifie que ces colonnes ont au moins une valeur non nulle par groupement)
-        colonnes_completude = bareme[
+        bareme = merged.group_by(["siren", "annee"]).agg(
             [
-                "montant",
-                "date_notification",
-                "cpv_8",
-                "lieu_execution_nom",
-                "forme_prix",
-                "objet",
-                "nature",
-                "duree_mois",
-                "procedure",
-                "titulaire_id",
+                pl.count("id").alias("id"),
+                pl.sum("obligation_publication_bool"),
+                pl.sum("montant"),
+                pl.median("delai_publication_jours"),
+                *[
+                    pl.count(col).alias(col)
+                    for col in [
+                        "date_notification",
+                        "cpv_8",
+                        "lieu_execution_nom",
+                        "forme_prix",
+                        "objet",
+                        "nature",
+                        "duree_mois",
+                        "procedure",
+                        "titulaire_id",
+                    ]
+                ],
             ]
-        ]
-
-        ## Note E : présence de données
-        ## Note D : au moins une données avec obligation de publication
-        ## Note C : au moins une donnée sans obligation de publication
-        ## Note B : toutes les colonnes obligatoires sont présentes
-        ## Note A : délai de publication median inférieur à 60 jours
-        bareme["E"] = bareme["id"].map(lambda x: 1 if x > 0 else 0)
-        bareme["D"] = bareme["obligation_publication_bool"].map(lambda x: 1 if x > 0 else 0)
-        bareme["C"] = (bareme["id"] - bareme["obligation_publication_bool"]).map(
-            lambda x: 1 if x > 0 else 0
-        )
-        bareme["B"] = colonnes_completude.all(axis=1).map(int)
-        bareme["A"] = bareme["delai_publication_jours"].map(
-            lambda x: 1 if x is not None and x <= 60 else 0
         )
 
-        bareme["mp_score"] = bareme.apply(cls.score_total, axis=1)
-        bareme = bareme.filter(items=["siren", "annee", "mp_score"])
-        print(bareme[bareme["mp_score"] != "E"])
-        return pl.from_pandas(bareme)
+        bareme = bareme.with_columns(
+            [
+                (pl.col("id") > 0).cast(pl.Int8).alias("E"),
+                (pl.col("obligation_publication_bool") > 0).cast(pl.Int8).alias("D"),
+                ((pl.col("id") - pl.col("obligation_publication_bool")) > 0)
+                .cast(pl.Int8)
+                .alias("C"),
+                (
+                    (pl.col("montant") > 0)
+                    & (pl.col("date_notification").is_not_null())
+                    & (pl.col("cpv_8").is_not_null())
+                    & (pl.col("lieu_execution_nom").is_not_null())
+                    & (pl.col("forme_prix").is_not_null())
+                    & (pl.col("objet").is_not_null())
+                    & (pl.col("nature").is_not_null())
+                    & (pl.col("duree_mois").is_not_null())
+                    & (pl.col("procedure").is_not_null())
+                    & (pl.col("titulaire_id").is_not_null())
+                )
+                .cast(pl.Int8)
+                .alias("B"),
+                (pl.col("delai_publication_jours") <= 60)
+                .fill_null(False)
+                .cast(pl.Int8)
+                .alias("A"),
+            ]
+        )
+        bareme = bareme.with_columns(
+            [
+                pl.when(pl.col("E") == 0)
+                .then(pl.lit("E"))
+                .when(pl.col("D") == 0)
+                .then(pl.lit("D"))
+                .when(pl.col("C") == 0)
+                .then(pl.lit("C"))
+                .when(pl.col("B") == 0)
+                .then(pl.lit("B"))
+                .otherwise(pl.lit("A"))
+                .alias("mp_score")
+            ]
+        )
 
-    @staticmethod
-    def score_total(row: pd.Series) -> str:
-        if row["E"] == 0:
-            return "E"
-        if row["D"] == 0:
-            return "D"
-        if row["C"] == 0:
-            return "C"
-        if row["B"] == 0:
-            return "B"
-        return "A"
-
-    @staticmethod
-    def median_delay(series: pd.Series):
-        """Custom aggregation function to avoid warning when slice contains only NaN values"""
-        if all(series.isna()):
-            return None
-        return series.median()
+        return bareme.select(["siren", "annee", "mp_score"])
