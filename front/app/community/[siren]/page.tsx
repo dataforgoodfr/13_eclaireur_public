@@ -37,13 +37,15 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <Suspense key={community.siren} fallback={<Loading />}>
       <FicheHeader community={community} />
-      <FicheIdentite community={community} />
-      <ErrorBoundary>
-        <FicheMarchesPublics siren={siren} />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <FicheSubventions siren={siren} />
-      </ErrorBoundary>
+      <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
+        <FicheIdentite community={community} />
+        <ErrorBoundary>
+          <FicheMarchesPublics siren={siren} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <FicheSubventions siren={siren} />
+        </ErrorBoundary>
+      </div>
     </Suspense>
   );
 }
