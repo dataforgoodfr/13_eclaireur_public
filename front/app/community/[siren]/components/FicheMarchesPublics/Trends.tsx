@@ -6,6 +6,7 @@ import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDow
 import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
 import { formatCompactPrice } from '@/utils/utils';
+import MarchesPublicsTrendsBarChart from './MarchesPublicsTrendsBarChart';
 import {
   Bar,
   BarChart,
@@ -57,6 +58,8 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     );
   };
 
+  console.log(trends)
+
   return (
     <>
       <div className='flex items-center justify-between'>
@@ -86,7 +89,11 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         </div>
       </div>
       <div className='border p-4'>
-        <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+          {!contractDisplayed && (
+            <MarchesPublicsTrendsBarChart data={trends} />
+          )}
+          {contractDisplayed && <MarchesPublicsTrendsBarChart data={trends} />}
+        {/* <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
           <BarChart
             width={500}
             height={300}
@@ -120,7 +127,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
               </Bar>
             )}
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer> */}
       </div>
     </>
   );
