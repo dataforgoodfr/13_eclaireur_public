@@ -1,4 +1,4 @@
-import { MarchePublic } from '@/app/models/marchePublic';
+import { MarchePublicSector } from '@/app/models/marchePublic';
 import { getQueryFromPool } from '@/utils/db';
 
 import { DataTable } from '../constants';
@@ -12,28 +12,24 @@ const ROWS_PER_PAGE = 10;
  * @param limit
  * @returns
  */
-function createSQLQueryParams(siren: string, limit: number): [string, (string | number)[]] {
-  const values = [siren, limit];
+function createSQLQueryParams(
+  siren: string,
+  year: number,
+  limit: number,
+): [string, (string | number)[]] {
+  const values = [siren, year, limit];
 
-  /*   const querySQL = `
-    SELECT cpv_2, cpv_2_label, SUM(montant) AS total_montant, SUM(SUM(montant)) AS total_montant
-    FROM ${TABLE_NAME} 
-    WHERE acheteur_id = $1
-    GROUP BY cpv_2, cpv_2_label
-    ORDER BY total_montant DESC
-    LIMIT $2
-`; */
   const querySQL = `
     SELECT 
       cpv_2, 
       cpv_2_label, 
-      SUM(montant) AS total_montant,
-      SUM(SUM(montant)) OVER () AS pourcentage_du_total
+      SUM(montant) AS montant,
+      SUM(SUM(montant)) OVER () AS total_montant
     FROM ${TABLE_NAME}
-    WHERE acheteur_id = $1
+    WHERE acheteur_id = $1 AND annee_notification = $2
     GROUP BY cpv_2, cpv_2_label
-    ORDER BY total_montant DESC
-    LIMIT $2;
+    ORDER BY montant DESC
+    LIMIT $3;
   `;
 
   return [querySQL, values];
@@ -46,10 +42,11 @@ function createSQLQueryParams(siren: string, limit: number): [string, (string | 
  */
 export async function fetchTopMarchesPublicsBySector(
   siren: string,
+  year: number,
   limit = ROWS_PER_PAGE,
-): Promise<MarchePublic[]> {
-  const params = createSQLQueryParams(siren, limit);
-  const marchesPublics = (await getQueryFromPool(...params)) as MarchePublic[];
+): Promise<MarchePublicSector[]> {
+  const params = createSQLQueryParams(siren, year, limit);
+  const marchesPublics = (await getQueryFromPool(...params)) as MarchePublicSector[];
 
   return marchesPublics;
 }

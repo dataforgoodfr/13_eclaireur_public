@@ -1,4 +1,4 @@
-import { MarchePublic } from '@/app/models/marchePublic';
+import { MarchePublicSector } from '@/app/models/marchePublic';
 
 const ROWS_PER_PAGE = 10;
 
@@ -12,11 +12,13 @@ const API_ROUTE = '/api/marches_publics/top/sector';
  */
 export async function fetchTopMarchesPublicsBySector(
   siren: string,
+  year: number,
   limit = ROWS_PER_PAGE,
-): Promise<MarchePublic[]> {
+): Promise<MarchePublicSector[]> {
   const url = new URL(API_ROUTE, baseURL);
 
   url.searchParams.append('siren', siren);
+  url.searchParams.append('year', year.toString());
   url.searchParams.append('limit', limit.toString());
 
   const res = await fetch(url.toString(), { method: 'get' });
@@ -25,5 +27,5 @@ export async function fetchTopMarchesPublicsBySector(
     throw new Error('Failed to fetch top with siren ' + siren);
   }
 
-  return (await res.json()) as Promise<MarchePublic[]>;
+  return (await res.json()) as Promise<MarchePublicSector[]>;
 }
