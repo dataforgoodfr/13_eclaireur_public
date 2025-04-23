@@ -15,12 +15,15 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const limit = page * ROWS_PER_PAGE;
   const values = [`%${query}%`, `%${query}%`, limit]; // Values for nom, siren, and limit
   const querySQL = `
-    SELECT nom, siren, type 
-    FROM ${TABLE_NAME} 
-    WHERE nom_unaccented ILIKE $1
-      OR siren ILIKE $2 
-    LIMIT $3
-`;
+    SELECT nom, code_postal, type, siren,
+           SIMILARITY(LOWER(nom), LOWER($1)) AS similarity_score
+    FROM ${TABLE_NAME}
+    WHERE nom ILIKE $2
+       OR code_postal::text ILIKE $2
+    ORDER BY similarity_score DESC
+    LIMIT $3;
+  `;
+
   return [querySQL, values];
 }
 
