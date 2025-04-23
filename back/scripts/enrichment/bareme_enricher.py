@@ -43,12 +43,15 @@ class BaremeEnricher(BaseEnricher):
 
         # Data analysts, please add your code here!
         bareme = cls.build_bareme_table(communities)
-        # barem_sub = cls.bareme_subventions(marches_publics, communities)
-
+        barem_sub = cls.bareme_subventions(subventions, financial, communities)
         barem_mp = cls.bareme_marchespublics(marches_publics, communities)
-        bareme = bareme.join(barem_mp, on=["siren", "annee"], how="left")
+        bareme = bareme.join(
+            barem_sub[["siren", "annee", "subventions_score"]],
+            on=["siren", "annee"],
+            how="left",
+        ).join(barem_mp, on=["siren", "annee"], how="left")
 
-        return bareme
+        return communities, bareme
 
     @classmethod
     def build_bareme_table(cls, communities: pl.DataFrame) -> pl.DataFrame:
@@ -56,6 +59,72 @@ class BaremeEnricher(BaseEnricher):
         annees = pl.DataFrame({"annee": list(range(2016, current_year))})
         bareme_table = communities.select("siren").join(annees, how="cross")
         return bareme_table
+
+    @classmethod
+    def bareme_subventions(cls, subventions, financial, bareme_table) -> pl.DataFrame:
+        current_year = datetime.now().year
+        valid_years = list(range(2016, current_year))
+        subventionsFiltred = subventions.filter(pl.col("annee").is_in(valid_years))
+
+        sub_agg = (
+            subventionsFiltred.group_by(["id_attribuant", "annee"])
+            .agg(pl.col("montant").sum().alias("total_subventions_spent"))
+            .rename({"id_attribuant": "siren"})
+        )
+
+        budget = financial.select(["siren", "annee", "subventions"])
+
+        bareme_table = bareme_table.join(sub_agg, on=["siren", "annee"], how="left").join(
+            budget, on=["siren", "annee"], how="left"
+        )
+
+        bareme_table = bareme_table.with_columns(
+            [
+                pl.col("total_subventions_spent").fill_null(0.0),
+                pl.col("subventions").fill_null(0.0),
+                (pl.col("subventions") * 1000.0).alias("subventions_budget"),
+            ]
+        )
+
+        bareme_table = bareme_table.with_columns(
+            [
+                pl.when(pl.col("subventions_budget") != 0)
+                .then(
+                    (pl.col("total_subventions_spent") / pl.col("subventions_budget")) * 100.0
+                )
+                .otherwise(float("nan"))
+                .alias("taux_subventions")
+            ]
+        )
+
+        bareme_table = bareme_table.with_columns(
+            [
+                pl.when((pl.col("subventions_budget") != 0))
+                .then(pl.col("taux_subventions").map_elements(cls.get_score_from_tp))
+                .otherwise("E")
+                .alias("score_subventions")
+            ]
+        )
+
+        return bareme_table.select(["siren", "annee", "taux_subventions", "score_subventions"])
+
+    @staticmethod
+    def get_score_from_tp(tp: float) -> str:
+        """
+        Return a score based on the taux de publication (tp).
+        """
+        if tp < 25:
+            return "E"
+        elif tp <= 50:
+            return "D"
+        elif tp <= 75:
+            return "C"
+        elif tp <= 95:
+            return "B"
+        elif tp <= 105:
+            return "A"
+        else:
+            return "E"
 
     @classmethod
     def bareme_marchespublics(cls, marches_publics, communities) -> pl.DataFrame:
