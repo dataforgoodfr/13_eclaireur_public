@@ -56,7 +56,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
 
-        truc = (
+        return (
             pl.from_pandas(marches_pd)
             .pipe(cls.drop_source_duplicates)
             .pipe(cls.drop_sous_traitance_duplicates)
@@ -76,8 +76,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
         )
-
-        return truc
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
