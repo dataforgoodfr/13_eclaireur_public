@@ -58,7 +58,7 @@ export default function Ranking({ data }: { data: Subvention[] }) {
     <>
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Classement par tailles de contrats</h3>
+          <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
@@ -78,18 +78,20 @@ export default function Ranking({ data }: { data: Subvention[] }) {
           {topContractData.map((item, index) => (
             <TableRow key={index}>
               <TableCell className='font-medium'>{item.beneficiaire_nom}</TableCell>
-              <TableCell className=''>
-                {formatSubventionObject(item.objet).map((item, index) => (
-                  <span key={index} className='text-neutral-800'>
-                    {index > 0 && ' - '}
-                    {item}
-                  </span>
-                ))}
+              <TableCell>
+                <div className='line-clamp-2 overflow-hidden text-ellipsis'>
+                  {formatSubventionObject(item.objet).map((item, index) => (
+                    <span key={index}>
+                      {index > 0 && ' - '}
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </TableCell>
               <TableCell className='text-right'>
                 {formatCompactPrice(parseFloat(item.montant))}
               </TableCell>
-              <TableCell className='text-right'>{item.datenotification_annee}</TableCell>
+              <TableCell className='text-right'>{item.year}</TableCell>
             </TableRow>
           ))}
         </TableBody>
