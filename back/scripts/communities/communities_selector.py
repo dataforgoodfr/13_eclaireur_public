@@ -9,6 +9,7 @@ from back.scripts.utils.config import get_combined_filename, project_config
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     normalize_column_names,
+    normalize_commune_code,
     normalize_identifiant,
 )
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -126,12 +127,12 @@ class CommunitiesSelector:
             BaseLoader.loader_factory(
                 resource_url,
                 dtype={"code_insee": str},
-                usecols=["code_insee", "superficie_km2"],
+                columns=["code_insee", "superficie_km2", "code_postal"],
             )
             .load()
-            .drop_duplicates(subset=["code_insee"])[
-                ["code_insee", "superficie_km2", "code_postal"]
-            ]
+            .pipe(normalize_commune_code, id_col="code_insee")
+            .pipe(normalize_commune_code, id_col="code_postal")
+            .drop_duplicates(subset=["code_insee"])
         )
 
         LOGGER.info("Saving geometrics dataset to local cache")

@@ -2,6 +2,7 @@ import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
 
+import { FicheCard } from '../FicheCard';
 import Contract from './Contract';
 import Distribution from './Distribution';
 import Trends from './Trends';
@@ -27,7 +28,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
 
   return (
-    <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
+    <FicheCard>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
       {marchesPublics.length > 0 ? (
         <Tabs defaultValue={tabs.trends}>
@@ -55,6 +56,6 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
       ) : (
         <NoData />
       )}
-    </div>
+    </FicheCard>
   );
 }

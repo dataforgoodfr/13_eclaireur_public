@@ -6,6 +6,7 @@ import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils'
 import * as d3 from 'd3';
 
 import { TooltipProps, TreeData } from '../../types/interface';
+import { CHART_HEIGHT } from '../constants';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -91,7 +92,7 @@ export default function Treemap({ data }: TreemapProps) {
     return () => observer.disconnect();
   }, []);
 
-  const height = 600;
+  const height = CHART_HEIGHT;
   const width = containerWidth || 1486;
 
   const hierarchy = d3
