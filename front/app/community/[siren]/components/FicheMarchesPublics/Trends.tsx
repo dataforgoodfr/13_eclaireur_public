@@ -31,8 +31,6 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     }, {}),
   );
 
-  console.log(trends);
-
   return (
     <>
       <div className='flex items-baseline justify-between'>
@@ -59,40 +57,6 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
       ) : (
         <MarchesPublicsTrendsBarChart data={trends} datakey='nombre' />
       )}
-      {/* <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
-          <BarChart
-            width={500}
-            height={300}
-            data={trends}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='annee' />
-            <Legend
-              formatter={(value) => {
-                const legendLabels: Record<string, string> = {
-                  Montant: 'Montant total annuel (€)',
-                  Nombre: 'Nombre de marchés',
-                };
-                return legendLabels[value] || value;
-              }}
-            />
-            {isContractDisplayed ? (
-              <Bar dataKey='nombre' fill='#ff7300' radius={[10, 10, 0, 0]}>
-                <LabelList dataKey='nombre' position='top' />
-              </Bar>
-            ) : (
-              <Bar dataKey='montant' fill='#413ea0' radius={[10, 10, 0, 0]}>
-                <LabelList content={renderLabel} />
-              </Bar>
-            )}
-          </BarChart>
-        </ResponsiveContainer> */}
     </>
   );
 }
