@@ -1,5 +1,6 @@
-import carteImage from '@/public/carte-image.png';
-import placeHolderImage from '@/public/placeholder.jpg';
+import advancedSearchImg from '@/public/advancedSearchImg.png';
+import carteImg from '@/public/carteImg.png';
+import interpellateImg from '@/public/interpellateImg.png';
 
 import CtaCard from './CtaCard';
 
@@ -8,30 +9,33 @@ export default function CtaGroup() {
     {
       title: 'Cartographie',
       caption: 'Explorer la carte pour voir quelles sont les collectivités les plus transparentes.',
-      image: carteImage,
+      image: carteImg,
       buttonText: 'Naviguer sur la carte',
       href: '/map',
+      colorClassName: 'bg-card-secondary-foreground-2',
     },
 
     {
       title: 'Recherche avancée',
-      caption: 'Personnaliser votre recherche pour trouver les collectivités qui vous intéressent.',
-      image: placeHolderImage,
+      caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
+      image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
       href: '/',
+      colorClassName: 'bg-card-secondary-foreground-3',
     },
 
     {
       title: 'Interpeller',
-      caption: "Interpeller les élus pour améliorer la transparence dans votre collectivité.",
-      image: placeHolderImage,
+      caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
+      image: interpellateImg,
       buttonText: 'Engagement citoyen',
       href: '/',
+      colorClassName: 'bg-card-secondary-foreground-4',
     },
   ];
 
   return (
-    <div className='box-border flex w-full flex-wrap items-stretch justify-center gap-2 p-2'>
+    <div className='mx-auto my-20 flex max-w-screen-lg justify-center space-x-8'>
       {CtaInfo.map((item) => (
         <CtaCard
           key={item.title}
@@ -40,6 +44,7 @@ export default function CtaGroup() {
           image={item.image}
           buttonText={item.buttonText}
           href={item.href}
+          colorClassName={item.colorClassName}
         />
       ))}
     </div>
