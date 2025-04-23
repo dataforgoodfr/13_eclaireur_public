@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCompactPrice } from '@/utils/utils'; 
+import { formatCompactPrice } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
 
@@ -32,16 +32,14 @@ export default function Ranking({ data }: { data: Subvention[] }) {
   const availableYears: number[] = getAvailableYears(data);
 
   const filteredData =
-    selectedYear === 'All'
-      ? data
-      : data.filter((item) => item.year === selectedYear);
+    selectedYear === 'All' ? data : data.filter((item) => item.year === selectedYear);
 
   function formatSubventionObject(input: string): string[] {
     return input
-      .replace(/[\[\]]/g, '')
-      
-      .split(/',\s*'|",\s*"/)
-      .map((item) => item.replace(/^'|-'?$/g, '').trim());
+      .replace(/[\[\]]/g, '') // Supprime les crochets
+      .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
+      .split(/',|",/) // Split sur des virgules
+      .map((item) => item.trim().replace(/^['"]|['"]$/g, ''));
   }
 
   function getTopContract(data: any[]) {
@@ -79,10 +77,15 @@ export default function Ranking({ data }: { data: Subvention[] }) {
         <TableBody>
           {topContractData.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='font-medium'>
-                {item.beneficiaire_nom}
+              <TableCell className='font-medium'>{item.beneficiaire_nom}</TableCell>
+              <TableCell className=''>
+                {formatSubventionObject(item.objet).map((item, index) => (
+                  <span key={index} className='text-neutral-800'>
+                    {index > 0 && ' - '}
+                    {item}
+                  </span>
+                ))}
               </TableCell>
-              <TableCell className=''>{item.objet}</TableCell>
               <TableCell className='text-right'>
                 {formatCompactPrice(parseFloat(item.montant))}
               </TableCell>

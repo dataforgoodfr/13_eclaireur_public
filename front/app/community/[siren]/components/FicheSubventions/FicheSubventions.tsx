@@ -16,7 +16,6 @@ async function getSubventions(siren: string) {
 
 export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
-  console.log(subventions)
 
   return (
     <>
