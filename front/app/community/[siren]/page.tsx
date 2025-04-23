@@ -9,6 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
+import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
 
 // TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
 export const metadata: Metadata = {
@@ -36,10 +37,15 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <Suspense key={community.siren} fallback={<Loading />}>
       <FicheHeader community={community} />
-      <FicheIdentite community={community} />
-      <ErrorBoundary>
-        <FicheMarchesPublics siren={siren} />
-      </ErrorBoundary>
+      <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
+        <FicheIdentite community={community} />
+        <ErrorBoundary>
+          <FicheMarchesPublics siren={siren} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <FicheSubventions siren={siren} />
+        </ErrorBoundary>
+      </div>
     </Suspense>
   );
 }

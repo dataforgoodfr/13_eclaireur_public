@@ -3,10 +3,9 @@
 import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
-import { MarchePublic } from '@/app/models/marche_public';
+import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
-import { formatNumber } from '@/utils/utils';
-import { Contrast } from 'lucide-react';
+import { formatCompactPrice } from '@/utils/utils';
 import {
   Bar,
   BarChart,
@@ -16,6 +15,8 @@ import {
   ResponsiveContainer,
   XAxis,
 } from 'recharts';
+
+import { CHART_HEIGHT } from '../constants';
 
 type FormattedDataTrends = {
   annee: number;
@@ -51,7 +52,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         dominantBaseline='middle'
         fontSize='16'
       >
-        {formatNumber(value)} €
+        {formatCompactPrice(value)}
       </text>
     );
   };
@@ -81,14 +82,11 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          <div className='rounded p-1 hover:bg-neutral-100'>
-            <Contrast className='text-neutral-500' />
-          </div>
           <DownloadSelector />
         </div>
       </div>
       <div className='border p-4'>
-        <ResponsiveContainer width='100%' height={600}>
+        <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
           <BarChart
             width={500}
             height={300}
