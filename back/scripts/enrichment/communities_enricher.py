@@ -1,6 +1,8 @@
 from pathlib import Path
 import typing
 import polars as pl
+from datetime import datetime
+
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
@@ -25,8 +27,11 @@ class CommunitiesEnricher(BaseEnricher):
     @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, bareme = inputs
+
+        current_year = datetime.now().year
+        target_year = current_year - 1
         communities = communities.join(
-            bareme.filter(pl.col("annee") == 2024).select(
+            bareme.filter(pl.col("annee") == target_year).select(
                 ["siren", "mp_score", "subventions_score"]
             ),
             on="siren",
