@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import { MarchePublic } from '@/app/models/marchePublic';
-import { Switch } from '@/components/ui/switch';
 import { formatCompactPrice } from '@/utils/utils';
 import {
   Bar,
@@ -16,6 +15,7 @@ import {
   XAxis,
 } from 'recharts';
 
+import { GraphSwitch } from '../DataViz/GraphSwitch';
 import { CHART_HEIGHT } from '../constants';
 
 type FormattedDataTrends = {
@@ -25,7 +25,7 @@ type FormattedDataTrends = {
 };
 
 export default function Trends({ data }: { data: MarchePublic[] }) {
-  const [contractDisplayed, setContractDisplayed] = useState(false);
+  const [isContractDisplayed, setIsContractDisplayed] = useState(false);
 
   const trends: FormattedDataTrends[] = Object.values(
     data.reduce<Record<string, FormattedDataTrends>>((acc, item) => {
@@ -62,24 +62,12 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
           <h3 className='py-2 text-xl'>Évolution des marchés publics au cours du temps</h3>
-          <div className='flex items-baseline gap-2'>
-            <div
-              onClick={() => setContractDisplayed(false)}
-              className={`cursor-pointer ${!contractDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              (Montants annuels
-            </div>
-            <Switch
-              checked={contractDisplayed}
-              onCheckedChange={() => setContractDisplayed((prev) => !prev)}
-            />
-            <div
-              onClick={() => setContractDisplayed(true)}
-              className={`cursor-pointer ${contractDisplayed ? 'text-neutral-800' : 'text-neutral-400'}`}
-            >
-              Nombre de contrats)
-            </div>
-          </div>
+          <GraphSwitch
+            isActive={isContractDisplayed}
+            onChange={setIsContractDisplayed}
+            label1='Montants annuels'
+            label2='Nombre de contrats'
+          />
         </div>
         <div className='flex items-center gap-2'>
           <DownloadSelector />
@@ -109,14 +97,13 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
                 return legendLabels[value] || value;
               }}
             />
-            {!contractDisplayed && (
-              <Bar dataKey='montant' fill='#413ea0' radius={[10, 10, 0, 0]}>
-                <LabelList content={renderLabel} />
-              </Bar>
-            )}
-            {contractDisplayed && (
+            {isContractDisplayed ? (
               <Bar dataKey='nombre' fill='#ff7300' radius={[10, 10, 0, 0]}>
                 <LabelList dataKey='nombre' position='top' />
+              </Bar>
+            ) : (
+              <Bar dataKey='montant' fill='#413ea0' radius={[10, 10, 0, 0]}>
+                <LabelList content={renderLabel} />
               </Bar>
             )}
           </BarChart>
