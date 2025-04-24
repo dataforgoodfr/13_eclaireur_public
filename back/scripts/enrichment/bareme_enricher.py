@@ -88,11 +88,11 @@ class BaremeEnricher(BaseEnricher):
                 pl.col("taux_subventions")
                 .map_elements(cls.get_score_from_tp)
                 .cast(pl.Utf8)
-                .alias("score_subventions")
+                .alias("subventions_score")
             ]
         )
 
-        return bareme_table.select(["siren", "annee", "taux_subventions", "score_subventions"])
+        return bareme_table.select(["siren", "annee", "subventions_score"])
 
     @staticmethod
     def get_score_from_tp(tp: float) -> str:
