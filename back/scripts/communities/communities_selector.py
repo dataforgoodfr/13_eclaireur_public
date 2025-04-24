@@ -23,7 +23,6 @@ class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
-    It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
     @classmethod

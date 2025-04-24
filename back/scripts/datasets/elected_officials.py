@@ -44,6 +44,11 @@ RENAME_COMMON_COLUMNS = {
 
 
 class ElectedOfficialsWorkflow(DatasetAggregator):
+    """
+    This dataset contains the list of all elected official in differents positions.
+    In particular, it contains mayors, regional president, member of parliaments, etc...
+    """
+
     DATASET_ID = "5c34c4d1634f4173183a64f1"
 
     @classmethod
