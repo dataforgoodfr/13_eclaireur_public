@@ -77,8 +77,8 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
               <TableCell className='text-right'>{stringifyCommunityType(community.type)}</TableCell>
               <TableCell className='text-right'>{formatNumber(community.population)}</TableCell>
               <TableCell className='text-right'>TODO</TableCell>
-              <TableCell className='text-right'>TODO</TableCell>
-              <TableCell className='text-right'>TODO</TableCell>
+              <TableCell className='text-right'>{community.mp_score ?? '-'}</TableCell>
+              <TableCell className='text-right'>{community.subventions_score ?? '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

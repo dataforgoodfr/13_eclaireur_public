@@ -42,7 +42,7 @@ function CommunitiesTableWithLoader() {
   if (!data) return <Loading />;
 
   if (data && data.length > 0) {
-    return <CommunitiesTable communities={data.filter((d) => d.siren)} />;
+    return <CommunitiesTable communities={data} />;
   }
 
   return <NoResults />;
