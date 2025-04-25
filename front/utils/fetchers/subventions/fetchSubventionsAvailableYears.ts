@@ -2,15 +2,15 @@ import { getQueryFromPool } from '@/utils/db';
 
 import { DataTable } from '../constants';
 
-const TABLE_NAME = DataTable.MarchesPublics;
+const TABLE_NAME = DataTable.Subventions;
 
 function createSQLQueryParams(siren: string): [string, (string | number)[]] {
   const values = [siren];
 
   const querySQL = `
-    SELECT DISTINCT annee_notification::integer AS year
+    SELECT DISTINCT annee::integer AS year
     FROM ${TABLE_NAME}
-    WHERE acheteur_id = $1
+    WHERE id_attribuant = $1
     ORDER BY year
   `;
 
@@ -18,11 +18,11 @@ function createSQLQueryParams(siren: string): [string, (string | number)[]] {
 }
 
 /**
- * Fetch available years of marches publics of a community (SSR)
+ * Fetch available years of subventions of a community (SSR)
  * @param query
  * @param limit
  */
-export async function fetchAvailableYears(siren: string): Promise<number[]> {
+export async function fetchSubventionsAvailableYears(siren: string): Promise<number[]> {
   const params = createSQLQueryParams(siren);
   const rows = (await getQueryFromPool(...params)) as { year: number }[];
 

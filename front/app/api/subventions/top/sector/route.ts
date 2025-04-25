@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fetchTopMarchesPublicsBySector } from '@/utils/fetchers/marches-publics/fetchTopMarchesPublicsBySector-server';
+import { fetchTopSubventionsByNaf } from '@/utils/fetchers/subventions/fetchTopSubventionsByNaf-server';
 import { parseNumber } from '@/utils/utils';
 
 const DEFAULT_LIMIT = 10;
@@ -25,11 +25,10 @@ export async function GET(request: Request) {
       limit,
     };
 
-    const data = await fetchTopMarchesPublicsBySector(siren, year ?? null, pagination);
+    const data = await fetchTopSubventionsByNaf(siren, year ?? null, pagination);
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Database error: ', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

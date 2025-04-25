@@ -36,4 +36,5 @@ export type MarchePublicSector = Pick<MarchePublic, 'cpv_2' | 'cpv_2_label'> & {
   montant: number;
   /** Total of the community for a year */
   grand_total: number;
+  total_row_count: number;
 };

@@ -1,20 +1,20 @@
-import { MarchePublicSector } from '@/app/models/marchePublic';
+import { SubventionSector } from '@/app/models/subvention';
 
 import { Pagination } from '../types';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-const API_ROUTE = '/api/marches_publics/top/sector';
+const API_ROUTE = '/api/subventions/top/sector';
 
 /**
- * Fetch the top marches publics by sector with pagination
+ * Fetch the top subventions by section naf with pagination
  * @param query
  * @param limit
  */
-export async function fetchTopMarchesPublicsBySector(
+export async function fetchTopSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination: Pagination,
-): Promise<MarchePublicSector[]> {
+): Promise<SubventionSector[]> {
   const url = new URL(API_ROUTE, baseURL);
 
   url.searchParams.append('siren', siren);
@@ -31,5 +31,5 @@ export async function fetchTopMarchesPublicsBySector(
     throw new Error('Failed to fetch top with siren ' + siren);
   }
 
-  return (await res.json()) as Promise<MarchePublicSector[]>;
+  return (await res.json()) as Promise<SubventionSector[]>;
 }

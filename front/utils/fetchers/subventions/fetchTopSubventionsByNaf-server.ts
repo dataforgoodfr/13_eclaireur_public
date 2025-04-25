@@ -1,10 +1,10 @@
-import { MarchePublicSector } from '@/app/models/marchePublic';
+import { SubventionSector } from '@/app/models/subvention';
 import { getQueryFromPool } from '@/utils/db';
 
 import { DataTable } from '../constants';
 import { Pagination } from '../types';
 
-const TABLE_NAME = DataTable.MarchesPublics;
+const TABLE_NAME = DataTable.Subventions;
 
 function createSQLQueryParams(
   siren: string,
@@ -14,22 +14,28 @@ function createSQLQueryParams(
   const values: (string | number)[] = [siren];
 
   let query = `
+    WITH tableWithNaf2 AS (
+      SELECT 
+        LEFT(naf8_beneficiaire, 2) AS naf2,
+        montant
+      FROM ${TABLE_NAME}
+      WHERE id_attribuant = $1 AND naf8_beneficiaire IS NOT NULL
+    )
     SELECT 
-      cpv_2, 
-      cpv_2_label, 
+      naf2, 
       SUM(montant) AS montant,
       SUM(SUM(montant)) OVER () AS grand_total,
       count(*) OVER()::integer AS total_row_count
-    FROM ${TABLE_NAME}
-    WHERE acheteur_id = $1`;
+    FROM tableWithNaf2
+    `;
 
   if (year !== null) {
-    query += ` AND annee_notification = $${values.length + 1}`;
+    query += `WHERE annee = $${values.length + 1}`;
     values.push(year);
   }
 
   query += `
-    GROUP BY cpv_2, cpv_2_label
+    GROUP BY naf2
     ORDER BY montant DESC
     `;
 
@@ -42,15 +48,15 @@ function createSQLQueryParams(
 }
 
 /**
- * Fetch the top marches publics by sector (SSR) with pagination
+ * Fetch the top subventions by section naf (SSR) with pagination
  */
-export async function fetchTopMarchesPublicsBySector(
+export async function fetchTopSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination: Pagination,
-): Promise<MarchePublicSector[]> {
+): Promise<SubventionSector[]> {
   const params = createSQLQueryParams(siren, year, pagination);
-  const rows = (await getQueryFromPool(...params)) as MarchePublicSector[];
+  const rows = (await getQueryFromPool(...params)) as SubventionSector[];
 
   return rows;
 }

@@ -1,10 +1,10 @@
 export type Subvention = {
-  /** Primary key [char9] */
-  attribuant_siren: string;
+  /** Siren de la collectivite */
+  id_attribuant: string;
   /** Primary key */
   attribuant_type: string;
-  beneficiaire_siret: string;
-  beneficiaire_siren: string;
+  /** Siren du beneficiaire */
+  id_beneficiaire: string;
   beneficiaire_nom: string;
   nom: string;
   type: string;
@@ -13,6 +13,7 @@ export type Subvention = {
   year: number;
   url: string;
   tendance: number;
+  naf8_beneficiaire: string;
   section_naf: string;
   naf_subsector: string;
   naf_subsubsector: string;
@@ -56,4 +57,14 @@ export type SubventionV0 = {
   montant_per_sub: number[];
   montant: number;
   nombre_subventions: number;
+};
+
+export type SubventionSector = {
+  /** Using naf2 to represent the sector */
+  naf2: string;
+  /** Total of the community of the naf section for a year */
+  montant: number;
+  /** Total of the community for a year */
+  grand_total: number;
+  total_row_count: number;
 };
