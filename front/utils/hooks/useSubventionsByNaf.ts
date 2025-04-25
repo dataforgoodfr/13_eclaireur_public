@@ -13,7 +13,7 @@ export function useSubventionsByNaf(
   year: number | null,
   pagination = DEFAULT_PAGINATION,
 ) {
-  const queryKey = ['subventions', 'top', 'sector', siren, year, pagination];
+  const queryKey = ['communities', siren, 'subventions', 'naf2', year, pagination];
 
   const query = useQuery({
     queryKey,

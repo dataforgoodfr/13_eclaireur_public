@@ -13,7 +13,7 @@ export function useMarchesPublicsByCPV2(
   year: number | null,
   pagination = DEFAULT_PAGINATION,
 ) {
-  const queryKey = ['marches-publics', 'top', 'sector', siren, year, pagination];
+  const queryKey = ['communities', siren, 'marches-publics', 'cpv_2', year, pagination];
 
   const query = useQuery({
     queryKey,
