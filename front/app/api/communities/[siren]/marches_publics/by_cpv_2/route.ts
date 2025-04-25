@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fetchMarchesPublicsByCPV2 } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsBySector-server';
+import { fetchMarchesPublicsByCPV2 } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsByCPV2-server';
 import { parseNumber } from '@/utils/utils';
 
 const DEFAULT_LIMIT = 10;

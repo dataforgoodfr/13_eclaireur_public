@@ -24,10 +24,10 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     return <Loading style={{ height: CHART_HEIGHT }} />;
   }
 
-  const treeLeaves: TreeLeaf[] = data.map(({ naf2, montant, grand_total }) => ({
+  const treeLeaves: TreeLeaf[] = data.map(({ naf2, label, montant, grand_total }) => ({
     type: 'leaf',
     id: naf2,
-    name: naf2,
+    name: label,
     value: montant,
     part: montant / grand_total,
   }));

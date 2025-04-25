@@ -47,9 +47,9 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
     return <NoData />;
   }
 
-  const rows: SectorRow[] = data.map(({ naf2, montant, grand_total }) => ({
+  const rows: SectorRow[] = data.map(({ naf2, label, montant, grand_total }) => ({
     id: naf2,
-    name: naf2,
+    name: label,
     amount: montant,
     percentage: roundNumber(montant / grand_total),
   }));

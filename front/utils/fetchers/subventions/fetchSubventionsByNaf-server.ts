@@ -14,20 +14,23 @@ function createSQLQueryParams(
   const values: (string | number)[] = [siren];
 
   let query = `
-    WITH tableWithNaf2 AS (
-      SELECT 
-        LEFT(naf8_beneficiaire, 2) AS naf2,
-        montant
-      FROM ${TABLE_NAME}
-      WHERE id_attribuant = $1 AND naf8_beneficiaire IS NOT NULL
-    )
+  WITH tableWithNaf2 AS (
     SELECT 
-      naf2, 
-      SUM(montant) AS montant,
-      SUM(SUM(montant)) OVER () AS grand_total,
-      count(*) OVER()::integer AS total_row_count
-    FROM tableWithNaf2
-    `;
+      "Libellé_naf_n2_beneficiaire" AS label, 
+      LEFT(naf8_beneficiaire, 2) AS naf2,
+      montant,
+      annee
+    FROM ${TABLE_NAME}
+    WHERE id_attribuant = $1 AND naf8_beneficiaire IS NOT NULL
+  )
+  SELECT 
+    naf2, 
+    label,
+    SUM(montant) AS montant,
+    SUM(SUM(montant)) OVER () AS grand_total,
+    count(*) OVER()::integer AS total_row_count
+  FROM tableWithNaf2
+  `;
 
   if (year !== null) {
     query += `WHERE annee = $${values.length + 1}`;
@@ -35,7 +38,7 @@ function createSQLQueryParams(
   }
 
   query += `
-    GROUP BY naf2
+    GROUP BY naf2, label
     ORDER BY montant DESC
     `;
 

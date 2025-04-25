@@ -62,6 +62,7 @@ export type SubventionV0 = {
 export type SubventionSector = {
   /** Using naf2 to represent the sector */
   naf2: string;
+  label: string;
   /** Total of the community of the naf section for a year */
   montant: number;
   /** Total of the community for a year */
