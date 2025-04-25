@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 
+import { PaginationProps, WithPagination } from '@/components/Pagination';
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
-import { PaginationProps } from '../Pagination/Pagination';
-import { WithPagination } from '../Pagination/WithPagination';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
 import { CHART_HEIGHT } from '../constants';
 
