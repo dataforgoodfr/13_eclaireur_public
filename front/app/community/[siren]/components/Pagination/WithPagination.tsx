@@ -12,7 +12,10 @@ export type WithPaginationProps = PropsWithChildren<PaginationProps> &
  */
 export function WithPagination({ children, className, style, ...restProps }: WithPaginationProps) {
   return (
-    <div className={cn('flex flex-col items-center justify-between', className)} style={style}>
+    <div
+      className={cn('flex flex-col items-center justify-between gap-2', className)}
+      style={style}
+    >
       {children}
       <Pagination {...restProps} />
     </div>
