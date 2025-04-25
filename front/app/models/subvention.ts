@@ -3,11 +3,6 @@ export type Subvention = {
   id_attribuant: string;
   /** Primary key */
   id_beneficiaire: string;
-  Libellé_naf_n1_beneficiaire:string;
-  Libellé_naf_n2_beneficiaire:string;
-  Libellé_naf_n3_beneficiaire:string;
-  Libellé_naf_n4_beneficiaire:string;
-  Libellé_naf_n5_beneficiaire:string;
   annee: number;
   categorie_juridique_n1_name_beneficiaire: string;
   categorie_juridique_n2_name_beneficiaire: string;
@@ -22,6 +17,11 @@ export type Subvention = {
   id_rae:string;
   is_active_beneficiaire:boolean;
   is_valid_siren_beneficiaire:boolean;
+  Libellé_naf_n1_beneficiaire:string;
+  Libellé_naf_n2_beneficiaire:string;
+  Libellé_naf_n3_beneficiaire:string;
+  Libellé_naf_n4_beneficiaire:string;
+  Libellé_naf_n5_beneficiaire:string;
   montant: number;
   naf8_beneficiaire:string;
   nature:string;
