@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import Loading from '@/components/ui/Loading';
-import { useTopMarchesPublicsBySector } from '@/utils/hooks/useTopMarchesPublicsBySector';
+import { useTopSubventionsByNaf } from '@/utils/hooks/useTopSubventionsByNaf';
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
@@ -13,7 +13,7 @@ import { WithPagination } from '../Pagination/WithPagination';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
 import { CHART_HEIGHT } from '../constants';
 
-type MarchesPublicsSectortableProps = {
+type SubventionsSectorTableProps = {
   siren: string;
   year: YearOption;
 };
@@ -31,17 +31,13 @@ function usePagination(initialPage = DEFAULT_PAGE): Omit<PaginationProps, 'total
 
 const MAX_ROW_PER_PAGE = 10;
 
-export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublicsSectortableProps) {
+export default function SubventionsSectorTable({ siren, year }: SubventionsSectorTableProps) {
   const paginationProps = usePagination();
 
-  const { data, isPending, isError } = useTopMarchesPublicsBySector(
-    siren,
-    year === 'All' ? null : year,
-    {
-      page: paginationProps.activePage,
-      limit: MAX_ROW_PER_PAGE,
-    },
-  );
+  const { data, isPending, isError } = useTopSubventionsByNaf(siren, year === 'All' ? null : year, {
+    page: paginationProps.activePage,
+    limit: MAX_ROW_PER_PAGE,
+  });
 
   if (isPending || isError) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
@@ -51,9 +47,9 @@ export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublic
     return <NoData />;
   }
 
-  const rows: SectorRow[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({
-    id: cpv_2,
-    name: cpv_2_label,
+  const rows: SectorRow[] = data.map(({ naf2, montant, grand_total }) => ({
+    id: naf2,
+    name: naf2,
     amount: montant,
     percentage: roundNumber(montant / grand_total),
   }));

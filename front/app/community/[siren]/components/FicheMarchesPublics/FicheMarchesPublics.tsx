@@ -1,7 +1,7 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchAvailableYears } from '@/utils/fetchers/marches-publics/fetchAvailableYears';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
+import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 
 import { FicheCard } from '../FicheCard';
 import Contract from './Contract';
@@ -27,7 +27,7 @@ async function getMarchesPublics(siren: string) {
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  const availableYears = await fetchAvailableYears(siren);
+  const availableYears = await fetchMarchesPublicsAvailableYears(siren);
 
   return (
     <FicheCard>

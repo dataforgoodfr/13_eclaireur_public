@@ -4,22 +4,11 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { MarchePublic } from '@/app/models/marchePublic';
 import { Switch } from '@/components/ui/switch';
 
 import { YearOption } from '../../types/interface';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
 import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
-
-function getAvailableYears(data: MarchePublic[]) {
-  return [
-    ...new Set(
-      data.map(
-        (item) => item.datenotification_annee && item.montant && item.datenotification_annee,
-      ),
-    ),
-  ].sort((a: number, b: number) => a - b);
-}
 
 type DistributionProps = { siren: string; availableYears: number[] };
 
@@ -31,7 +20,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
     <>
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Répartition </h3>
+          <h3 className='py-2 text-xl'>Répartition par secteur</h3>
           <div className='flex items-baseline gap-2'>
             <div
               onClick={() => {

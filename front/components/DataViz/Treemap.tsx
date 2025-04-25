@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
 import * as d3 from 'd3';
 
-import { TooltipProps, TreeData } from '../../types/interface';
-import { CHART_HEIGHT } from '../constants';
+import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
+import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {

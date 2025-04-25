@@ -1,6 +1,6 @@
 'use client';
 
-import { PureComponent, useState } from 'react';
+import { useState } from 'react';
 
 import { Subvention } from '@/app/models/subvention';
 
