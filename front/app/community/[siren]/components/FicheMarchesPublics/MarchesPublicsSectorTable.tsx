@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import Loading from '@/components/ui/Loading';
-import { useTopMarchesPublicsBySector } from '@/utils/hooks/useTopMarchesPublicsBySector';
+import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
@@ -34,7 +34,7 @@ const MAX_ROW_PER_PAGE = 10;
 export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublicsSectortableProps) {
   const paginationProps = usePagination();
 
-  const { data, isPending, isError } = useTopMarchesPublicsBySector(
+  const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
     year === 'All' ? null : year,
     {

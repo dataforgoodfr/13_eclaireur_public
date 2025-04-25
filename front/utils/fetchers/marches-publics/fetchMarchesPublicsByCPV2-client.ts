@@ -3,21 +3,21 @@ import { MarchePublicSector } from '@/app/models/marchePublic';
 import { Pagination } from '../types';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-const API_ROUTE = '/api/marches_publics/top/sector';
+function getAPIRoute(communitySiren: string) {
+  return `/api/communities/${communitySiren}/marches_publics/by_cpv_2`;
+}
 
 /**
  * Fetch the top marches publics by sector with pagination
  * @param query
  * @param limit
  */
-export async function fetchTopMarchesPublicsBySector(
-  siren: string,
+export async function fetchMarchesPublicsByCPV2(
+  communitySiren: string,
   year: number | null,
   pagination: Pagination,
 ): Promise<MarchePublicSector[]> {
-  const url = new URL(API_ROUTE, baseURL);
-
-  url.searchParams.append('siren', siren);
+  const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   if (year !== null) url.searchParams.append('year', year.toString());
 
@@ -28,7 +28,7 @@ export async function fetchTopMarchesPublicsBySector(
   const res = await fetch(url.toString(), { method: 'get' });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch top with siren ' + siren);
+    throw new Error('Failed to fetch mp by cpv2 with siren ' + communitySiren);
   }
 
   return (await res.json()) as Promise<MarchePublicSector[]>;

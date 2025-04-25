@@ -48,9 +48,9 @@ function createSQLQueryParams(
 }
 
 /**
- * Fetch the top subventions by section naf (SSR) with pagination
+ * Fetch the subventions by section naf (SSR) with pagination
  */
-export async function fetchTopSubventionsByNaf(
+export async function fetchSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination: Pagination,

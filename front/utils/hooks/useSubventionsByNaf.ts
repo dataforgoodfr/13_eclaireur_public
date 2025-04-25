@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchTopSubventionsByNaf } from '../fetchers/subventions/fetchTopSubventionsByNaf-client';
+import { fetchSubventionsByNaf } from '../fetchers/subventions/fetchSubventionsByNaf-client';
 import { Pagination } from '../fetchers/types';
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -8,7 +8,7 @@ const DEFAULT_PAGINATION: Pagination = {
   limit: 10,
 };
 
-export function useTopSubventionsByNaf(
+export function useSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination = DEFAULT_PAGINATION,
@@ -17,7 +17,7 @@ export function useTopSubventionsByNaf(
 
   const query = useQuery({
     queryKey,
-    queryFn: () => fetchTopSubventionsByNaf(siren, year, pagination),
+    queryFn: () => fetchSubventionsByNaf(siren, year, pagination),
   });
 
   return query;

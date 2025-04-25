@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchTopMarchesPublicsBySector } from '../fetchers/marches-publics/fetchTopMarchesPublicsBySector-client';
+import { fetchMarchesPublicsByCPV2 } from '../fetchers/marches-publics/fetchMarchesPublicsByCPV2-client';
 import { Pagination } from '../fetchers/types';
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -8,7 +8,7 @@ const DEFAULT_PAGINATION: Pagination = {
   limit: 10,
 };
 
-export function useTopMarchesPublicsBySector(
+export function useMarchesPublicsByCPV2(
   siren: string,
   year: number | null,
   pagination = DEFAULT_PAGINATION,
@@ -17,7 +17,7 @@ export function useTopMarchesPublicsBySector(
 
   const query = useQuery({
     queryKey,
-    queryFn: () => fetchTopMarchesPublicsBySector(siren, year, pagination),
+    queryFn: () => fetchMarchesPublicsByCPV2(siren, year, pagination),
   });
 
   return query;

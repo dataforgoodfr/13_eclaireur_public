@@ -1,7 +1,7 @@
 'use client';
 
 import Loading from '@/components/ui/Loading';
-import { useTopMarchesPublicsBySector } from '@/utils/hooks/useTopMarchesPublicsBySector';
+import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
@@ -18,7 +18,7 @@ export default function MarchesPublicsSectorTreemap({
   siren,
   year,
 }: MarchesPublicsSectorTreemapProps) {
-  const { data, isPending, isError } = useTopMarchesPublicsBySector(
+  const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
     year === 'All' ? null : year,
     { page: 1, limit: LIMIT_NUMBER_CATEGORIES },

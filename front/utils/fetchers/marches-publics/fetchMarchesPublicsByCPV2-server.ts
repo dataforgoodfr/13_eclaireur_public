@@ -42,9 +42,9 @@ function createSQLQueryParams(
 }
 
 /**
- * Fetch the top marches publics by sector (SSR) with pagination
+ * Fetch the marches publics by sector (SSR) with pagination
  */
-export async function fetchTopMarchesPublicsBySector(
+export async function fetchMarchesPublicsByCPV2(
   siren: string,
   year: number | null,
   pagination: Pagination,

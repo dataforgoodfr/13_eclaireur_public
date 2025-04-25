@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 
-import { fetchTopMarchesPublicsBySector } from '@/utils/fetchers/marches-publics/fetchTopMarchesPublicsBySector-server';
+import { fetchMarchesPublicsByCPV2 } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsBySector-server';
 import { parseNumber } from '@/utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
 
-export async function GET(request: Request) {
+export async function GET(request: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {
+    const { siren } = await params;
     const { searchParams } = new URL(request.url);
-
-    const siren = searchParams.get('siren') ?? undefined;
 
     if (siren === undefined) {
       throw new Error('Siren is not defined');
@@ -25,7 +24,7 @@ export async function GET(request: Request) {
       limit,
     };
 
-    const data = await fetchTopMarchesPublicsBySector(siren, year ?? null, pagination);
+    const data = await fetchMarchesPublicsByCPV2(siren, year ?? null, pagination);
 
     return NextResponse.json(data);
   } catch (error) {

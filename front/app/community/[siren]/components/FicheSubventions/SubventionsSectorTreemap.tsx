@@ -1,7 +1,7 @@
 'use client';
 
 import Loading from '@/components/ui/Loading';
-import { useTopSubventionsByNaf } from '@/utils/hooks/useTopSubventionsByNaf';
+import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
@@ -15,7 +15,7 @@ type SubventionsSectorTreemapProps = {
 const LIMIT_NUMBER_CATEGORIES = 50;
 
 export default function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
-  const { data, isPending, isError } = useTopSubventionsByNaf(siren, year === 'All' ? null : year, {
+  const { data, isPending, isError } = useSubventionsByNaf(siren, year === 'All' ? null : year, {
     page: 1,
     limit: LIMIT_NUMBER_CATEGORIES,
   });

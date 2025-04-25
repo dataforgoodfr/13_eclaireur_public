@@ -3,21 +3,21 @@ import { SubventionSector } from '@/app/models/subvention';
 import { Pagination } from '../types';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-const API_ROUTE = '/api/subventions/top/sector';
+function getAPIRoute(communitySiren: string) {
+  return `/api/communities/${communitySiren}/subventions/by_naf2`;
+}
 
 /**
- * Fetch the top subventions by section naf with pagination
+ * Fetch the subventions by section naf with pagination
  * @param query
  * @param limit
  */
-export async function fetchTopSubventionsByNaf(
-  siren: string,
+export async function fetchSubventionsByNaf(
+  communitySiren: string,
   year: number | null,
   pagination: Pagination,
 ): Promise<SubventionSector[]> {
-  const url = new URL(API_ROUTE, baseURL);
-
-  url.searchParams.append('siren', siren);
+  const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   if (year !== null) url.searchParams.append('year', year.toString());
 
@@ -28,7 +28,7 @@ export async function fetchTopSubventionsByNaf(
   const res = await fetch(url.toString(), { method: 'get' });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch top with siren ' + siren);
+    throw new Error('Failed to fetch subventions by naf with siren ' + communitySiren);
   }
 
   return (await res.json()) as Promise<SubventionSector[]>;

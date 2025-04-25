@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import Loading from '@/components/ui/Loading';
-import { useTopSubventionsByNaf } from '@/utils/hooks/useTopSubventionsByNaf';
+import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
@@ -34,7 +34,7 @@ const MAX_ROW_PER_PAGE = 10;
 export default function SubventionsSectorTable({ siren, year }: SubventionsSectorTableProps) {
   const paginationProps = usePagination();
 
-  const { data, isPending, isError } = useTopSubventionsByNaf(siren, year === 'All' ? null : year, {
+  const { data, isPending, isError } = useSubventionsByNaf(siren, year === 'All' ? null : year, {
     page: paginationProps.activePage,
     limit: MAX_ROW_PER_PAGE,
   });
