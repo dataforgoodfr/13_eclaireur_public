@@ -63,7 +63,7 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
     style: 'currency',
     minimumFractionDigits: 1,
     ...options,
-  } satisfies Intl.NumberFormatOptions;
+  } as const;
 
   return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
 }
