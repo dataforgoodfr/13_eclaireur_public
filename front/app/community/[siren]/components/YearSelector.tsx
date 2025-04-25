@@ -6,15 +6,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-type YearOption = number | 'All';
+import { YearOption } from '../types/interface';
 
-export default function YearSelector({
-  years,
-  onSelect,
-}: {
+type YearSelectorProps = {
   years: number[];
   onSelect: (option: YearOption) => void;
-}) {
+};
+
+export default function YearSelector({ years, onSelect }: YearSelectorProps) {
   return (
     <Select onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}>
       <SelectTrigger className='w-[100px]'>
