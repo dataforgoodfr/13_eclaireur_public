@@ -15,9 +15,9 @@ import {
 import { cn, formatNumber, stringifyCommunityType } from '@/utils/utils';
 import { ArrowUpDown } from 'lucide-react';
 
+import { Pagination } from '../../community/[siren]/components/Pagination/Pagination';
 import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
-import { Pagination } from './Pagination';
 
 type CommunitiesTableProps = {
   communities: AdvancedSearchCommunity[];
