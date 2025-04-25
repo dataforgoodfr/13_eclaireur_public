@@ -53,7 +53,7 @@ export default async function ProjectDescription() {
             <ChiffreCle
               className='rotate-[3deg] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)]'
               value={`${kpis.publishedSubventionsPercentage}%`}
-              description='des subventions sont publiées.'
+              description='des subventions en montant sont publiées.'
             />
             <ChiffreCle
               value={formatNumber(kpis.communitiesTotalCount)}
