@@ -56,10 +56,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='fr'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen`}>
         <Providers>
           <Navbar />
-          <div className='relative pt-[80px]'>{children}</div>
+          <div className='relative pt-[80px] flex-grow'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />
