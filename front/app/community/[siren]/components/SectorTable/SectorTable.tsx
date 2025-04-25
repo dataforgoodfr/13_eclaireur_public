@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { formatFirstLetterToUppercase, formatNumber } from '@/utils/utils';
 
-import PercentageBarCell from '../FicheMarchesPublics/PercentageBarCell';
+import PercentageBarCell from './PercentageBarCell';
 
 export type SectorRow = {
   id: string;
