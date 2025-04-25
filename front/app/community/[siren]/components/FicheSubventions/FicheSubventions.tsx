@@ -9,7 +9,7 @@ import Trends from './Trends';
 
 async function getSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
-    filters: { attribuant_siren: siren },
+    filters: { id_attribuant: siren },
     // TODO - Remove limit when api to calculate data is done
     limit: 100,
   });
