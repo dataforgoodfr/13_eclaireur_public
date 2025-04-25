@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import Loading from '@/components/ui/Loading';
 import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
 
-import { CommunitiesTable } from './components/CommunitiesTable';
+import { AdvancedSearchTable } from './components/AdvanceSearchTable';
 import DownloadingButton from './components/DownloadingButton';
 import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
@@ -42,7 +42,7 @@ function CommunitiesTableWithLoader() {
   if (!data) return <Loading />;
 
   if (data && data.length > 0) {
-    return <CommunitiesTable communities={data} />;
+    return <AdvancedSearchTable communities={data} />;
   }
 
   return <NoResults />;

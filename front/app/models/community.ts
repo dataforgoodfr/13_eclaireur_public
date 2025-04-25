@@ -34,4 +34,6 @@ export type AdvancedSearchCommunity = Pick<
   Community,
   'siren' | 'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'
 > &
-  RowCount;
+  RowCount & {
+    subventions_budget: number;
+  };

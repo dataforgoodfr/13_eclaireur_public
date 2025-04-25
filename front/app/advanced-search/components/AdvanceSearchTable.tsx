@@ -19,13 +19,21 @@ import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
 import { Pagination } from './Pagination';
 
-type CommunitiesTableProps = {
+type AdvancedSearchTableProps = {
   communities: AdvancedSearchCommunity[];
 };
 
-export function CommunitiesTable({ communities }: CommunitiesTableProps) {
+export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
   const { pagination, setPage } = usePaginationParams();
   const { order, setOrder } = useOrderParams();
+
+  function formatAmount(amount: number) {
+    return formatNumber(amount, {
+      notation: 'compact',
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    });
+  }
 
   function handleHeadClick(orderBy: AdvancedSearchOrder['by']) {
     setOrder({
@@ -54,7 +62,14 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
                 Population
               </OrderingButton>
             </TableHead>
-            <TableHead className='text-right'>Budget total</TableHead>
+            <TableHead>
+              <OrderingButton
+                className='justify-end'
+                onClick={() => handleHeadClick('subventions_budget')}
+              >
+                Budget subventions (€)
+              </OrderingButton>
+            </TableHead>
             <TableHead>
               <OrderingButton className='justify-end' onClick={() => handleHeadClick('mp_score')}>
                 Score Marchés Publics
@@ -75,8 +90,10 @@ export function CommunitiesTable({ communities }: CommunitiesTableProps) {
             <TableRow key={community.siren + community.type}>
               <TableCell className='font-medium'>{community.nom}</TableCell>
               <TableCell className='text-right'>{stringifyCommunityType(community.type)}</TableCell>
-              <TableCell className='text-right'>{formatNumber(community.population)}</TableCell>
-              <TableCell className='text-right'>TODO</TableCell>
+              <TableCell className='text-right'>{formatAmount(community.population)}</TableCell>
+              <TableCell className='text-right'>
+                {formatAmount(community.subventions_budget)}
+              </TableCell>
               <TableCell className='text-right'>{community.mp_score ?? '-'}</TableCell>
               <TableCell className='text-right'>{community.subventions_score ?? '-'}</TableCell>
             </TableRow>
