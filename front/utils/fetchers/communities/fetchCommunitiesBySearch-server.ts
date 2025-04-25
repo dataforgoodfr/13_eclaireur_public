@@ -19,12 +19,13 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const partialQuery = `%${query}%`;
   const values = [exactQuery, partialQuery, limit];
 
+  // TODO - remove casting of code_postal_x when renamed in the db
   const querySQL = `
-    SELECT nom, code_postal, type, siren,
+    SELECT nom, code_postal_x as code_postal, type, siren,
            SIMILARITY(LOWER(nom), LOWER($1)) AS similarity_score
     FROM ${TABLE_NAME}
     WHERE nom ILIKE $2
-       OR code_postal::text ILIKE $2
+       OR code_postal_x::text ILIKE $2
     ORDER BY similarity_score DESC
     LIMIT $3;
   `;
