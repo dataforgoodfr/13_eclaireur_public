@@ -35,6 +35,12 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
+export function roundNumber(value: number, decimalsCount = 2) {
+  const multiplier = Math.pow(10, decimalsCount);
+
+  return Math.round(value * multiplier) / multiplier;
+}
+
 export function parseNumber(value: string | null) {
   if (value === null) return undefined;
 
@@ -55,7 +61,7 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
     notation: 'compact',
     currency: 'EUR',
     style: 'currency',
-    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
     ...options,
   } as const;
 
@@ -66,7 +72,7 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
   const defaultOptions = {
     style: 'currency',
     currency: 'EUR',
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
     ...options,
   } as const;
   return formatFrench(value, defaultOptions);
@@ -74,7 +80,7 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
 
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
     ...options,
   } as const;
 

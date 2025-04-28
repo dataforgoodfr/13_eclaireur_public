@@ -5,7 +5,6 @@ import polars as pl
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
-from back.scripts.utils.config import get_project_base_path
 
 
 class FinancialEnricher(BaseEnricher):
@@ -24,20 +23,6 @@ class FinancialEnricher(BaseEnricher):
         ]
 
     @classmethod
-    def get_output_path(cls, main_config: dict, output_type: str = "") -> Path:
-        return (
-            get_project_base_path()
-            / main_config["warehouse"]["data_folder"]
-            / f"{cls.get_dataset_name()}{output_type}.parquet"
-        )
-
-    @classmethod
-    def enrich(cls, main_config: dict) -> None:
-        inputs = list(map(pl.read_parquet, cls.get_input_paths(main_config)))
-        financial = cls._clean_and_enrich(inputs)
-        financial.write_parquet(cls.get_output_path(main_config, output_type=""))
-
-    @classmethod
     def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
         communities, financial = inputs
         financial_filtred = cls._add_financial_type(financial)
@@ -51,6 +36,7 @@ class FinancialEnricher(BaseEnricher):
                 (pl.col("ressources_invest") * 1000).alias("ressources_invest"),
                 (pl.col("emploi_invest") * 1000).alias("emploi_invest"),
                 (pl.col("dette") * 1000).alias("dette"),
+                pl.col("annee").cast(pl.Int64),
             ]
         )
         financial_filtred = cls.clean_region_and_dep_columns(financial_filtred)

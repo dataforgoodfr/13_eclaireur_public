@@ -15,9 +15,9 @@ DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
 class DataGouvSearcher:
     """
-    This class is responsible for searching datafiles on the data.gouv.fr API and datasets catalog.
-    It initializes from a CommunitiesSelector object and a datagouv_config dictionary, to load the datasets and datafiles catalogs.
-    It provides one public method get_datafiles(search_config, method) to build a list of datafiles based on title and description filters and column names filters.
+    This class is responsible for subvention related files in the data.gouv catalog.
+    The strategy is to look for datasets with specific keywords in their title and description.
+    We then try to deduplicate the selected dataset by selecting only the most practical format to work with.
     """
 
     @classmethod
