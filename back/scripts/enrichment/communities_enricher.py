@@ -58,12 +58,10 @@ class CommunitiesEnricher(BaseEnricher):
 
     @staticmethod
     def _map_score_to_numeric(column: str) -> pl.Expr:
-        """Transforme strictement les scores 'A'-'E' en scores numériques pour une colonne donnée."""
         mapping = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
         return pl.col(column).replace_strict(mapping).cast(pl.Int64)
 
     @staticmethod
     def _map_numeric_to_score(column: str) -> pl.Expr:
-        """Transforme strictement les scores numériques en scores 'A'-'E' pour une colonne donnée."""
         mapping = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E"}
         return pl.col(column).replace_strict(mapping)
