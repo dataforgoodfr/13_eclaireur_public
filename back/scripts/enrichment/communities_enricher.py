@@ -29,67 +29,41 @@ class CommunitiesEnricher(BaseEnricher):
         communities, bareme = inputs
 
         current_year = datetime.now().year
-        target_year = current_year - 1
-        communities = communities.join(
-            bareme.filter(pl.col("annee") == target_year).select(
-                ["siren", "mp_score", "subventions_score"]
-            ),
-            on="siren",
-            how="left",
+        target_year = current_year - 2
+        return (
+            communities.join(
+                bareme.filter(pl.col("annee") == target_year).select(
+                    ["siren", "mp_score", "subventions_score"]
+                ),
+                on="siren",
+                how="left",
+            )
+            .with_columns(
+                [
+                    cls._map_score_to_numeric("mp_score").alias("mp_score_num"),
+                    cls._map_score_to_numeric("subventions_score").alias("sub_score_num"),
+                ]
+            )
+            .with_columns(
+                [
+                    ((pl.col("mp_score_num") + pl.col("sub_score_num")) / 2)
+                    .floor()
+                    .cast(pl.Int64)
+                    .alias("global_score_num"),
+                ]
+            )
+            .with_columns([cls._map_numeric_to_score("global_score_num").alias("global_score")])
+            .drop(["mp_score_num", "sub_score_num", "global_score_num"])
         )
 
-        mp_score_expr = (
-            pl.when(pl.col("mp_score") == "A")
-            .then(1)
-            .when(pl.col("mp_score") == "B")
-            .then(2)
-            .when(pl.col("mp_score") == "C")
-            .then(3)
-            .when(pl.col("mp_score") == "D")
-            .then(4)
-            .when(pl.col("mp_score") == "E")
-            .then(5)
-            .otherwise(None)
-            .cast(pl.Int64)
-            .alias("mp_score_num")
-        )
+    @staticmethod
+    def _map_score_to_numeric(column: str) -> pl.Expr:
+        """Transforme strictement les scores 'A'-'E' en scores numériques pour une colonne donnée."""
+        mapping = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+        return pl.col(column).replace_strict(mapping).cast(pl.Int64)
 
-        sub_score_expr = (
-            pl.when(pl.col("subventions_score") == "A")
-            .then(1)
-            .when(pl.col("subventions_score") == "B")
-            .then(2)
-            .when(pl.col("subventions_score") == "C")
-            .then(3)
-            .when(pl.col("subventions_score") == "D")
-            .then(4)
-            .when(pl.col("subventions_score") == "E")
-            .then(5)
-            .otherwise(None)
-            .cast(pl.Int64)
-            .alias("sub_score_num")
-        )
-
-        communities = communities.with_columns(
-            [mp_score_expr.alias("mp_score_num"), sub_score_expr.alias("sub_score_num")]
-        )
-
-        communities = communities.with_columns(
-            [
-                pl.col("mp_score_num").alias("mp_score_num"),
-                pl.col("sub_score_num").alias("sub_score_num"),
-            ]
-        )
-
-        communities = communities.with_columns(
-            [
-                ((pl.col("mp_score_num") + pl.col("sub_score_num")) / 2)
-                .floor()
-                .cast(pl.Int64)
-                .alias("global_score")
-            ]
-        )
-
-        return communities.select(
-            [col for col in communities.columns if not col.endswith("_num")]
-        )
+    @staticmethod
+    def _map_numeric_to_score(column: str) -> pl.Expr:
+        """Transforme strictement les scores numériques en scores 'A'-'E' pour une colonne donnée."""
+        mapping = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E"}
+        return pl.col(column).replace_strict(mapping)
