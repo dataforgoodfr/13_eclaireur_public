@@ -8,24 +8,35 @@ import { GraphSwitch } from '../DataViz/GraphSwitch';
 import DownloadButton from '../FicheSubventions/DownloadButton';
 import MarchesPublicsTrendsBarChart from './MarchesPublicsTrendsBarChart';
 
-type FormattedDataTrends = {
+type ChartData = {
   annee: number;
-  montant: number;
-  nombre: number;
+  yValue: number;
 };
 
 export default function Trends({ data }: { data: MarchePublic[] }) {
   const [isContractDisplayed, setIsContractDisplayed] = useState(false);
 
-  const trends: FormattedDataTrends[] = Object.values(
-    data.reduce<Record<string, FormattedDataTrends>>((acc, item) => {
+  const contractNumberTrends: ChartData[] = Object.values(
+    data.reduce<Record<string, ChartData>>((acc, item) => {
       const year = item.datenotification_annee;
 
       if (!acc[year]) {
-        acc[year] = { annee: year, montant: 0, nombre: 0 };
+        acc[year] = { annee: year, yValue: 0 };
       }
-      acc[year].montant += parseFloat(String(item.montant)) || 0;
-      acc[year].nombre += 1;
+      acc[year].yValue += 1;
+
+      return acc;
+    }, {}),
+  );
+
+  const contractAmountTrends: ChartData[] = Object.values(
+    data.reduce<Record<string, ChartData>>((acc, item) => {
+      const year = item.datenotification_annee;
+
+      if (!acc[year]) {
+        acc[year] = { annee: year, yValue: 0 };
+      }
+      acc[year].yValue += parseFloat(String(item.montant)) || 0;
 
       return acc;
     }, {}),
@@ -52,11 +63,10 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
           </div>
         </div>
       </div>
-      {!isContractDisplayed ? (
-        <MarchesPublicsTrendsBarChart data={trends} datakey='montant' />
-      ) : (
-        <MarchesPublicsTrendsBarChart data={trends} datakey='nombre' />
-      )}
+      <MarchesPublicsTrendsBarChart
+        data={isContractDisplayed ? contractNumberTrends : contractAmountTrends}
+        isContractDisplayed={isContractDisplayed}
+      />
     </>
   );
 }

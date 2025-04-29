@@ -1,5 +1,6 @@
 import { formatCompactPrice, formatNumber } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { string } from 'zod';
 
 import { CHART_HEIGHT } from '../constants';
 
@@ -8,15 +9,15 @@ const LEGEND_LABELS: Record<string, string> = {
   montant: 'Montant des marchés publics publiées (€)',
 };
 
-function getLegendFormatter(value: string): string {
-  const label = LEGEND_LABELS[value];
+function getLegendFormatter(isContractDisplayed: boolean): string {
+  const label = isContractDisplayed ? LEGEND_LABELS.nombre : LEGEND_LABELS.montant;
   if (!label) {
-    throw new Error(`Clé de légende inconnue : "${value}".`);
+    throw new Error(`Clé de légende inconnue.`);
   }
   return label;
 }
 
-const renderLabel = (props: any) => {
+function renderLabel(props: any, isContractDisplayed: boolean) {
   const { x, y, width, value } = props;
   return (
     <text
@@ -27,40 +28,29 @@ const renderLabel = (props: any) => {
       dominantBaseline='middle'
       fontSize='16'
     >
-      {formatCompactPrice(value)}
+      {isContractDisplayed ? formatNumber(value) : formatCompactPrice(value)}
     </text>
   );
-};
+}
 
-const renderNumberLabel = (props: any) => {
-  const { x, y, width, value } = props;
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 10}
-      fill='#4e4e4e'
-      textAnchor='middle'
-      dominantBaseline='middle'
-      fontSize='16'
-    >
-      {formatNumber(value)}
-    </text>
-  );
-};
+function renderYaxisLabel(value: number, isContractDisplayed: boolean): string {
+  return isContractDisplayed ? String(value) : formatCompactPrice(value);
+}
 
 type ChartData = {
   annee: number;
-  montant: number;
-  nombre: number;
+  yValue: number;
+};
+
+type MarchesPublicsTrendsBarChartProps = {
+  data: ChartData[];
+  isContractDisplayed: boolean;
 };
 
 export default function MarchesPublicsTrendsBarChart({
   data,
-  datakey,
-}: {
-  data: ChartData[];
-  datakey: string;
-}) {
+  isContractDisplayed,
+}: MarchesPublicsTrendsBarChartProps) {
   return (
     <div className='p-4'>
       <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
@@ -76,16 +66,12 @@ export default function MarchesPublicsTrendsBarChart({
           }}
         >
           <XAxis dataKey='annee' axisLine={true} tickLine={true} />
-          <YAxis
-            tickFormatter={(value) => (datakey === 'montant' ? formatCompactPrice(value) : value)}
-          />
-          <Legend formatter={getLegendFormatter} />
-          <Bar dataKey={datakey} stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
+          <YAxis tickFormatter={(value) => renderYaxisLabel(value, isContractDisplayed)} />
+          <Legend formatter={() => getLegendFormatter(isContractDisplayed)} />
+          <Bar dataKey={'yValue'} stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
             <LabelList
               position='top'
-              content={(value) =>
-                datakey === 'montant' ? renderLabel(value) : renderNumberLabel(value)
-              }
+              content={(props) => renderLabel(props, isContractDisplayed)}
             />
           </Bar>
         </BarChart>
