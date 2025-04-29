@@ -44,7 +44,15 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
 
 
 class DeclaInteretWorkflow:
-    """https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources"""
+    """
+    Dataset containing declarations of interest of elected officials.
+
+    The data is a xml file containing many sections.
+    Only a couple of sections have been parsed so far, mostly to setup the logic.
+    For each declaration, the non parsed sections are documented in a dedicated column : `to_parse`.
+
+    https://www.data.gouv.fr/fr/datasets/contenu-des-declarations-publiees-apres-le-1er-juillet-2017-au-format-xml/#/resources
+    """
 
     @classmethod
     def get_config_key(cls) -> str:
