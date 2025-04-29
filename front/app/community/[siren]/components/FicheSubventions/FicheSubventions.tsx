@@ -47,7 +47,7 @@ export async function FicheSubventions({ siren }: FicheSubventionsProps) {
             </div>
           </TabsContent>
           <TabsContent value='details'>
-            <Ranking data={subventions} />
+            <Ranking data={subventions} availableYears={availableYears} />
           </TabsContent>
         </Tabs>
       ) : (

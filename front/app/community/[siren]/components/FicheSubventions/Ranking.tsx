@@ -19,20 +19,18 @@ import { YearOption } from '../../types/interface';
 
 const ROWS_COUNT = 10;
 
-function getAvailableYears(data: Subvention[]) {
-  return [...new Set(data.map((item) => item.year && item.montant && item.year))].sort(
-    (a: number, b: number) => a - b,
-  );
-}
-
-export default function Ranking({ data }: { data: Subvention[] }) {
+export default function Ranking({
+  data,
+  availableYears,
+}: {
+  data: Subvention[];
+  availableYears: number[];
+}) {
   const [linesDisplayed, setLinesDisplayed] = useState(0);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
-  const availableYears: number[] = getAvailableYears(data);
-
   const filteredData =
-    selectedYear === 'All' ? data : data.filter((item) => item.year === selectedYear);
+    selectedYear === 'All' ? data : data.filter((item) => item.annee === selectedYear);
 
   function formatSubventionObject(input: string): string[] {
     return input
@@ -42,17 +40,17 @@ export default function Ranking({ data }: { data: Subvention[] }) {
       .map((item) => item.trim().replace(/^['"]|['"]$/g, ''));
   }
 
-  function getTopContract(data: any[]) {
-    const sortedContracts = data.sort((a, b) => Number(b.montant) - Number(a.montant));
-    const topContract =
-      sortedContracts.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed
-        ? sortedContracts.slice(0, ROWS_COUNT + ROWS_COUNT * linesDisplayed)
-        : sortedContracts;
+  function getTopSubs(data: any[]) {
+    const sortedSubs = data.sort((a, b) => Number(b.montant) - Number(a.montant));
+    const topSubs =
+      sortedSubs.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed
+        ? sortedSubs.slice(0, ROWS_COUNT + ROWS_COUNT * linesDisplayed)
+        : sortedSubs;
 
-    return topContract;
+    return topSubs;
   }
 
-  const topContractData = getTopContract(filteredData);
+  const topSubsData = getTopSubs(filteredData);
 
   return (
     <>
@@ -75,11 +73,15 @@ export default function Ranking({ data }: { data: Subvention[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {topContractData.map((item, index) => (
+          {topSubsData.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='font-medium'>{item.beneficiaire_nom}</TableCell>
+              <TableCell className='font-medium'>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
+                  {item.nom_beneficiaire}
+                </div>
+              </TableCell>
               <TableCell>
-                <div className='line-clamp-2 overflow-hidden text-ellipsis'>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
                   {formatSubventionObject(item.objet).map((item, index) => (
                     <span key={index}>
                       {index > 0 && ' - '}
@@ -91,7 +93,7 @@ export default function Ranking({ data }: { data: Subvention[] }) {
               <TableCell className='text-right'>
                 {formatCompactPrice(parseFloat(item.montant))}
               </TableCell>
-              <TableCell className='text-right'>{item.year}</TableCell>
+              <TableCell className='text-right'>{item.annee}</TableCell>
             </TableRow>
           ))}
         </TableBody>
