@@ -1,6 +1,6 @@
 'use client';
 
-import { PureComponent, useState } from 'react';
+import { useState } from 'react';
 
 import { Subvention } from '@/app/models/subvention';
 
@@ -21,7 +21,7 @@ export default function Trends({ data }: { data: Subvention[] }) {
   function calculateTrends(data: Subvention[]) {
     const subventionsByYear: Trends[] = Object.values(
       data.reduce<Record<string, Trends>>((acc, item) => {
-        const year = item.year;
+        const year = item.annee;
 
         if (!acc[year]) {
           acc[year] = { annee: year, montant: 0, nombre: 0 };
