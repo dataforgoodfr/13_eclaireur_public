@@ -30,3 +30,11 @@ export type MarchePublic = {
   datepublication_annee: number;
   delaipublication_jours: number;
 };
+
+export type MarchePublicSector = Pick<MarchePublic, 'cpv_2' | 'cpv_2_label'> & {
+  /** Total of the community of the sector for a year */
+  montant: number;
+  /** Total of the community for a year */
+  grand_total: number;
+  total_row_count: number;
+};

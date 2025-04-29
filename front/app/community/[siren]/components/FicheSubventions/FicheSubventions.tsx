@@ -1,15 +1,16 @@
-import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
+import { fetchSubventionsAvailableYears } from '@/utils/fetchers/subventions/fetchSubventionsAvailableYears';
 
 import { FicheCard } from '../FicheCard';
+import { NoData } from '../NoData';
 import Distribution from './Distribution';
 import Ranking from './Ranking';
 import Trends from './Trends';
 
 async function getSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
-    filters: { attribuant_siren: siren },
+    filters: { id_attribuant: siren },
     // TODO - Remove limit when api to calculate data is done
     limit: 100,
   });
@@ -17,8 +18,11 @@ async function getSubventions(siren: string) {
   return subventionsResults;
 }
 
-export async function FicheSubventions({ siren }: { siren: string }) {
+type FicheSubventionsProps = { siren: string };
+
+export async function FicheSubventions({ siren }: FicheSubventionsProps) {
   const subventions = await getSubventions(siren);
+  const availableYears = await fetchSubventionsAvailableYears(siren);
 
   return (
     <FicheCard>
@@ -35,7 +39,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
             <Trends data={subventions} />
           </TabsContent>
           <TabsContent value='distribution'>
-            <Distribution data={subventions} />
+            <Distribution siren={siren} availableYears={availableYears} />
           </TabsContent>
           <TabsContent value='compare'>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>

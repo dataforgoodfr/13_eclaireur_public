@@ -1,27 +1,18 @@
 export type YearOption = number | 'All';
 
-export type Sector = {
-  name: string;
-  size: number;
-  part: number;
-  pourcentageCategoryTop1: number;
-};
-
 export type TreeLeaf = {
   type: 'leaf';
+  id: string;
   name: string;
   value: number;
-  part?: number;
-  pourcentageCategoryTop1?: number;
 };
 
 export type TreeNode = {
   type: 'node';
-  value: number;
+  id: string;
   name: string;
+  value: number;
   children: TreeData[];
-  part?: number;
-  pourcentageCategoryTop1?: number;
 };
 
 export type TreeData = TreeNode | TreeLeaf;

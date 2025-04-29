@@ -20,7 +20,7 @@ export default function CtaGroup() {
       caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
       image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
-      href: '/',
+      href: '/advanced-search',
       colorClassName: 'bg-card-secondary-foreground-3',
     },
 
@@ -29,7 +29,7 @@ export default function CtaGroup() {
       caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
       image: interpellateImg,
       buttonText: 'Engagement citoyen',
-      href: '/',
+      href: '/interpeller',
       colorClassName: 'bg-card-secondary-foreground-4',
     },
   ];
