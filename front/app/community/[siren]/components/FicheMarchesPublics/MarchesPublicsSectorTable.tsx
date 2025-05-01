@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
-import { PaginationProps, WithPagination } from '@/components/Pagination';
+import { WithPagination } from '@/components/Pagination';
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
+import { usePagination } from '@/utils/hooks/usePagination';
 import { roundNumber } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
@@ -16,17 +15,6 @@ type MarchesPublicsSectortableProps = {
   siren: string;
   year: YearOption;
 };
-
-const DEFAULT_PAGE = 1;
-
-function usePagination(initialPage = DEFAULT_PAGE): Omit<PaginationProps, 'totalPage'> {
-  const [page, setPage] = useState(initialPage);
-
-  return {
-    activePage: page,
-    onPageChange: setPage,
-  };
-}
 
 const MAX_ROW_PER_PAGE = 10;
 
