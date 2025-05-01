@@ -15,7 +15,7 @@ function createSQLQueryParams(siren: string): [string, (string | number)[]] {
     FROM ${TABLE_NAME}
     WHERE id_attribuant = $1
     GROUP by year
-    ORDER BY year DESC
+    ORDER BY year ASC
   `;
 
   return [querySQL, values];
