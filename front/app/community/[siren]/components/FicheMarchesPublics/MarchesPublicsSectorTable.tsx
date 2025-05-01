@@ -11,14 +11,14 @@ import { NoData } from '../NoData';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
 import { CHART_HEIGHT } from '../constants';
 
-type MarchesPublicsSectortableProps = {
+type MarchesPublicsSectorTableProps = {
   siren: string;
   year: YearOption;
 };
 
 const MAX_ROW_PER_PAGE = 10;
 
-export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublicsSectortableProps) {
+export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublicsSectorTableProps) {
   const paginationProps = usePagination();
 
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
