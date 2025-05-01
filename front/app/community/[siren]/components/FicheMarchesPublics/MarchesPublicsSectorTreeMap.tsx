@@ -1,5 +1,7 @@
 'use client';
 
+import { RefAttributes } from 'react';
+
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
 
@@ -10,6 +12,7 @@ import { CHART_HEIGHT } from '../constants';
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
   year: YearOption;
+  svgRef?: RefAttributes<SVGSVGElement>['ref'];
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;
@@ -17,6 +20,7 @@ const LIMIT_NUMBER_CATEGORIES = 50;
 export default function MarchesPublicsSectorTreemap({
   siren,
   year,
+  svgRef,
 }: MarchesPublicsSectorTreemapProps) {
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
@@ -44,5 +48,5 @@ export default function MarchesPublicsSectorTreemap({
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} />;
+  return <Treemap data={treeData} svgRef={svgRef} />;
 }

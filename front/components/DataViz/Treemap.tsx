@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { RefAttributes, useEffect, useRef, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
 import * as d3 from 'd3';
@@ -41,9 +41,9 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
-type TreemapProps = { data: TreeData };
+type TreemapProps = { data: TreeData; svgRef?: RefAttributes<SVGSVGElement>['ref'] };
 
-export default function Treemap({ data }: TreemapProps) {
+export default function Treemap({ data, svgRef }: TreemapProps) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
     visible: false,
     x: 0,
@@ -155,7 +155,7 @@ export default function Treemap({ data }: TreemapProps) {
 
   return (
     <div ref={containerRef}>
-      <svg width={width} height={height}>
+      <svg width={width} height={height} ref={svgRef}>
         {allShapes}
       </svg>
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
