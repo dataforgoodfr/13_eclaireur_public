@@ -1,4 +1,4 @@
-import { MarchePublic, PaginationMarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic, PaginatedMarchePublic } from '@/app/models/marchePublic';
 import { getQueryFromPool } from '@/utils/db';
 
 import { DataTable } from '../constants';
@@ -49,9 +49,9 @@ export async function fetchMarchesPublicsPaginated(
   year: number | null,
   pagination: Pagination,
   by = DEFAULT_BY,
-): Promise<PaginationMarchePublic[]> {
+): Promise<PaginatedMarchePublic[]> {
   const params = createSQLQueryParams(siren, year, pagination, by);
-  const rows = (await getQueryFromPool(...params)) as PaginationMarchePublic[];
+  const rows = (await getQueryFromPool(...params)) as PaginatedMarchePublic[];
 
   return rows;
 }
