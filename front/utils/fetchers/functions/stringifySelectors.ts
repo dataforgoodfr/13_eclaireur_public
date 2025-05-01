@@ -3,10 +3,11 @@
  * @param selectors
  * @returns
  */
-export function stringifySelectors(selectors: string[] | undefined): string {
+export function stringifySelectors(selectors: string[] | undefined, prefix?: string): string {
+  const formattedPrefix = prefix !== undefined ? `${prefix}.` : '';
   if (selectors == null) {
-    return '*';
+    return `${formattedPrefix}*`;
   }
 
-  return selectors.join(', ');
+  return formattedPrefix + selectors.join(`, ${formattedPrefix}`);
 }
