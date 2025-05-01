@@ -1,4 +1,4 @@
-import { MarchePublic, PaginationMarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic, PaginatedMarchePublic } from '@/app/models/marchePublic';
 
 import { Pagination } from '../types';
 
@@ -18,7 +18,7 @@ export async function fetchMarchesPublicsPaginated(
   year: number | null,
   pagination: Pagination,
   by = DEFAULT_BY,
-): Promise<PaginationMarchePublic[]> {
+): Promise<PaginatedMarchePublic[]> {
   const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   if (year !== null) url.searchParams.append('year', year.toString());
@@ -35,5 +35,5 @@ export async function fetchMarchesPublicsPaginated(
     throw new Error('Failed to fetch mp by amount with siren ' + communitySiren);
   }
 
-  return (await res.json()) as Promise<PaginationMarchePublic[]>;
+  return (await res.json()) as Promise<PaginatedMarchePublic[]>;
 }

@@ -61,4 +61,4 @@ export type MarchePublicSector = Paginated<
   }
 >;
 
-export type PaginationMarchePublic = Paginated<MarchePublic>;
+export type PaginatedMarchePublic = Paginated<MarchePublic>;
