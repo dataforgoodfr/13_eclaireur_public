@@ -30,7 +30,7 @@ export function SubventionYearlyAmountsChart({ siren }: SubventionYearlyAmountsC
 }
 
 const LEGEND_LABELS: Record<Exclude<keyof BarChartData[number], 'year'>, string> = {
-  amount: 'Nombre de subventions publiées (€)',
+  amount: 'Nombre de subventions publiées',
 };
 
 function getLegendFormatter(value: Exclude<keyof BarChartData[number], 'year'>): string {
