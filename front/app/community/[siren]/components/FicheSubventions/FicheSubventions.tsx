@@ -5,8 +5,8 @@ import { fetchSubventionsAvailableYears } from '@/utils/fetchers/subventions/fet
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
 import Distribution from './Distribution';
+import Evolution from './Evolution';
 import Ranking from './Ranking';
-import Trends from './Trends';
 
 async function getSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
@@ -36,7 +36,7 @@ export async function FicheSubventions({ siren }: FicheSubventionsProps) {
             <TabsTrigger value='details'>Classement</TabsTrigger>
           </TabsList>
           <TabsContent value='trends'>
-            <Trends data={subventions} />
+            <Evolution siren={siren} />
           </TabsContent>
           <TabsContent value='distribution'>
             <Distribution siren={siren} availableYears={availableYears} />
