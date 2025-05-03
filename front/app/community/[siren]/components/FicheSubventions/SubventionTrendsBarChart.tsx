@@ -1,4 +1,3 @@
-import { formatNumber } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import { CHART_HEIGHT } from '../constants';
@@ -40,7 +39,7 @@ export default function SubventionTrendsBarChart({ data }: { data: ChartData[] }
           <YAxis />
           <Legend formatter={getLegendFormatter} />
           <Bar dataKey='nombre' stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
-            <LabelList position='top' formatter={(value: number) => formatNumber(value)} />
+            <LabelList position='top' />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
