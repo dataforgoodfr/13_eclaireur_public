@@ -35,7 +35,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector onDownloadData={handleDownloadData} />
+          <DownloadSelector onClickDownloadData={handleDownloadData} />
         </div>
       </div>
       {isTableDisplayed ? (
