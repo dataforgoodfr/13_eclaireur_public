@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -10,6 +9,9 @@ import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
 import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
+import { FicheIdentiteSkeleton } from './components/Skeletons/FicheIdentiteSkeleton';
+import { FicheMarchesPublicsSkeleton } from './components/Skeletons/FicheMarchesPublicsSkeleton';
+import { FicheSubventionsSkeleton } from './components/Skeletons/FicheSubventionsSkeleton';
 
 // TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
 export const metadata: Metadata = {
@@ -36,19 +38,17 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
   return (
     <>
-      <Suspense fallback={<Loading />}>
-        <FicheHeader community={community} />
-      </Suspense>
+      <FicheHeader community={community} />
       <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<FicheIdentiteSkeleton />}>
           <FicheIdentite community={community} />
         </Suspense>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<FicheMarchesPublicsSkeleton />}>
           <ErrorBoundary>
             <FicheMarchesPublics siren={siren} />
           </ErrorBoundary>
         </Suspense>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<FicheSubventionsSkeleton />}>
           <ErrorBoundary>
             <FicheSubventions siren={siren} />
           </ErrorBoundary>
