@@ -5,6 +5,7 @@ import { fetchSubventionsAvailableYears } from '@/utils/fetchers/subventions/fet
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
 import Distribution from './Distribution';
+import Ranking from './Ranking';
 import Trends from './Trends';
 
 async function getSubventions(siren: string) {
@@ -46,9 +47,7 @@ export async function FicheSubventions({ siren }: FicheSubventionsProps) {
             </div>
           </TabsContent>
           <TabsContent value='details'>
-            <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-              En construction
-            </div>
+            <Ranking data={subventions} availableYears={availableYears} />
           </TabsContent>
         </Tabs>
       ) : (

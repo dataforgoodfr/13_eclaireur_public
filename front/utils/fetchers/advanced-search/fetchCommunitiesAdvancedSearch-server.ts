@@ -22,7 +22,9 @@ export async function fetchCommunitiesAdvancedSearch(
   return getQueryFromPool(...params) as Promise<AdvancedSearchCommunity[]>;
 }
 
-const TABLE_NAME = DataTable.Communities;
+const COMMUNITIES = DataTable.Communities;
+const COMMUNITIES_ACCOUNT = DataTable.CommunitiesAccount;
+
 const SELECTORS = [
   'siren',
   'nom',
@@ -36,10 +38,11 @@ export type CommunitiesAdvancedSearchFilters = Partial<
   Pick<Community, 'type' | 'population' | 'mp_score' | 'subventions_score'>
 >;
 
+// TODO - Which year should we take to get the budget
+const LAST_YEAR = new Date().getFullYear() - 2;
+
 /**
- * Create the sql query for the marches publics
- * @param filters
- * @returns
+ * Create the sql query for the advanced search
  */
 export function createSQLQueryParams(
   filters: CommunitiesAdvancedSearchFilters,
@@ -51,10 +54,20 @@ export function createSQLQueryParams(
   const { by, direction } = order;
   const values: (CommunityType | number | string | undefined)[] = [];
 
-  const selectorsStringified = stringifySelectors(SELECTORS);
+  const selectorsStringified = stringifySelectors(SELECTORS, 'community');
   let query = `
-    SELECT ${selectorsStringified}, count(*) OVER()::real AS total_row_count
-    FROM ${TABLE_NAME}
+    WITH mergeWithAccount AS (
+      SELECT ${selectorsStringified}, 
+        account.annee AS annee, 
+        account.subventions AS subventions_budget
+      FROM ${COMMUNITIES} community
+      INNER JOIN ${COMMUNITIES_ACCOUNT} account ON community.siren = account.siren
+    )
+    SELECT ${stringifySelectors(SELECTORS)},
+      annee, 
+      subventions_budget, 
+      count(*) OVER()::real AS total_row_count
+    FROM mergeWithAccount
     `;
 
   let whereConditions = [];
@@ -75,6 +88,9 @@ export function createSQLQueryParams(
     whereConditions.push(`subventions_score = $${values.length + 1}`);
     values.push(subventions_score);
   }
+
+  whereConditions.push(`annee = $${values.length + 1}`);
+  values.push(LAST_YEAR);
 
   if (whereConditions.length > 0) {
     query += ` WHERE ${whereConditions.join(' AND ')}`;

@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
+import { downloadMarchesPublicsByCPV2CSV } from '@/utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
@@ -15,6 +16,10 @@ type DistributionProps = { siren: string; availableYears: number[] };
 export default function Distribution({ siren, availableYears }: DistributionProps) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
+
+  function handleDownloadData() {
+    downloadMarchesPublicsByCPV2CSV(siren, selectedYear === 'All' ? null : selectedYear);
+  }
 
   return (
     <>
@@ -30,7 +35,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector />
+          <DownloadSelector onClickDownloadData={handleDownloadData} />
         </div>
       </div>
       {isTableDisplayed ? (

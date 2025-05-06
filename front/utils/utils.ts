@@ -61,7 +61,7 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
     notation: 'compact',
     currency: 'EUR',
     style: 'currency',
-    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
     ...options,
   } as const;
 

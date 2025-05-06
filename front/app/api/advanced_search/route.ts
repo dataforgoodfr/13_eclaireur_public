@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { getQueryFromPool } from '@/utils/db';
-import {
-  CommunitiesAdvancedSearchFilters,
-  createSQLQueryParams,
-} from '@/utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
-import { Pagination } from '@/utils/fetchers/types';
+import { fetchCommunitiesAdvancedSearch } from '@/utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
 import { CommunityType } from '@/utils/types';
 import { parseDirection, parseNumber } from '@/utils/utils';
 
@@ -18,16 +13,6 @@ const DEFAULT_ORDER: AdvancedSearchOrder = {
   by: 'type',
   direction: 'ASC',
 };
-
-async function getDataFromPool(
-  filters: CommunitiesAdvancedSearchFilters,
-  pagination: Pagination,
-  order: AdvancedSearchOrder,
-) {
-  const params = createSQLQueryParams(filters, pagination, order);
-
-  return getQueryFromPool(...params);
-}
 
 export async function GET(request: Request) {
   try {
@@ -55,7 +40,7 @@ export async function GET(request: Request) {
       direction,
     };
 
-    const data = await getDataFromPool(filters, pagination, order);
+    const data = await fetchCommunitiesAdvancedSearch(filters, pagination, order);
 
     return NextResponse.json(data);
   } catch (error) {
