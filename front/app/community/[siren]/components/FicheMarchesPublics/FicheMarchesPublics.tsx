@@ -4,7 +4,7 @@ import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarch
 import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 
 import { FicheCard } from '../FicheCard';
-import Contract from './Contract';
+import Contracts from './Contracts';
 import Distribution from './Distribution';
 import Trends from './Trends';
 
@@ -17,7 +17,7 @@ const tabs = {
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
-    filters: { acheteur_siren: siren },
+    filters: { acheteur_id: siren },
     // TODO - Remove limit when api to calculate data is done
     limit: 100,
   });
@@ -44,7 +44,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
-            <Distribution availableYears={availableYears} siren={siren} />
+            <Distribution siren={siren} availableYears={availableYears} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
@@ -52,7 +52,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             </div>
           </TabsContent>
           <TabsContent value={tabs.details}>
-            <Contract data={marchesPublics} />
+            <Contracts siren={siren} availableYears={availableYears} />
           </TabsContent>
         </Tabs>
       ) : (

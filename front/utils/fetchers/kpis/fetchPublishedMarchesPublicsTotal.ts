@@ -13,7 +13,7 @@ export function createSQLQueryParams(year: number): [string, (string | number)[]
   const query = `
     WITH mp_siren AS (
       SELECT 
-          LEFT(acheteur_id,9) AS acheteur_siren,
+          acheteur_id,
           montant
       FROM ${MP_TABLE} mp
       WHERE annee_notification = $1
@@ -22,7 +22,7 @@ export function createSQLQueryParams(year: number): [string, (string | number)[]
     SELECT SUM(mps.montant)
     FROM mp_siren AS mps
     INNER JOIN ${COMMUNITIES_TABLE} c
-    ON mps.acheteur_siren = c.siren
+    ON mps.acheteur_id = c.siren
   `;
 
   return [query, values];

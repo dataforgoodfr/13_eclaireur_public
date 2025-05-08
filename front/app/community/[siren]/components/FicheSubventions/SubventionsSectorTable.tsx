@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
-import { PaginationProps, WithPagination } from '@/components/Pagination';
+import { WithPagination } from '@/components/Pagination';
 import Loading from '@/components/ui/Loading';
+import { usePagination } from '@/utils/hooks/usePagination';
 import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
 import { roundNumber } from '@/utils/utils';
 
@@ -16,17 +15,6 @@ type SubventionsSectorTableProps = {
   siren: string;
   year: YearOption;
 };
-
-const DEFAULT_PAGE = 1;
-
-function usePagination(initialPage = DEFAULT_PAGE): Omit<PaginationProps, 'totalPage'> {
-  const [page, setPage] = useState(initialPage);
-
-  return {
-    activePage: page,
-    onPageChange: setPage,
-  };
-}
 
 const MAX_ROW_PER_PAGE = 10;
 
