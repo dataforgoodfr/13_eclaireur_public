@@ -42,9 +42,7 @@ export type CommunitiesAdvancedSearchFilters = Partial<
 const LAST_YEAR = new Date().getFullYear() - 2;
 
 /**
- * Create the sql query for the marches publics
- * @param filters
- * @returns
+ * Create the sql query for the advanced search
  */
 export function createSQLQueryParams(
   filters: CommunitiesAdvancedSearchFilters,

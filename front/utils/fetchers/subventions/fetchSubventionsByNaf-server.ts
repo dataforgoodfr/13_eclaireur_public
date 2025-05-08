@@ -6,7 +6,10 @@ import { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.Subventions;
 
-function createSQLQueryParams(
+/**
+ * Create the sql query for the subventions by naf2
+ */
+export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,

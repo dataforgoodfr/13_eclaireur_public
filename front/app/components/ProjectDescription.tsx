@@ -1,16 +1,13 @@
-import { HTMLAttributes } from 'react';
+import { Suspense } from 'react';
 
 import Link from 'next/link';
 
-import { fetchKPIs } from '@/utils/fetchers/kpis/fetchKPIs';
-import { cn, formatCompactPrice, formatNumber } from '@/utils/utils';
 import { ArrowRight } from 'lucide-react';
 
-const KPIS_YEAR = 2023;
+import Loading from '../../components/ui/Loading';
+import KPIs from './KPIs';
 
 export default async function ProjectDescription() {
-  const kpis = await fetchKPIs(KPIS_YEAR);
-
   return (
     <main className='mx-auto max-w-screen-xl px-6 py-20'>
       <article>
@@ -49,41 +46,11 @@ export default async function ProjectDescription() {
               <ArrowRight />
             </Link>
           </div>
-          <div className='grid grid-cols-1 place-content-center gap-10 pb-20 xl:grid-cols-2'>
-            <ChiffreCle
-              className='rotate-[3deg] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)]'
-              value={`${kpis.publishedSubventionsPercentage} %`}
-              description='des subventions en montant sont publiées.'
-            />
-            <ChiffreCle
-              value={formatNumber(kpis.communitiesTotalCount)}
-              description='collectivités recensées sur le site.'
-            />
-            <ChiffreCle
-              value={formatCompactPrice(kpis.subventionsTotalBudget)}
-              description='de budget total de subventions dans les collectivités.'
-            />
-            <ChiffreCle
-              value={`${kpis.communitiesGoodScoresPercentage} %`}
-              description='des collectivités ont un score A ou B.'
-            />
-          </div>
+          <Suspense fallback={<Loading />}>
+            <KPIs />
+          </Suspense>
         </div>
       </article>
     </main>
-  );
-}
-
-type ChiffreCleProps = {
-  value: string | number;
-  description: string;
-} & HTMLAttributes<HTMLDivElement>;
-
-function ChiffreCle({ value, description, className, ...restProps }: ChiffreCleProps) {
-  return (
-    <div className={cn('h-48 content-center rounded border px-6', className)} {...restProps}>
-      <p className='pb-4 text-2xl font-bold'>{value}</p>
-      <p>{description}</p>
-    </div>
   );
 }
