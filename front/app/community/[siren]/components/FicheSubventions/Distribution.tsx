@@ -20,7 +20,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
 
   const { ref: treemapRef, downloadSVG: downloadSVGTreemap } = useDownloadSVG();
 
-  function handleDownloadChart() {
+  function handleClickDownloadChart() {
     downloadSVGTreemap({ fileName: 'treemap-subventions-by-sector' });
   }
   function handleClickDownloadData() {
@@ -43,7 +43,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
           <DownloadSelector
             onClickDownloadData={handleClickDownloadData}
-            onClickDownloadChart={isTableDisplayed ? undefined : handleDownloadChart}
+            onClickDownloadChart={isTableDisplayed ? undefined : handleClickDownloadChart}
           />
         </div>
       </div>
