@@ -5,6 +5,7 @@ import { useState } from 'react';
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { downloadMarchesPublicsByCPV2CSV } from '@/utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
+import { useDownloadSVG } from '@/utils/hooks/useDownloadSVG';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
@@ -17,8 +18,13 @@ export default function Distribution({ siren, availableYears }: DistributionProp
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
-  function handleDownloadData() {
+  const { ref: treemapRef, downloadSVG: downloadSVGTreemap } = useDownloadSVG();
+
+  function handleClickDownloadData() {
     downloadMarchesPublicsByCPV2CSV(siren, selectedYear === 'All' ? null : selectedYear);
+  }
+  function handleClickDownloadChart() {
+    downloadSVGTreemap({ fileName: 'treemap-marches-publics-by-sector' });
   }
 
   return (
@@ -35,13 +41,16 @@ export default function Distribution({ siren, availableYears }: DistributionProp
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector onClickDownloadData={handleDownloadData} />
+          <DownloadSelector
+            onClickDownloadData={handleClickDownloadData}
+            onClickDownloadChart={isTableDisplayed ? undefined : handleClickDownloadChart}
+          />
         </div>
       </div>
       {isTableDisplayed ? (
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
       ) : (
-        <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
+        <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} svgRef={treemapRef} />
       )}
     </>
   );
