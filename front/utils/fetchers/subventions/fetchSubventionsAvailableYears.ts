@@ -19,8 +19,6 @@ function createSQLQueryParams(siren: string): [string, (string | number)[]] {
 
 /**
  * Fetch available years of subventions of a community (SSR)
- * @param query
- * @param limit
  */
 export async function fetchSubventionsAvailableYears(siren: string): Promise<number[]> {
   const params = createSQLQueryParams(siren);
