@@ -13,6 +13,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { ErrorFetching } from '../../../../../components/ui/ErrorFetching';
 import { CHART_HEIGHT } from '../constants';
 
 type SubventionTrendsStackedBarChartProps = {
@@ -22,8 +23,12 @@ type SubventionTrendsStackedBarChartProps = {
 export function SubventionyearlyCountsChart({ siren }: SubventionTrendsStackedBarChartProps) {
   const { data, isPending, isError } = useSubventionYearlyCounts(siren);
 
-  if (isPending || isError) {
+  if (isPending) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
+  }
+
+  if (isError) {
+    return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
   }
 
   return <BarChart data={data} />;

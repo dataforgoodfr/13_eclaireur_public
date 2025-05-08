@@ -13,6 +13,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { ErrorFetching } from '../../../../../components/ui/ErrorFetching';
 import { CHART_HEIGHT } from '../constants';
 
 type SubventionYearlyAmountsChartProps = {
@@ -22,8 +23,12 @@ type SubventionYearlyAmountsChartProps = {
 export function SubventionYearlyAmountsChart({ siren }: SubventionYearlyAmountsChartProps) {
   const { data, isPending, isError } = useSubventionYearlyAmounts(siren);
 
-  if (isPending || isError) {
+  if (isPending) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
+  }
+
+  if (isError) {
+    return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
   }
 
   return <BarChart data={data} />;
