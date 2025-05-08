@@ -8,12 +8,13 @@ import { ArrowDownToLine } from 'lucide-react';
 
 type DownloadDropDownProps = {
   onDownloadData?: () => void;
-  onDownloadChart?: () => void;
+  onClickDownloadData?: () => void;
+  onClickDownloadChart?: () => void;
 };
 
 export default function DownloadDropDown({
-  onDownloadData,
-  onDownloadChart,
+  onClickDownloadData,
+  onClickDownloadChart,
 }: DownloadDropDownProps) {
   return (
     <DropdownMenu>
@@ -23,9 +24,11 @@ export default function DownloadDropDown({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={onDownloadData}>Télécharger les données</DropdownMenuItem>
-        {onDownloadChart && (
-          <DropdownMenuItem onClick={onDownloadChart}>Télécharger le graphique</DropdownMenuItem>
+        <DropdownMenuItem onClick={onClickDownloadData}>Télécharger les données</DropdownMenuItem>
+        {onClickDownloadChart && (
+          <DropdownMenuItem onClick={onClickDownloadChart}>
+            Télécharger le graphique
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

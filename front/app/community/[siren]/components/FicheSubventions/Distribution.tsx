@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
+import { downloadSubventionsByNafCSV } from '@/utils/fetchers/subventions/download/downloadSubventionsByNaf';
 import { useDownloadSVG } from '@/utils/hooks/useDownloadSVG';
 
 import { YearOption } from '../../types/interface';
@@ -22,6 +23,9 @@ export default function Distribution({ siren, availableYears }: DistributionProp
   function handleDownloadChart() {
     downloadSVGTreemap({ fileName: 'treemap-subventions-by-sector' });
   }
+  function handleClickDownloadData() {
+    downloadSubventionsByNafCSV(siren, selectedYear === 'All' ? null : selectedYear);
+  }
 
   return (
     <>
@@ -37,7 +41,10 @@ export default function Distribution({ siren, availableYears }: DistributionProp
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector onDownloadChart={isTableDisplayed ? undefined : handleDownloadChart} />
+          <DownloadSelector
+            onClickDownloadData={handleClickDownloadData}
+            onClickDownloadChart={isTableDisplayed ? undefined : handleDownloadChart}
+          />
         </div>
       </div>
       {isTableDisplayed ? (
