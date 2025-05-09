@@ -1,17 +1,18 @@
 import { Suspense } from 'react';
 
+import type { Metadata } from 'next';
+
 import Loading from '@/components/ui/Loading';
 
+import CommunitiesTableWithLoader from './components/CommunitiesTableWithLoader';
 import DownloadingButton from './components/DownloadingButton';
 import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
-import CommunitiesTableWithLoader from './components/CommunitiesTableWithLoader';
-import type { Metadata } from 'next';
-
 
 export const metadata: Metadata = {
   title: 'Recherche avancée',
-  description: 'Télécharger les données des collectivités sélectionnées par les filtres de recherche.',
+  description:
+    'Télécharger les données des collectivités sélectionnées par les filtres de recherche.',
 };
 
 export default function Page() {
@@ -31,5 +32,3 @@ export default function Page() {
     </div>
   );
 }
-
-
