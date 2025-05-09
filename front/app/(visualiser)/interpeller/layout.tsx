@@ -7,7 +7,7 @@ import InterpellateFAQ from '@/components/Interpellate/InterpellateFAQ';
 import { SelectedContactsProvider } from './Contexts/SelectedContactsContext';
 
 export const metadata: Metadata = {
-  title: 'Interpeller - Eclaireur Public',
+  title: 'Interpeller',
   description: '',
   // TODO - compléter description (facultatif)
 };
