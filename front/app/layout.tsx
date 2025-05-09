@@ -23,6 +23,10 @@ export const metadata: Metadata = {
     template: '%s | Éclaireur Public',
     default: 'Éclaireur Public',
   },
+  metadataBase: process.env.NEXT_PUBLIC_BASE_URL != null ? new URL(process.env.NEXT_PUBLIC_BASE_URL) : null,
+  alternates: {
+    canonical: './',
+  },
   description:
     'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
   robots: 'noindex, nofollow',
