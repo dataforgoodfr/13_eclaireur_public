@@ -7,7 +7,7 @@ import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
 import { parseNumber } from '@/utils/utils';
 
-import { DEFAULT_PAGE } from './usePaginationParams';
+import { DEFAULT_PAGE } from '../app/advanced-search/hooks/usePaginationParams';
 
 type Filters = Partial<Pick<Community, 'type' | 'population' | 'mp_score' | 'subventions_score'>>;
 

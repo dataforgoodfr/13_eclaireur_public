@@ -39,7 +39,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <>
       <FicheHeader community={community} />
-      <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
+      <div className='mx-auto flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
         <Suspense fallback={<FicheIdentiteSkeleton />}>
           <FicheIdentite community={community} />
         </Suspense>

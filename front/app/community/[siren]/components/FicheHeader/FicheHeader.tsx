@@ -20,20 +20,22 @@ export function FicheHeader({ community }: FicheHeaderProps) {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed z-40 flex h-[140px] w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
-      <GoBack />
-      <div className='flex flex-1 justify-center'>
-        <div className='w-fit text-center'>
-          <div className='grid min-w-0 grid-cols-3 gap-2'>
-            <p className='col-span-2 text-xl font-bold'>{title}</p>
-            <div>
-              <CopyUrlButton label='Partager la fiche' />
+    <div className='z-40 w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
+      <div className='flex'>
+        <GoBack />
+        <div className='flex flex-1 justify-center'>
+          <div className='w-fit text-center'>
+            <div className='grid min-w-0 grid-cols-3 gap-2'>
+              <p className='col-span-2 text-xl font-bold'>{title}</p>
+              <div>
+                <CopyUrlButton label='Partager la fiche' />
+              </div>
             </div>
+            <p className='mt-6'>{descriptionText}</p>
           </div>
-          <p className='mt-6'>{descriptionText}</p>
         </div>
+        <FicheComparisonInput community={community} />
       </div>
-      <FicheComparisonInput community={community} />
     </div>
   );
 }
