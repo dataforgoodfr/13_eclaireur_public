@@ -1,14 +1,13 @@
-'use client'
+'use client';
 
+import Loading from '@/components/ui/Loading';
 import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
 
-import { AdvancedSearchTable } from './AdvanceSearchTable';
-import { NoResults } from './NoResults';
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
-import Loading from '@/components/ui/Loading';
-
+import { AdvancedSearchTable } from './AdvanceSearchTable';
+import { NoResults } from './NoResults';
 
 export default function CommunitiesTableWithLoader() {
   const { filters } = useFiltersParams();

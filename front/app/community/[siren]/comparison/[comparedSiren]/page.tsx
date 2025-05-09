@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-
 import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
@@ -11,9 +10,7 @@ import { Header } from './Header/Header';
 
 type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
 
-export async function generateMetadata(
-  { params }: PageProps,
-): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const siren = (await params).siren;
   const siren2 = (await params).comparedSiren;
   const community = await getCommunity(siren);
