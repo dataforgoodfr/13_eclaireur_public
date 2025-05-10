@@ -21,13 +21,16 @@ import { CHART_HEIGHT } from '../constants';
 type MarchesPublicsTableProps = {
   siren: string;
   year: YearOption;
+  paginationProps: ReturnType<typeof usePagination>;
 };
 
 const MAX_ROW_PER_PAGE = 10;
 
-export default function MarchesPublicsTable({ siren, year }: MarchesPublicsTableProps) {
-  const paginationProps = usePagination();
-
+export default function MarchesPublicsTable({
+  siren,
+  year,
+  paginationProps,
+}: MarchesPublicsTableProps) {
   const { data, isPending, isError } = useMarchesPublicsPaginated(
     siren,
     year === 'All' ? null : year,
@@ -97,7 +100,7 @@ export function Table({ rows }: Table) {
       </TableHeader>
       <TableBody>
         {rows.map(({ id, name, object, amount, year }) => (
-          <TableRow key={id}>
+          <TableRow key={id + name}>
             <TableCell className='space-x-1'>
               <span className='py-.5 rounded-md bg-neutral-200 px-2'>{name}</span>
             </TableCell>

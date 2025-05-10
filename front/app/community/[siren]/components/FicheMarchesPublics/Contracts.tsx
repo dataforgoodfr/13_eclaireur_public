@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
+import { usePagination } from '@/utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
 import MarchesPublicsTable from './MarchesPublicsTable';
@@ -15,6 +16,12 @@ type ContractsProps = {
 
 export default function Contracts({ siren, availableYears }: ContractsProps) {
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const paginationProps = usePagination();
+
+  function handleSelectedYear(option: YearOption) {
+    setSelectedYear(option);
+    paginationProps.onPageChange(1);
+  }
 
   return (
     <>
@@ -23,11 +30,11 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
           <h3 className='py-2 text-xl'>Classement par tailles de contrats</h3>
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={setSelectedYear} />
+          <YearSelector years={availableYears} onSelect={handleSelectedYear} />
           <DownloadSelector />
         </div>
       </div>
-      <MarchesPublicsTable siren={siren} year={selectedYear} />
+      <MarchesPublicsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
     </>
   );
 }
