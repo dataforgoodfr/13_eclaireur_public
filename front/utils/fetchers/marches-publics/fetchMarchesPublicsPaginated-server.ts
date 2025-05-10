@@ -16,7 +16,11 @@ function createSQLQueryParams(
 
   let query = `
     SELECT 
-      *,
+      id, 
+      objet, 
+      montant, 
+      annee_notification,
+      ARRAY_AGG(titulaire_denomination_sociale) AS titulaire_names,
       count(*) OVER()::integer AS total_row_count
     FROM ${TABLE_NAME}
     WHERE acheteur_id = $1`;
@@ -27,6 +31,11 @@ function createSQLQueryParams(
   }
 
   query += `
+    GROUP BY 
+      id, 
+      objet, 
+      montant,
+      annee_notification
     ORDER BY ${by} DESC
     `;
 
@@ -34,6 +43,8 @@ function createSQLQueryParams(
 
   query += ` LIMIT $${values.length + 1} OFFSET ($${values.length + 2} - 1) * $${values.length + 1}`;
   values.push(...[limit, page]);
+
+  console.log(query);
 
   return [query, values];
 }
@@ -52,6 +63,8 @@ export async function fetchMarchesPublicsPaginated(
 ): Promise<PaginatedMarchePublic[]> {
   const params = createSQLQueryParams(siren, year, pagination, by);
   const rows = (await getQueryFromPool(...params)) as PaginatedMarchePublic[];
+
+  console.log(rows);
 
   return rows;
 }

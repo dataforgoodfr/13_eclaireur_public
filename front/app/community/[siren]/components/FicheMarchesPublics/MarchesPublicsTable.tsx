@@ -2,6 +2,7 @@
 
 import { WithPagination } from '@/components/Pagination';
 import Loading from '@/components/ui/Loading';
+import { Badge } from '@/components/ui/badge';
 import {
   Table as ShadCNTable,
   TableBody,
@@ -48,15 +49,13 @@ export default function MarchesPublicsTable({
     return <NoData />;
   }
 
-  const rows: Row[] = data.map(
-    ({ id, titulaire_denomination_sociale, objet, montant, annee_notification }) => ({
-      id,
-      name: titulaire_denomination_sociale,
-      object: objet,
-      amount: montant,
-      year: annee_notification,
-    }),
-  );
+  const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
+    id,
+    names: titulaire_names,
+    object: objet,
+    amount: montant,
+    year: annee_notification,
+  }));
 
   const totalPage = Math.ceil(data[0].total_row_count / MAX_ROW_PER_PAGE);
 
@@ -69,7 +68,7 @@ export default function MarchesPublicsTable({
 
 type Row = {
   id: string | number;
-  name: string;
+  names: string[];
   object: string;
   amount: number;
   year: number;
@@ -99,12 +98,16 @@ export function Table({ rows }: Table) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map(({ id, name, object, amount, year }) => (
-          <TableRow key={id + name}>
-            <TableCell className='space-x-1'>
-              <span className='py-.5 rounded-md bg-neutral-200 px-2'>{name}</span>
+        {rows.map(({ id, names, object, amount, year }) => (
+          <TableRow key={id}>
+            <TableCell>
+              {names.map((name) => (
+                <Badge key={name} className='m-1'>
+                  {name}
+                </Badge>
+              ))}
             </TableCell>
-            <TableCell className=''>{object}</TableCell>
+            <TableCell>{object}</TableCell>
             <TableCell className='text-right'>{formatAmount(amount)}</TableCell>
             <TableCell className='text-right'>{year}</TableCell>
           </TableRow>

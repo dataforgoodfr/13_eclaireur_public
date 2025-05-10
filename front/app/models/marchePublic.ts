@@ -61,4 +61,8 @@ export type MarchePublicSector = Paginated<
   }
 >;
 
-export type PaginatedMarchePublic = Paginated<MarchePublic>;
+export type PaginatedMarchePublic = Paginated<
+  Pick<MarchePublic, 'id' | 'objet' | 'montant' | 'annee_notification'>
+> & {
+  titulaire_names: string[];
+};
