@@ -1,3 +1,5 @@
+import { Paginated } from './pagination';
+
 export type Subvention = {
   /** Siren de la collectivite */
   id_attribuant: string;
@@ -70,7 +72,7 @@ export type SubventionV0 = {
   nombre_subventions: number;
 };
 
-export type SubventionSector = {
+export type SubventionSector = Paginated<{
   /** Using naf2 to represent the sector */
   naf2: string;
   label: string;
@@ -78,5 +80,4 @@ export type SubventionSector = {
   montant: number;
   /** Total of the community for a year */
   grand_total: number;
-  total_row_count: number;
-};
+}>;
