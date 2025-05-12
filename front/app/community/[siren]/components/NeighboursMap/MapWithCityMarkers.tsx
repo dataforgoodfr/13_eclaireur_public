@@ -69,6 +69,7 @@ export default function MapWithCityMarkers({ center, cities }: MapWithCityMarker
         longitude: center[1],
       }}
       mapStyle={MAP_STYLE_URL}
+      interactive={false}
       style={style}
     >
       {markers}
