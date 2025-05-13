@@ -95,6 +95,15 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
   return formatFrench(value, defaultOptions);
 }
 
+export function formatNumberInteger(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+    maximumFractionDigits: 0,
+    ...options,
+  } as const;
+
+  return formatFrench(value, defaultOptions);
+}
+
 export function formatFirstLetterToUppercase(str: string): string {
   if (!str?.trim()) return '';
   if (str.length === 1) return str.toUpperCase();
