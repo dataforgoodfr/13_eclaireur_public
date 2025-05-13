@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
+import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { usePagination } from '@/utils/hooks/usePagination';
 
@@ -31,7 +31,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={handleSelectedYear} />
-          <DownloadSelector />
+          <DownloadButton />
         </div>
       </div>
       <MarchesPublicsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
