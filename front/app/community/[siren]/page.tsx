@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
+import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
@@ -43,10 +44,14 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           <FicheIdentite community={community} />
         </Suspense>
         <Suspense fallback={<FicheMarchesPublicsSkeleton />}>
+          <ErrorBoundary>
             <FicheMarchesPublics siren={siren} />
+          </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<FicheSubventionsSkeleton />}>
+          <ErrorBoundary>
             <FicheSubventions siren={siren} />
+          </ErrorBoundary>
         </Suspense>
       </div>
     </>
