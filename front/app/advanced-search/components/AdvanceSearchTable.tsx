@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn, formatNumber, stringifyCommunityType } from '@/utils/utils';
+import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
 import { ArrowUpDown } from 'lucide-react';
 
 import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
@@ -26,14 +26,6 @@ type AdvancedSearchTableProps = {
 export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
   const { pagination, setPage } = usePaginationParams();
   const { order, setOrder } = useOrderParams();
-
-  function formatAmount(amount: number) {
-    return formatNumber(amount, {
-      notation: 'compact',
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
-    });
-  }
 
   function handleHeadClick(orderBy: AdvancedSearchOrder['by']) {
     setOrder({
@@ -90,9 +82,9 @@ export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
             <TableRow key={community.siren + community.type}>
               <TableCell className='font-medium'>{community.nom}</TableCell>
               <TableCell className='text-right'>{stringifyCommunityType(community.type)}</TableCell>
-              <TableCell className='text-right'>{formatAmount(community.population)}</TableCell>
+              <TableCell className='text-right'>{formatCompact(community.population)}</TableCell>
               <TableCell className='text-right'>
-                {formatAmount(community.subventions_budget)}
+                {formatCompact(community.subventions_budget)}
               </TableCell>
               <TableCell className='text-right'>{community.mp_score ?? '-'}</TableCell>
               <TableCell className='text-right'>{community.subventions_score ?? '-'}</TableCell>
