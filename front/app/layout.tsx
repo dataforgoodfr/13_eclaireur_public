@@ -25,7 +25,6 @@ export const metadata: Metadata = {
   },
   description:
     'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
-  robots: 'noindex, nofollow',
   keywords: [
     'Transparence financière',
     'Gestion des dépenses publiques',
@@ -57,12 +56,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='fr'>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <Navbar />
-          <div className='relative flex-grow pt-[80px]'>{children}</div>
+          <div className='relative pt-[80px]'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />

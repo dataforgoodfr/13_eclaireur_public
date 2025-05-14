@@ -11,10 +11,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FinancialAccounts(DatasetAggregator):
-    """
-    Dataset containing financial number of all french communities across multiple years.
-    """
-
     @classmethod
     def get_config_key(cls) -> str:
         return "financial_accounts"

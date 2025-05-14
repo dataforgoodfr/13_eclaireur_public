@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -8,7 +7,6 @@ from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     expand_json_columns,
     is_dayfirst,
-    normalize_commune_code,
     normalize_date,
     normalize_identifiant,
     normalize_montant,
@@ -228,23 +226,4 @@ class TestNormalizeMontant:
         df = pd.DataFrame({"amount": [-1000.0, -2000.50, -300]})
         expected = pd.DataFrame({"amount": [1000.0, 2000.50, 300.0]})
         result = normalize_montant(df, "amount")
-        pd.testing.assert_frame_equal(result, expected)
-
-
-class TestNormalizeCommuneCode:
-    def test_column_not_present(self):
-        df = pd.DataFrame({"other_col": [1, 2, 3]})
-        result = normalize_commune_code(df, "missing_col")
-        pd.testing.assert_frame_equal(result, df)
-
-    def test_float_column_with_nan(self):
-        df = pd.DataFrame({"commune_code": [1.0, 2.0, np.nan]})
-        result = normalize_commune_code(df, "commune_code")
-        expected = pd.DataFrame({"commune_code": ["00001", "00002", None]})
-        pd.testing.assert_frame_equal(result, expected)
-
-    def test_str_column_with_nan(self):
-        df = pd.DataFrame({"commune_code": ["1000", "52430", None]})
-        result = normalize_commune_code(df, "commune_code")
-        expected = pd.DataFrame({"commune_code": ["01000", "52430", None]})
         pd.testing.assert_frame_equal(result, expected)

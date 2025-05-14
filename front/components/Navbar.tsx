@@ -86,13 +86,11 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
 
 export default function Navbar() {
   return (
-    <div className='fixed z-50 flex h-[80px] w-full items-center justify-between bg-white px-10 shadow'>
+    <div className='fixed z-50 flex h-[80px] w-full flex-row items-center justify-between bg-primary-foreground px-10'>
       <Link className='mr-6' href='/'>
-        <h1 className='w-[100px] rounded bg-black px-2 py-1 font-bold uppercase text-white'>
-          Éclaireur Public
-        </h1>
+        <h1 className='text-lg font-bold'>Éclaireur Public</h1>
       </Link>
-      <NavigationMenu className='h-18 flex items-center py-2'>
+      <NavigationMenu className='flex h-16 items-center py-2'>
         {/* Desktop */}
         <NavigationMenuList className='max-md:hidden'>
           <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />

@@ -32,14 +32,11 @@ LOGGER = logging.getLogger(__name__)
 
 class TopicAggregator(DatasetAggregator):
     """
-    This class is responsible for loading and normalizing the subvention files.
-
-    As a DatasetAggregator subclass, each subvention candidate is downloaded and formatted individually.
-    All properly normalized files are concatenate in the end.
-
-    Given the wide variety of file formats, there are multiple steps to try to identify the columns of interest
-    and properly format them.
-    Files that are not properly read or formatted are logged into the errors.json file with the corresponding error.
+    This class is responsible for loading the datafiles from the files_in_scope dataframe.
+    It loads the schema of the topic, filters the readable files, loads the datafiles into dataframes, and normalizes the data according to the schema.
+    The main difference with DataFilesLoader is that it loads, saves and normalizes each dataset independently.
+    Each step (download, load, normalize) generates a local file that must be saved.
+    A given step on a given file must not be run if the output file already exists on disk.
     """
 
     def __init__(

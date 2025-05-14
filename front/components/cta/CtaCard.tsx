@@ -11,7 +11,14 @@ interface CtaCardProps {
   colorClassName?: string;
 }
 
-export default function CtaCard({ title, caption, image, buttonText, href, colorClassName }: CtaCardProps) {
+export default function CtaCard({
+  title,
+  caption,
+  image,
+  buttonText,
+  href,
+  colorClassName,
+}: CtaCardProps) {
   return (
     <div
       className={`box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md ${colorClassName}`}

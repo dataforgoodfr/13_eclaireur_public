@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
+import { formatFirstLetterToUppercase, formatCompactPrice } from '@/utils/utils';
 import * as d3 from 'd3';
 
-import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
-import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
+import { TooltipProps, TreeData } from '../../types/interface';
 import TreemapTooltip from './TreemapTooltip';
 
 function wrapText(text: string, maxWidth: number): string[] {
@@ -25,7 +24,6 @@ function wrapText(text: string, maxWidth: number): string[] {
     }
   }
   lines.push(currentLine);
-
   return lines;
 }
 
@@ -41,9 +39,7 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
-type TreemapProps = { data: TreeData };
-
-export default function Treemap({ data }: TreemapProps) {
+export default function Treemap({ data }: { data: TreeData }) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
     visible: false,
     x: 0,
@@ -54,7 +50,7 @@ export default function Treemap({ data }: TreemapProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
+  function handleOnMouseEnter(e: React.MouseEvent, leaf: any) {
     setTooltip({
       visible: true,
       x: e.clientX,
@@ -92,7 +88,7 @@ export default function Treemap({ data }: TreemapProps) {
     return () => observer.disconnect();
   }, []);
 
-  const height = CHART_HEIGHT;
+  const height = 600;
   const width = containerWidth || 1486;
 
   const hierarchy = d3
@@ -106,7 +102,7 @@ export default function Treemap({ data }: TreemapProps) {
   const colorMap = generateColorMap(leafNames);
 
   const allShapes = root.leaves().map((leaf) => (
-    <g key={leaf.data.id}>
+    <g key={leaf.id}>
       <rect
         x={leaf.x0}
         y={leaf.y0}
@@ -141,13 +137,11 @@ export default function Treemap({ data }: TreemapProps) {
           fill='white'
           className='pointer-events-none'
         >
-          {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map(
-            (line, i) => (
-              <tspan key={line + i} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
-                {line}
-              </tspan>
-            ),
-          )}
+          {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map((line, i) => (
+            <tspan key={line} x={leaf.x0 + 8} dy={i === 0 ? 0 : 14}>
+              {line}
+            </tspan>
+          ))}
         </text>
       )}
     </g>

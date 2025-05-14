@@ -10,22 +10,14 @@ export default {
   theme: {
   	extend: {
   		backgroundImage: {
-  			'homepage-header': 'url("/transparency.png")'
+  			'homepage-header': 'url("/bg-ep.jpg")'
   		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-          secondary: {
-            foreground: {
-              '1': 'var(--card-secondary-foreground-1)',
-              '2': 'var(--card-secondary-foreground-2)',
-              '3': 'var(--card-secondary-foreground-3)',
-              '4': 'var(--card-secondary-foreground-4)',
-            },
-          },
+  				foreground: 'hsl(var(--card-foreground))'
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',

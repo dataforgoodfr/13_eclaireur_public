@@ -13,10 +13,10 @@ export default async function ProjectDescription() {
   const subventionsTotalBudget = await fetchSubventionsTotalBudget(KPIS_YEAR);
 
   return (
-    <main className='mx-auto max-w-screen-xl px-6 py-20'>
+    <main className='px-20 py-16'>
       <article>
         <h2 className='mb-5 text-3xl font-bold uppercase'>Le projet</h2>
-        <div className='grid gap-12 md:grid-cols-2'>
+        <div className='grid gap-8 md:grid-cols-2'>
           <div>
             <div className='mb-3 pr-10 text-lg'>
               <p className='my-6 text-lg'>
@@ -50,10 +50,8 @@ export default async function ProjectDescription() {
               <ArrowRight />
             </Link>
           </div>
-          <div className='grid grid-cols-1 place-content-center gap-10 pb-20 xl:grid-cols-2'>
-            <div className='rotate-[3deg] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)]'>
-              <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
-            </div>
+          <div className='grid grid-cols-1 justify-items-center gap-4 xl:grid-cols-2 2xl:px-20'>
+            <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
             <ChiffreCle
               value={communitiesTotalCount}
               description='Collectivités recensées sur le site'
@@ -74,8 +72,8 @@ type ChiffreCleProps = {
 
 function ChiffreCle({ value, description }: ChiffreCleProps) {
   return (
-    <div className='h-48 content-center rounded border px-6'>
-      <p className='pb-4 text-2xl font-bold'>{value}</p>
+    <div className='h-48 w-64 content-center border px-6'>
+      <p className='text-2xl font-bold'>{value}</p>
       <p className=''>{description}</p>
     </div>
   );

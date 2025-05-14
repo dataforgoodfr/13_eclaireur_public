@@ -9,7 +9,6 @@ from back.scripts.utils.config import get_combined_filename, project_config
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     normalize_column_names,
-    normalize_commune_code,
     normalize_identifiant,
 )
 from back.scripts.utils.datagouv_api import DataGouvAPI
@@ -23,6 +22,7 @@ class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
+    It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
     @classmethod
@@ -126,12 +126,12 @@ class CommunitiesSelector:
             BaseLoader.loader_factory(
                 resource_url,
                 dtype={"code_insee": str},
-                columns=["code_insee", "superficie_km2", "code_postal"],
+                usecols=["code_insee", "superficie_km2"],
             )
             .load()
-            .pipe(normalize_commune_code, id_col="code_insee")
-            .pipe(normalize_commune_code, id_col="code_postal")
-            .drop_duplicates(subset=["code_insee"])
+            .drop_duplicates(subset=["code_insee"])[
+                ["code_insee", "superficie_km2", "code_postal"]
+            ]
         )
 
         LOGGER.info("Saving geometrics dataset to local cache")

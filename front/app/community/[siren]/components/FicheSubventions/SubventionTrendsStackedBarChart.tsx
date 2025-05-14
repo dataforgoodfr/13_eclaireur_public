@@ -10,8 +10,6 @@ import {
   YAxis,
 } from 'recharts';
 
-import { CHART_HEIGHT } from '../constants';
-
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const montantEntry = payload.find((entry: any) => entry.name === 'montant');
@@ -93,7 +91,7 @@ type ChartData = {
 export default function SubventionTrendsStackedBarChart({ data }: { data: ChartData[] }) {
   return (
     <div className='p-4'>
-      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+      <ResponsiveContainer width='100%' height={600}>
         <BarChart
           width={500}
           height={300}

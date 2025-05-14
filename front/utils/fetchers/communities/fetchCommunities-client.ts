@@ -17,12 +17,10 @@ export async function fetchCommunities(
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const limit = options?.limit;
-  const siren = options?.filters?.siren;
   const type = options?.filters?.type;
 
   const url = new URL(API_ROUTE, baseURL);
 
-  if (siren) url.searchParams.append('siren', siren);
   if (type) url.searchParams.append('type', type);
   if (!pagination && limit) url.searchParams.append('limit', limit.toString());
   if (pagination) {

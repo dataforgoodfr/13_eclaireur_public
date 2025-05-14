@@ -6,12 +6,12 @@ import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type SubventionsParams = {
   selectors?: (keyof Subvention)[];
-  filters?: Partial<Subvention>;
+  filters?: Partial<Pick<Subvention, 'attribuant_siren' | 'attribuant_type'>>;
   limit?: number;
   orderBy?: { direction: 'asc' | 'desc'; column: keyof Subvention };
 };
 
-const TABLE_NAME = DataTable.Subventions;
+const TABLE_NAME = DataTable.SubventionsStaging;
 
 /**
  * Create the sql query for the subventions
@@ -19,7 +19,7 @@ const TABLE_NAME = DataTable.Subventions;
  * @returns
  */
 export function createSQLQueryParams(options?: SubventionsParams) {
-  let values: (CommunityType | number | string | boolean)[] = [];
+  let values: (CommunityType | number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
   let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;

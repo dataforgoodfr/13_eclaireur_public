@@ -12,7 +12,7 @@ const FIRST_PAGE = 1;
 const MAX_PAGE_COUNT_ON_SIDES = 1;
 const MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE = 1;
 
-export type PaginationProps = {
+type PaginationProps = {
   totalPage: number;
   activePage: number;
   onPageChange: (page: number) => void;
@@ -40,6 +40,7 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
   const allPages = [...new Array(totalPage)].map((_, i) => i + FIRST_PAGE);
 
   const isCloseToLeftSide = activePage < MAX_PAGE_COUNT_ON_SIDES + 1;
+  const isCloseToRightSide = activePage > MAX_PAGE_COUNT_ON_SIDES - 1;
 
   const firstVisiblePages = allPages.slice(0, MAX_PAGE_COUNT_ON_SIDES);
 
@@ -50,7 +51,6 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
     ),
     Math.min(activePage + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE, totalPage - MAX_PAGE_COUNT_ON_SIDES),
   );
-
   const lastVisiblePages = allPages.slice(totalPage - MAX_PAGE_COUNT_ON_SIDES);
 
   return (

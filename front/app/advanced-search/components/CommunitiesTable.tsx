@@ -3,7 +3,6 @@
 import { PropsWithChildren } from 'react';
 
 import { AdvancedSearchCommunity } from '@/app/models/community';
-import { Pagination } from '@/components/Pagination';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -18,6 +17,7 @@ import { ArrowUpDown } from 'lucide-react';
 
 import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
+import { Pagination } from './Pagination';
 
 type CommunitiesTableProps = {
   communities: AdvancedSearchCommunity[];

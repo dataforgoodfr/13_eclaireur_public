@@ -39,29 +39,8 @@ class MarchesPublicsEnricher(BaseEnricher):
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
-        marches_pd = (
-            marches.to_pandas()
-            .pipe(cls.set_unique_mp_id)
-            .pipe(cls.set_unique_mp_titulaire_id)
-            .drop(columns=["id", "uid", "uuid"])
-            .pipe(cls.keep_last_modifications)
-            .apply(cls.appliquer_modifications, axis=1)
-            .pipe(cls.correction_types_colonnes_str, ["objet"])
-            .drop(columns=["modifications"])
-            .pipe(normalize_montant, "montant")
-            .pipe(normalize_date, "datePublicationDonnees")
-            .pipe(normalize_date, "dateNotification")
-            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
-            .pipe(cls._add_metadata)
-            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
-        )
-
-        return (
-            pl.from_pandas(marches_pd)
-            .pipe(cls.drop_source_duplicates)
-            .pipe(cls.drop_sous_traitance_duplicates)
-            .pipe(cls.generate_new_id)
-            .pipe(cls.forme_prix_enrich)
+        marches = (
+            marches.pipe(cls.forme_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
             .pipe(
                 cls.generic_json_column_enrich,
@@ -72,6 +51,21 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "technique", "technique")
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
+        )
+        marches_pd = (
+            marches.to_pandas()
+            .pipe(normalize_montant, "montant")
+            .pipe(normalize_montant, "montant")
+            .pipe(normalize_date, "datePublicationDonnees")
+            .pipe(normalize_date, "dateNotification")
+            .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
+            .pipe(cls._add_metadata)
+            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
+        )
+        # do stuff with sirene
+
+        return (
+            pl.from_pandas(marches_pd)
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
@@ -87,50 +81,6 @@ class MarchesPublicsEnricher(BaseEnricher):
             .otherwise(pl.col("formePrix"))
             .alias("forme_prix")
         ).drop("formePrix")
-
-    @staticmethod
-    def safe_typePrix_json_load(x):
-        try:
-            parsed = json.loads(x)
-            if isinstance(parsed, list) and parsed:
-                return parsed[0]
-            elif isinstance(parsed, dict):
-                type_prix = parsed.get("typePrix")
-                if isinstance(type_prix, list) and type_prix:
-                    return type_prix[0]
-                if isinstance(type_prix, str):
-                    return type_prix
-            return None
-        except (json.JSONDecodeError, TypeError):
-            return
-
-    @staticmethod
-    def set_unique_mp_id(marches: pd.DataFrame) -> pd.DataFrame:
-        """
-        Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
-
-        Le but de cette fonction est de créer un id unique par MP, pour ensuite créer un id plus propre par MP.
-        """
-        marches["id_mp"] = (
-            marches[["id", "uid", "uuid", "dateNotification", "codeCPV"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
-        )
-        return marches
-
-    @staticmethod
-    def set_unique_mp_titulaire_id(marches: pd.DataFrame) -> pd.DataFrame:
-        """
-        Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
-
-        Le but de cette fonction est de créer un id unique par MP et titulaire, pour ensuite dédoublonner par ce nouvel id.
-        """
-        marches["id_mp_titulaire"] = (
-            marches[["id_mp", "titulaire_id"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
-        )
-        return marches
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -369,143 +319,4 @@ class MarchesPublicsEnricher(BaseEnricher):
                 return_dtype=pl.Utf8,
             )
             .alias(col_name)
-        )
-
-    @staticmethod
-    def drop_source_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
-        """
-        Certains MP identiques viennent de sources différentes
-        On enlève un des doublons
-        """
-
-        # Dataset of sources by frequency to build priority when deduplicating
-        source_priority = (
-            marches["source"]
-            .value_counts(sort=True)
-            .with_row_index(name="priority")
-            .drop("count")
-        )
-
-        return (
-            marches.join(source_priority, on="source", how="left")
-            .with_columns(
-                pl.col("priority")
-                .fill_null(999)
-                .rank("dense", descending=False)
-                .over("id_mp_titulaire")
-                .alias("rank")
-            )
-            .with_columns((pl.col("rank") > 1).cast(pl.Int8).alias("is_duplicate"))
-            .filter(pl.col("is_duplicate") == 0)
-            .drop(["is_duplicate", "rank", "priority"])
-        )
-
-    def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
-        """
-        Certains MP sont en doublons mais avec la colonne actesSousTraitance différente.
-        Cette fonction sert à dédoublonner ces cas.
-        On va notamment garder la ligne avec le plus d'actes de sous traitance
-        """
-
-        return marches.sort(["titulaire_id", "objet", "actesSousTraitance"]).unique(
-            subset=["id_mp_titulaire", "titulaire_id", "objet"], keep="first"
-        )
-
-    @staticmethod
-    def tri_modification(mod):
-        # Tri personnalisé sans convertir les id entiers en chaînes
-        return (
-            mod.get("datePublicationDonneesModification")
-            or mod.get("dateNotificationModification")
-            or mod.get("dateSignatureModification")
-            or mod.get("updated_at")
-            or (mod.get("id") if isinstance(mod.get("id"), str) else "")
-        )
-
-    @staticmethod
-    def appliquer_modifications(row):
-        try:
-            modifications_raw = row["modifications"]
-            modifications_list = json.loads(modifications_raw)
-        except (json.JSONDecodeError, TypeError):
-            return row  # on ignore si la valeur est vide ou mal formée
-
-        # Si ce n'est pas une liste (ex: un dict direct ou None), on ignore
-        if not isinstance(modifications_list, list):
-            # modifications_invalides += 1  # 61 lignes invalides !!!  donc potentiellement non traitées mais je ne sais pas vraiment ce qui bloque
-            return row
-
-        # Extraire proprement les dicts de modification (cas [{"modification": {...}}, ...])
-        #  En l'adaptant, potentiellement réutilisable pour l'extraction des listes de dicts des titulaires
-        modifs = [
-            mod["modification"] if isinstance(mod, dict) and "modification" in mod else mod
-            for mod in modifications_list
-        ]
-
-        modifs_sorted = sorted(modifs, key=MarchesPublicsEnricher.tri_modification)
-
-        for modif in modifs_sorted:
-            for key, value in modif.items():
-                # Gestion spéciale de 'id'
-                if key == "id":
-                    if isinstance(value, int):
-                        continue  # On ignore les id techniques
-                    elif isinstance(value, str):
-                        row["id"] = value  # Appliquer le vrai identifiant
-                        continue
-
-                # Normalisation du nom de la clé
-                base_key = (
-                    key.replace("Modification", "") if key.endswith("Modification") else key
-                )
-
-                if base_key in row:
-                    try:
-                        if isinstance(row[base_key], (float, int)):
-                            row[base_key] = float(value)
-                        else:
-                            row[base_key] = value
-                    except (ValueError, TypeError):
-                        row[base_key] = value
-
-        return row
-
-    @staticmethod
-    def correction_types_colonnes_str(
-        marches: pd.DataFrame, colonnes_a_convertir_en_str: list
-    ) -> pd.DataFrame:
-        # Corrige les types des colonnes avant la conversion en polars
-        marches[colonnes_a_convertir_en_str] = (
-            marches[colonnes_a_convertir_en_str].astype(str).replace("nan", "")
-        )
-        return marches
-
-    @staticmethod
-    def keep_last_modifications(marches: pd.DataFrame) -> pd.DataFrame:
-        """
-        A chaque modification d'un MP, une nouvelle ligne avec les infos initiales du MP est ajoutée au dataset et le champs "modifications" est incrémenté avec les nouvelles modifications.
-        Cela produit autant de doublons que d'étapes de modifications du MP dans le dataset
-        Cette fonction ne conserve un MP qu'avec sa dernière version de modifications
-        En théorie, c'est pour chaque MP, la ligne avec le champs "modifications" le plus rempli.
-        """
-
-        return (
-            marches.assign(modifications_length=marches["modifications"].fillna("").str.len())
-            .sort_values(["id_mp_titulaire", "modifications_length"], ascending=False)
-            .drop_duplicates("id_mp_titulaire")
-            .drop(columns="modifications_length")
-        )
-
-    @staticmethod
-    def generate_new_id(marches: pl.DataFrame) -> pl.DataFrame:
-        # Génère un nouvel id unique, entier, pour chaque MP
-
-        id_mapping = (
-            marches.select("id_mp")
-            .unique()
-            .with_row_count(name="id")  # génère l'entier par valeur unique
-        )
-
-        return marches.join(id_mapping, on="id_mp", how="left").drop(
-            ["id_mp", "id_mp_titulaire"]
         )

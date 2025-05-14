@@ -3,16 +3,13 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
-
 from back.scripts.datasets.communities_contacts import CommunitiesContact
+from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.enrichment.communities_enricher import CommunitiesEnricher
 from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
-from back.scripts.enrichment.bareme_enricher import BaremeEnricher
-from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
-
 from back.scripts.utils.psql_connector import PSQLConnector
 
 
@@ -26,20 +23,18 @@ class DataWarehouseWorkflow:
             "collectivites": CommunitiesEnricher.get_output_path(config),
             "marches_publics": MarchesPublicsEnricher.get_output_path(config),
             "subventions": SubventionsEnricher.get_output_path(config),
-            "comptes_collectivites": FinancialEnricher.get_output_path(config),
+            "comptes_collectivites": FinancialAccounts.get_output_path(config),
             "elus": ElectedOfficialsEnricher.get_output_path(config),
             "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
             "communties_contacts": CommunitiesContact.get_output_path(config),
-            "bareme": BaremeEnricher.get_output_path(config),
         }
 
     def run(self) -> None:
         ElectedOfficialsEnricher.enrich(self._config)
-        FinancialEnricher.enrich(self._config)
         CommunitiesEnricher.enrich(self._config)
         SubventionsEnricher.enrich(self._config)
         MarchesPublicsEnricher.enrich(self._config)
-        BaremeEnricher.enrich(self._config)
+
         self._send_to_postgres()
 
     def _send_to_postgres(self):

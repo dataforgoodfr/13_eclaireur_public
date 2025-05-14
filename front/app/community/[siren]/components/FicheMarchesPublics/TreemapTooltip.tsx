@@ -1,6 +1,6 @@
 import { formatFirstLetterToUppercase, formatPrice } from '@/utils/utils';
 
-import { TooltipProps } from '../../app/community/[siren]/types/interface';
+import { TooltipProps } from '../../types/interface';
 
 export default function TreemapTooltip({ visible, x, y, name, value }: TooltipProps) {
   return (

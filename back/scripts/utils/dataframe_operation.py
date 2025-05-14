@@ -224,19 +224,6 @@ def normalize_montant(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
     return frame.assign(**{id_col: montant})
 
 
-def normalize_commune_code(frame: pd.DataFrame, id_col: str) -> pd.DataFrame:
-    if id_col not in frame.columns:
-        return frame
-    code = (
-        frame[id_col]
-        .astype(str)
-        .where(frame[id_col].notnull())
-        .str.replace(".0", "")
-        .str.zfill(5)
-    )
-    return frame.assign(**{id_col: code})
-
-
 def normalize_identifiant(
     frame: pd.DataFrame, id_col: str, format: IdentifierFormat = IdentifierFormat.SIRET
 ) -> pd.DataFrame:

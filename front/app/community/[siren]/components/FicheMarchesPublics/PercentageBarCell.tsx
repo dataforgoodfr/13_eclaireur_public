@@ -1,11 +1,6 @@
 import { TableCell } from '@/components/ui/table';
 
-type PercentageBarCellProps = {
-  /** Percentage value from 0 to 100 */
-  value: number;
-};
-
-export default function PercentageBarCell({ value }: PercentageBarCellProps) {
+export default function PercentageBarCell({ value }: { value: number }) {
   return (
     <TableCell>
       <div className='relative h-[14px] w-full rounded-md bg-gray-300'>

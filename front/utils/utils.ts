@@ -8,15 +8,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Create a url with the base url as a prefix
- * @param url
- * @returns
- */
-export function withBaseURL(url: string) {
-  return process.env.NEXT_PUBLIC_BASE_URL + url;
-}
-
 export function debounce<A = unknown, R = void>(
   fn: (args: A) => R,
   ms: number,
@@ -33,12 +24,6 @@ export function debounce<A = unknown, R = void>(
         resolve(fn(args));
       }, ms);
     });
-}
-
-export function roundNumber(value: number, decimalsCount = 2) {
-  const multiplier = Math.pow(10, decimalsCount);
-
-  return Math.round(value * multiplier) / multiplier;
 }
 
 export function parseNumber(value: string | null) {
@@ -61,7 +46,7 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
     notation: 'compact',
     currency: 'EUR',
     style: 'currency',
-    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
     ...options,
   } as const;
 
@@ -72,7 +57,7 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
   const defaultOptions = {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
     ...options,
   } as const;
   return formatFrench(value, defaultOptions);
@@ -80,18 +65,18 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
 
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
-    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
     ...options,
   } as const;
+  
+  return formatFrench(value, defaultOptions)};
 
-  return formatFrench(value, defaultOptions);
-}
 
 export function formatFirstLetterToUppercase(str: string): string {
   if (!str?.trim()) return '';
   if (str.length === 1) return str.toUpperCase();
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+};
 
 export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.CA) return `Communauté d'agglomeration`;

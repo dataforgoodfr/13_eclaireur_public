@@ -8,7 +8,7 @@ type FicheCardProps = PropsWithChildren<{
 
 export function FicheCard({ subtitle, children }: FicheCardProps) {
   return (
-    <Card>
+    <Card className='mx-auto max-w-screen-2xl'>
       <CardHeader>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>

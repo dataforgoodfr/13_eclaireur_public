@@ -35,12 +35,6 @@ READ_COLUMNS = {
 
 
 class OfglLoader(DatasetAggregator):
-    """
-    This dataset contains financial aggregation of frechn communities.
-    Each type of communities has its own file and format.
-    This dataset is mostly used later on to make the link between insee code and siren of the community.
-    """
-
     INSEE_COL = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
 
     @classmethod

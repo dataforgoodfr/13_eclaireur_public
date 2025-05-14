@@ -4,30 +4,27 @@ import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
 
-
-
 import { useRouter } from 'next/navigation';
-
-
 
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
 import { loadContacts } from '@/utils/localStorage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
-
-
 import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
-
-
-
-
 
 export type InterpellateFormProps = {
   missingData: unknown;

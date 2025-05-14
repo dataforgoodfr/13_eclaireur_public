@@ -1,9 +1,7 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
-import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 
-import { FicheCard } from '../FicheCard';
 import Contract from './Contract';
 import Distribution from './Distribution';
 import Trends from './Trends';
@@ -27,12 +25,17 @@ async function getMarchesPublics(siren: string) {
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  const availableYears = await fetchMarchesPublicsAvailableYears(siren);
+  const test = await fetchMarchesPublics({
+    filters: { acheteur_siren: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 100,
+    orderBy: { direction: 'asc', column: 'montant' },
+  });
 
   return (
-    <FicheCard>
+    <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
-      {marchesPublics.length > 0 ? (
+      {[''].length > 0 ? (
         <Tabs defaultValue={tabs.trends}>
           <TabsList>
             <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>
@@ -44,7 +47,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Trends data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
-            <Distribution availableYears={availableYears} siren={siren} />
+            <Distribution data={marchesPublics} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
@@ -58,6 +61,6 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
       ) : (
         <NoData />
       )}
-    </FicheCard>
+    </div>
   );
 }

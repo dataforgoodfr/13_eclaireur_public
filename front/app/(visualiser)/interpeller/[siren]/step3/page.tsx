@@ -14,10 +14,7 @@ export default async function InterpellateStep3({
         <Stepper currentStep={3} />
 
         <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Envoyez votre message</h2>
-        <InterpellateForm
-          missingData=''
-          communityParam={siren}
-        />
+        <InterpellateForm missingData='' communityParam={siren} />
       </article>
     </section>
   );

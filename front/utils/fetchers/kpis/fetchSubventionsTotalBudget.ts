@@ -9,7 +9,7 @@ export function createSQLQueryParams(year: number): [string, (string | number)[]
   const querySQL = `
     SELECT SUM(subventions)
     FROM ${TABLE_NAME}
-    WHERE annee = $1
+    WHERE LEFT(exercice, 4) = $1
   `;
 
   return [querySQL, values];

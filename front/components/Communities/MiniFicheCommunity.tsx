@@ -33,7 +33,7 @@ export const DescDisplay = async ({ communitySiren }: { communitySiren: string }
   } else if (type === 'REG') {
     return ``;
   }
-    // TODO : handle thess cases
+  // TODO : handle thess cases
   // Metropole = 'MET',
   // /** Collectivite territoriale unique (ex: Corse, Martinique, Guyane) */
   // CTU = 'CTU',
@@ -54,7 +54,9 @@ export default async function MiniFicheCommunity({ communitySiren }: { community
       <article>
         <h3 className='text-2xl font-bold'>{nom}</h3>
         <p>{categorie}</p>
-        <p><DescDisplay communitySiren={communitySiren} /></p>
+        <p>
+          <DescDisplay communitySiren={communitySiren} />
+        </p>
         <p>{population} habitants</p>
       </article>
     </div>

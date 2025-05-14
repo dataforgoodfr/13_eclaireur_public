@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { withBaseURL } from '@/utils/utils';
-
 const linkClassName =
   'flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800';
 
@@ -39,7 +37,7 @@ export default function Footer() {
                 className='relative -my-2 inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 hover:bg-neutral-300'
               >
                 <img
-                  src={withBaseURL('dataforgoodLogo.png')}
+                  src='dataforgoodLogo.png'
                   alt='logo de Data For Good'
                   className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
                 />
@@ -52,7 +50,7 @@ export default function Footer() {
                 className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
               >
                 <img
-                  src={withBaseURL('anticorLogo.png')}
+                  src='anticorLogo.png'
                   alt='logo de Anticor'
                   className='absolute top-1/2 h-4 -translate-y-1/2'
                 />
@@ -65,7 +63,7 @@ export default function Footer() {
                 className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
               >
                 <img
-                  src={withBaseURL('transparencyLogo.png')}
+                  src='transparencyLogo.png'
                   alt='logo de Transparency International'
                   className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
                 />
