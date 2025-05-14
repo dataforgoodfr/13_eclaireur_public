@@ -21,6 +21,7 @@ export async function POST(request: Request) {
   if (success && data) {
     ({ firstname, lastname, email, emails, object, message } = data);
   }
+  console.log('message !!!! => ', message);
 
   // check out Zod's .flatten() method for an easier way to process errors
   let zodErrors = {};
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
     to: process.env.MY_EMAIL,
     cc: process.env.CC_EMAIL_MESSAGE,
     subject: `|| ECLAIREUR PUBLIC || Message de ${firstname} ${lastname} (${email})`,
+    // html: typeof message === 'string' ? message : '',
     html: message,
   };
 

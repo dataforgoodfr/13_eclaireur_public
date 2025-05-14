@@ -19,7 +19,12 @@ export default function CtaCard({ title, caption, image, buttonText, href, color
       <h3 className='text-3xl font-bold'>{title}</h3>
       <p>{caption}</p>
       <div className='relative aspect-square w-full'>
-        <Image className='rounded-sm' fill={true} src={image} alt='Card illustration image' />
+        <Image
+          className='rounded-sm transition delay-150 duration-300 ease-in-out hover:scale-125'
+          fill={true}
+          src={image}
+          alt='Card illustration image'
+        />
       </div>
       <a
         href={href}

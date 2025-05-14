@@ -8,9 +8,9 @@ export const InterpellateFormSchema = z.object({
     message: 'Veuillez saisir votre nom de famille, celui-ci doit contenir au moins 2 caractères',
   }),
   email: z.string().email({
-    message: 'VEuillez saisir une adresse e-mail valide',
+    message: 'Veuillez saisir une adresse e-mail valide',
   }),
-  emails: z.string().email(),
+  emails: z.string(),
   object: z.string(),
   message: z.any(),
 });
