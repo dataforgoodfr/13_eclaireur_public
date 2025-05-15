@@ -18,7 +18,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
 
   const contractNumberTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
-      const year = item.datenotification_annee;
+      const year = item.annee_notification;
 
       if (!acc[year]) {
         acc[year] = { annee: year, yValue: 0 };
@@ -31,7 +31,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
 
   const contractAmountTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
-      const year = item.datenotification_annee;
+      const year = item.annee_notification;
 
       if (!acc[year]) {
         acc[year] = { annee: year, yValue: 0 };
