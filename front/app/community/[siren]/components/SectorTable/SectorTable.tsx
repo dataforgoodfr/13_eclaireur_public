@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCompact, formatFirstLetterToUppercase, formatNumber } from '@/utils/utils';
+import { formatCompact, formatFirstLetterToUppercase, formatNumberInteger } from '@/utils/utils';
 
 import PercentageBarCell from './PercentageBarCell';
 
@@ -29,8 +29,8 @@ export default function SectorTable({ data }: SectorTableProps) {
         <TableRow>
           <TableHead className='w-[400px]'>Secteur</TableHead>
           <TableHead></TableHead>
-          <TableHead className='w-[100px] text-right'>Montant (€)</TableHead>
           <TableHead className='w-[80px] text-right'>Part (%)</TableHead>
+          <TableHead className='w-[100px] text-right'>Montant (€)</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -38,8 +38,8 @@ export default function SectorTable({ data }: SectorTableProps) {
           <TableRow key={id}>
             <TableCell className='font-medium'>{formatFirstLetterToUppercase(name)}</TableCell>
             <PercentageBarCell value={percentage * 100} />
+            <TableCell className='text-right'>{formatNumberInteger(percentage * 100)}</TableCell>
             <TableCell className='text-right'>{formatCompact(amount)}</TableCell>
-            <TableCell className='text-right'>{formatNumber(percentage)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

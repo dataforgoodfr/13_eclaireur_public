@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
