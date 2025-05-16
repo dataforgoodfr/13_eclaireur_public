@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
 
 import { fetchKPIs } from '@/utils/fetchers/kpis/fetchKPIs';
-import { cn, formatCompactPrice, formatNumber } from '@/utils/utils';
+import { cn, formatCompactPrice, formatNumberInteger } from '@/utils/utils';
 
 const KPIS_YEAR = 2023;
 
@@ -16,7 +16,7 @@ export default async function KPIs() {
         description='des subventions en montant sont publiées.'
       />
       <ChiffreCle
-        value={formatNumber(kpis.communitiesTotalCount)}
+        value={formatNumberInteger(kpis.communitiesTotalCount)}
         description='collectivités recensées sur le site.'
       />
       <ChiffreCle
