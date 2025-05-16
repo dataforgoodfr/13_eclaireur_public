@@ -15,7 +15,8 @@ type ContractsProps = {
 };
 
 export default function Contracts({ siren, availableYears }: ContractsProps) {
-  const defaultYear : number | 'All' = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
+  const defaultYear: number | 'All' =
+    availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const paginationProps = usePagination();
 
