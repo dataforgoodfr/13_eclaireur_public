@@ -21,7 +21,7 @@ export function Header({ community, community2 }: FicheHeaderProps) {
       <div className='flex-1 text-center'>
         <p className='text-xl font-bold'>{title}</p>
         <p className='mb-4 text-gray-500'>{lastUpdateText}</p>
-        <p>{descriptionText }</p>
+        <p>{descriptionText}</p>
       </div>
     </div>
   );

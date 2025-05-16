@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import InterpellateFAQ from '@/components/Interpellate/InterpellateFAQ';
 
 export const metadata: Metadata = {
-  title: 'Interpeller - Eclaireur Public',
+  title: 'Interpeller',
   description: '',
   // TODO - compléter description (facultatif)
 };
