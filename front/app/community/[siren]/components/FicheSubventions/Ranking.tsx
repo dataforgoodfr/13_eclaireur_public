@@ -72,51 +72,51 @@ export default function Ranking({
           <DownloadButton />
         </div>
       </div>
-        <Table className='min-h-[600px]'>
-          <TableHeader>
-            <TableRow>
-              <TableHead className='w-[300px]'>Bénéficiaires</TableHead>
-              <TableHead className=''>Objet</TableHead>
-              <TableHead className='w-[140px] text-right'>Montant</TableHead>
-              <TableHead className='w-[140px] text-right'>Année</TableHead>
+      <Table className='min-h-[600px]'>
+        <TableHeader>
+          <TableRow>
+            <TableHead className='w-[300px]'>Bénéficiaires</TableHead>
+            <TableHead className=''>Objet</TableHead>
+            <TableHead className='w-[140px] text-right'>Montant</TableHead>
+            <TableHead className='w-[140px] text-right'>Année</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {topSubsData.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell className='font-medium'>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
+                  {item.nom_beneficiaire}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
+                  {formatSubventionObject(item.objet).map((item, index) => (
+                    <span key={index}>
+                      {index > 0 && ' - '}
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell className='text-right'>
+                {formatCompactPrice(parseFloat(item.montant))}
+              </TableCell>
+              <TableCell className='text-right'>{item.annee}</TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {topSubsData.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className='font-medium'>
-                  <div className='line-clamp-1 overflow-hidden text-ellipsis'>
-                    {item.nom_beneficiaire}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className='line-clamp-1 overflow-hidden text-ellipsis'>
-                    {formatSubventionObject(item.objet).map((item, index) => (
-                      <span key={index}>
-                        {index > 0 && ' - '}
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell className='text-right'>
-                  {formatCompactPrice(parseFloat(item.montant))}
-                </TableCell>
-                <TableCell className='text-right'>{item.annee}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        {filteredData.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed && (
-          <div className='flex items-center justify-center pt-6'>
-            <button
-              className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
-              onClick={() => setLinesDisplayed(linesDisplayed + 1)}
-            >
-              Voir plus
-            </button>
-          </div>
-        )}
+          ))}
+        </TableBody>
+      </Table>
+      {filteredData.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed && (
+        <div className='flex items-center justify-center pt-6'>
+          <button
+            className='rounded-md bg-neutral-600 px-3 py-1 text-neutral-100 hover:bg-neutral-800'
+            onClick={() => setLinesDisplayed(linesDisplayed + 1)}
+          >
+            Voir plus
+          </button>
+        </div>
+      )}
     </>
   );
 }
