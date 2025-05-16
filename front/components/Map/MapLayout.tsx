@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
 import FranceMap from './Map';
 import MapDataControls from './MapDataControls';
+
 
 export type ChoroplethDataSource = {
   name: string;
@@ -111,10 +112,17 @@ export const territories: Record<string, TerritoryData> = {
 export default function MapLayout() {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedDataSource, setSelectedDataSource] = useState<string>('mp_score');
-
+  const [viewState, setViewState] = useState<Partial<ViewState>>(
+    territories['metropole'].viewState
+  );
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
   const selectedChoroplethData = choroplethDataSource[selectedDataSource];
-
+  // Update viewState when selectedTerritory changes
+  useEffect(() => {
+    if (selectedTerritory && territories[selectedTerritory]) {
+      setViewState(territories[selectedTerritory].viewState);
+    }
+  }, [selectedTerritory]);
   return (
     <div className='flex min-h-screen w-full'>
       {/* Map: 2/3 width, plain white bg, no border */}
@@ -122,6 +130,8 @@ export default function MapLayout() {
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
+          viewState={viewState}
+          setViewState={setViewState}
         />
       </div>
       {/* Controls: 1/3 width, orange bg */}

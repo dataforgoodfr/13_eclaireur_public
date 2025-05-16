@@ -30,24 +30,26 @@ import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 import updateFeatureStates from './utils/updateFeatureState';
 
-interface TerritoryMapProps {
+interface MapProps {
   selectedTerritoryData: TerritoryData | undefined;
   selectedChoroplethData: ChoroplethDataSource;
+  viewState: Partial<ViewState>;
+  setViewState: (vs: Partial<ViewState>) => void;
 }
 
 export default function FranceMap({
-  selectedTerritoryData,
+   selectedTerritoryData,
   selectedChoroplethData,
-}: TerritoryMapProps) {
+  viewState,
+  setViewState,
+}: MapProps) {
   const mapRef = useRef<MapRef>(null);
 
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
   const [cursor, setCursor] = useState<string>('grab');
-  const [viewState, setViewState] = useState<Partial<ViewState>>(
-    selectedTerritoryData?.viewState || DEFAULT_VIEW_STATE,
-  );
+
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
 
   const regionsMaxZoom = selectedTerritoryData?.regionsMaxZoom || 6;
