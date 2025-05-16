@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar';
+import Footer from '@/app/components/Footer';
+import Navbar from '@/app/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 
 import Providers from './Providers';
@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   },
   description:
     'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
+  robots: 'noindex, nofollow',
   keywords: [
     'Transparence financière',
     'Gestion des dépenses publiques',
@@ -56,10 +57,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='fr'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
+      >
         <Providers>
           <Navbar />
-          <div className='relative pt-[80px] flex-grow'>{children}</div>
+          <div className='relative flex-grow pt-[80px]'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />

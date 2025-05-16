@@ -1,17 +1,13 @@
+import { Suspense } from 'react';
+
 import Link from 'next/link';
 
-import { fetchCommunitiesTotalCount } from '@/utils/fetchers/kpis/fetchCommunitiesTotalCount';
-import { fetchPublishedSubventionsTotal } from '@/utils/fetchers/kpis/fetchPublishedSubventionsTotal';
-import { fetchSubventionsTotalBudget } from '@/utils/fetchers/kpis/fetchSubventionsTotalBudget';
 import { ArrowRight } from 'lucide-react';
 
-const KPIS_YEAR = 2023;
+import Loading from '../../components/ui/Loading';
+import KPIs from './KPIs';
 
 export default async function ProjectDescription() {
-  const communitiesTotalCount = await fetchCommunitiesTotalCount();
-  const publishedSubventionsTotal = await fetchPublishedSubventionsTotal(KPIS_YEAR);
-  const subventionsTotalBudget = await fetchSubventionsTotalBudget(KPIS_YEAR);
-
   return (
     <main className='mx-auto max-w-screen-xl px-6 py-20'>
       <article>
@@ -50,33 +46,11 @@ export default async function ProjectDescription() {
               <ArrowRight />
             </Link>
           </div>
-          <div className='grid grid-cols-1 place-content-center gap-10 pb-20 xl:grid-cols-2'>
-            <div className='rotate-[3deg] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)]'>
-              <ChiffreCle value='0%' description='Des dépenses françaises sont publiées' />
-            </div>
-            <ChiffreCle
-              value={communitiesTotalCount}
-              description='Collectivités recensées sur le site'
-            />
-            <ChiffreCle value='XMd€' description='Budget total des collectivités' />
-            <ChiffreCle value='XXX' description='XXX' />
-          </div>
+          <Suspense fallback={<Loading />}>
+            <KPIs />
+          </Suspense>
         </div>
       </article>
     </main>
-  );
-}
-
-type ChiffreCleProps = {
-  value: string | number;
-  description: string;
-};
-
-function ChiffreCle({ value, description }: ChiffreCleProps) {
-  return (
-    <div className='h-48 content-center rounded border px-6'>
-      <p className='pb-4 text-2xl font-bold'>{value}</p>
-      <p className=''>{description}</p>
-    </div>
   );
 }

@@ -5,34 +5,36 @@ import { DataTable } from '../constants';
 const MP_TABLE = DataTable.MarchesPublics;
 const COMMUNITIES_TABLE = DataTable.Communities;
 
-// TODO - change dateNotification to annee_notification when db updated
-// Still bug on dateNotification
+// Pour exclure les marchés publics avec des montants supérieurs à MAX_MP_MONTANT (jugés comme étant des erreurs de saisie)
+const MAX_MP_MONTANT = 1_000_000_000;
+
 export function createSQLQueryParams(year: number): [string, (string | number)[]] {
-  const values = [year];
-  const querySQL = `
+  const values = [year, MAX_MP_MONTANT];
+  const query = `
     WITH mp_siren AS (
-        SELECT 
-            LEFT(acheteur_id,9) AS acheteur_siren,
-            montant,
-        FROM ${MP_TABLE} mp
-        WHERE annee_notification = $1
+      SELECT 
+          acheteur_id,
+          montant
+      FROM ${MP_TABLE} mp
+      WHERE annee_notification = $1
+      AND montant * count_titulaires < $2
     )
     SELECT SUM(mps.montant)
     FROM mp_siren AS mps
     INNER JOIN ${COMMUNITIES_TABLE} c
-    ON mps.acheteur_siren = c.siren
+    ON mps.acheteur_id = c.siren
   `;
 
-  return [querySQL, values];
+  return [query, values];
 }
 
 /**
  * Montant total marchés publics déclarés
- * En ne gardant que les marchés publics inferieur a 1Md
+ * En ne gardant que les marchés publics inferieur a MAX_MP_MONTANT
  * @param year
  * @returns
  */
-export async function fetchPusblishedMarchesPublicsTotal(year: number): Promise<number> {
+export async function fetchPublishedMarchesPublicsTotal(year: number): Promise<number> {
   const params = createSQLQueryParams(year);
 
   const result = (await getQueryFromPool(...params)) as { sum: number }[];

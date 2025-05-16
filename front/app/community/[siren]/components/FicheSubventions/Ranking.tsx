@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
+import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { MarchePublic } from '@/app/models/marchePublic';
+import { Subvention } from '@/app/models/subvention';
 import {
   Table,
   TableBody,
@@ -19,77 +19,81 @@ import { YearOption } from '../../types/interface';
 
 const ROWS_COUNT = 10;
 
-function getAvailableYears(data: MarchePublic[]) {
-  return [...new Set(data.map((item) => item.datenotification_annee))].sort(
-    (a: number, b: number) => a - b,
-  );
-}
-
-export default function Top10({ data }: { data: MarchePublic[] }) {
+export default function Ranking({
+  data,
+  availableYears,
+}: {
+  data: Subvention[];
+  availableYears: number[];
+}) {
   const [linesDisplayed, setLinesDisplayed] = useState(0);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
-  const availableYears: number[] = getAvailableYears(data);
-
   const filteredData =
-    selectedYear === 'All'
-      ? data
-      : data.filter((item) => item.datenotification_annee === selectedYear);
+    selectedYear === 'All' ? data : data.filter((item) => item.annee === selectedYear);
 
-  function formatCompanyNames(input: string): string[] {
+  function formatSubventionObject(input: string): string[] {
     return input
-      .replace(/[\[\]]/g, '')
-      .split(/',\s*'|",\s*"/)
-      .map((item) => item.replace(/^'|-'?$/g, '').trim());
+      .replace(/[\[\]]/g, '') // Supprime les crochets
+      .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
+      .split(/',|",/) // Split sur des virgules
+      .map((item) => item.trim().replace(/^['"]|['"]$/g, ''));
   }
 
-  function getTopContract(data: any[]) {
-    const sortedContracts = data.sort((a, b) => Number(b.montant) - Number(a.montant));
-    const topContract =
-      sortedContracts.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed
-        ? sortedContracts.slice(0, ROWS_COUNT + ROWS_COUNT * linesDisplayed)
-        : sortedContracts;
+  function getTopSubs(data: any[]) {
+    const sortedSubs = data.sort((a, b) => Number(b.montant) - Number(a.montant));
+    const topSubs =
+      sortedSubs.length > ROWS_COUNT + ROWS_COUNT * linesDisplayed
+        ? sortedSubs.slice(0, ROWS_COUNT + ROWS_COUNT * linesDisplayed)
+        : sortedSubs;
 
-    return topContract;
+    return topSubs;
   }
 
-  const topContractData = getTopContract(filteredData);
+  const topSubsData = getTopSubs(filteredData);
 
   return (
     <>
       <div className='flex items-center justify-between'>
         <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Classement par tailles de contrats</h3>
+          <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector />
+          <DownloadButton/>
         </div>
       </div>
       <Table className='min-h-[600px]'>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-[300px]'>Titulaires</TableHead>
+            <TableHead className='w-[300px]'>Bénéficiaires</TableHead>
             <TableHead className=''>Objet</TableHead>
             <TableHead className='w-[140px] text-right'>Montant</TableHead>
             <TableHead className='w-[140px] text-right'>Année</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {topContractData.map((item, index) => (
+          {topSubsData.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='space-x-1'>
-                {formatCompanyNames(item.titulaires_liste_noms).map((company, index) => (
-                  <span key={index} className='py-.5 rounded-md bg-neutral-200 px-2'>
-                    {company}
-                  </span>
-                ))}
+              <TableCell className='font-medium'>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
+                  {item.nom_beneficiaire}
+                </div>
               </TableCell>
-              <TableCell className=''>{item.objet}</TableCell>
+              <TableCell>
+                <div className='line-clamp-1 overflow-hidden text-ellipsis'>
+                  {formatSubventionObject(item.objet).map((item, index) => (
+                    <span key={index}>
+                      {index > 0 && ' - '}
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
               <TableCell className='text-right'>
                 {formatCompactPrice(parseFloat(item.montant))}
               </TableCell>
-              <TableCell className='text-right'>{item.datenotification_annee}</TableCell>
+              <TableCell className='text-right'>{item.annee}</TableCell>
             </TableRow>
           ))}
         </TableBody>

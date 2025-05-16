@@ -8,7 +8,7 @@ import { Order } from '@/utils/fetchers/types';
 import { parseDirection } from '@/utils/utils';
 
 export type AdvancedSearchOrder = Order<
-  'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'
+  'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score' | 'subventions_budget'
 >;
 
 export const DEFAULT_ORDER: AdvancedSearchOrder = {

@@ -1,6 +1,8 @@
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
 
+import { Paginated } from './pagination';
+
 export type Community = {
   /** Primary key [char9] */
   siren: string;
@@ -14,8 +16,8 @@ export type Community = {
   population: number;
   latitude: number | null;
   longitude: number | null;
-  mp_score: TransparencyScore;
-  subventions_score: TransparencyScore;
+  mp_score: TransparencyScore | null;
+  subventions_score: TransparencyScore | null;
   siren_epci: string;
   naf8: string;
   tranche_effectif: number;
@@ -28,29 +30,8 @@ export type Community = {
   code_postal: number | null;
 };
 
-/** @deprecated use Community instead */
-export type CommunityV0 = {
-  /** Primary key [char9] */
-  siren: string;
-  /** Primary key */
-  type: string;
-  nom: string;
-  cog: string;
-  code_departement: string;
-  code_region: string;
-  epci: string;
-  latitude: number;
-  longitude: number;
-  population: number;
-  superficie: number;
-  obligation_publication: boolean;
-  nom_elu: string;
-};
-
-export type RowCount = { total_row_count: number };
-
-export type AdvancedSearchCommunity = Pick<
-  Community,
-  'siren' | 'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'
-> &
-  RowCount;
+export type AdvancedSearchCommunity = Paginated<
+  Pick<Community, 'siren' | 'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'> & {
+    subventions_budget: number;
+  }
+>;
