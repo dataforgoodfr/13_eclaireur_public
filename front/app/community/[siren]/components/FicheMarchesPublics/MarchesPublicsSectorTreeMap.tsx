@@ -8,6 +8,7 @@ import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 import { CHART_HEIGHT } from '../constants';
+import { NoData } from '../NoData';
 
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
@@ -35,6 +36,10 @@ export default function MarchesPublicsSectorTreemap({
 
   if (isPending || isError) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
+  }
+
+ if (data.length === 0) {
+    return <NoData />;
   }
 
   const treeLeaves: TreeLeaf[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({

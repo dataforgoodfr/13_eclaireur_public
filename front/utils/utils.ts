@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import { start } from 'repl';
 import { twMerge } from 'tailwind-merge';
 
 import { Direction } from './fetchers/types';
@@ -137,4 +138,15 @@ export function parseDirection(value: string | null): Direction | undefined {
   if (value === 'DESC') return 'DESC';
 
   return undefined;
+}
+
+export function getAllYearsFrom2018ToCurrent(): number[] {
+  const years: number[] = [];
+  const startYear: number = 2018;
+  let year: number = new Date().getFullYear();
+  while (year >= startYear) {
+    years.push(year);
+    year--;
+  }
+  return years;
 }
