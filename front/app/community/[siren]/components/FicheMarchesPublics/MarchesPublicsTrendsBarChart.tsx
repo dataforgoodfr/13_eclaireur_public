@@ -1,4 +1,4 @@
-import { formatCompactPrice, formatCompact } from '@/utils/utils';
+import { formatCompact, formatCompactPrice } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import { CHART_HEIGHT } from '../constants';

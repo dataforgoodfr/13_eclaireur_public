@@ -4,30 +4,25 @@ import getAdminTypeFromLayerId from './getAdminTypeFromLayerId';
 
 const getCommunityDataFromFeature = (
   feature: maplibregl.MapGeoJSONFeature,
-  maps: {
-    communesByCode: Record<string, Community>;
-    departmentsByCode: Record<string, Community>;
-    regionsByCode: Record<string, Community>;
-  } | null, // Allow null for communityMapsRef.current before it's initialized
+  communityMap: Record<string, Community> | null,
 ): Community | undefined => {
   const props = feature.properties || {};
-  const layerId = feature.layer.id;
-  const type = getAdminTypeFromLayerId(layerId);
-  const code = props.code?.toString();
-  const regionCode = feature.id?.toString().slice(-2);
+  let code: string | undefined;
 
-  // Ensure that maps is not null before accessing properties
-  if (maps) {
-    if (type === 'commune' && code) {
-      return maps.communesByCode[code];
-    } else if (type === 'departement' && code) {
-      return maps.departmentsByCode[code];
-    } else if (type === 'region' && regionCode) {
-      return maps.regionsByCode[regionCode];
-    }
+  const adminType = feature.layer ? getAdminTypeFromLayerId(feature.layer.id) : undefined;
+
+  if (adminType === 'region') {
+    // For regions, use the last 2 chars of feature.id
+    code = feature.id?.toString().slice(-2);
+  } else {
+    // For others, use code or code_insee
+    code = props.code?.toString() || props.code_insee?.toString();
   }
 
-  // Return undefined if no matching data is found
+  if (communityMap && code) {
+    return communityMap[code];
+  }
+
   return undefined;
 };
 

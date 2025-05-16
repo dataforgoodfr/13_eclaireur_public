@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import Map, {
   Layer,
   type MapLayerMouseEvent,
@@ -18,6 +19,9 @@ import {
   fetchDepartementsByCode,
   fetchRegionsByCode,
 } from '@/utils/fetchers/map/map-fetchers';
+import { useCommunes } from '@/utils/hooks/map/useCommunes';
+import { useDepartements } from '@/utils/hooks/map/useDepartements';
+import { useRegions } from '@/utils/hooks/map/useRegions';
 import { debounce } from '@/utils/utils';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
@@ -29,15 +33,10 @@ import {
   BASE_MAP_STYLE,
   DEFAULT_VIEW_STATE,
   MAPTILER_API_KEY,
-  MAX_FEATURES_LOAD,
 } from './constants';
-import type { CommunityMaps, HoverInfo } from './types';
-import createCommunityMaps from './utils/createCommunityMaps';
-import enrichFeatureWithData from './utils/enrichFeatureWithData';
+import type { HoverInfo } from './types';
 import extractFeaturesByLevel from './utils/extractFeaturesByLevel';
-import { fetchMissingData } from './utils/fetchMissingData';
 import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
-import getCodesToFetch from './utils/getCodesToFetch';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 
 // TODO data checking:
@@ -55,15 +54,12 @@ export default function FranceMap({
   selectedChoroplethData,
 }: TerritoryMapProps) {
   const mapRef = useRef<MapRef>(null);
-  const communityMapsRef = useRef<CommunityMaps | null>(null);
-  const regionsRef = useRef<Community[]>([]);
-  const departementsRef = useRef<Community[]>([]);
-  const communesRef = useRef<Community[]>([]);
 
   const router = useRouter();
-  const [fetchedRegionCodes, setFetchedRegionCodes] = useState<Set<string>>(new Set());
-  const [fetchedDepartementCodes, setFetchedDepartementCodes] = useState<Set<string>>(new Set());
-  const [fetchedCommuneCodes, setFetchedCommuneCodes] = useState<Set<string>>(new Set());
+
+  const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
+  const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
+  const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [cursor, setCursor] = useState<string>('grab');
   const [viewState, setViewState] = useState<Partial<ViewState>>(
@@ -81,19 +77,28 @@ export default function FranceMap({
 
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
 
-  useEffect(() => {
-    if (
-      regionsRef.current.length > 0 &&
-      departementsRef.current.length > 0 &&
-      communesRef.current.length > 0
-    ) {
-      communityMapsRef.current = createCommunityMaps(
-        regionsRef.current,
-        departementsRef.current,
-        communesRef.current,
-      );
-    }
-  }, [regionsRef.current, departementsRef.current, communesRef.current]);
+  const { data: communes, isLoading: communesLoading } = useCommunes(visibleCommuneCodes);
+  const { data: departements, isLoading: departementsLoading } =
+    useDepartements(visibleDepartementCodes);
+  const { data: regions, isLoading: regionsLoading } = useRegions(visibleRegionCodes);
+
+  const communityMap = useMemo(() => {
+    const map: Record<string, Community> = {};
+    (regions ?? []).forEach((c) => {
+      // Use code_insee_region or code_insee for regions
+      const regionCode = c.code_insee_region ?? c.code_insee ?? c.code;
+      if (regionCode) map[regionCode.toString()] = c;
+    });
+    (departements ?? []).forEach((c) => {
+      const deptCode = c.code_insee ?? c.code;
+      if (deptCode) map[deptCode.toString()] = c;
+    });
+    (communes ?? []).forEach((c) => {
+      const communeCode = c.code_insee ?? c.code;
+      if (communeCode) map[communeCode.toString()] = c;
+    });
+    return map;
+  }, [regions, departements, communes]);
 
   // Update viewState when selectedTerritoryData changes
   useEffect(() => {
@@ -102,146 +107,47 @@ export default function FranceMap({
     }
   }, [selectedTerritoryData]);
 
-  // effect to ensure data is fetched and loaded each time we navigate back to the page.
-  useEffect(() => {
-    if (mapReady && mapRef.current) {
-      const mapInstance = mapRef.current.getMap();
-
-      let retryCount = 0;
-      const maxRetries = 5;
-
-      const attemptQuery = () => {
-        const features = mapInstance.querySourceFeatures('statesData', {
-          sourceLayer: 'administrative',
-          filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
-        });
-
-        console.log(`Attempt ${retryCount + 1}: Found ${features.length} features`);
-
-        if (features.length > 0) {
-          // Features found, proceed with combining datasets
-          fetchAndEnrichVisibleFeatures(mapInstance);
-        } else if (retryCount < maxRetries) {
-          // No features found yet, retry after a delay
-          retryCount++;
-          setTimeout(attemptQuery, 300);
-        } else {
-          console.error('Failed to find features after maximum retries');
-        }
-      };
-      attemptQuery();
-    }
-  }, [mapReady, selectedTerritoryData]);
-
-  const fetchAndEnrichVisibleFeatures = async (mapInstance: maplibregl.Map) => {
-    if (!mapInstance) return;
-
+  function updateVisibleCodes(mapInstance: maplibregl.Map) {
     const features = mapInstance.querySourceFeatures('statesData', {
       sourceLayer: 'administrative',
       filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
     });
 
-    // break the features into different Admin types
     const { regions, departments, communes } = extractFeaturesByLevel(features);
 
-    const featuresInViewport = regions.length + departments.length + communes.length;
-
-    if (featuresInViewport < MAX_FEATURES_LOAD) {
-      const regionsCodesToFetch: string[] = [];
-      const departementCodesToFetch: string[] = [];
-      const communeCodesToFetch: string[] = [];
-
-      // TODO: Refactor into funciton
-      features.forEach((feature) => {
-        const level = feature.properties.level;
-
-        getCodesToFetch(
-          feature,
-          level,
-          level === 1
-            ? fetchedRegionCodes
-            : level === 2
-              ? fetchedDepartementCodes
-              : fetchedCommuneCodes,
-          level === 1 ? regionsRef : level === 2 ? departementsRef : communesRef,
-          level === 1
-            ? (code) => regionsCodesToFetch.push(code)
-            : level === 2
-              ? (code) => departementCodesToFetch.push(code)
-              : (code) => communeCodesToFetch.push(code),
-        );
-      });
-
-      setIsLoading(true);
-
-      await fetchMissingData(
-        regionsCodesToFetch,
-        fetchRegionsByCode,
-        regionsRef,
-        setFetchedRegionCodes,
-      );
-
-      await fetchMissingData(
-        departementCodesToFetch,
-        fetchDepartementsByCode,
-        departementsRef,
-        setFetchedDepartementCodes,
-      );
-
-      await fetchMissingData(
-        communeCodesToFetch,
-        fetchCommunesByCode,
-        communesRef,
-        setFetchedCommuneCodes,
-      );
-
-      communityMapsRef.current = createCommunityMaps(
-        regionsRef.current,
-        departementsRef.current,
-        communesRef.current,
-      );
-
-      features.forEach((feature) => {
-        const enrichedFeature = enrichFeatureWithData(feature, communityMapsRef.current);
-        mapInstance.setFeatureState(
-          { source: 'statesData', sourceLayer: 'administrative', id: feature.id },
-          {
-            mp_score: enrichedFeature.mp_score,
-            subventions_score: enrichedFeature.subventions_score,
-            population: enrichedFeature.population,
-          },
-        );
-      });
-
-      setIsLoading(false);
-    } else {
-      console.log('Too many features in the viewport, skipping fetch.');
-    }
-  };
-
-  const debouncedQuery = useCallback(
-    debounce((mapInstance: maplibregl.Map) => {
-      fetchAndEnrichVisibleFeatures(mapInstance);
-    }, 300),
-    [],
-  );
+    setVisibleRegionCodes(regions.map((f) => f.id?.toString().slice(-2)).filter(Boolean));
+    setVisibleDepartementCodes(departments.map((f) => f.properties.code));
+    setVisibleCommuneCodes(communes.map((f) => f.properties.code));
+  }
 
   const handleMove = (event: any) => {
     setViewState(event.viewState);
 
     const mapInstance = mapRef.current?.getMap();
-    if (mapInstance) debouncedQuery(mapInstance);
+    if (mapInstance) {
+      updateVisibleCodes(mapInstance);
+    }
+  };
+
+  const getActiveFeatureType = (zoom: number) => {
+    if (zoom <= regionsMaxZoom) return 'region';
+    if (zoom <= departementsMaxZoom) return 'departement';
+    return 'commune';
   };
 
   const onHover = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
     const { features, point } = event;
+    const zoom = viewState.zoom ?? regionsMaxZoom; // fallback if zoom is undefined
 
-    if (features?.length) {
+    const activeType = getActiveFeatureType(zoom);
+
+    // Only consider features of the active type
+    const feature = features?.find((f) => getAdminTypeFromLayerId(f.layer.id) === activeType);
+
+    if (feature) {
       setCursor('pointer');
-      const feature = features[0];
-      const type = getAdminTypeFromLayerId(feature.layer.id);
-      setHoverInfo({ x: point.x, y: point.y, feature, type });
+      setHoverInfo({ x: point.x, y: point.y, feature, type: activeType });
     } else {
       setCursor('grab');
       setHoverInfo(null);
@@ -252,7 +158,7 @@ export default function FranceMap({
     const feature = event.features?.[0];
     if (!feature) return;
 
-    const community = getCommunityDataFromFeature(feature, communityMapsRef.current);
+    const community = getCommunityDataFromFeature(feature, communityMap);
     if (community?.siren) {
       router.push(`/community/${community.siren}`);
     }
@@ -262,7 +168,7 @@ export default function FranceMap({
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
-    const data = getCommunityDataFromFeature(feature, communityMapsRef.current);
+    const data = getCommunityDataFromFeature(feature, communityMap);
 
     return (
       <div
@@ -314,6 +220,10 @@ export default function FranceMap({
         cursor={cursor}
         onLoad={() => {
           setMapReady(true);
+          const mapInstance = mapRef.current?.getMap();
+          if (mapInstance) {
+            updateVisibleCodes(mapInstance);
+          }
         }}
       >
         <Source
