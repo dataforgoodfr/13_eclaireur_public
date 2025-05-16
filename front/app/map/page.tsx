@@ -2,7 +2,7 @@ import MapLayout from '@/components/Map/MapLayout';
 
 export default function MapPage() {
   return (
-    <div className='global-margin my-20 flex flex-row gap-x-10'>
+    <div className='flex w-full flex-row'>
       <MapLayout />
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMemo } from 'react';
 import Map, {
   Layer,
@@ -11,38 +11,45 @@ import Map, {
   type ViewState,
 } from 'react-map-gl/maplibre';
 
-import { useRouter } from 'next/navigation';
-
 import type { Community } from '@/app/models/community';
-import {
-  fetchCommunesByCode,
-  fetchDepartementsByCode,
-  fetchRegionsByCode,
-} from '@/utils/fetchers/map/map-fetchers';
 import { useCommunes } from '@/utils/hooks/map/useCommunes';
 import { useDepartements } from '@/utils/hooks/map/useDepartements';
 import { useRegions } from '@/utils/hooks/map/useRegions';
-import { debounce } from '@/utils/utils';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import ChoroplethLayer from './ChoroplethLayer';
 import type { TerritoryData } from './MapLayout';
 import type { ChoroplethDataSource } from './MapLayout';
-import {
-  BASE_MAP_STYLE,
-  DEFAULT_VIEW_STATE,
-  MAPTILER_API_KEY,
-} from './constants';
+import { BASE_MAP_STYLE, DEFAULT_VIEW_STATE, MAPTILER_API_KEY } from './constants';
 import type { HoverInfo } from './types';
 import extractFeaturesByLevel from './utils/extractFeaturesByLevel';
 import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
+import updateFeatureStates from './utils/updateFeatureState';
 
-// TODO data checking:
-// Guyane does not have a department
-// Martinique does not have a department
-// Mayotte does not have a region
+function ChoroplethLegend() {
+  return (
+    <div className='absolute bottom-4 left-4 rounded bg-white p-2 shadow'>
+      <div>
+        <span style={{ background: '#2ca02c', padding: '0 8px' }} /> A (Best)
+      </div>
+      <div>
+        <span style={{ background: '#a1d99b', padding: '0 8px' }} /> B
+      </div>
+      <div>
+        <span style={{ background: '#ffffb2', padding: '0 8px' }} /> C
+      </div>
+      <div>
+        <span style={{ background: '#fdae6b', padding: '0 8px' }} /> D
+      </div>
+      <div>
+        <span style={{ background: '#de2d26', padding: '0 8px' }} /> E (Worst)
+      </div>
+    </div>
+  );
+}
 
 interface TerritoryMapProps {
   selectedTerritoryData: TerritoryData | undefined;
@@ -55,18 +62,14 @@ export default function FranceMap({
 }: TerritoryMapProps) {
   const mapRef = useRef<MapRef>(null);
 
-  const router = useRouter();
-
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
-  const [mapReady, setMapReady] = useState(false);
   const [cursor, setCursor] = useState<string>('grab');
   const [viewState, setViewState] = useState<Partial<ViewState>>(
     selectedTerritoryData?.viewState || DEFAULT_VIEW_STATE,
   );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const regionsMaxZoom = selectedTerritoryData?.regionsMaxZoom || 6;
   const departementsMaxZoom = selectedTerritoryData?.departementsMaxZoom || 8;
@@ -85,27 +88,27 @@ export default function FranceMap({
   const communityMap = useMemo(() => {
     const map: Record<string, Community> = {};
     (regions ?? []).forEach((c) => {
-      // Use code_insee_region or code_insee for regions
-      const regionCode = c.code_insee_region ?? c.code_insee ?? c.code;
-      if (regionCode) map[regionCode.toString()] = c;
+      const regionCode = c.code_insee_region;
+      if (regionCode) map[`region-${regionCode}`] = c;
     });
     (departements ?? []).forEach((c) => {
-      const deptCode = c.code_insee ?? c.code;
-      if (deptCode) map[deptCode.toString()] = c;
+      const deptCode = c.code_insee;
+      if (deptCode) map[`departement-${deptCode}`] = c;
     });
     (communes ?? []).forEach((c) => {
-      const communeCode = c.code_insee ?? c.code;
-      if (communeCode) map[communeCode.toString()] = c;
+      const communeCode = c.code_insee;
+      if (communeCode) map[`commune-${communeCode}`] = c;
     });
     return map;
   }, [regions, departements, communes]);
 
   // Update viewState when selectedTerritoryData changes
   useEffect(() => {
-    if (selectedTerritoryData) {
-      setViewState(selectedTerritoryData.viewState);
-    }
-  }, [selectedTerritoryData]);
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
+  }, [communityMap, choroplethParameter, territoryFilterCode]);
 
   function updateVisibleCodes(mapInstance: maplibregl.Map) {
     const features = mapInstance.querySourceFeatures('statesData', {
@@ -121,14 +124,15 @@ export default function FranceMap({
   }
 
   const handleMove = (event: any) => {
-    setViewState(event.viewState);
-
-    const mapInstance = mapRef.current?.getMap();
-    if (mapInstance) {
-      updateVisibleCodes(mapInstance);
-    }
+    setViewState(event.viewState); // Only update view state here
   };
 
+  const handleMoveEnd = () => {
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+    updateVisibleCodes(mapInstance); // Update visible codes
+    updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode); // Expensive: only do on move end
+  };
   const getActiveFeatureType = (zoom: number) => {
     if (zoom <= regionsMaxZoom) return 'region';
     if (zoom <= departementsMaxZoom) return 'departement';
@@ -141,10 +145,8 @@ export default function FranceMap({
     const zoom = viewState.zoom ?? regionsMaxZoom; // fallback if zoom is undefined
 
     const activeType = getActiveFeatureType(zoom);
-
     // Only consider features of the active type
     const feature = features?.find((f) => getAdminTypeFromLayerId(f.layer.id) === activeType);
-
     if (feature) {
       setCursor('pointer');
       setHoverInfo({ x: point.x, y: point.y, feature, type: activeType });
@@ -160,16 +162,14 @@ export default function FranceMap({
 
     const community = getCommunityDataFromFeature(feature, communityMap);
     if (community?.siren) {
-      router.push(`/community/${community.siren}`);
+      window.open(`/community/${community.siren}`, '_blank');
     }
   };
-
   const renderTooltip = () => {
     if (!hoverInfo) return null;
 
     const { feature, type, x, y } = hoverInfo;
     const data = getCommunityDataFromFeature(feature, communityMap);
-
     return (
       <div
         className='pointer-events-none absolute z-50 rounded-lg bg-white px-3 py-2 text-sm text-gray-900 shadow-md'
@@ -197,8 +197,8 @@ export default function FranceMap({
   };
 
   return (
-    <div className='relative h-[800px] w-[800px] rounded-lg shadow-md'>
-      {isLoading && (
+    <div className='relative h-full w-full bg-white'>
+      {(communesLoading || departementsLoading || regionsLoading) && (
         <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
         </div>
@@ -209,6 +209,7 @@ export default function FranceMap({
         mapStyle={BASE_MAP_STYLE as StyleSpecification}
         {...viewState}
         onMove={handleMove}
+        onMoveEnd={handleMoveEnd}
         maxZoom={14}
         interactiveLayerIds={['regions', 'departements', 'communes']}
         onMouseMove={onHover}
@@ -219,133 +220,64 @@ export default function FranceMap({
         touchPitch={false}
         cursor={cursor}
         onLoad={() => {
-          setMapReady(true);
           const mapInstance = mapRef.current?.getMap();
           if (mapInstance) {
             updateVisibleCodes(mapInstance);
           }
         }}
       >
+        <ChoroplethLegend />
         <Source
           id='statesData'
           type='vector'
           url={`https://api.maptiler.com/tiles/countries/tiles.json?key=${MAPTILER_API_KEY}`}
         >
-          {/* Regions Layer */}
-          <Layer
+          <ChoroplethLayer
             id='regions'
-            source-layer='administrative'
-            type='fill'
+            source='statesData'
+            sourceLayer='administrative'
             minzoom={0}
             maxzoom={regionsMaxZoom}
             filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
-            paint={{
-              'fill-color': [
-                'interpolate',
-                ['linear'],
-                // Use a fallback value of 0 when feature-state population is not set
-                ['coalesce', ['feature-state', choroplethParameter], 5],
-                1,
-                '#2ca02c', // green
-                2,
-                '#a1d99b', // light green
-                3,
-                '#ffffb2', // yellow
-                4,
-                '#fdae6b', // orange
-                5,
-                '#de2d26', // red
-              ],
-              'fill-opacity': 0.85,
-              'fill-outline-color': '#000',
-            }}
+            choroplethParameter={choroplethParameter}
           />
-          {/* Departments Layer */}
-          <Layer
+          <ChoroplethLayer
             id='departements'
-            source-layer='administrative'
-            type='fill'
+            source='statesData'
+            sourceLayer='administrative'
             minzoom={regionsMaxZoom}
             maxzoom={departementsMaxZoom}
             filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
-            paint={{
-              'fill-color': [
-                'interpolate',
-                ['linear'],
-                ['coalesce', ['feature-state', choroplethParameter], 5],
-                1,
-                '#2ca02c', // green
-                2,
-                '#a1d99b', // light green
-                3,
-                '#ffffb2', // yellow
-                4,
-                '#fdae6b', // orange
-                5,
-                '#de2d26', // red
-              ],
-              'fill-opacity': 0.85,
-              'fill-outline-color': '#000',
-            }}
+            choroplethParameter={choroplethParameter}
           />
-
-          {/* Communes Layer */}
-          <Layer
+          <ChoroplethLayer
             id='communes'
-            source-layer='administrative'
-            type='fill'
+            source='statesData'
+            sourceLayer='administrative'
             minzoom={departementsMaxZoom}
             maxzoom={communesMaxZoom}
             filter={['==', 'level', 3]}
-            paint={{
-              'fill-color': [
-                'interpolate',
-                ['linear'],
-                ['coalesce', ['feature-state', choroplethParameter], 5],
-                1,
-                '#2ca02c', // green
-                2,
-                '#a1d99b', // light green
-                3,
-                '#ffffb2', // yellow
-                4,
-                '#fdae6b', // orange
-                5,
-                '#de2d26', // red
-              ],
-              'fill-opacity': 0.85,
-              'fill-outline-color': '#000',
-            }}
+            choroplethParameter={choroplethParameter}
           />
-
-          {/* Region Borders */}
-          <Layer
+          <ChoroplethLayer
             id='region-borders'
-            source-layer='administrative'
+            source='statesData'
+            sourceLayer='administrative'
             type='line'
             minzoom={regionsMaxZoom}
             maxzoom={communesMaxZoom}
             filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
-            paint={{
-              'line-color': 'black',
-              'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],
-              'line-opacity': 1,
-            }}
+            choroplethParameter={choroplethParameter}
           />
-
-          {/* Department Borders */}
-          <Layer
+          <ChoroplethLayer
             id='department-borders'
-            source-layer='administrative'
+            source='statesData'
+            sourceLayer='administrative'
             type='line'
             minzoom={departementsMaxZoom}
             maxzoom={communesMaxZoom}
             filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
-            paint={{
-              'line-color': 'black',
-              'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 2],
-              'line-opacity': 1,
-            }}
+            choroplethParameter={choroplethParameter}
           />
         </Source>
       </Map>

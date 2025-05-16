@@ -116,16 +116,20 @@ export default function MapLayout() {
   const selectedChoroplethData = choroplethDataSource[selectedDataSource];
 
   return (
-    <>
-      <div className='min-h-screen'>
+    <div className='flex min-h-screen w-full'>
+      {/* Map: 2/3 width, plain white bg, no border */}
+      <div className='flex w-2/3 items-center justify-center bg-white'>
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
         />
       </div>
-      <div>
-        <h2>Select France Metropole or Overseas Territory</h2>
-        <div>
+      {/* Controls: 1/3 width, orange bg */}
+      <div className='min-h-screen w-1/3 p-8' style={{ background: '#fb8c30' }}>
+        <h2 className='mb-4 text-xl font-bold text-white'>
+          Select France Metropole or Overseas Territory
+        </h2>
+        <div className='mb-6'>
           <FrenchTerritoriesSelect
             territories={territories}
             selectedTerritory={selectedTerritory}
@@ -139,6 +143,6 @@ export default function MapLayout() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
