@@ -107,7 +107,7 @@ export function Table({ rows }: Table) {
                 </Badge>
               ))}
             </TableCell>
-            <TableCell>{object}</TableCell>
+            <TableCell>{object.toLocaleUpperCase()}</TableCell>
             <TableCell className='text-right'>{formatAmount(amount)}</TableCell>
             <TableCell className='text-right'>{year}</TableCell>
           </TableRow>
