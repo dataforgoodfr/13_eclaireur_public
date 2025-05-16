@@ -13,9 +13,15 @@ export async function GET(request: NextRequest) {
 
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT * FROM collectivities 
-      WHERE code_insee IN (${placeholders})
-      AND type = 'COM'
+      SELECT 
+        c.*,
+        b.subventions_score,
+        b.mp_score
+      FROM collectivites c
+      LEFT JOIN bareme b
+        ON c.siren = b.siren AND b.annee = 2024
+      WHERE c.code_insee IN (${placeholders})
+        AND c.type = 'COM'
     `;
 
     const communes = await getQueryFromPool(query, codes);
@@ -44,8 +50,15 @@ export async function POST(request: NextRequest) {
 
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT * FROM collectivites 
-      WHERE code_insee IN (${placeholders})
+      SELECT 
+        c.*,
+        b.subventions_score,
+        b.mp_score
+      FROM collectivites c
+      LEFT JOIN bareme b
+        ON c.siren = b.siren AND b.annee = 2024
+      WHERE c.code_insee IN (${placeholders})
+        AND c.type = 'COM'
     `;
 
     const communes = await getQueryFromPool(query, codes);

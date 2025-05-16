@@ -60,7 +60,7 @@ export default function Ranking({
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadButton/>
+          <DownloadButton />
         </div>
       </div>
       <Table className='min-h-[600px]'>
