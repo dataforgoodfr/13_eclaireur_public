@@ -18,13 +18,14 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const baseURL: string | undefined = process.env.DEV_SITE_URL ?? process.env.NEXT_PUBLIC_BASE_URL;
+
 export const metadata: Metadata = {
   title: {
     template: '%s | Éclaireur Public',
     default: 'Éclaireur Public',
   },
-  metadataBase:
-    process.env.NEXT_PUBLIC_BASE_URL != null ? new URL(process.env.NEXT_PUBLIC_BASE_URL) : null,
+  metadataBase: baseURL != null ? new URL(baseURL) : null,
   alternates: {
     canonical: './',
   },
