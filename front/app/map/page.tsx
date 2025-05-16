@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import Map from '@/components/Map/map';
+import MapPage from '@/components/Map/MapPage';
 
 export const metadata: Metadata = {
   title: 'Cartographie',
@@ -8,6 +8,6 @@ export const metadata: Metadata = {
     'Carte interactive affichant les données des collectivités pour mieux comprendre la répartition géographique des dépenses publiques et la transparence des collectivités.',
 };
 
-export default function MapPage() {
-  return <Map></Map>;
+export default function Page() {
+  return <MapPage></MapPage>;
 }

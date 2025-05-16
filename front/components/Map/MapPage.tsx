@@ -7,7 +7,7 @@ import SelectCommunityType from '@/components/SelectCommunityType';
 import { useCommunities } from '@/utils/hooks/useCommunities';
 import { CommunityType } from '@/utils/types';
 
-export default function Map() {
+export default function MapPage() {
   const [communityType, setCommunityType] = useState(CommunityType.Region);
 
   const { isLoading, data } = useCommunities({
