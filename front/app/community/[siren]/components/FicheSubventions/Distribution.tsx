@@ -5,6 +5,7 @@ import { useState } from 'react';
 import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '@/app/community/[siren]/components/YearSelector';
 import { downloadSubventionsByNafCSV } from '@/utils/fetchers/subventions/download/downloadSubventionsByNaf';
+import { useDownloadSVG } from '@/utils/hooks/useDownloadSVG';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
@@ -17,6 +18,11 @@ export default function Distribution({ siren, availableYears }: DistributionProp
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
+  const { ref: treemapRef, downloadSVG: downloadSVGTreemap } = useDownloadSVG();
+
+  function handleClickDownloadChart() {
+    downloadSVGTreemap({ fileName: 'treemap-subventions-by-sector' });
+  }
   function handleClickDownloadData() {
     downloadSubventionsByNafCSV(siren, selectedYear === 'All' ? null : selectedYear);
   }
@@ -35,13 +41,16 @@ export default function Distribution({ siren, availableYears }: DistributionProp
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadSelector onClickDownloadData={handleClickDownloadData} />
+          <DownloadSelector
+            onClickDownloadData={handleClickDownloadData}
+            onClickDownloadChart={isTableDisplayed ? undefined : handleClickDownloadChart}
+          />
         </div>
       </div>
       {isTableDisplayed ? (
         <SubventionsSectorTable siren={siren} year={selectedYear} />
       ) : (
-        <SubventionsSectorTreemap siren={siren} year={selectedYear} />
+        <SubventionsSectorTreemap siren={siren} year={selectedYear} svgRef={treemapRef} />
       )}
     </>
   );
