@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
 import FranceMap from './Map';
-import MapDataControls from './MapDataControls';
-
+import TransparencyScoreControls from './TransparencyScoreControls';
 
 export type ChoroplethDataSource = {
   name: string;
@@ -111,12 +110,12 @@ export const territories: Record<string, TerritoryData> = {
 
 export default function MapLayout() {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('mp_score');
+  const [selectedScore, setSelectedScore] = useState<string>('mp_score');
   const [viewState, setViewState] = useState<Partial<ViewState>>(
-    territories['metropole'].viewState
+    territories['metropole'].viewState,
   );
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
-  const selectedChoroplethData = choroplethDataSource[selectedDataSource];
+  const selectedChoroplethData = choroplethDataSource[selectedScore];
   // Update viewState when selectedTerritory changes
   useEffect(() => {
     if (selectedTerritory && territories[selectedTerritory]) {
@@ -135,20 +134,17 @@ export default function MapLayout() {
         />
       </div>
       {/* Controls: 1/3 width, orange bg */}
-      <div className='min-h-screen w-1/3 bg-[#ffeccf] p-8'>
-        <div>
-          <MapDataControls
-            selectedDataSource={selectedDataSource}
-            setSelectedDataSource={setSelectedDataSource}
-          />
-        </div>
-        <div className='mb-6'>
-          <FrenchTerritoriesSelect
-            territories={territories}
-            selectedTerritory={selectedTerritory}
-            onSelectTerritory={setSelectedTerritory}
-          />
-        </div>
+      <div className='flex min-h-screen w-1/3 flex-col bg-[#ffeccf] px-8 py-20'>
+        <TransparencyScoreControls
+          selectedScore={selectedScore}
+          setSelectedScore={setSelectedScore}
+        />
+        <hr className='my-12 border-t border-[#fdc04e]' />
+        <FrenchTerritoriesSelect
+          territories={territories}
+          selectedTerritory={selectedTerritory}
+          onSelectTerritory={setSelectedTerritory}
+        />
       </div>
     </div>
   );

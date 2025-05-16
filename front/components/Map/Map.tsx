@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMemo } from 'react';
 import Map, {
-  type MapLayerMouseEvent,
   type MapRef,
   NavigationControl,
   Source,
@@ -23,12 +22,12 @@ import ChoroplethLayer from './ChoroplethLayer';
 import ChoroplethLegend from './Legend';
 import type { TerritoryData } from './MapLayout';
 import type { ChoroplethDataSource } from './MapLayout';
-import { BASE_MAP_STYLE, DEFAULT_VIEW_STATE, MAPTILER_API_KEY } from './constants';
+import MapTooltip from './MapTooltip';
+import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
 import type { HoverInfo } from './types';
-import extractFeaturesByLevel from './utils/extractFeaturesByLevel';
-import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
-import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 import updateFeatureStates from './utils/updateFeatureState';
+import { updateVisibleCodes } from './utils/updateVisibleCodes';
+import { useFranceMapHandlers } from './utils/useFranceMapHanders';
 
 interface MapProps {
   selectedTerritoryData: TerritoryData | undefined;
@@ -38,7 +37,7 @@ interface MapProps {
 }
 
 export default function FranceMap({
-   selectedTerritoryData,
+  selectedTerritoryData,
   selectedChoroplethData,
   viewState,
   setViewState,
@@ -48,17 +47,12 @@ export default function FranceMap({
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
-  const [cursor, setCursor] = useState<string>('grab');
-
   const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
 
   const regionsMaxZoom = selectedTerritoryData?.regionsMaxZoom || 6;
   const departementsMaxZoom = selectedTerritoryData?.departementsMaxZoom || 8;
   const communesMaxZoom = selectedTerritoryData?.communesMaxZoom || 14;
-
-  // Get the filter from the selected territory or use default
   const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
-
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
 
   const { data: communes, isLoading: communesLoading } = useCommunes(visibleCommuneCodes);
@@ -91,94 +85,20 @@ export default function FranceMap({
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   }, [communityMap, choroplethParameter, territoryFilterCode]);
 
-  function updateVisibleCodes(mapInstance: maplibregl.Map) {
-    const features = mapInstance.querySourceFeatures('statesData', {
-      sourceLayer: 'administrative',
-      filter: ['==', ['get', 'iso_a2'], selectedTerritoryData?.filterCode || 'FR'],
-    });
-
-    const { regions, departments, communes } = extractFeaturesByLevel(features);
-
-    setVisibleRegionCodes(regions.map((f) => f.id?.toString().slice(-2)).filter(Boolean));
-    setVisibleDepartementCodes(departments.map((f) => f.properties.code));
-    setVisibleCommuneCodes(communes.map((f) => f.properties.code));
-  }
-
-  const handleMove = (event: any) => {
-    setViewState(event.viewState); // Only update view state here
-  };
-
-  const handleMoveEnd = () => {
-    const mapInstance = mapRef.current?.getMap();
-    if (!mapInstance) return;
-    updateVisibleCodes(mapInstance); // Update visible codes
-    updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode); // Expensive: only do on move end
-  };
-  const getActiveFeatureType = (zoom: number) => {
-    if (zoom <= regionsMaxZoom) return 'region';
-    if (zoom <= departementsMaxZoom) return 'departement';
-    return 'commune';
-  };
-
-  const onHover = (event: MapLayerMouseEvent) => {
-    event.originalEvent.stopPropagation();
-    const { features, point } = event;
-    const zoom = viewState.zoom ?? regionsMaxZoom; // fallback if zoom is undefined
-
-    const activeType = getActiveFeatureType(zoom);
-    // Only consider features of the active type
-    const feature = features?.find((f) => getAdminTypeFromLayerId(f.layer.id) === activeType);
-    if (feature) {
-      setCursor('pointer');
-      setHoverInfo({ x: point.x, y: point.y, feature, type: activeType });
-    } else {
-      setCursor('grab');
-      setHoverInfo(null);
-    }
-  };
-
-  const onClick = (event: MapLayerMouseEvent) => {
-    const feature = event.features?.[0];
-    if (!feature) return;
-
-    const community = getCommunityDataFromFeature(feature, communityMap);
-    if (community?.siren) {
-      window.open(`/community/${community.siren}`, '_blank');
-    }
-  };
-  const renderTooltip = () => {
-    if (!hoverInfo) return null;
-
-    const { feature, type, x, y } = hoverInfo;
-    const data = getCommunityDataFromFeature(feature, communityMap);
-    return (
-      <div
-        className='pointer-events-none absolute z-50 rounded-lg bg-white px-3 py-2 text-sm text-gray-900 shadow-md'
-        style={{ left: x + 10, top: y + 10 }}
-      >
-        {data ? (
-          <>
-            <div className='font-semibold'>{data.nom}</div>
-            <div className='text-xs text-gray-700'>
-              Population: {data.population?.toLocaleString() ?? 'N/A'}
-            </div>
-            <div className='text-xs text-gray-500'>SIREN: {data.siren ?? 'N/A'}</div>
-            <div className='text-xs text-gray-400'>Code: {data.code_insee}</div>
-            <div className='text-xs text-gray-400'>Subventions score: {data.subventions_score}</div>
-            <div className='text-xs text-gray-400'>Marches Public score: {data.mp_score}</div>
-          </>
-        ) : (
-          <>
-            <div className='text-sm text-gray-600'>Unknown {type}</div>
-            <div className='text-sm text-gray-600'>{feature.properties?.name}</div>
-          </>
-        )}
-      </div>
-    );
-  };
-
+  const { handleMove, handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
+    mapRef,
+    setViewState,
+    setVisibleRegionCodes,
+    setVisibleDepartementCodes,
+    setVisibleCommuneCodes,
+    setHoverInfo,
+    communityMap,
+    choroplethParameter,
+    territoryFilterCode,
+    selectedTerritoryData,
+  });
   return (
-    <div className='relative h-full w-full bg-white'>
+    <div className='relative h-full w-full cursor-grab bg-white'>
       {(communesLoading || departementsLoading || regionsLoading) && (
         <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
@@ -199,16 +119,22 @@ export default function FranceMap({
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
-        cursor={cursor}
         onLoad={() => {
           const mapInstance = mapRef.current?.getMap();
           if (mapInstance) {
-            updateVisibleCodes(mapInstance);
+            updateVisibleCodes(
+              mapInstance,
+              selectedTerritoryData?.filterCode || 'FR',
+              setVisibleRegionCodes,
+              setVisibleDepartementCodes,
+              setVisibleCommuneCodes,
+            );
           }
         }}
       >
         <NavigationControl position='top-right' />
         <ChoroplethLegend />
+        <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
         <Source
           id='statesData'
           type='vector'
@@ -263,7 +189,6 @@ export default function FranceMap({
           />
         </Source>
       </Map>
-      {renderTooltip()}
     </div>
   );
 }

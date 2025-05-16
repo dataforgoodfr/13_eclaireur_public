@@ -1,10 +1,10 @@
 export default function ChoroplethLegend() {
   const grades = [
-    { label: 'A', color: '#2ca02c' },
-    { label: 'B', color: '#a1d99b' },
-    { label: 'C', color: '#ffffb2' },
-    { label: 'D', color: '#fdae6b' },
-    { label: 'E', color: '#de2d26' },
+    { label: 'A', color: '#1976d2' }, // strong blue
+    { label: 'B', color: '#64b5f6' }, // light blue
+    { label: 'C', color: '#b2dfdb' }, // soft teal
+    { label: 'D', color: '#ffe082' }, // soft yellow
+    { label: 'E', color: '#ffb74d' }, // soft orange
   ];
 
   return (

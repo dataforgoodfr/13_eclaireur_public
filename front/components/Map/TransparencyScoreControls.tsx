@@ -1,11 +1,9 @@
 'use client';
 
-import { choroplethDataSource } from './MapLayout';
-
-export type MapDataControlsProps = {
-  selectedDataSource: string;
-  setSelectedDataSource: (value: string) => void;
-};
+export interface TransparencyScoreControlsProps {
+  selectedScore: string;
+  setSelectedScore: (value: string) => void;
+}
 
 const options = [
   {
@@ -18,12 +16,12 @@ const options = [
   },
 ];
 
-export default function MapDataControls({
-  selectedDataSource,
-  setSelectedDataSource,
-}: MapDataControlsProps) {
+export default function TransparencyScoreControls({
+  selectedScore,
+  setSelectedScore,
+}: TransparencyScoreControlsProps) {
   return (
-    <div className='mb-8'>
+    <div className=''>
       <div className='mb-4 flex items-center'>
         <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#062aad] text-sm font-bold text-white'>
           1
@@ -34,12 +32,12 @@ export default function MapDataControls({
       </div>
       <div className='flex gap-3'>
         {options.map((opt) => {
-          const selected = selectedDataSource === opt.value;
+          const selected = selectedScore === opt.value;
           return (
             <button
               key={opt.value}
               type='button'
-              onClick={() => setSelectedDataSource(opt.value)}
+              onClick={() => setSelectedScore(opt.value)}
               className={`rounded border border-black px-4 py-2 text-sm font-medium transition ${
                 selected ? 'bg-[#062aad] text-white' : 'bg-white text-[#062aad]'
               } `}
