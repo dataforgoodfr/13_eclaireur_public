@@ -9,7 +9,7 @@ export type HoverInfo = {
   type: AdminType;
 } | null;
 
-export enum FeatureLevel {
+export enum TerritoryLevel {
   Region = 1,
   Department = 2,
   Commune = 3,
