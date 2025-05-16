@@ -1,11 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
 import { choroplethDataSource } from './MapLayout';
 
 export type MapDataControlsProps = {
@@ -13,32 +7,49 @@ export type MapDataControlsProps = {
   setSelectedDataSource: (value: string) => void;
 };
 
+const options = [
+  {
+    value: 'mp_score',
+    label: 'Transparence des Marchés Publics',
+  },
+  {
+    value: 'subventions_score',
+    label: 'Transparence des Subventions',
+  },
+];
+
 export default function MapDataControls({
   selectedDataSource,
   setSelectedDataSource,
 }: MapDataControlsProps) {
-  console.log(selectedDataSource);
   return (
-    <Card className='w-full'>
-      <CardHeader className='pb-3'>
-        <CardTitle className='text-sm font-medium'>Data Source</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <RadioGroup
-          value={selectedDataSource}
-          onValueChange={setSelectedDataSource}
-          className='space-y-2'
-        >
-          {Object.values(choroplethDataSource).map((source) => (
-            <div key={source.dataName} className='flex items-center space-x-2'>
-              <RadioGroupItem value={source.dataName} id={source.dataName} />
-              <Label htmlFor={source.dataName} className='text-sm'>
-                {source.name}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </CardContent>
-    </Card>
+    <div className='mb-8'>
+      <div className='mb-4 flex items-center'>
+        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#062aad] text-sm font-bold text-white'>
+          1
+        </span>
+        <span className='text-base font-semibold tracking-wide text-[#062aad]'>
+          CHOISISSEZ UN SCORE
+        </span>
+      </div>
+      <div className='flex gap-3'>
+        {options.map((opt) => {
+          const selected = selectedDataSource === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type='button'
+              onClick={() => setSelectedDataSource(opt.value)}
+              className={`rounded border border-black px-4 py-2 text-sm font-medium transition ${
+                selected ? 'bg-[#062aad] text-white' : 'bg-white text-[#062aad]'
+              } `}
+              style={{ minWidth: 180 }}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

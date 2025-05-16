@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMemo } from 'react';
 import Map, {
-  Layer,
   type MapLayerMouseEvent,
   type MapRef,
+  NavigationControl,
   Source,
   type StyleSpecification,
   type ViewState,
@@ -20,6 +20,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
+import ChoroplethLegend from './Legend';
 import type { TerritoryData } from './MapLayout';
 import type { ChoroplethDataSource } from './MapLayout';
 import { BASE_MAP_STYLE, DEFAULT_VIEW_STATE, MAPTILER_API_KEY } from './constants';
@@ -28,28 +29,6 @@ import extractFeaturesByLevel from './utils/extractFeaturesByLevel';
 import getAdminTypeFromLayerId from './utils/getAdminTypeFromLayerId';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 import updateFeatureStates from './utils/updateFeatureState';
-
-function ChoroplethLegend() {
-  return (
-    <div className='absolute bottom-4 left-4 rounded bg-white p-2 shadow'>
-      <div>
-        <span style={{ background: '#2ca02c', padding: '0 8px' }} /> A (Best)
-      </div>
-      <div>
-        <span style={{ background: '#a1d99b', padding: '0 8px' }} /> B
-      </div>
-      <div>
-        <span style={{ background: '#ffffb2', padding: '0 8px' }} /> C
-      </div>
-      <div>
-        <span style={{ background: '#fdae6b', padding: '0 8px' }} /> D
-      </div>
-      <div>
-        <span style={{ background: '#de2d26', padding: '0 8px' }} /> E (Worst)
-      </div>
-    </div>
-  );
-}
 
 interface TerritoryMapProps {
   selectedTerritoryData: TerritoryData | undefined;
@@ -226,6 +205,7 @@ export default function FranceMap({
           }
         }}
       >
+        <NavigationControl position='top-right' />
         <ChoroplethLegend />
         <Source
           id='statesData'

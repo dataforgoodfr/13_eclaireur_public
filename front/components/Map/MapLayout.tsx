@@ -110,7 +110,7 @@ export const territories: Record<string, TerritoryData> = {
 
 export default function MapLayout() {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('subventions_score');
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('mp_score');
 
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
   const selectedChoroplethData = choroplethDataSource[selectedDataSource];
@@ -125,21 +125,18 @@ export default function MapLayout() {
         />
       </div>
       {/* Controls: 1/3 width, orange bg */}
-      <div className='min-h-screen w-1/3 p-8' style={{ background: '#fb8c30' }}>
-        <h2 className='mb-4 text-xl font-bold text-white'>
-          Select France Metropole or Overseas Territory
-        </h2>
+      <div className='min-h-screen w-1/3 bg-[#ffeccf] p-8'>
+        <div>
+          <MapDataControls
+            selectedDataSource={selectedDataSource}
+            setSelectedDataSource={setSelectedDataSource}
+          />
+        </div>
         <div className='mb-6'>
           <FrenchTerritoriesSelect
             territories={territories}
             selectedTerritory={selectedTerritory}
             onSelectTerritory={setSelectedTerritory}
-          />
-        </div>
-        <div>
-          <MapDataControls
-            selectedDataSource={selectedDataSource}
-            setSelectedDataSource={setSelectedDataSource}
           />
         </div>
       </div>
