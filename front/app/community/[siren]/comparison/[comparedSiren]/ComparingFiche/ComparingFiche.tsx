@@ -13,7 +13,7 @@ export function ComparingFiche({ community }: ComparingFicheProps) {
   const scoreTODO = TransparencyScore.A;
 
   return (
-    <div className='flex flex-col rounded bg-gray-100 p-6 space-y-[50px]'>
+    <div className='flex flex-col space-y-[50px] rounded bg-gray-100 p-6'>
       <h5 className='text-center text-lg font-bold'>{community.nom}</h5>
       <CommunityDetails community={community} />
       <TransparencyScoreBar score={scoreTODO} />

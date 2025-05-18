@@ -13,13 +13,17 @@ import { FicheIdentiteSkeleton } from './components/Skeletons/FicheIdentiteSkele
 import { FicheMarchesPublicsSkeleton } from './components/Skeletons/FicheMarchesPublicsSkeleton';
 import { FicheSubventionsSkeleton } from './components/Skeletons/FicheSubventionsSkeleton';
 
-// TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
-export const metadata: Metadata = {
-  title: 'Collectivité',
-  description: 'Détail d’une collectivité',
-};
-
 type CommunityPageProps = { params: Promise<{ siren: string }> };
+
+export async function generateMetadata({ params }: CommunityPageProps): Promise<Metadata> {
+  const siren = (await params).siren;
+  const community = await getCommunity(siren);
+
+  return {
+    title: community.nom,
+    description: `Visualiser les dernières données de dépenses publiques de la collectivite : ${community.nom}`,
+  };
+}
 
 async function getCommunity(siren: string) {
   const communitiesResults = await fetchCommunities({ filters: { siren } });
