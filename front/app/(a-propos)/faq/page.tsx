@@ -155,7 +155,7 @@ export default function Page() {
           <AccordionTrigger>Où puis-je télécharger les données utilisées ?</AccordionTrigger>
           <AccordionContent>
             Les données publiques utilisées par Éclaireur Public peuvent être téléchargées via la
-            barre de navigation ou dans le footer en cliquant sur le bouton télécharger.
+            barre de navigation ou dans le bas de page en cliquant sur le bouton télécharger.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value='item-15'>
