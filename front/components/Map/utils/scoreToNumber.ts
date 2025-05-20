@@ -6,7 +6,9 @@ import { TransparencyScore } from '../../TransparencyScore/constants';
  * @param {TransparencyScore | string | null | undefined} score - The letter score to convert.
  * @returns {number} The corresponding numeric score.
  */
-export default function scoreLetterToNumber(score: TransparencyScore | string | null | undefined): number {
+export default function scoreLetterToNumber(
+  score: TransparencyScore | string | null | undefined,
+): number {
   if (!score) return 5; // Default to worst score if null/undefined
   switch (score) {
     case TransparencyScore.A:

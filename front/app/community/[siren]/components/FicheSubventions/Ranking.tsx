@@ -37,7 +37,12 @@ export default function Ranking({
       .replace(/[\[\]]/g, '') // Supprime les crochets
       .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
       .split(/',|",/) // Split sur des virgules
-      .map((item) => item.trim().replace(/^['"]|['"]$/g, '').toLocaleUpperCase());
+      .map((item) =>
+        item
+          .trim()
+          .replace(/^['"]|['"]$/g, '')
+          .toLocaleUpperCase(),
+      );
   }
 
   function getTopSubs(data: any[]) {
