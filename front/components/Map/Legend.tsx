@@ -9,7 +9,7 @@ export default function ChoroplethLegend() {
 
   return (
     <div className='absolute left-4 top-4 z-20 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white/95 px-4 py-3 shadow-lg'>
-      <div className='mb-1 font-semibold text-gray-700'>Score Legend</div>
+      <div className='mb-1 font-semibold text-gray-700'>Score Légende</div>
       <div className='flex items-center gap-2'>
         {grades.map((g) => (
           <div key={g.label} className='flex flex-col items-center'>

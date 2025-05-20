@@ -35,7 +35,7 @@ export type TerritoryData = {
 
 export const territories: Record<string, TerritoryData> = {
   metropole: {
-    name: 'France Metropole',
+    name: 'France métropolitaine',
     viewState: {
       longitude: 2.2137,
       latitude: 46.2276,
@@ -124,7 +124,6 @@ export default function MapLayout() {
   }, [selectedTerritory]);
   return (
     <div className='flex min-h-screen w-full'>
-      {/* Map: 2/3 width, plain white bg, no border */}
       <div className='flex w-2/3 items-center justify-center bg-white'>
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
@@ -133,7 +132,6 @@ export default function MapLayout() {
           setViewState={setViewState}
         />
       </div>
-      {/* Controls: 1/3 width, orange bg */}
       <div className='flex min-h-screen w-1/3 flex-col bg-[#ffeccf] px-8 py-20'>
         <TransparencyScoreControls
           selectedScore={selectedScore}
