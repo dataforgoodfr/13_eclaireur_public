@@ -164,7 +164,7 @@ export default function FranceMap({
             sourceLayer='administrative'
             minzoom={departementsMaxZoom}
             maxzoom={communesMaxZoom}
-            filter={['==', 'level', 3]}
+            filter={['all', ['==', 'level', 3], ['==', 'level_0', territoryFilterCode || 'FR']]}
             choroplethParameter={choroplethParameter}
           />
           <ChoroplethLayer
