@@ -1,4 +1,4 @@
-export type Contact = {
+export type CommunityContact = {
   /** Primary key [char9] */
   siren: string;
   /** Primary key */

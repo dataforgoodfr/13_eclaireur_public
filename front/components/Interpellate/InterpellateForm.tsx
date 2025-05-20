@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
-import { loadContacts } from '@/utils/localStorage';
+import { ContactsProps, loadContacts } from '@/utils/localStorage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
@@ -30,36 +30,37 @@ export type InterpellateFormProps = {
   missingData: unknown;
   communityParam: string;
 };
+function getRecipientName(contactArray: ContactsProps[]) {
+  return contactArray[0].nom;
+}
 
 export default function InterpellateForm({ missingData, communityParam }: InterpellateFormProps) {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [fullname, setFullname] = useState('');
-  const contactsLoaded = loadContacts();
-  let recipientName;
-  if (contactsLoaded.length > 0) {
-    recipientName = contactsLoaded[0].nom;
-  }
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputName = (e.target as HTMLInputElement).name;
-    if (inputName === 'firstname') {
-      setFirstname(e.target.value);
-    }
-    if (inputName === 'lastname') {
-      setLastname(e.target.value);
-    }
-  };
-  const handleFullName = () => {
-    setFullname(firstname.concat(' ', lastname));
-  };
-  const contactsList = contactsLoaded.map((elt) => elt.contact).join('; ');
-  const formMessage = renderToString(<MessageToContacts from={fullname} to={recipientName} />);
-  console.log(formMessage.toString());
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
   const router = useRouter();
   const {
     formState: { isSubmitting },
     setError,
   } = useForm();
+  const contactsLoaded = loadContacts();
+  const recipientName = getRecipientName(contactsLoaded);
+
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputName = (e.target as HTMLInputElement).name;
+    if (inputName === 'firstname') {
+      setFirstName(e.target.value);
+    }
+    if (inputName === 'lastname') {
+      setLastName(e.target.value);
+    }
+  };
+  const handleFullName = () => {
+    setFullName(firstName.concat(' ', lastName));
+  };
+  const contactsList = contactsLoaded.map((elt) => elt.contact).join('; ');
+  const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
     defaultValues: {
@@ -204,7 +205,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
               id='simulatedTextAreaContent'
               className='w-full cursor-not-allowed rounded-md border border-input bg-slate-300 text-base opacity-35 shadow-sm transition-colors md:text-sm'
             >
-              <MessageToContacts from={fullname} to={recipientName} />
+              <MessageToContacts from={fullName} to={recipientName} />
             </div>
           </div>
 

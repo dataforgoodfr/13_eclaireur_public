@@ -1,7 +1,10 @@
-import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunities-server';
+import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunitiesAccounts-server';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '@/utils/fetchers/contacts/fetchContacts-server';
 
+type CommunityLocalisationCardProps = {
+  communitySiren: string;
+};
 async function getCommunity(siren: string) {
   const communitiesResults = await fetchCommunities({ filters: { siren } });
   if (communitiesResults.length === 0) {
@@ -23,14 +26,18 @@ async function getContacts(siren: string) {
   }
   return contactsResults;
 }
-export const DescDisplay = async ({ communitySiren }: { communitySiren: string }) => {
+export const CommunityLocalisationCard = async ({
+  communitySiren,
+}: CommunityLocalisationCardProps) => {
   const communityAccount = await getCommunityAccounts(communitySiren);
   const { nom_com, nom_reg, nom_dept, dep_clean, type } = communityAccount;
   if (type === 'DEP') {
     return `{nom_reg}`;
-  } else if (type === 'COM') {
+  }
+  if (type === 'COM') {
     return `${nom_dept} (${dep_clean}), ${nom_reg}`;
-  } else if (type === 'REG') {
+  }
+  if (type === 'REG') {
     return ``;
   }
   // TODO : handle thess cases
@@ -47,7 +54,6 @@ export const DescDisplay = async ({ communitySiren }: { communitySiren: string }
 
 export default async function MiniFicheCommunity({ communitySiren }: { communitySiren: string }) {
   const community = await getCommunity(communitySiren);
-  // const contacts = await getContacts(communitySiren);
   const { nom, population, categorie } = community;
   return (
     <div className='right min-w-1/4 px-4 py-2'>
@@ -55,7 +61,7 @@ export default async function MiniFicheCommunity({ communitySiren }: { community
         <h3 className='text-2xl font-bold'>{nom}</h3>
         <p>{categorie}</p>
         <p>
-          <DescDisplay communitySiren={communitySiren} />
+          <CommunityLocalisationCard communitySiren={communitySiren} />
         </p>
         <p>{population} habitants</p>
       </article>

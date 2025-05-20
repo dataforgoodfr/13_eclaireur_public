@@ -26,7 +26,6 @@ export default async function InterpellateStep2({
   const communityName = community.nom;
 
   const contacts = await getContacts(siren);
-  console.log('contacts => ', contacts);
   const emailContacts = contacts.filter((elt) => elt.type_contact === 'MAIL');
   let emailContactsLen = emailContacts.length;
   const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
@@ -52,20 +51,6 @@ export default async function InterpellateStep2({
             </span>
           </h3>
         )}
-
-        {/* <ul className='flex flex-wrap gap-4'>
-          {emailContacts && (
-            <ContactsList
-              contactsitems={emailContacts.map((contact) => ({
-                name: contact.nom,
-                email: contact.contact,
-                photoSrc: 'https://placehold.co/200/png',
-                fonction: 'contact générique',
-              }))}
-            />
-          )}
-        </ul> */}
-        {/* {emailContacts && <ContactsDisplayZone items={emailContacts} siren={siren} />} */}
         {emailContacts && (
           <ul className='flex flex-wrap gap-4'>
             <ContactList contacts={emailContacts} siren={siren} />

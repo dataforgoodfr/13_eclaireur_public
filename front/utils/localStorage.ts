@@ -1,4 +1,4 @@
-type ContactsProps = {
+export type ContactsProps = {
   id?: string;
   nom?: string;
   photoSrc?: string;
