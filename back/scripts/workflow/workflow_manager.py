@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
@@ -46,19 +47,26 @@ class WorkflowManager:
         self.source_folder = get_project_data_path()
         self.source_folder.mkdir(exist_ok=True, parents=True)
 
+    def get_workflows(self) -> list:
+        return [
+            CPVLabelsWorkflow,
+            SireneWorkflow,
+            OfglLoader.from_config,
+            CommunitiesSelector,
+            DataGouvCatalog,
+            MarchesPublicsWorkflow.from_config,
+            FinancialAccounts,
+            ElectedOfficialsWorkflow.from_config,
+            DeclaInteretWorkflow,
+            DataGouvSearcher,
+            CommunitiesContact,
+        ]
+
     def run_workflow(self):
         self.logger.info("Workflow started.")
-        CPVLabelsWorkflow(self.config).run()
-        SireneWorkflow(self.config).run()
-        OfglLoader.from_config(self.config).run()
-        CommunitiesSelector(self.config).run()
-        DataGouvCatalog(self.config).run()
-        MarchesPublicsWorkflow.from_config(self.config).run()
-        FinancialAccounts(self.config).run()
-        ElectedOfficialsWorkflow.from_config(self.config).run()
-        DeclaInteretWorkflow(self.config).run()
-        DataGouvSearcher(self.config).run()
-        CommunitiesContact(self.config).run()
+
+        for workflow in self.get_workflows():
+            workflow(deepcopy(self.config)).run()
 
         self.process_subvention("subventions", self.config["search"]["subventions"])
 
