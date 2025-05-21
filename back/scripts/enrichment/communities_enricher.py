@@ -1,13 +1,12 @@
 import typing
+from datetime import datetime
 from pathlib import Path
 
 import polars as pl
-from datetime import datetime
-
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.bareme_enricher import BaremeEnricher
+from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class CommunitiesEnricher(BaseEnricher):
