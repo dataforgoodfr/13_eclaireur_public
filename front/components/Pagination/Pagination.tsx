@@ -54,7 +54,7 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
   const lastVisiblePages = allPages.slice(totalPage - MAX_PAGE_COUNT_ON_SIDES);
 
   return (
-    <ShadCNPagination>
+    <ShadCNPagination className={totalPage === 1 ? "invisible" : ""}>
       <PaginationContent>
         <ShacCNPaginationItem className='cursor-pointer'>
           <PaginationPrevious onClick={handlePreviousPage} />
