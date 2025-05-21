@@ -13,9 +13,15 @@ export async function GET(request: NextRequest) {
 
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT * FROM collectivites
-      WHERE code_insee IN (${placeholders})
-      AND type = 'DEP'
+      SELECT 
+        c.*,
+        b.subventions_score,
+        b.mp_score
+      FROM collectivites c
+      LEFT JOIN bareme b
+        ON c.siren = b.siren AND b.annee = 2024
+      WHERE c.code_insee IN (${placeholders})
+        AND c.type = 'DEP'
     `;
 
     const departements = await getQueryFromPool(query, codes);
