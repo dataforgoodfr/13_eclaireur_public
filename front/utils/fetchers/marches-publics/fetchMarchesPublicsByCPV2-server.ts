@@ -6,7 +6,10 @@ import { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.MarchesPublics;
 
-function createSQLQueryParams(
+/**
+ * Create the sql query for the marches publics by cpv 2
+ */
+export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,

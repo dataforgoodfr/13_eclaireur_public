@@ -1,5 +1,5 @@
 import { Community } from '@/app/models/community';
-import { formatNumber, stringifyCommunityType } from '@/utils/utils';
+import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
 import { CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';
@@ -25,12 +25,12 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
       />
       <TinyCard
         title={populationLabel}
-        description={`${formatNumber(community.population)} ${populationUnit}`}
+        description={`${formatNumberInteger(community.population)} ${populationUnit}`}
         icon={<Users />}
       />
       <TinyCard
         title={agentsLabel}
-        description={`${formatNumber(community.tranche_effectif)}  ${agentsUnit}`}
+        description={`${formatNumberInteger(community.tranche_effectif)}  ${agentsUnit}`}
         icon={<Landmark />}
       />
       {/** TODO - Add back when budget is in community in db */}

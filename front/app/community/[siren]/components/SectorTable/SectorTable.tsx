@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatFirstLetterToUppercase, formatNumber } from '@/utils/utils';
+import { formatCompact, formatFirstLetterToUppercase, formatNumberInteger } from '@/utils/utils';
 
 import PercentageBarCell from './PercentageBarCell';
 
@@ -23,22 +23,14 @@ export type SectorRow = {
 type SectorTableProps = { data: SectorRow[] };
 
 export default function SectorTable({ data }: SectorTableProps) {
-  function formatAmount(amount: number) {
-    return formatNumber(amount, {
-      notation: 'compact',
-      maximumFractionDigits: 1,
-      minimumFractionDigits: 1,
-    });
-  }
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead className='w-[400px]'>Secteur</TableHead>
           <TableHead></TableHead>
-          <TableHead className='w-[100px] text-right'>Montant (€)</TableHead>
           <TableHead className='w-[80px] text-right'>Part (%)</TableHead>
+          <TableHead className='w-[100px] text-right'>Montant (€)</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -46,8 +38,8 @@ export default function SectorTable({ data }: SectorTableProps) {
           <TableRow key={id}>
             <TableCell className='font-medium'>{formatFirstLetterToUppercase(name)}</TableCell>
             <PercentageBarCell value={percentage * 100} />
-            <TableCell className='text-right'>{formatAmount(amount)}</TableCell>
-            <TableCell className='text-right'>{formatNumber(percentage)}</TableCell>
+            <TableCell className='text-right'>{formatNumberInteger(percentage * 100)}</TableCell>
+            <TableCell className='text-right'>{formatCompact(amount)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

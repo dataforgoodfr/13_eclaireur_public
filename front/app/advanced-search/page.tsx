@@ -9,6 +9,7 @@ import { AdvancedSearchTable } from './components/AdvanceSearchTable';
 import DownloadingButton from './components/DownloadingButton';
 import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
+import { NeedFilterValue } from './components/NeedFilterValue';
 import { NoResults } from './components/NoResults';
 import { useFiltersParams } from './hooks/useFiltersParams';
 import { useOrderParams } from './hooks/useOrderParams';
@@ -38,6 +39,10 @@ function CommunitiesTableWithLoader() {
   const { order } = useOrderParams();
 
   const { data } = useAdvancedSearch(filters, pagination, order);
+
+  if (Object.values(filters).every((x) => x == null)) {
+    return <NeedFilterValue />;
+  }
 
   if (!data) return <Loading />;
 

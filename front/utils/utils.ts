@@ -56,6 +56,14 @@ function formatFrench(value: number, options?: Intl.NumberFormatOptions) {
   return formattedNumber;
 }
 
+export function formatCompact(amount: number) {
+  return formatNumber(amount, {
+    notation: 'compact',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+}
+
 export function formatCompactPrice(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
     notation: 'compact',
@@ -81,6 +89,15 @@ export function formatPrice(value: number, options?: Intl.NumberFormatOptions): 
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
     minimumFractionDigits: 2,
+    ...options,
+  } as const;
+
+  return formatFrench(value, defaultOptions);
+}
+
+export function formatNumberInteger(value: number, options?: Intl.NumberFormatOptions): string {
+  const defaultOptions = {
+    maximumFractionDigits: 0,
     ...options,
   } as const;
 
