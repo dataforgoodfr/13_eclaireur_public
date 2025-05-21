@@ -252,3 +252,11 @@ class TestCSVLoader:
         # Should skip bad lines or handle them gracefully
         assert df.shape[0] > 0  # Should skip bad lines or handle them gracefully
         assert df.shape[0] > 0
+
+    def test_sniffer_error(self):
+        filename = Path(__file__).parent / "fixtures" / "test_sniffer_error.csv"
+
+        loader = CSVLoader(filename)
+        df = loader.load()
+        assert isinstance(df, pd.DataFrame)
+        assert df.shape[1] > 1
