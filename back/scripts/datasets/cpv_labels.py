@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import get_combined_filename
 from back.scripts.utils.decorators import tracker
