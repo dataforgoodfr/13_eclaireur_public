@@ -36,6 +36,7 @@ beautifulsoup4 = "^4.13.3"
 lxml = "^5.3.1"
 responses = "^0.25.6"
 ijson = "^3.3.0"
+fastexcel = "^0.13.0"
 inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
@@ -46,7 +47,7 @@ tox = "^4.4.8"
 [tool.ruff]
 # Same as Black.
 line-length = 96
-target-version = "py310"
+target-version = "py313"
 
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
@@ -104,3 +105,7 @@ exclude = [
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
+
+[tool.ruff.lint.isort]
+    known-first-party = ["back"]
+    section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]

@@ -1,12 +1,23 @@
 import { Suspense } from 'react';
 
-import Loading from '@/components/ui/Loading';
+import type { Metadata } from 'next';
+
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
 import { FicheMarchesPublics } from './components/FicheMarchesPublics/FicheMarchesPublics';
+import { FicheSubventions } from './components/FicheSubventions/FicheSubventions';
+import { FicheIdentiteSkeleton } from './components/Skeletons/FicheIdentiteSkeleton';
+import { FicheMarchesPublicsSkeleton } from './components/Skeletons/FicheMarchesPublicsSkeleton';
+import { FicheSubventionsSkeleton } from './components/Skeletons/FicheSubventionsSkeleton';
+
+// TODO Une fois les développements sur le détail d'une collectivité terminées, ajouter un titre dynamique
+export const metadata: Metadata = {
+  title: 'Collectivité',
+  description: 'Détail d’une collectivité',
+};
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
@@ -26,12 +37,23 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const community = await getCommunity(siren);
 
   return (
-    <Suspense key={community.siren} fallback={<Loading />}>
+    <>
       <FicheHeader community={community} />
-      <FicheIdentite community={community} />
-      <ErrorBoundary>
-        <FicheMarchesPublics siren={siren} />
-      </ErrorBoundary>
-    </Suspense>
+      <div className='mx-auto mt-[140px] flex max-w-screen-xl flex-col items-stretch justify-center gap-y-10 p-10'>
+        <Suspense fallback={<FicheIdentiteSkeleton />}>
+          <FicheIdentite community={community} />
+        </Suspense>
+        <Suspense fallback={<FicheMarchesPublicsSkeleton />}>
+          <ErrorBoundary>
+            <FicheMarchesPublics siren={siren} />
+          </ErrorBoundary>
+        </Suspense>
+        <Suspense fallback={<FicheSubventionsSkeleton />}>
+          <ErrorBoundary>
+            <FicheSubventions siren={siren} />
+          </ErrorBoundary>
+        </Suspense>
+      </div>
+    </>
   );
 }

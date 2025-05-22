@@ -1,4 +1,5 @@
 import pandas as pd
+
 from back.scripts.utils.config import get_project_base_path
 
 

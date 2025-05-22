@@ -1,4 +1,11 @@
-export default function page() {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Mentions légales',
+  description: 'Mentions légales',
+};
+
+export default function Page() {
   return (
     <div className='mx-auto w-full max-w-screen-lg p-6'>
       <h1 className='my-6 text-3xl font-bold'>Mentions légales</h1>

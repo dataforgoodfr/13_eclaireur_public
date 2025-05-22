@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import Footer from '@/components/footer';
-import Navbar from '@/components/navbar';
+import Footer from '@/app/components/Footer';
+import Navbar from '@/app/components/Navbar';
+import { Toaster } from '@/components/ui/toaster';
 
 import Providers from './Providers';
 import './globals.css';
@@ -18,8 +19,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Eclaireur Public',
-  description: '',
+  title: {
+    template: '%s | Éclaireur Public',
+    default: 'Éclaireur Public',
+  },
+  description:
+    'Éclaireur Public est une initiative portée par Transparency International France et Anticor. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
+  robots: 'noindex, nofollow',
+  keywords: [
+    'Transparence financière',
+    'Gestion des dépenses publiques',
+    'Collectivités locales',
+    'Comptes publics',
+    'Réforme comptable',
+    'Budgets locaux',
+    'Finances locales',
+    'Responsabilité publique',
+    'Gouvernance locale',
+    'Dépenses municipales',
+    'Contrôle budgétaire',
+    'Information citoyenne',
+    'Comptabilité publique',
+    'Optimisation des dépenses',
+    'Rapports financiers',
+    'Engagement citoyen',
+    'Transparence budgétaire',
+    'Décentralisation financière',
+    'Audit des dépenses',
+    'Participation citoyenne',
+  ],
 };
 
 export default function RootLayout({
@@ -29,12 +57,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='fr'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
+      >
         <Providers>
           <Navbar />
-          {children}
+          <div className='relative flex-grow pt-[80px]'>{children}</div>
           <Footer />
         </Providers>
+        <Toaster />
       </body>
     </html>
   );

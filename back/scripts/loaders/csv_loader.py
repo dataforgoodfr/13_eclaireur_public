@@ -55,7 +55,6 @@ class CSVLoader(BaseLoader):
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {
-            "delimiter": ",",
             "on_bad_lines": "skip",
             "low_memory": False,
         }
@@ -68,12 +67,16 @@ class CSVLoader(BaseLoader):
         try:
             dialect = sniffer.sniff(sample)
             csv_params["header"] = 0 if sniffer.has_header(sample) else None
-            csv_params["delimiter"] = dialect.delimiter
-            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
-
         except csv.Error as e:
-            LOGGER.warning(f"CSV Sniffer error with encoding: {str(e)}")
-            # If sniffer fails, try with default delimiter
+            LOGGER.warning(f"CSV Sniffer error: {e}")
+            # Try to find the most common delimiter
+            counts = {sep: decoded_content.count(sep) for sep in (",", ";", "\t")}
+            delimiter = max(counts, key=counts.get)
+        else:
+            delimiter = dialect.delimiter
+
+        csv_params["delimiter"] = delimiter
+        LOGGER.debug(f"Detected delimiter: '{delimiter}'")
 
         try:
             df = pd.read_csv(StringIO(decoded_content), **csv_params)

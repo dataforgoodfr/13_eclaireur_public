@@ -1,17 +1,15 @@
 import { PropsWithChildren } from 'react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 
 type FicheCardProps = PropsWithChildren<{
-  title: string;
   subtitle?: string;
 }>;
 
-export function FicheCard({ title, subtitle, children }: FicheCardProps) {
+export function FicheCard({ subtitle, children }: FicheCardProps) {
   return (
-    <Card className='mx-auto max-w-screen-2xl'>
+    <Card>
       <CardHeader>
-        <CardTitle className='text-center'>{title}</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>

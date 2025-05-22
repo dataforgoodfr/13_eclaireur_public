@@ -1,5 +1,6 @@
 import copy
 import logging
+import re
 import ssl
 from collections import Counter
 from pathlib import Path
@@ -13,7 +14,6 @@ from back.scripts.datasets.constants import (
     TOPIC_IGNORE_EXTRA_REGEX,
 )
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders.json_loader import JSONLoader
 from back.scripts.utils.config import get_project_base_path, project_config
 from back.scripts.utils.dataframe_operation import (
@@ -32,11 +32,14 @@ LOGGER = logging.getLogger(__name__)
 
 class TopicAggregator(DatasetAggregator):
     """
-    This class is responsible for loading the datafiles from the files_in_scope dataframe.
-    It loads the schema of the topic, filters the readable files, loads the datafiles into dataframes, and normalizes the data according to the schema.
-    The main difference with DataFilesLoader is that it loads, saves and normalizes each dataset independently.
-    Each step (download, load, normalize) generates a local file that must be saved.
-    A given step on a given file must not be run if the output file already exists on disk.
+    This class is responsible for loading and normalizing the subvention files.
+
+    As a DatasetAggregator subclass, each subvention candidate is downloaded and formatted individually.
+    All properly normalized files are concatenate in the end.
+
+    Given the wide variety of file formats, there are multiple steps to try to identify the columns of interest
+    and properly format them.
+    Files that are not properly read or formatted are logged into the errors.json file with the corresponding error.
     """
 
     def __init__(
@@ -117,30 +120,6 @@ class TopicAggregator(DatasetAggregator):
             .to_dict()
         )
 
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
-        """
-        Read a saved raw dataset and transform its columns and type
-        to fit into the official schema.
-
-        Automatically load a dataset into a pandas dataframe, whatever the initial format.
-        A mixture of explicit matching and keyword matching identify the columns of interest
-        and adapt their name.
-        Ensure the correct data type.
-
-        If the process raises an exception, the file is skipped, a message is logged,
-        and the error is added to the errors.csv tracking file.
-        """
-        opts = {"dtype": str} if file_metadata.format == "csv" else {}
-        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
-        try:
-            df = loader.load()
-            if not isinstance(df, pd.DataFrame):
-                LOGGER.error(f"Unable to load file into a DataFrame = {file_metadata.url}")
-                raise RuntimeError("Unable to load file into a DataFrame")
-            return df.pipe(self._normalize_frame, file_metadata)
-        except Exception as e:
-            self.errors[str(e)].append(raw_filename.parent.name)
-
     def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
         """
         Identify in the dataset columns that are neither in the official schema
@@ -199,6 +178,10 @@ class TopicAggregator(DatasetAggregator):
         optional_features = {}
         if "idAttribuant" not in df.columns:
             optional_features["idAttribuant"] = str(file_metadata.siren).zfill(9) + "0" * 5
+
+        if "dateConvention" not in df.columns:
+            df = self._add_date_from_metadata(df, file_metadata)
+
         if "dateConvention" in df.columns:
             optional_features["annee"] = df["dateConvention"].dt.year
         return df.assign(
@@ -287,3 +270,27 @@ class TopicAggregator(DatasetAggregator):
             if len(options) == 1:
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
+
+    def _add_date_from_metadata(self, df: pd.DataFrame, file_metadata: tuple) -> pd.DataFrame:
+        metadata_year = self.year_from_metadata(file_metadata)
+        if metadata_year:
+            return df.assign(
+                dateConvention=pd.to_datetime(metadata_year, format="%Y", utc=True)
+            )
+        return df
+
+    @staticmethod
+    def year_from_metadata(file_metadata: tuple) -> pd.DataFrame:
+        pat = re.compile(r"\b(20\d{2})\b")
+
+        title = file_metadata.dataset_title or ""
+        title_year = pat.search(title.replace("_", " "))
+        if title_year and len(title_year.groups()) == 1:
+            return title_year.group(1)
+
+        title = file_metadata.title or ""
+        title_year = pat.search(title.replace("_", " "))
+        if title_year and len(title_year.groups()) == 1:
+            return title_year.group(1)
+
+        return None

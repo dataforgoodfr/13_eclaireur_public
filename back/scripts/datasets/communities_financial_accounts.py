@@ -5,11 +5,16 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
+from back.scripts.utils.dataframe_operation import normalize_date
 
 LOGGER = logging.getLogger(__name__)
 
 
 class FinancialAccounts(DatasetAggregator):
+    """
+    Dataset containing financial number of all french communities across multiple years.
+    """
+
     @classmethod
     def get_config_key(cls) -> str:
         return "financial_accounts"
@@ -28,4 +33,9 @@ class FinancialAccounts(DatasetAggregator):
         selected_columns = {
             v: k for k, v in self.columns_mapping[file_metadata.type].dropna().to_dict().items()
         }
-        return df[selected_columns.keys()].rename(columns=selected_columns)
+        return (
+            df[selected_columns.keys()]
+            .rename(columns=selected_columns)
+            .pipe(normalize_date, id_col="exercice")
+            .assign(annee=lambda df: df["exercice"].dt.year)
+        )

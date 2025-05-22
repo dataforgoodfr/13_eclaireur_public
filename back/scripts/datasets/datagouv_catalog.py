@@ -17,6 +17,13 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DataGouvCatalog:
+    """
+    Dataset containing the complete list of urls available on data.gouv, updated daily.
+
+    This workflow depends on Communities (in `add_siren`) to add when available
+    the siren of the publishing organisation.
+    """
+
     DATASET_ID = "5d13a8b6634f41070a43dff3"
 
     @classmethod

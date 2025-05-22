@@ -1,55 +1,63 @@
 import { NoData } from '@/app/community/[siren]/components/NoData';
-import { MarchePublic } from '@/app/models/marche_public';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
+import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 
-import Top10 from './Top10';
+import { FicheCard } from '../FicheCard';
+import Contracts from './Contracts';
+import Distribution from './Distribution';
 import Trends from './Trends';
 
+const tabs = {
+  trends: 'trends',
+  distribution: 'distribution',
+  comparison: 'comparison',
+  details: 'details',
+};
+
 async function getMarchesPublics(siren: string) {
-  const marchesPublicsResults = await fetchMarchesPublics({ acheteur_siren: siren });
+  const marchesPublicsResults = await fetchMarchesPublics({
+    filters: { acheteur_id: siren },
+    // TODO - Remove limit when api to calculate data is done
+    limit: 100,
+  });
 
   return marchesPublicsResults;
 }
 
-type FicheMarchesPublics = {
-  marchesPublics: MarchePublic[];
-};
-
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
+  const availableYears = await fetchMarchesPublicsAvailableYears(siren);
 
   return (
-    <div className='mx-auto my-6 max-w-screen-2xl rounded-xl border p-6 shadow'>
+    <FicheCard>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
       {marchesPublics.length > 0 ? (
-        <Tabs defaultValue='trends'>
+        <Tabs defaultValue={tabs.trends}>
           <TabsList>
-            <TabsTrigger value='trends'>Évolution</TabsTrigger>
-            <TabsTrigger value='distribution'>Répartition</TabsTrigger>
-            <TabsTrigger value='compare'>Comparaison</TabsTrigger>
-            <TabsTrigger value='details'>Classement</TabsTrigger>
+            <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>
+            <TabsTrigger value={tabs.distribution}>Répartition</TabsTrigger>
+            <TabsTrigger value={tabs.comparison}>Comparaison</TabsTrigger>
+            <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
           </TabsList>
-          <TabsContent value='trends'>
+          <TabsContent value={tabs.trends}>
             <Trends data={marchesPublics} />
           </TabsContent>
-          <TabsContent value='distribution'>
-            <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-              Treemap en construction
-            </div>
+          <TabsContent value={tabs.distribution}>
+            <Distribution siren={siren} availableYears={availableYears} />
           </TabsContent>
-          <TabsContent value='compare'>
+          <TabsContent value={tabs.comparison}>
             <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
               En construction
             </div>
           </TabsContent>
-          <TabsContent value='details'>
-            <Top10 rawData={marchesPublics} />
+          <TabsContent value={tabs.details}>
+            <Contracts siren={siren} availableYears={availableYears} />
           </TabsContent>
         </Tabs>
       ) : (
         <NoData />
       )}
-    </div>
+    </FicheCard>
   );
 }

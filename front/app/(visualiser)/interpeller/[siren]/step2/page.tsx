@@ -1,8 +1,9 @@
 import Link from 'next/link';
 
 import ElectedPolician from '@/components/ElectedPoliticians/SinglePoliticianCard';
+import Stepper from '@/components/Interpellate/Stepper';
 import { buttonVariants } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default async function InterpellateStep2({
   params,
@@ -13,6 +14,8 @@ export default async function InterpellateStep2({
   return (
     <section id='interpellation-step2' className='my-16'>
       <article>
+        <Stepper currentStep={2} />
+
         <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>
           Choisissez les élu.e.s à interpeller
         </h2>

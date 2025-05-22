@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import Stepper from '@/components/Interpellate/Stepper';
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -15,9 +16,7 @@ export default function Page() {
 
   return (
     <section id='interpellation-step1-nocommunity' className='my-16'>
-      <div id='stepper'>
-        <img src='placeholder-stepper.png' width='794' height='84' alt='' />
-      </div>
+      <Stepper currentStep={1} />
       <article className='my-6 flex flex-col justify-start'>
         <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
         <div className='ml-16 min-w-[400] self-center'>
@@ -34,20 +33,28 @@ export default function Page() {
           className='float-right'
         />
         <p className='my-6'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis officiis at magnam
-          recusandae incidunt nobis animi facere, illo harum est?
+          Les collectivités sont légalement tenues de publier leurs données administratives en open
+          data selon la loi pour une République Numérique de 2016, comme décrit en détail sur notre{' '}
+          <Link href='/cadre-reglementaire' className='border-b-2 border-black'>
+            page consacrée au cadre règlementaire
+          </Link>
+          .
+        </p>
+        <p className='my-6'>Seules 10% d’entre elles respectent cette obligation.</p>
+        <p className='my-6'>
+          Interpeller vos élu·es, c’est leur rappelez leur responsabilité démocratique et les
+          encourager à mieux rendre compte de l'utilisation des fonds publics.
         </p>
         <p className='my-6'>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus dicta commodi, iste harum
-          quisquam fugit placeat inventore tenetur voluptas, nulla alias ab ea dignissimos
-          reiciendis nemo incidunt doloremque! Consequatur nemo sequi labore, earum dolorum non.
+          Une meilleure publication des données permet de suivre plus factuellement les dépenses
+          publiques, de prévenir d'éventuels abus et d'améliorer la confiance citoyenne.
         </p>
         <p className='my-6'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet quia cumque corrupti,
-          tempora nesciunt expedita hic necessitatibus dicta incidunt ad!
+          Votre engagement est un levier puissant pour renforcer la transparence, prévenir la
+          corruption et faire évoluer les pratiques locales.
         </p>
         <p className='my-6'>
-          <Link href='/' className={buttonVariants({ variant: 'outline' })}>
+          <Link href='/le-projet' className={buttonVariants({ variant: 'outline' })}>
             En savoir plus <ChevronRight />
           </Link>
         </p>

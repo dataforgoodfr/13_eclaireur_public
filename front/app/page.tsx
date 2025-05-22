@@ -1,7 +1,6 @@
-import HomePageHeader from '@/components/HomePageHeader';
-import FranceMap from '@/components/Map/open-tiles';
-import ProjectDescription from '@/components/ProjectDescription';
-import CtaGroup from '@/components/cta/CtaGroup';
+import HomePageHeader from '@/app/components/HomePageHeader';
+import ProjectDescription from '@/app/components/ProjectDescription';
+import CtaGroup from '@/app/components/cta/CtaGroup';
 
 export default async function Home() {
   return (
@@ -9,12 +8,6 @@ export default async function Home() {
       <HomePageHeader />
       <CtaGroup />
       <ProjectDescription />
-      <div className='global-margin mx-auto my-20 flex w-full items-center justify-between'>
-        <div className='place-self-start'>
-          <h3 className='text-2xl font-semibold'>Explorer par région</h3>
-        </div>
-        <FranceMap />
-      </div>
     </>
   );
 }

@@ -15,7 +15,7 @@ type contactDetailsT = {
 };
 
 async function sendContactData(contactDetails: contactDetailsT) {
-  const apiEndpoint = `api/contact`;
+  const apiEndpoint = `api/mailing`;
   const response = await fetch(apiEndpoint, {
     method: 'POST',
     body: JSON.stringify(contactDetails),

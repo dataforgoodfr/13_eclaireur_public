@@ -10,7 +10,7 @@ import { Input } from '../ui/input';
 import Suggestions from './SearchSuggestions';
 
 type SearchBarProps = {
-  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type'>) => void;
+  onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function SearchBar({ onSelect }: SearchBarProps) {
@@ -36,7 +36,7 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
         <Search className='absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground' />
         <Input
           className='pl-8 pr-4'
-          placeholder='Entrez une collectivité territoriale'
+          placeholder='Rechercher par Code postal, Commune, Département, Région'
           onChange={handleInputChange}
           onFocus={handleOnFocus}
           onBlur={(e) => {

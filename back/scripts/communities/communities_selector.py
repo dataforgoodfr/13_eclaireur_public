@@ -9,11 +9,12 @@ from back.scripts.utils.config import get_combined_filename, project_config
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     normalize_column_names,
+    normalize_commune_code,
     normalize_identifiant,
 )
+from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.geolocator import GeoLocator
-from back.scripts.utils.datagouv_api import DataGouvAPI
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +23,6 @@ class CommunitiesSelector:
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
-    It merges, cleans, and enriches datasets with geographic coordinates.
     """
 
     @classmethod
@@ -36,6 +36,9 @@ class CommunitiesSelector:
     def __init__(self, main_config):
         self.main_config = main_config
         self.config = main_config[self.get_config_key()]
+
+        self.data_folder = Path(self.config["data_folder"])
+        self.data_folder.mkdir(parents=True, exist_ok=True)
 
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
@@ -53,7 +56,7 @@ class CommunitiesSelector:
             .pipe(self.add_epci_infos)
             .pipe(self.add_geocoordinates)
             .pipe(self.add_sirene_infos)
-            .pipe(self.add_postal_code)
+            .pipe(self.add_geo_and_postal_metrics)
             .pipe(normalize_column_names)
         )
         communities.to_parquet(self.output_filename, index=False)
@@ -98,34 +101,45 @@ class CommunitiesSelector:
         )
 
     @tracker(ulogger=LOGGER, log_start=True)
-    def add_postal_code(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def add_geo_and_postal_metrics(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
-        Adds postal code information to the communities DataFrame by fetching
-        the latest version from data.gouv.fr using the dataset ID.
+        Adds area (superficie), density and postal code to the communities DataFrame by fetching
+        the latest version from data.gouv.fr using the dataset_id.
         """
-        dataset_id = self.config["postal_code"]["dataset_id"]
+        geo_metrics_filename = self.data_folder / "geo_metrics.parquet"
+        if geo_metrics_filename.exists():
+            LOGGER.info("Loading geometrics dataset from local cache")
+            geo_metrics_df = pd.read_parquet(geo_metrics_filename)
+            return frame.merge(geo_metrics_df, on="code_insee", how="left")
+
+        dataset_id = self.config["geo_metrics_dataset_id"]
+
         resources_df = DataGouvAPI.dataset_resources(dataset_id)
         if resources_df.empty:
             raise ValueError(f"No resources found for dataset ID {dataset_id}")
-        # Find the main CSV resource
+
         resource_url = resources_df.loc[
             resources_df["format"].str.lower() == "csv", "resource_url"
         ].iloc[0]
 
-        postal_code_df = (
-            pd.read_csv(
+        geo_metrics_df = (
+            BaseLoader.loader_factory(
                 resource_url,
-                delimiter=";",
-                encoding="latin1",
-                usecols=["#Code_commune_INSEE", "Code_postal"],
+                dtype={"code_insee": str},
+                columns=["code_insee", "superficie_km2", "code_postal"],
             )
-            .rename(
-                columns={"#Code_commune_INSEE": "code_insee", "Code_postal": "code_postal"},
-            )
+            .load()
+            .pipe(normalize_commune_code, id_col="code_insee")
+            .pipe(normalize_commune_code, id_col="code_postal")
             .drop_duplicates(subset=["code_insee"])
         )
 
-        return frame.merge(postal_code_df, on="code_insee", how="left")
+        LOGGER.info("Saving geometrics dataset to local cache")
+        geo_metrics_df.to_parquet(geo_metrics_filename)
+
+        return frame.merge(geo_metrics_df, on="code_insee", how="left").assign(
+            densite=lambda df: df["population"].div(df["superficie_km2"])
+        )
 
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
