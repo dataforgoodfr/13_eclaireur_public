@@ -66,7 +66,7 @@ export default function Ranking({
           <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
         </div>
         <div className='flex items-center gap-2'>
-          //TODO Fix year selector with this table
+          {/* TODO: Fix year selector with this table */}
           <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
           <DownloadButton />
         </div>
