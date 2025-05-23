@@ -8,6 +8,7 @@ import * as d3 from 'd3';
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
 import TreemapTooltip from './TreemapTooltip';
+import TreemapZoomButtons from './TreemapZoomButtons';
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -41,9 +42,9 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
-type TreemapProps = { data: TreeData, handleClick:Function  };
+type TreemapProps = { data: TreeData; isZoomActive: boolean; handleClick: Function };
 
-export default function Treemap({ data, handleClick }: TreemapProps) {
+export default function Treemap({ data, isZoomActive, handleClick }: TreemapProps) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
     visible: false,
     x: 0,
@@ -52,7 +53,7 @@ export default function Treemap({ data, handleClick }: TreemapProps) {
     value: 0,
   });
   const [containerWidth, setContainerWidth] = useState(0);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
@@ -77,7 +78,7 @@ export default function Treemap({ data, handleClick }: TreemapProps) {
     setTooltip((prev) => ({ ...prev, visible: false }));
   }
 
-    useEffect(() => {
+  useEffect(() => {
     const resize = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
@@ -156,11 +157,18 @@ export default function Treemap({ data, handleClick }: TreemapProps) {
   ));
 
   return (
-    <div ref={containerRef}>
+    <div className='relative' ref={containerRef}>
+      {tooltip.visible && <TreemapTooltip {...tooltip} />}
+      {isZoomActive && (
+        <em className='ml-2'>
+          Filtre actif: affichage des marchés d'un montant inférieur ou égal à{' '}
+          {formatCompactPrice(root.leaves()[0].value ?? 0)}
+        </em>
+      )}
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      {tooltip.visible && <TreemapTooltip {...tooltip} />}
+      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick}/>
     </div>
   );
 }

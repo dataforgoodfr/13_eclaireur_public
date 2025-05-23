@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
-import {  useState } from 'react';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
@@ -19,11 +20,9 @@ export default function MarchesPublicsSectorTreemap({
   siren,
   year,
 }: MarchesPublicsSectorTreemapProps) {
-  const [maxNodeValue, setMaxNodeValue] = useState<string>("");
+  const [maxNodeValue, setMaxNodeValue] = useState<string>('');
 
-  function updateMaxNodeValue(value:string){
-    console.log(value);
-
+  function updateMaxNodeValue(value: string) {
     setMaxNodeValue(value);
   }
 
@@ -54,5 +53,7 @@ export default function MarchesPublicsSectorTreemap({
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} handleClick={updateMaxNodeValue}/>;
+  return (
+    <Treemap data={treeData} isZoomActive={maxNodeValue !== ''} handleClick={updateMaxNodeValue} />
+  );
 }
