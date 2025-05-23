@@ -18,13 +18,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
     const year = parseNumber(searchParams.get('year'));
     const page = parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE;
     const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
+    const maxNodeValue = parseNumber(searchParams.get('maxNodeValue'));
 
     const pagination = {
       page,
       limit,
     };
 
-    const data = await fetchMarchesPublicsByCPV2(siren, year ?? null, pagination);
+    const data = await fetchMarchesPublicsByCPV2(siren, year ?? null, pagination, maxNodeValue ?? null);
 
     return NextResponse.json(data);
   } catch (error) {

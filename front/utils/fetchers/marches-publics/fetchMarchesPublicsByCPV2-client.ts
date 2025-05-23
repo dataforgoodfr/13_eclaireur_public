@@ -16,10 +16,12 @@ export async function fetchMarchesPublicsByCPV2(
   communitySiren: string,
   year: number | null,
   pagination: Pagination,
+  maxNodeValue: string,
 ): Promise<MarchePublicSector[]> {
   const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   if (year !== null) url.searchParams.append('year', year.toString());
+  if (maxNodeValue !== "") url.searchParams.append('maxNodeValue', maxNodeValue);
 
   const { page, limit } = pagination;
   url.searchParams.append('page', page.toString());

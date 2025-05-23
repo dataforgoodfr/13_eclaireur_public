@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Loading from '@/components/ui/Loading';
 import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
 
@@ -15,10 +17,17 @@ type SubventionsSectorTreemapProps = {
 const LIMIT_NUMBER_CATEGORIES = 50;
 
 export default function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
-  const { data, isPending, isError } = useSubventionsByNaf(siren, year === 'All' ? null : year, {
-    page: 1,
-    limit: LIMIT_NUMBER_CATEGORIES,
-  });
+  const [maxNodeValue, setMaxNodeValue] = useState<string>('');
+  const { data, isPending, isError } = useSubventionsByNaf(
+    siren,
+    year === 'All' ? null : year,
+    { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
+    maxNodeValue,
+  );
+
+  function updateMaxNodeValue(value: string) {
+    setMaxNodeValue(value);
+  }
 
   if (isPending || isError) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
@@ -40,5 +49,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} />;
+  return (
+    <Treemap data={treeData} isZoomActive={maxNodeValue !== ''} handleClick={updateMaxNodeValue} />
+  );
 }
