@@ -27,8 +27,7 @@ export default function Ranking({
   data: Subvention[];
   availableYears: number[];
 }) {
-  const defaultYear: number | 'All' =
-    availableYears.length > 0 ? Math.max(...availableYears) : 'All';
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [linesDisplayed, setLinesDisplayed] = useState(0);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 

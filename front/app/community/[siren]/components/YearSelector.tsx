@@ -10,7 +10,7 @@ import { getAllYearsFrom2018ToCurrent } from '@/utils/utils';
 import { YearOption } from '../types/interface';
 
 type YearSelectorProps = {
-  defaultValue: number | 'All';
+  defaultValue: YearOption;
   onSelect: (option: YearOption) => void;
 };
 
