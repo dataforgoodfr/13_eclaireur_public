@@ -9,4 +9,5 @@ export enum DataTable {
   MarchesPublics = 'marches_publics',
   Elus = 'elus',
   Bareme = 'bareme',
+  Contacts = 'communties_contacts',
 }
