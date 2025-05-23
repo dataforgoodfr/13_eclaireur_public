@@ -3,7 +3,7 @@ import re
 import pytest
 import responses
 
-from back.scripts.loaders.base_loader import BaseLoader as BaseLoaderBase
+from back.scripts.loaders import BaseLoader as BaseLoaderBase
 
 
 class BaseLoader(BaseLoaderBase):
