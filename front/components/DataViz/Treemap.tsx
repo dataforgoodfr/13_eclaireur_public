@@ -161,7 +161,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
       {isZoomActive && (
         <em className='ml-2'>
-          Filtre actif: affichage des marchés d'un montant inférieur ou égal à{' '}
+          Filtre actif: affichage limités aux montants inférieurs ou égaux à{' '}
           {formatCompactPrice(root.leaves()[0].value ?? 0)}
         </em>
       )}
