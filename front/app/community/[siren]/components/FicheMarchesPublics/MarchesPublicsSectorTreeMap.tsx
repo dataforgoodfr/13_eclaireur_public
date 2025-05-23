@@ -2,6 +2,7 @@
 
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
+import {  useState } from 'react';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
@@ -18,10 +19,19 @@ export default function MarchesPublicsSectorTreemap({
   siren,
   year,
 }: MarchesPublicsSectorTreemapProps) {
+  const [maxNodeValue, setMaxNodeValue] = useState<string>("");
+
+  function updateMaxNodeValue(value:string){
+    console.log(value);
+
+    setMaxNodeValue(value);
+  }
+
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
     year === 'All' ? null : year,
     { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
+    maxNodeValue,
   );
 
   if (isPending || isError) {
@@ -44,5 +54,5 @@ export default function MarchesPublicsSectorTreemap({
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} />;
+  return <Treemap data={treeData} handleClick={updateMaxNodeValue}/>;
 }
