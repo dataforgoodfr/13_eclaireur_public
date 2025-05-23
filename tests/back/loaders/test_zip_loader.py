@@ -1,6 +1,7 @@
 import pandas as pd
 
-from back.scripts.loaders import JSONLoader, ZipLoader
+from back.scripts.loaders.json_loader import JSONLoader
+from back.scripts.loaders.zip_loader import ZipLoader
 
 
 def test_zip_loader():
