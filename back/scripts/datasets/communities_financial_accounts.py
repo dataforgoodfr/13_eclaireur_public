@@ -4,7 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from back.scripts.datasets.dataset_aggregator import LOADER_CLASSES, DatasetAggregator
+from back.scripts.datasets.dataset_aggregator import DatasetAggregator
+from back.scripts.loaders.common import LOADER_CLASSES
 from back.scripts.utils.dataframe_operation import normalize_date
 
 LOGGER = logging.getLogger(__name__)

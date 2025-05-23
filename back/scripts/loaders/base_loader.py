@@ -1,4 +1,3 @@
-import itertools
 import logging
 import os
 import re
@@ -9,6 +8,8 @@ from urllib.parse import urlparse
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+from back.scripts.loaders.common import LOADER_CLASSES
 
 
 def retry_session(retries, session=None, backoff_factor=0.3):
@@ -126,23 +127,13 @@ class BaseLoader:
         file_extension = cls.get_file_extension(file_url)
         file_media_type = cls.get_file_media_type(file_url)
 
-        for loader_class in BaseLoader.__subclasses__():
+        for loader_class in set(LOADER_CLASSES.values()):
             if loader_class.can_load_file(
                 file_extension=file_extension, file_media_type=file_media_type
             ):
                 return loader_class
 
         return None
-
-    @classmethod
-    def valid_extensions(cls):
-        return sorted(
-            set(
-                itertools.chain.from_iterable(
-                    [s.file_extensions or [] for s in BaseLoader.__subclasses__()]
-                )
-            )
-        )
 
     @classmethod
     def can_load_file(

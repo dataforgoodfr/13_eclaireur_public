@@ -7,11 +7,13 @@ from pathlib import Path
 from typing import Type
 from urllib.parse import urlparse
 
-from back.scripts.loaders import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.common import LOADER_CLASSES, register_loader
 
 LOGGER = logging.getLogger(__name__)
 
 
+@register_loader
 class ZipLoader(BaseLoader):
     file_extensions = {"zip"}
     file_media_type_regex = re.compile(r"zip", flags=re.IGNORECASE)
@@ -89,9 +91,6 @@ class ZipLoader(BaseLoader):
         """
         Resolve the archive file loader class based on the URL path.
         """
-        # TODO: LOADER_CLASSES may be more effective as BaseLoader staticmethod
-        from back.scripts.loaders import LOADER_CLASSES
-
         # First, try to find the archive file loader class based on the filename
         filename = self.get_archive_prefix()
         filename_extension = filename.rsplit(".", 1)[-1]

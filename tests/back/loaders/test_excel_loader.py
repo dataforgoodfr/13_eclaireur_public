@@ -2,7 +2,7 @@ import filecmp
 import tempfile
 from pathlib import Path
 
-from back.scripts.loaders import ExcelLoader
+from back.scripts.loaders.excel_loader import ExcelLoader
 
 
 class TestExcelLoader:

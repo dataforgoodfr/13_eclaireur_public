@@ -3,11 +3,13 @@ from io import StringIO
 
 import pandas as pd
 
-from .base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.common import register_loader
 
 LOGGER = logging.getLogger(__name__)
 
 
+@register_loader
 class XMLLoader(BaseLoader):
     file_extensions = {"xml", "rdf"}
 
