@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Type
 from urllib.parse import urlparse
 
-from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders import BaseLoader
 from back.scripts.loaders.common import LOADER_CLASSES, register_loader
 
 LOGGER = logging.getLogger(__name__)
