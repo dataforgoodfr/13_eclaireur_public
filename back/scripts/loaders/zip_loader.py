@@ -8,7 +8,7 @@ from typing import Type
 from urllib.parse import urlparse
 
 from back.scripts.loaders import BaseLoader
-from back.scripts.loaders.common import LOADER_CLASSES, register_loader
+from back.scripts.loaders.utils import LOADER_CLASSES, register_loader
 
 LOGGER = logging.getLogger(__name__)
 

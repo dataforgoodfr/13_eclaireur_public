@@ -9,7 +9,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from back.scripts.loaders.common import LOADER_CLASSES
+from back.scripts.loaders.utils import LOADER_CLASSES
 
 
 def retry_session(retries, session=None, backoff_factor=0.3):
