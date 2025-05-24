@@ -4,7 +4,7 @@ from io import StringIO
 import pandas as pd
 
 from back.scripts.loaders import BaseLoader
-from back.scripts.loaders.common import register_loader
+from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
 

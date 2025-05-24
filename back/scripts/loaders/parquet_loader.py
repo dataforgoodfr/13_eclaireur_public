@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.loaders.base_loader import BaseLoader
-from back.scripts.loaders.common import register_loader
+from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
 

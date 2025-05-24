@@ -7,7 +7,7 @@ from typing import Tuple
 import pandas as pd
 
 from back.scripts.loaders.base_loader import retry_session
-from back.scripts.loaders.common import LOADER_CLASSES
+from back.scripts.loaders.utils import LOADER_CLASSES
 
 LOGGER = logging.getLogger(__name__)
 
