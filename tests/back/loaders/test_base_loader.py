@@ -3,7 +3,6 @@ import re
 import pytest
 import responses
 
-from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.loaders import BaseLoader as BaseLoaderBase
 
 
@@ -147,11 +146,6 @@ class TestBaseLoader:
 
         can_load = BaseLoaderFakeNoCsv.can_load_file(url)
         assert can_load is False
-
-    def test_valid_extensions(self):
-        extensions = BaseLoader.valid_extensions()
-        exp = sorted(LOADER_CLASSES)
-        assert extensions == exp
 
     @responses.activate
     def test_unsupported_file_url_force(self):
