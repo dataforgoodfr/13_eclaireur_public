@@ -1,0 +1,194 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
+import Map, {
+  type MapRef,
+  NavigationControl,
+  Source,
+  type StyleSpecification,
+  type ViewState,
+} from 'react-map-gl/maplibre';
+
+import type { Community } from '@/app/models/community';
+import { useCommunes } from '@/utils/hooks/map/useCommunes';
+import { useDepartements } from '@/utils/hooks/map/useDepartements';
+import { useRegions } from '@/utils/hooks/map/useRegions';
+import { Loader2 } from 'lucide-react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+import ChoroplethLayer from './ChoroplethLayer';
+import ChoroplethLegend from './Legend';
+import type { TerritoryData } from './MapLayout';
+import type { ChoroplethDataSource } from './MapLayout';
+import MapTooltip from './MapTooltip';
+import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
+import type { HoverInfo } from './types';
+import updateFeatureStates from './utils/updateFeatureState';
+import { updateVisibleCodes } from './utils/updateVisibleCodes';
+import { useFranceMapHandlers } from './utils/useFranceMapHanders';
+
+interface MapProps {
+  selectedTerritoryData: TerritoryData | undefined;
+  selectedChoroplethData: ChoroplethDataSource;
+  viewState: Partial<ViewState>;
+  setViewState: (vs: Partial<ViewState>) => void;
+}
+
+export default function FranceMap({
+  selectedTerritoryData,
+  selectedChoroplethData,
+  viewState,
+  setViewState,
+}: MapProps) {
+  const mapRef = useRef<MapRef>(null);
+
+  const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
+  const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
+  const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
+
+  const regionsMaxZoom = selectedTerritoryData?.regionsMaxZoom || 6;
+  const departementsMaxZoom = selectedTerritoryData?.departementsMaxZoom || 8;
+  const communesMaxZoom = selectedTerritoryData?.communesMaxZoom || 14;
+  const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
+  const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
+
+  const { data: communes, isLoading: communesLoading } = useCommunes(visibleCommuneCodes);
+  const { data: departements, isLoading: departementsLoading } =
+    useDepartements(visibleDepartementCodes);
+  const { data: regions, isLoading: regionsLoading } = useRegions(visibleRegionCodes);
+
+  const communityMap = useMemo(() => {
+    const map: Record<string, Community> = {};
+    (regions ?? []).forEach((c) => {
+      const regionCode = c.code_insee_region;
+      if (regionCode) map[`region-${regionCode}`] = c;
+    });
+    (departements ?? []).forEach((c) => {
+      const deptCode = c.code_insee;
+      if (deptCode) map[`departement-${deptCode}`] = c;
+    });
+    (communes ?? []).forEach((c) => {
+      const communeCode = c.code_insee;
+      if (communeCode) map[`commune-${communeCode}`] = c;
+    });
+    return map;
+  }, [regions, departements, communes]);
+
+  // Update viewState when selectedTerritoryData changes
+  useEffect(() => {
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
+  }, [communityMap, choroplethParameter, territoryFilterCode]);
+
+  const { handleMove, handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
+    mapRef,
+    setViewState,
+    setVisibleRegionCodes,
+    setVisibleDepartementCodes,
+    setVisibleCommuneCodes,
+    setHoverInfo,
+    communityMap,
+    choroplethParameter,
+    territoryFilterCode,
+    selectedTerritoryData,
+  });
+  return (
+    <div className='relative h-full w-full cursor-grab bg-white'>
+      {(communesLoading || departementsLoading || regionsLoading) && (
+        <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
+          <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
+        </div>
+      )}
+      <Map
+        ref={mapRef}
+        mapLib={maplibregl}
+        mapStyle={BASE_MAP_STYLE as StyleSpecification}
+        {...viewState}
+        onMove={handleMove}
+        onMoveEnd={handleMoveEnd}
+        maxZoom={14}
+        interactiveLayerIds={['regions', 'departements', 'communes']}
+        onMouseMove={onHover}
+        onMouseOut={() => setHoverInfo(null)}
+        onClick={onClick}
+        attributionControl={false}
+        dragRotate={false}
+        touchPitch={false}
+        onLoad={() => {
+          const mapInstance = mapRef.current?.getMap();
+          if (mapInstance) {
+            updateVisibleCodes(
+              mapInstance,
+              selectedTerritoryData?.filterCode || 'FR',
+              setVisibleRegionCodes,
+              setVisibleDepartementCodes,
+              setVisibleCommuneCodes,
+            );
+          }
+        }}
+      >
+        <NavigationControl position='top-right' />
+        <ChoroplethLegend />
+        <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
+        <Source
+          id='statesData'
+          type='vector'
+          url={`https://api.maptiler.com/tiles/countries/tiles.json?key=${MAPTILER_API_KEY}`}
+        >
+          <ChoroplethLayer
+            id='regions'
+            source='statesData'
+            sourceLayer='administrative'
+            minzoom={0}
+            maxzoom={regionsMaxZoom}
+            filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
+            choroplethParameter={choroplethParameter}
+          />
+          <ChoroplethLayer
+            id='departements'
+            source='statesData'
+            sourceLayer='administrative'
+            minzoom={regionsMaxZoom}
+            maxzoom={departementsMaxZoom}
+            filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
+            choroplethParameter={choroplethParameter}
+          />
+          <ChoroplethLayer
+            id='communes'
+            source='statesData'
+            sourceLayer='administrative'
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
+            filter={['all', ['==', 'level', 3], ['==', 'level_0', territoryFilterCode || 'FR']]}
+            choroplethParameter={choroplethParameter}
+          />
+          <ChoroplethLayer
+            id='region-borders'
+            source='statesData'
+            sourceLayer='administrative'
+            type='line'
+            minzoom={regionsMaxZoom}
+            maxzoom={communesMaxZoom}
+            filter={['all', ['==', 'level', 1], ['==', 'level_0', territoryFilterCode || 'FR']]}
+            choroplethParameter={choroplethParameter}
+          />
+          <ChoroplethLayer
+            id='department-borders'
+            source='statesData'
+            sourceLayer='administrative'
+            type='line'
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
+            filter={['all', ['==', 'level', 2], ['==', 'level_0', territoryFilterCode || 'FR']]}
+            choroplethParameter={choroplethParameter}
+          />
+        </Source>
+      </Map>
+    </div>
+  );
+}

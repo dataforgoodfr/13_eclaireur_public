@@ -13,8 +13,9 @@ It does the following:
 - write output to `<project-base-path>/ofgl-base-communes-consolidee.test.csv`
 """
 
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 ofgl_cities_full = pd.read_csv(
     Path.cwd() / "ofgl-base-communes-consolidee.csv", sep=";", dtype=str

@@ -1,13 +1,14 @@
-from pathlib import Path
 import typing
-import polars as pl
 from datetime import datetime
+from pathlib import Path
+
+import polars as pl
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.enrichment.base_enricher import BaseEnricher
-from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
-from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
+from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
+from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 
 
 class BaremeEnricher(BaseEnricher):

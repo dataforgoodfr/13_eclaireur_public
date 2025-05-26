@@ -37,7 +37,12 @@ export default function Ranking({
       .replace(/[\[\]]/g, '') // Supprime les crochets
       .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
       .split(/',|",/) // Split sur des virgules
-      .map((item) => item.trim().replace(/^['"]|['"]$/g, '').toLocaleUpperCase());
+      .map((item) =>
+        item
+          .trim()
+          .replace(/^['"]|['"]$/g, '')
+          .toLocaleUpperCase(),
+      );
   }
 
   function getTopSubs(data: any[]) {
@@ -60,7 +65,7 @@ export default function Ranking({
         </div>
         <div className='flex items-center gap-2'>
           <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadButton/>
+          <DownloadButton />
         </div>
       </div>
       <Table className='min-h-[600px]'>

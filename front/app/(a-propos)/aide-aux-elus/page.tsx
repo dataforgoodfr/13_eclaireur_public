@@ -97,7 +97,9 @@ export default function Page() {
       <h2 className='my-12 text-xl font-bold'>Questions fréquentes</h2>
       <Accordion type='single' collapsible className='my-6'>
         <AccordionItem value='item-1'>
-          <AccordionTrigger>Pourquoi ma collectivité a une mauvaise note de transparence ?</AccordionTrigger>
+          <AccordionTrigger>
+            Pourquoi ma collectivité a une mauvaise note de transparence ?
+          </AccordionTrigger>
           <AccordionContent>
             {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
@@ -105,7 +107,9 @@ export default function Page() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value='item-2'>
-          <AccordionTrigger>Que puis-je faire pour améliorer la transparence de ma collectivité ?</AccordionTrigger>
+          <AccordionTrigger>
+            Que puis-je faire pour améliorer la transparence de ma collectivité ?
+          </AccordionTrigger>
           <AccordionContent>
             {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
@@ -113,7 +117,9 @@ export default function Page() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value='item-3'>
-          <AccordionTrigger>Combien ça coûte d'ouvrir les données au grand public ?</AccordionTrigger>
+          <AccordionTrigger>
+            Combien ça coûte d'ouvrir les données au grand public ?
+          </AccordionTrigger>
           <AccordionContent>
             {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
@@ -121,8 +127,10 @@ export default function Page() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value='item-4'>
-          <AccordionTrigger>Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment les
-        faire corriger ?</AccordionTrigger>
+          <AccordionTrigger>
+            Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment les
+            faire corriger ?
+          </AccordionTrigger>
           <AccordionContent>
             {/* TODO - rédiger la réponse */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae assumenda perferendis
