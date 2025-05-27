@@ -6,28 +6,28 @@ import Stepper from '@/components/Interpellate/Stepper';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '@/utils/fetchers/contacts/fetchContacts-server';
 
+async function getContacts(siren: string) {
+  return await fetchContacts({ filters: { siren } });
+}
+async function getCommunity(siren: string) {
+  const communitiesResults = await fetchCommunities({ filters: { siren } });
+  if (communitiesResults.length === 0) {
+    throw new Error(`Community doesnt exist with siren ${siren}`);
+  }
+  return communitiesResults[0];
+}
 export default async function InterpellateStep2({
   params,
 }: {
   params: Promise<{ siren: string }>;
 }) {
   const { siren } = await params;
-  async function getContacts(siren: string) {
-    return await fetchContacts({ filters: { siren } });
-  }
-  async function getCommunity(siren: string) {
-    const communitiesResults = await fetchCommunities({ filters: { siren } });
-    if (communitiesResults.length === 0) {
-      throw new Error(`Community doesnt exist with siren ${siren}`);
-    }
-    return communitiesResults[0];
-  }
   const community = await getCommunity(siren);
   const communityName = community.nom;
 
   const contacts = await getContacts(siren);
   const emailContacts = contacts.filter((elt) => elt.type_contact === 'MAIL');
-  let emailContactsLen = emailContacts.length;
+  const emailContactsLen = emailContacts.length;
   const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
 
   return (

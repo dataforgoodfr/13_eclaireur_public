@@ -65,7 +65,7 @@ export default function ContactList({ contacts, siren }: ContactListProps) {
           <li key={elt.contact} className='relative basis-[310]'>
             <Checkbox
               id={elt.contact}
-              onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, elt)}
+              onCheckedChange={(checked:boolean) => handleCheckboxChange(checked, elt)}
               checked={isAlreadyChecked}
               className='absolute right-2 top-2'
             />

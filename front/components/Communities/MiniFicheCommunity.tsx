@@ -1,4 +1,4 @@
-import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunitiesAccounts-server';
+import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '@/utils/fetchers/contacts/fetchContacts-server';
 
@@ -15,7 +15,7 @@ async function getCommunity(siren: string) {
 async function getCommunityAccounts(siren: string) {
   const communitiesAccountsResults = await fetchCommunityAccounts({ filters: { siren } });
   if (communitiesAccountsResults.length === 0) {
-    throw new Error(`Community doesnt exist with siren ${siren}`);
+    throw new Error(`Community account doesnt exist with siren ${siren}`);
   }
   return communitiesAccountsResults[0];
 }

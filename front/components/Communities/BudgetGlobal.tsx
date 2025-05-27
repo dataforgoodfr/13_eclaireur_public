@@ -1,4 +1,4 @@
-import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunitiesAccounts-server';
+import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
 import { formatPrice } from '@/utils/utils';
 
 async function getCommunityAccounts(siren: string) {

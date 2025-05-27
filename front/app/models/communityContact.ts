@@ -1,10 +1,12 @@
+import { CommunityType } from '@/utils/types';
+
 export type CommunityContact = {
   /** Primary key [char9] */
   siren: string;
   /** Primary key */
-  type: string;
+  type: CommunityType;
   nom: string;
   code_insee: string;
   contact: string;
-  type_contact: string;
+  type_contact: 'MAIL' | 'WEB' | null;
 };

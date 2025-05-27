@@ -46,14 +46,11 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
   const contactsLoaded = loadContacts();
   const recipientName = getRecipientName(contactsLoaded);
 
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputName = (e.target as HTMLInputElement).name;
-    if (inputName === 'firstname') {
-      setFirstName(e.target.value);
-    }
-    if (inputName === 'lastname') {
-      setLastName(e.target.value);
-    }
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstName(e.target.value);
+  };
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastName(e.target.value);
   };
   const handleFullName = () => {
     setFullName(firstName.concat(' ', lastName));
@@ -128,7 +125,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
                     <Input
                       placeholder='Entrez votre prénom'
                       {...field}
-                      onInput={handleFullNameChange}
+                      onInput={handleFirstNameChange}
                       onBlur={handleFullName}
                     />
                   </FormControl>
@@ -147,7 +144,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
                   <Input
                     placeholder='Entrez votre nom'
                     {...field}
-                    onInput={handleFullNameChange}
+                    onInput={handleLastNameChange}
                     onBlur={handleFullName}
                   />
                 </FormControl>
