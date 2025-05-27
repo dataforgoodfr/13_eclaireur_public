@@ -54,10 +54,13 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
   const lastVisiblePages = allPages.slice(totalPage - MAX_PAGE_COUNT_ON_SIDES);
 
   return (
-    <ShadCNPagination className={totalPage === 1 ? "invisible" : ""}>
+    <ShadCNPagination className={totalPage === 1 ? 'invisible' : ''}>
       <PaginationContent>
-        <ShacCNPaginationItem className='cursor-pointer'>
-          <PaginationPrevious onClick={handlePreviousPage} />
+        <ShacCNPaginationItem>
+          <PaginationPrevious
+            className={`cursor-pointer ${activePage === 1 ? 'invisible' : ''}`}
+            onClick={handlePreviousPage}
+          />
         </ShacCNPaginationItem>
         {firstVisiblePages.map((page) => (
           <PaginationItem
@@ -94,7 +97,10 @@ export function Pagination({ totalPage, activePage, onPageChange }: PaginationPr
           />
         ))}
         <ShacCNPaginationItem>
-          <PaginationNext className='cursor-pointer' onClick={handleNextPage} />
+          <PaginationNext
+            className={`cursor-pointer ${activePage === totalPage ? 'invisible' : ''}`}
+            onClick={handleNextPage}
+          />
         </ShacCNPaginationItem>
       </PaginationContent>
     </ShadCNPagination>
