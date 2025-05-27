@@ -64,6 +64,14 @@ export function formatCompact(amount: number) {
   });
 }
 
+export function formatAmount(amount: number) {
+  return formatNumber(amount, {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+  });
+}
+
 export function formatCompactPrice(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
     notation: 'compact',

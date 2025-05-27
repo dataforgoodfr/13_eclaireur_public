@@ -5,6 +5,7 @@ export type TreeLeaf = {
   id: string;
   name: string;
   value: number;
+  part:number
 };
 
 export type TreeNode = {
@@ -13,6 +14,7 @@ export type TreeNode = {
   name: string;
   value: number;
   children: TreeData[];
+  part?: number;
 };
 
 export type TreeData = TreeNode | TreeLeaf;
@@ -23,4 +25,5 @@ export type TooltipProps = {
   y: number;
   name: string;
   value: number;
+  percentage: number,
 };

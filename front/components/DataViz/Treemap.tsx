@@ -50,6 +50,7 @@ export default function Treemap({ data }: TreemapProps) {
     y: 0,
     name: '',
     value: 0,
+    percentage: 0,
   });
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,6 +62,7 @@ export default function Treemap({ data }: TreemapProps) {
       y: e.clientY - 30,
       name: leaf.data.name,
       value: leaf.data.value,
+      percentage: leaf.data.type === 'leaf' ? leaf.data.part : 0,
     });
   }
 
