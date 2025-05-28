@@ -5,7 +5,7 @@ from io import StringIO
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders import EncodedDataLoader
 from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
@@ -14,44 +14,25 @@ WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
 @register_loader
-class CSVLoader(BaseLoader):
+class CSVLoader(EncodedDataLoader):
     file_extensions = {"csv"}
     file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
 
-    def __init__(self, file_url, columns=None, dtype=None, **kwargs):
+    def __init__(
+        self, *args, columns: list[str] | None = None, dtype: dict | None = None, **kwargs
+    ):
         """
         Initialize the CSV loader for either URL or local file.
 
         Args:
-            source (str): URL or file path to the CSV file
             columns (list, optional): List of column names to keep
             dtype (dict, optional): Dictionary of column data types
-            logger (logging.Logger, optional): Logger object for logging
         """
-        super().__init__(file_url, **kwargs)
+        super().__init__(*args, **kwargs)
         self.columns = columns
         self.dtype = dtype
 
-    def process_data(self, data) -> pd.DataFrame | None:
-        # Try different encodings for the data
-        encodings_to_try = ["utf-8-sig", "windows-1252", "latin1", "utf-16"]
-
-        for encoding in encodings_to_try:
-            try:
-                decoded_content = data.decode(encoding)
-                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
-                df = self._process_from_decoded(decoded_content)
-                if isinstance(df, pd.DataFrame):
-                    return df
-
-            except UnicodeDecodeError:
-                # Try the next encoding
-                continue
-
-        LOGGER.error(f"Unable to process CSV content from: {self.file_url}")
-        return None
-
-    def _process_from_decoded(self, decoded_content):
+    def process_from_decoded(self, decoded_content) -> pd.DataFrame | None:
         decoded_content = STARTING_NEWLINE.sub("", decoded_content)
         decoded_content = WINDOWS_NEWLINE.sub("\n", decoded_content)
         sniffer = csv.Sniffer()
@@ -82,10 +63,9 @@ class CSVLoader(BaseLoader):
 
         try:
             df = pd.read_csv(StringIO(decoded_content), **csv_params)
-            LOGGER.debug(
-                f"CSV Data from {self.file_url} loaded successfully. Shape: {df.shape}"
-            )
-            return df
-        except Exception:
-            # Continue to next encoding
+        except Exception as e:
+            LOGGER.warning(f"Error while reading CSV: {e}")
             return
+
+        LOGGER.debug(f"CSV Data from {self.file_url} loaded successfully. Shape: {df.shape}")
+        return df

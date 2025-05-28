@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 from io import BytesIO
 
@@ -6,6 +7,8 @@ import pandas as pd
 
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.loaders.utils import register_loader
+
+LOGGER = logging.getLogger(__name__)
 
 
 @register_loader
@@ -17,27 +20,26 @@ class JSONLoader(BaseLoader):
     file_extensions = {"json"}
     file_media_type_regex = re.compile(r"json", flags=re.IGNORECASE)
 
-    def __init__(self, file_url, key=None, **kwargs):
-        super().__init__(file_url, **kwargs)
+    def __init__(self, *args, key: str | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
         self.key = key
 
     def process_data(self, data):
-        # hacky work-around, but for the time being, only used for schema
-        if self.key is not None:
-            data = json.loads(data)
-            data = data.get(self.key, {})
-            data = json.dumps(data)
-
         content = None
         if isinstance(data, str):
             content = json.loads(data)
         elif isinstance(data, bytes):
+            # utile dans les cas où l'encodage n'est pas utf-8
             content = json.load(BytesIO(data))
         else:
             raise Exception("Unhandled type")
 
+        if self.key is not None:
+            content = content.get(self.key, {})
+
+        # TODO: voir si avec un peu de retravail, `pd.json_normalize` peut faire la même chose
         df = self._process_dict(content)
-        self.logger.debug(f"JSON Data from {self.file_url} loaded.")
+        LOGGER.debug(f"JSON Data from {self.file_url} loaded.")
         return df
 
     def _process_dict(self, json_data: dict | list) -> pd.DataFrame:
