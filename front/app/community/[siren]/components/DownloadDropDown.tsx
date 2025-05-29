@@ -7,7 +7,6 @@ import {
 import { ArrowDownToLine } from 'lucide-react';
 
 type DownloadDropDownProps = {
-  onDownloadData?: () => void;
   onClickDownloadData?: () => void;
   onClickDownloadChart?: () => void;
 };
