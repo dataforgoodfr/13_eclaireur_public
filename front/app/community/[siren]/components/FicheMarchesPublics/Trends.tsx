@@ -47,7 +47,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
       <div className='flex items-baseline justify-between'>
         <div>
           <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
-            Évolution des subventions au cours du temps
+            Évolution des marchés publics au cours du temps
           </h3>
           <GraphSwitch
             isActive={isContractDisplayed}
