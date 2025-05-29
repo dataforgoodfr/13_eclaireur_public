@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 import urllib
-from collections import defaultdict
+import datetime
 from pathlib import Path
 from urllib.error import HTTPError
 
@@ -64,7 +64,19 @@ class DatasetAggregator:
         self.data_folder.mkdir(parents=True, exist_ok=True)
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
-        self.errors = defaultdict(list)
+        self.errors = []
+
+    def _log_error(self, error_code, message, file_url, dataset, step, details=None):
+        error = {
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "error_code": error_code,
+            "message": message,
+            "file_url": file_url,
+            "dataset": dataset,
+            "step": step,
+            "details": details or {}
+        }
+        self.errors.append(error)
 
     def _ensure_url_hash(self, frame: pd.DataFrame) -> pd.DataFrame:
         hashes = frame["url"].apply(_sha256)
@@ -78,27 +90,47 @@ class DatasetAggregator:
             return
         self._process_files()
         self._concatenate_files()
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
+        with open(self.data_folder / "errors.jsonl", "w") as f:
+            for error in self.errors:
+                f.write(json.dumps(error, ensure_ascii=False) + "\n")
 
     def _process_files(self):
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
+                self._log_error(
+                    error_code="FORMAT_NOT_SUPPORTED",
+                    message=f"Format {file_infos.format} not supported",
+                    file_url=getattr(file_infos, "url", None),
+                    dataset=self.get_config_key(),
+                    step="process_files",
+                    details={"title": getattr(file_infos, "title", None)}
+                )
                 continue
 
             if file_infos.url is None or pd.isna(file_infos.url):
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
+                self._log_error(
+                    error_code="URL_NOT_SPECIFIED",
+                    message=f"URL not specified for file {file_infos.title}",
+                    file_url=None,
+                    dataset=self.get_config_key(),
+                    step="process_files",
+                    details={"title": getattr(file_infos, "title", None)}
+                )
                 continue
 
             try:
                 self._process_file(file_infos)
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
-                self.errors[str(e)].append(file_infos.url)
-
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
+                self._log_error(
+                    error_code="PROCESS_FILE_FAILED",
+                    message=str(e),
+                    file_url=getattr(file_infos, "url", None),
+                    dataset=self.get_config_key(),
+                    step="process_files"
+                )
         self._post_process()
         self._concatenate_files()
 
@@ -125,13 +157,24 @@ class DatasetAggregator:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
         except HTTPError as error:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
-            msg = (
-                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
+            msg = f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
+            self._log_error(
+                error_code="HTTP_ERROR",
+                message=msg,
+                file_url=file_metadata.url,
+                dataset=self.get_config_key(),
+                step="download_file",
+                details={"exception": str(error)}
             )
-            self.errors[msg].append(file_metadata.url)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
-            self.errors[str(e)].append(file_metadata.url)
+            self._log_error(
+                error_code="DOWNLOAD_FAILED",
+                message=str(e),
+                file_url=file_metadata.url,
+                dataset=self.get_config_key(),
+                step="download_file"
+            )
         LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
     def _dataset_filename(self, file_metadata: tuple, step: str):
@@ -168,7 +211,13 @@ class DatasetAggregator:
                 raise RuntimeError("Unable to load file into a DataFrame")
             return df.pipe(self._normalize_frame, file_metadata)
         except Exception as e:
-            self.errors[str(e)].append(raw_filename.parent.name)
+            self._log_error(
+                error_code="LOAD_FAILED",
+                message=str(e),
+                file_url=file_metadata.url,
+                dataset=self.get_config_key(),
+                step="read_parse_file"
+            )
 
     def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
         raise NotImplementedError()
