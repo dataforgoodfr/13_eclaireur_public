@@ -1,7 +1,8 @@
-from pathlib import Path
 import typing
+from pathlib import Path
 
 import polars as pl
+
 from back.scripts.utils.config import get_project_base_path
 
 

@@ -1,10 +1,11 @@
-from pathlib import Path
 import typing
+from pathlib import Path
+
 import polars as pl
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
+from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class FinancialEnricher(BaseEnricher):

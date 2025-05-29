@@ -1,6 +1,5 @@
-import { formatCompactPrice, formatNumber } from '@/utils/utils';
+import { formatCompact, formatCompactPrice } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { string } from 'zod';
 
 import { CHART_HEIGHT } from '../constants';
 
@@ -28,7 +27,7 @@ function renderLabel(props: any, isContractDisplayed: boolean) {
       dominantBaseline='middle'
       fontSize='16'
     >
-      {isContractDisplayed ? formatNumber(value) : formatCompactPrice(value)}
+      {isContractDisplayed ? formatCompact(value) : formatCompactPrice(value)}
     </text>
   );
 }

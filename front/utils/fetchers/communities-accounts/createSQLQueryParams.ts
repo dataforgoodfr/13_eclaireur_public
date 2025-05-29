@@ -11,7 +11,7 @@ export type CommunitiesAccountsOptions = {
   limit?: number;
 };
 
-const TABLE_NAME = DataTable.Communities;
+const TABLE_NAME = DataTable.CommunitiesAccount;
 
 /**
  * Create the sql query for the marches publics

@@ -5,13 +5,15 @@ from io import StringIO
 
 import pandas as pd
 
-from .base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
 STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
 WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
+@register_loader
 class CSVLoader(BaseLoader):
     file_extensions = {"csv"}
     file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
@@ -55,7 +57,6 @@ class CSVLoader(BaseLoader):
         sniffer = csv.Sniffer()
         sample = decoded_content[: min(4096, len(decoded_content))]
         csv_params = {
-            "delimiter": ",",
             "on_bad_lines": "skip",
             "low_memory": False,
         }
@@ -68,12 +69,16 @@ class CSVLoader(BaseLoader):
         try:
             dialect = sniffer.sniff(sample)
             csv_params["header"] = 0 if sniffer.has_header(sample) else None
-            csv_params["delimiter"] = dialect.delimiter
-            LOGGER.debug(f"Detected delimiter: '{dialect.delimiter}'")
-
         except csv.Error as e:
-            LOGGER.warning(f"CSV Sniffer error with encoding: {str(e)}")
-            # If sniffer fails, try with default delimiter
+            LOGGER.warning(f"CSV Sniffer error: {e}")
+            # Try to find the most common delimiter
+            counts = {sep: decoded_content.count(sep) for sep in (",", ";", "\t")}
+            delimiter = max(counts, key=counts.get)
+        else:
+            delimiter = dialect.delimiter
+
+        csv_params["delimiter"] = delimiter
+        LOGGER.debug(f"Detected delimiter: '{delimiter}'")
 
         try:
             df = pd.read_csv(StringIO(decoded_content), **csv_params)

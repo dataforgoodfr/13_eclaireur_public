@@ -1,9 +1,11 @@
-from back.scripts.datasets.marches import MarchesPublicsWorkflow
-from pathlib import Path
-from back.scripts.utils.config_manager import ConfigManager
 import os
+from pathlib import Path
+
 import pandas as pd
 import pandas.testing as pdtesting
+
+from back.scripts.datasets.marches import MarchesPublicsWorkflow
+from back.scripts.utils.config_manager import ConfigManager
 
 FIXTURES_DIRECTORY = Path(__file__).parent / "fixtures"
 CONFIG_TEST_FILEPATH = "back/config-test.yaml"

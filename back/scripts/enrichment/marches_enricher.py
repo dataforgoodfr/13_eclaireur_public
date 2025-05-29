@@ -1,21 +1,21 @@
 import json
 import typing
 from pathlib import Path
+
 import pandas as pd
 import polars as pl
-from unidecode import unidecode
 from inflection import underscore as to_snake_case
-
+from unidecode import unidecode
 
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import (
-    normalize_date,
-    normalize_montant,
-    normalize_identifiant,
     IdentifierFormat,
+    normalize_date,
+    normalize_identifiant,
+    normalize_montant,
 )
 
 

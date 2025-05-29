@@ -6,12 +6,12 @@ import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type MarchesPublicsParams = {
   selectors?: (keyof MarchePublic)[];
-  filters?: Partial<Pick<MarchePublic, 'acheteur_siren' | 'acheteur_type'>>;
+  filters?: Partial<Pick<MarchePublic, 'acheteur_id'>>;
   limit?: number;
   orderBy?: { direction: 'asc' | 'desc'; column: keyof MarchePublic };
 };
 
-const TABLE_NAME = DataTable.MarchesPublicsStaging;
+const TABLE_NAME = DataTable.MarchesPublics;
 
 /**
  * Create the sql query for the marches publics
