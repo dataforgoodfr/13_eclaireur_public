@@ -9,4 +9,7 @@ export type CommunityContact = {
   code_insee: string;
   contact: string;
   type_contact: 'MAIL' | 'WEB' | null;
+  /** not in the db yet */
+  fonction?: string;
+  photoSrc?: string;
 };

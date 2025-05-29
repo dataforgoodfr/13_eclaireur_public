@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import ContactList from '@/components/Contacts/ContactList';
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import Stepper from '@/components/Interpellate/Stepper';
@@ -14,13 +12,15 @@ async function getCommunity(siren: string) {
   if (communitiesResults.length === 0) {
     throw new Error(`Community doesnt exist with siren ${siren}`);
   }
+
   return communitiesResults[0];
 }
-export default async function InterpellateStep2({
-  params,
-}: {
+
+type InterpellateStep2Props = {
   params: Promise<{ siren: string }>;
-}) {
+};
+
+export default async function InterpellateStep2({ params }: InterpellateStep2Props) {
   const { siren } = await params;
   const community = await getCommunity(siren);
   const communityName = community.nom;
@@ -53,7 +53,7 @@ export default async function InterpellateStep2({
         )}
         {emailContacts && (
           <ul className='flex flex-wrap gap-4'>
-            <ContactList contacts={emailContacts} siren={siren} />
+            <ContactList contacts={emailContacts} />
           </ul>
         )}
       </article>

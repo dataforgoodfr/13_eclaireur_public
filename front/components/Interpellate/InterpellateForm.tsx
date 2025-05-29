@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { useSelectedContactsContext } from '@/app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
+import { CommunityContact } from '@/app/models/communityContact';
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,7 +21,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
-import { ContactsProps, loadContacts } from '@/utils/localStorage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
@@ -30,21 +31,24 @@ export type InterpellateFormProps = {
   missingData: unknown;
   communityParam: string;
 };
-function getRecipientName(contactArray: ContactsProps[]) {
-  return contactArray[0].nom;
+function getRecipientName(contacts: CommunityContact[]) {
+  if (contacts.length === 0) {
+    return 'No contact selected';
+  }
+
+  return contacts[0].nom;
 }
 
 export default function InterpellateForm({ missingData, communityParam }: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [fullName, setFullName] = useState('');
   const router = useRouter();
   const {
     formState: { isSubmitting },
     setError,
   } = useForm();
-  const contactsLoaded = loadContacts();
-  const recipientName = getRecipientName(contactsLoaded);
+  const { selectedContacts } = useSelectedContactsContext();
+  const recipientName = getRecipientName(selectedContacts);
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstName(e.target.value);
@@ -52,10 +56,9 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLastName(e.target.value);
   };
-  const handleFullName = () => {
-    setFullName(firstName.concat(' ', lastName));
-  };
-  const contactsList = contactsLoaded.map((elt) => elt.contact).join('; ');
+
+  const fullName = `${firstName} ${lastName}`;
+  const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
   const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
 
   const form = useForm<FormSchema>({
@@ -74,11 +77,12 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
 
   const onSubmit = async (data: FormSchema) => {
     const response = await postInterpellate(data);
-    const responseData = await response.json();
     if (!response.ok) {
       alert('Submitting form failed!');
       return;
     }
+
+    const responseData = await response.json();
 
     if (responseData.errors) {
       const errors = responseData.errors;
@@ -126,7 +130,6 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
                       placeholder='Entrez votre prénom'
                       {...field}
                       onInput={handleFirstNameChange}
-                      onBlur={handleFullName}
                     />
                   </FormControl>
                   <FormMessage />
@@ -141,12 +144,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
               <FormItem className='mb-4'>
                 <FormLabel>Nom</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder='Entrez votre nom'
-                    {...field}
-                    onInput={handleLastNameChange}
-                    onBlur={handleFullName}
-                  />
+                  <Input placeholder='Entrez votre nom' {...field} onInput={handleLastNameChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
