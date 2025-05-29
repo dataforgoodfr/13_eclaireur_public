@@ -4,9 +4,11 @@ from io import BytesIO
 
 import pandas as pd
 
-from .base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.utils import register_loader
 
 
+@register_loader
 class JSONLoader(BaseLoader):
     """
     Loader for JSON files.

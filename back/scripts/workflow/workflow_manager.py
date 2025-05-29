@@ -51,13 +51,13 @@ class WorkflowManager:
         return [
             CPVLabelsWorkflow,
             SireneWorkflow,
+            FinancialAccounts,
+            ElectedOfficialsWorkflow.from_config,
+            DeclaInteretWorkflow,
             OfglLoader.from_config,
             CommunitiesSelector,
             DataGouvCatalog,
             MarchesPublicsWorkflow.from_config,
-            FinancialAccounts,
-            ElectedOfficialsWorkflow.from_config,
-            DeclaInteretWorkflow,
             DataGouvSearcher,
             CommunitiesContact,
         ]

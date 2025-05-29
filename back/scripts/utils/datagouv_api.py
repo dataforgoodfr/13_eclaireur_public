@@ -6,7 +6,8 @@ from typing import Tuple
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import BaseLoader, retry_session
+from back.scripts.loaders.base_loader import retry_session
+from back.scripts.loaders.utils import LOADER_CLASSES
 
 LOGGER = logging.getLogger(__name__)
 
@@ -165,7 +166,7 @@ def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
     Select datasets for which we implemented a reader for their formats.
     Log formats to be added.
     """
-    valid_formats = df["format"].isin(BaseLoader.valid_extensions())
+    valid_formats = df["format"].isin(LOADER_CLASSES.keys())
     incorrects = df.loc[~valid_formats, "format"].dropna().value_counts().to_dict()
     LOGGER.info("Non implemented file formats: %s", incorrects)
     return df[valid_formats]
