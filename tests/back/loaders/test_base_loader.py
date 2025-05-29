@@ -150,9 +150,7 @@ class TestBaseLoader:
     @responses.activate
     def test_unsupported_file_url_force(self):
         # TODO: install pytest-mock
-        loader_url = BaseLoader(
-            "https://example.com/file.csv", num_retries=3, delay_between_retries=5
-        )
+        loader_url = BaseLoader("https://example.com/file.csv")
         expected_data = "its working"
         loader_url.can_load_file = lambda _: False
         loader_url.process_data = lambda _: expected_data
@@ -172,7 +170,7 @@ class TestBaseLoader:
 class TestBaseLoaderLoadUrl:
     @pytest.fixture
     def loader_url(self):
-        yield BaseLoader("https://example.com/file.csv", num_retries=3, delay_between_retries=5)
+        yield BaseLoader("https://example.com/file.csv")
 
     @responses.activate
     def test_remote_file_loading_200(self, loader_url):
