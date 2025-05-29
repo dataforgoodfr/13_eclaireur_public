@@ -5,13 +5,15 @@ from io import StringIO
 
 import pandas as pd
 
-from .base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
 STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
 WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
+@register_loader
 class CSVLoader(BaseLoader):
     file_extensions = {"csv"}
     file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
