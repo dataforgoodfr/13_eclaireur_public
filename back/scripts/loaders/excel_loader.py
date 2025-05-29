@@ -5,9 +5,11 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from .base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.utils import register_loader
 
 
+@register_loader
 class ExcelLoader(BaseLoader):
     """
     Loader for Excel files.
