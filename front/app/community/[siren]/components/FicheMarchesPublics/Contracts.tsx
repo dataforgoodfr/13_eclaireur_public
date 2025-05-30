@@ -15,7 +15,8 @@ type ContractsProps = {
 };
 
 export default function Contracts({ siren, availableYears }: ContractsProps) {
-  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
+  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const paginationProps = usePagination();
 
   function handleSelectedYear(option: YearOption) {
@@ -30,7 +31,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
           <h3 className='py-2 text-xl'>Classement par tailles de contrats</h3>
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={handleSelectedYear} />
+          <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
           <DownloadButton />
         </div>
       </div>

@@ -14,6 +14,7 @@ import SubventionsSectorTreemap from './SubventionsSectorTreemap';
 type DistributionProps = { siren: string; availableYears: number[] };
 
 export default function Distribution({ siren, availableYears }: DistributionProps) {
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
@@ -34,7 +35,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           />
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={setSelectedYear} />
+          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
           <DownloadSelector onClickDownloadData={handleClickDownloadData} />
         </div>
       </div>
