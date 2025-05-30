@@ -13,7 +13,7 @@ export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxNodeValue: number | null,
+  maxAmount: number | null,
 ): [string, (string | number)[]] {
   const values: (string | number)[] = [siren];
 
@@ -33,7 +33,7 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY cpv_2, cpv_2_label';
-  if (maxNodeValue !== null) query += ` HAVING SUM(montant) <= ${maxNodeValue}`;
+  if (maxAmount !== null) query += ` HAVING SUM(montant) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';
 
@@ -52,9 +52,9 @@ export async function fetchMarchesPublicsByCPV2(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxNodeValue: number | null,
+  maxAmount: number | null,
 ): Promise<MarchePublicSector[]> {
-  const params = createSQLQueryParams(siren, year, pagination, maxNodeValue);
+  const params = createSQLQueryParams(siren, year, pagination, maxAmount);
   const rows = (await getQueryFromPool(...params)) as MarchePublicSector[];
 
   return rows;

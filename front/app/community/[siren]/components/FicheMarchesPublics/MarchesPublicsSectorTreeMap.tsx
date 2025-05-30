@@ -20,17 +20,17 @@ export default function MarchesPublicsSectorTreemap({
   siren,
   year,
 }: MarchesPublicsSectorTreemapProps) {
-  const [maxNodeValue, setMaxNodeValue] = useState<string>('');
+  const [maxAmount, setmaxAmount] = useState<number | null>(null);
 
-  function updateMaxNodeValue(value: string) {
-    setMaxNodeValue(value);
+  function updatemaxAmount(value: number | null) {
+    setmaxAmount(value);
   }
 
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
     year === 'All' ? null : year,
     { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
-    maxNodeValue,
+    maxAmount,
   );
 
   if (isPending || isError) {
@@ -54,6 +54,6 @@ export default function MarchesPublicsSectorTreemap({
   };
 
   return (
-    <Treemap data={treeData} isZoomActive={maxNodeValue !== ''} handleClick={updateMaxNodeValue} />
+    <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />
   );
 }

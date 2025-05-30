@@ -121,7 +121,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
         onMouseMove={(e) => handleOnMouseMove(e)}
         onMouseLeave={() => handleOnMouseLeave()}
-        onClick={(e) => handleClick(leaf.data.value)}
+        onClick={() => handleClick(leaf.data.value)}
       />
       {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
         <text

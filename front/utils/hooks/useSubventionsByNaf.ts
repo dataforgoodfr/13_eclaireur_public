@@ -12,13 +12,13 @@ export function useSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination = DEFAULT_PAGINATION,
-  maxNodeValue: string,
+  maxAmount: number | null,
 ) {
-  const queryKey = ['communities', siren, 'subventions', 'naf2', year, pagination, maxNodeValue];
+  const queryKey = ['communities', siren, 'subventions', 'naf2', year, pagination, maxAmount];
 
   const query = useQuery({
     queryKey,
-    queryFn: () => fetchSubventionsByNaf(siren, year, pagination, maxNodeValue),
+    queryFn: () => fetchSubventionsByNaf(siren, year, pagination, maxAmount),
   });
 
   return query;

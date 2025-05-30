@@ -12,7 +12,7 @@ export default function TreemapZoomButtons({ isZoomActive, handleClick}: Treemap
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={() => handleClick("")} disabled={!isZoomActive} variant='outline'>
+              <Button onClick={() => handleClick()} disabled={!isZoomActive} variant='outline'>
                 <ZoomOut />
               </Button>
             </TooltipTrigger>

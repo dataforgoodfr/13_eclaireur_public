@@ -13,7 +13,7 @@ export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxNodeValue: number | null,
+  maxAmount: number | null,
 ): [string, (string | number)[]] {
   const values: (string | number)[] = [siren];
 
@@ -42,7 +42,7 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY naf2, label';
-  if (maxNodeValue !== null) query += ` HAVING SUM(montant) <= ${maxNodeValue}`;
+  if (maxAmount !== null) query += ` HAVING SUM(montant) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';
 
@@ -61,9 +61,9 @@ export async function fetchSubventionsByNaf(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxNodeValue: number | null,
+  maxAmount: number | null,
 ): Promise<SubventionSector[]> {
-  const params = createSQLQueryParams(siren, year, pagination, maxNodeValue);
+  const params = createSQLQueryParams(siren, year, pagination, maxAmount);
   const rows = (await getQueryFromPool(...params)) as SubventionSector[];
 
   return rows;

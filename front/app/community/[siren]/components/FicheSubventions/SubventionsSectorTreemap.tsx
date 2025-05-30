@@ -17,16 +17,16 @@ type SubventionsSectorTreemapProps = {
 const LIMIT_NUMBER_CATEGORIES = 50;
 
 export default function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
-  const [maxNodeValue, setMaxNodeValue] = useState<string>('');
+  const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const { data, isPending, isError } = useSubventionsByNaf(
     siren,
     year === 'All' ? null : year,
     { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
-    maxNodeValue,
+    maxAmount,
   );
 
-  function updateMaxNodeValue(value: string) {
-    setMaxNodeValue(value);
+  function updatemaxAmount(value: number | null) {
+    setmaxAmount(value);
   }
 
   if (isPending || isError) {
@@ -49,7 +49,5 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     children: treeLeaves,
   };
 
-  return (
-    <Treemap data={treeData} isZoomActive={maxNodeValue !== ''} handleClick={updateMaxNodeValue} />
-  );
+  return <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />;
 }

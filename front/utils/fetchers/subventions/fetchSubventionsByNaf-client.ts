@@ -16,12 +16,12 @@ export async function fetchSubventionsByNaf(
   communitySiren: string,
   year: number | null,
   pagination: Pagination,
-  maxNodeValue: string,
+  maxAmount: number | null,
 ): Promise<SubventionSector[]> {
   const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   if (year !== null) url.searchParams.append('year', year.toString());
-  if (maxNodeValue !== "") url.searchParams.append('maxNodeValue', maxNodeValue);
+  if (maxAmount !== null) url.searchParams.append('maxAmount', maxAmount.toString());
 
   const { page, limit } = pagination;
   url.searchParams.append('page', page.toString());

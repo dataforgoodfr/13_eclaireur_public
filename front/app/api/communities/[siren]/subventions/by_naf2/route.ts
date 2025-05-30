@@ -18,14 +18,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
     const year = parseNumber(searchParams.get('year'));
     const page = parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE;
     const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
-    const maxNodeValue = parseNumber(searchParams.get('maxNodeValue'));
+    const maxAmount = parseNumber(searchParams.get('maxAmount'));
 
     const pagination = {
       page,
       limit,
     };
 
-    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxNodeValue ?? null);
+    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxAmount ?? null);
 
     return NextResponse.json(data);
   } catch (error) {
