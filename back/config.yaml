@@ -45,6 +45,7 @@ cpv_labels:
 
 communities_contacts:
   data_folder: back/data/communities_contacts
+  combined_filename: back/data/communities_contacts/communities_contacts.parquet
   url: null
 
 search:
