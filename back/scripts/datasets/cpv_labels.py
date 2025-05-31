@@ -16,4 +16,4 @@ class CPVLabelsWorkflow(BaseDataset):
     def run(self) -> None:
         if self.output_filename.exists():
             return
-        BaseLoader.loader_factory(self.config["url"]).load().to_parquet(self._output_filename)
+        BaseLoader.loader_factory(self.config["url"]).load().to_parquet(self.output_filename)
