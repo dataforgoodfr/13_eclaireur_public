@@ -87,6 +87,7 @@ file_age_to_check:
 
 elected_officials:
   data_folder: back/data/elected_officials
+  combined_filename: back/data/elected_officials/elected_officials.parquet
 
 sirene:
   data_folder: back/data/sirene
