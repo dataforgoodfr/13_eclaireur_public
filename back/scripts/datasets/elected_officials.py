@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import normalize_date
 from back.scripts.utils.datagouv_api import DataGouvAPI
 
@@ -54,14 +53,6 @@ class ElectedOfficialsWorkflow(DatasetAggregator):
     @classmethod
     def get_config_key(cls) -> str:
         return "elected_officials"
-
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return (
-            get_project_base_path()
-            / main_config[cls.get_config_key()]["data_folder"]
-            / "elected_officials.parquet"
-        )
 
     @classmethod
     def from_config(cls, config: dict):
