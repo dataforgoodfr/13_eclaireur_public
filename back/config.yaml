@@ -105,6 +105,7 @@ datagouv_api:
 
 declarations_interet:
   data_folder: back/data/declarations_interet
+  combined_filename: back/data/declarations_interet/elected_officials.parquet
   url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
 
 financial_accounts:

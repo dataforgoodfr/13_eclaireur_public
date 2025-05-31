@@ -2,13 +2,13 @@ import logging
 import urllib.request
 from datetime import datetime
 from itertools import chain
-from pathlib import Path
 
 import pandas as pd
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from tqdm import tqdm
 
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.beautifulsoup_utils import (
     get_tag_bool,
     get_tag_datetime,
@@ -16,7 +16,6 @@ from back.scripts.utils.beautifulsoup_utils import (
     get_tag_int,
     get_tag_text,
 )
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
     return get_tag_bool(tag, exclude=exclude)
 
 
-class DeclaInteretWorkflow:
+class DeclaInteretWorkflow(BaseDataset):
     """
     Dataset containing declarations of interest of elected officials.
 
@@ -58,21 +57,9 @@ class DeclaInteretWorkflow:
     def get_config_key(cls) -> str:
         return "declarations_interet"
 
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return (
-            get_project_base_path()
-            / main_config[cls.get_config_key()]["data_folder"]
-            / "elected_officials.parquet"
-        )
-
-    def __init__(self, main_config: dict):
-        self._config = main_config[self.get_config_key()]
-        self.data_folder = Path(self._config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.input_filename = self.data_folder / "declarations.xml"
-        self.output_filename = self.get_output_path(main_config)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
@@ -82,7 +69,7 @@ class DeclaInteretWorkflow:
     def _fetch_xml(self):
         if self.input_filename.exists():
             return
-        urllib.request.urlretrieve(self._config["url"], self.input_filename)
+        urllib.request.urlretrieve(self.config["url"], self.input_filename)
 
     def _format_to_parquet(self):
         if self.output_filename.exists():
