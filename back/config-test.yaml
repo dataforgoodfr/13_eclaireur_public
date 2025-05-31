@@ -26,6 +26,7 @@ communities:
 
 communities_contacts:
   data_folder: back/tests/data/communities_contacts
+  combined_filename: back/tests/data/communities_contacts/communities_contacts.parquet
   url: file:./back/tests/inputs/communities_contact.tar.bz2
 
 cpv_labels:
@@ -79,6 +80,7 @@ file_age_to_check:
 
 elected_officials:
   data_folder: back/tests/data/elected_officials
+  combined_filename: back/tests/data/elected_officials/elected_officials.parquet
 
 sirene:
   data_folder: back/tests/data/sirene
@@ -97,6 +99,7 @@ datagouv_api:
 
 declarations_interet:
   data_folder: back/tests/data/declarations_interet
+  combined_filename: back/tests/data/declarations_interet/elected_officials.parquet
   url:  file:./tests/back/datasets/fixtures/declaration.xml
 
 financial_accounts:
