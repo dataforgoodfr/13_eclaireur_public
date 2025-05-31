@@ -7,8 +7,8 @@ import polars as pl
 from polars import col
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
-from back.scripts.utils.config import get_combined_filename
 from back.scripts.utils.dataframe_operation import expand_json_columns, normalize_column_names
 from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
@@ -16,7 +16,7 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 
-class DataGouvCatalog:
+class DataGouvCatalog(BaseDataset):
     """
     Dataset containing the complete list of urls available on data.gouv, updated daily.
 
@@ -30,24 +30,12 @@ class DataGouvCatalog:
     def get_config_key(cls) -> str:
         return "datagouv_catalog"
 
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return get_combined_filename(main_config, cls.get_config_key())
-
-    def __init__(self, main_config: dict):
-        self.main_config = main_config
-        self._config = main_config[self.get_config_key()]
-        self.data_folder = Path(self._config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-        self.output_filename = DataGouvCatalog.get_output_path(main_config)
-        self.output_filename.parent.mkdir(exist_ok=True, parents=True)
-
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self):
         if self.output_filename.exists():
             return
 
-        url = self._config.get("catalog_url") or self._catalog_url()
+        url = self.config.get("catalog_url") or self._catalog_url()
 
         catalog = BaseLoader.loader_factory(url).load()
         if not isinstance(catalog, pd.DataFrame):
