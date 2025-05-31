@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from back.scripts.utils.config import get_combined_filename, get_project_base_path
+from back.scripts.utils.config import get_project_base_path
 
 
 class BaseDataset:
@@ -14,7 +14,7 @@ class BaseDataset:
 
     @classmethod
     def get_output_path(cls, main_config: dict) -> Path:
-        return get_combined_filename(main_config, cls.get_config_key())
+        return get_project_base_path() / cls.get_config(main_config)["combined_filename"]
 
     def __init__(self, main_config: dict, *args, **kwargs):
         self.main_config = main_config
