@@ -98,6 +98,7 @@ datagouv_api:
 
 declarations_interet:
   data_folder: back/tests/data/declarations_interet
+  combined_filename: back/tests/data/declarations_interet/elected_officials.parquet
   url:  file:./tests/back/datasets/fixtures/declaration.xml
 
 financial_accounts:
