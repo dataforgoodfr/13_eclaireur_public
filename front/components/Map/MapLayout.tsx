@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
-import FranceMap from './Map';
 import TransparencyScoreControls from './TransparencyScoreControls';
+import FranceMap from './map';
 
 export type ChoroplethDataSource = {
   name: string;

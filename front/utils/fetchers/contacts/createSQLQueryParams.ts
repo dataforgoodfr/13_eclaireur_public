@@ -1,32 +1,28 @@
-import { Community } from '@/app/models/community';
+import { CommunityContact } from '@/app/models/communityContact';
 
-import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
 import { Pagination } from '../types';
 
-export type CommunitiesAccountsOptions = {
-  selectors?: (keyof Community)[];
-  filters?: Partial<Pick<Community, 'siren' | 'type'>>;
+export type ContactsOptions = {
+  selectors?: (keyof CommunityContact)[];
+  filters?: Partial<Pick<CommunityContact, 'siren' | 'type'>>;
   limit?: number;
 };
 
-const TABLE_NAME = DataTable.CommunitiesAccount;
+const TABLE_NAME = DataTable.Contacts;
 
 /**
  * Create the sql query for the marches publics
  * @param options
  * @returns
  */
-export function createSQLQueryParams(
-  options?: CommunitiesAccountsOptions,
-  pagination?: Pagination,
-) {
-  let values: (CommunityType | number | string)[] = [];
+export function createSQLQueryParams(options?: ContactsOptions, pagination?: Pagination) {
+  let values: (number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
   let query = `
-    SELECT ${selectorsStringified}, count(*) OVER() AS full_count
+    SELECT ${selectorsStringified}
     FROM ${TABLE_NAME}
    `;
 
