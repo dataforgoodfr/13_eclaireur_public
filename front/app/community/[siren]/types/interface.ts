@@ -14,10 +14,9 @@ export type TreeNode = {
   name: string;
   value: number;
   children: TreeData[];
-  part?: number;
 };
 
-export type TreeData = TreeNode | TreeLeaf;
+export type TreeData = TreeNode | TreeLeaf;   
 
 export type TooltipProps = {
   visible?: boolean;
