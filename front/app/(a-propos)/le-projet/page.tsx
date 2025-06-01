@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Le Projet Éclaireur Public',
+  title: 'Le Projet',
   description:
     'Éclaireur Public a deux objectifs principaux : ouvrir les données des collectivités locales, éclairer et informer les citoyens sur les enjeux locaux',
 };

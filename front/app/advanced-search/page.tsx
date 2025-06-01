@@ -1,19 +1,19 @@
-'use client';
-
 import { Suspense } from 'react';
 
-import Loading from '@/components/ui/Loading';
-import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
+import type { Metadata } from 'next';
 
-import { AdvancedSearchTable } from './components/AdvanceSearchTable';
+import Loading from '@/components/ui/Loading';
+
+import CommunitiesTableWithLoader from './components/CommunitiesTableWithLoader';
 import DownloadingButton from './components/DownloadingButton';
 import { Filters } from './components/Filters/Filters';
 import GoBackHome from './components/GoBackHome';
-import { NeedFilterValue } from './components/NeedFilterValue';
-import { NoResults } from './components/NoResults';
-import { useFiltersParams } from './hooks/useFiltersParams';
-import { useOrderParams } from './hooks/useOrderParams';
-import { usePaginationParams } from './hooks/usePaginationParams';
+
+export const metadata: Metadata = {
+  title: 'Recherche avancée',
+  description:
+    'Télécharger les données des collectivités sélectionnées par les filtres de recherche.',
+};
 
 export default function Page() {
   return (
@@ -31,24 +31,4 @@ export default function Page() {
       </Suspense>
     </div>
   );
-}
-
-function CommunitiesTableWithLoader() {
-  const { filters } = useFiltersParams();
-  const { pagination } = usePaginationParams();
-  const { order } = useOrderParams();
-
-  const { data } = useAdvancedSearch(filters, pagination, order);
-
-  if (Object.values(filters).every((x) => x == null)) {
-    return <NeedFilterValue />;
-  }
-
-  if (!data) return <Loading />;
-
-  if (data && data.length > 0) {
-    return <AdvancedSearchTable communities={data} />;
-  }
-
-  return <NoResults />;
 }
