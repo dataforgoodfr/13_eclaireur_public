@@ -27,7 +27,9 @@ class FinancialAccounts(DatasetAggregator):
         self.columns = Counter()
         self.columns_mapping = pd.read_csv(config["columns_mapping"], sep=";").set_index("name")
 
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+    def _read_parse_file(
+        self, file_metadata: pd.DataFrame, raw_filename: Path
+    ) -> pd.DataFrame | None:
         loader = LOADER_CLASSES[file_metadata.format](raw_filename)
         df = loader.load().assign(type=file_metadata.type)
         self.columns.update(df.columns)

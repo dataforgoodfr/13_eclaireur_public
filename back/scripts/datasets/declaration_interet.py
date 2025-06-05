@@ -157,7 +157,7 @@ class DeclaInteretWorkflow:
         }
 
     @staticmethod
-    def _non_parsed_sections(declaration: BeautifulSoup) -> str:
+    def _non_parsed_sections(declaration: BeautifulSoup) -> str | None:
         """
         Identify sections with content but not yet implemented.
         """
