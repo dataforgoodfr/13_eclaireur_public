@@ -65,7 +65,7 @@ class ElectedOfficialsWorkflow(DatasetAggregator):
         )
         return cls(resources, config)
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
         present_columns = {k: v for k, v in RENAME_COMMON_COLUMNS.items() if k in df.columns}
         return (
             df[present_columns.keys()]

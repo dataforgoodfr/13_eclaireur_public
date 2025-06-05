@@ -71,7 +71,7 @@ class SireneWorkflow(BaseDataset):
             return
         self._download_if_not_exists(self.config["url"], self.input_filename)
 
-    def _download_if_not_exists(self, url: str, file_path: Path = None) -> Path:
+    def _download_if_not_exists(self, url: str, file_path: Path | None = None) -> Path:
         """
         Download a file from a URL with rate limiting to avoid server throttling.
 

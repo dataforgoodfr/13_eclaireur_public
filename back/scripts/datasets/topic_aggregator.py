@@ -79,7 +79,7 @@ class TopicAggregator(DatasetAggregator):
     def get_output_path(cls, main_config: dict, topic: str = "subventions") -> Path:
         return Path(main_config[cls.get_config_key()]["combined_filename"] % {"topic": topic})
 
-    def _post_process(self):
+    def _post_process(self) -> None:
         pd.DataFrame.from_dict(self.extra_columns, orient="index").to_csv(
             self.data_folder / "extra_columns.csv"
         )
@@ -87,7 +87,7 @@ class TopicAggregator(DatasetAggregator):
             self.data_folder / "missing_data.parquet"
         )
 
-    def _load_schema(self, schema_topic_config):
+    def _load_schema(self, schema_topic_config: dict) -> None:
         """
         Load a Dataframe in memory containing official columns conventions.
         """
@@ -109,7 +109,7 @@ class TopicAggregator(DatasetAggregator):
         ).assign(lower_name=lambda df: df["name"].str.lower())
         self.official_topic_schema.to_parquet(schema_filename)
 
-    def _load_manual_column_rename(self):
+    def _load_manual_column_rename(self) -> None:
         """
         Load a manually defiend mapping between the original column name and an official column name.
         """
@@ -120,7 +120,7 @@ class TopicAggregator(DatasetAggregator):
             .to_dict()
         )
 
-    def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: tuple):
+    def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
         """
         Identify in the dataset columns that are neither in the official schema
         nor in the list of columns to ignore.
@@ -142,7 +142,7 @@ class TopicAggregator(DatasetAggregator):
         LOGGER.warning(f"File {file_metadata.url} has extra columns: {extra_columns}")
         raise RuntimeError("File has extra columns")
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
         """
         Set of steps to transform a raw DataFrame into a normalized one.
         """
@@ -171,7 +171,7 @@ class TopicAggregator(DatasetAggregator):
             .rename(columns=to_snake_case)
         )
 
-    def _add_metadata(self, df: pd.DataFrame, file_metadata: tuple):
+    def _add_metadata(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
         """
         Add to the normalized dataframe infos about the source of the raw file.
         """
@@ -191,7 +191,9 @@ class TopicAggregator(DatasetAggregator):
             **optional_features,
         )
 
-    def _clean_missing_values(self, df: pd.DataFrame, file_metadata: tuple):
+    def _clean_missing_values(
+        self, df: pd.DataFrame, file_metadata: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         Clean the dataframe by removing rows where all values are missing.
         """
@@ -224,7 +226,7 @@ class TopicAggregator(DatasetAggregator):
         return df[~mask]
 
     @staticmethod
-    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: tuple):
+    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
         if len(df.columns) != len(set(df.columns)):
             LOGGER.error(f"Data with duplicate columns : {file_metadata.url_hash}")
             raise RuntimeError("Data with duplicate columns")
@@ -237,7 +239,7 @@ class TopicAggregator(DatasetAggregator):
         return frame[columns]
 
     @staticmethod
-    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: tuple):
+    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
         """
         Flag datasets which have more unique attribuant siret than beneficiaire
         """
@@ -271,7 +273,9 @@ class TopicAggregator(DatasetAggregator):
                 matching[col] = list(options)[0]
         return frame.rename(columns=matching)
 
-    def _add_date_from_metadata(self, df: pd.DataFrame, file_metadata: tuple) -> pd.DataFrame:
+    def _add_date_from_metadata(
+        self, df: pd.DataFrame, file_metadata: pd.DataFrame
+    ) -> pd.DataFrame:
         metadata_year = self.year_from_metadata(file_metadata)
         if metadata_year:
             return df.assign(
@@ -280,7 +284,7 @@ class TopicAggregator(DatasetAggregator):
         return df
 
     @staticmethod
-    def year_from_metadata(file_metadata: tuple) -> pd.DataFrame:
+    def year_from_metadata(file_metadata: pd.DataFrame) -> str | None:
         pat = re.compile(r"\b(20\d{2})\b")
 
         title = file_metadata.dataset_title or ""

@@ -55,7 +55,9 @@ class OfglLoader(DatasetAggregator):
         self.columns = pd.DataFrame()
 
     @tracker(ulogger=LOGGER, inputs=True)
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+    def _read_parse_file(
+        self, file_metadata: pd.DataFrame, raw_filename: Path
+    ) -> pd.DataFrame | None:
         # Because parquet format seems buggy on the platform for commune;
         # We are forced to use csv which need some typing help
         opts = {"columns": READ_COLUMNS.keys(), "dtype": COM_CSV_DTYPES}

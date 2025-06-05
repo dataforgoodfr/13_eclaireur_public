@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-import urllib
+import urllib.request
 from collections import defaultdict
 from pathlib import Path
 from urllib.error import HTTPError
@@ -67,7 +67,7 @@ class DatasetAggregator(BaseDataset):
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
 
-    def _process_files(self):
+    def _process_files(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -91,14 +91,14 @@ class DatasetAggregator(BaseDataset):
     def _post_process(self):
         pass
 
-    def _process_file(self, file: tuple) -> None:
+    def _process_file(self, file: pd.DataFrame) -> None:
         """
         Download and normalize a spécific file.
         """
         self._download_file(file)
         self._normalize_file(file)
 
-    def _download_file(self, file_metadata: tuple):
+    def _download_file(self, file_metadata: pd.DataFrame) -> None:
         """
         Save locally the output of the URL.
         """
@@ -120,7 +120,7 @@ class DatasetAggregator(BaseDataset):
             self.errors[str(e)].append(file_metadata.url)
         LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
-    def _dataset_filename(self, file_metadata: tuple, step: str):
+    def _dataset_filename(self, file_metadata: pd.DataFrame, step: str) -> Path:
         """
         Expected path for a given file depending on the step (raw or norm).
         """
@@ -130,7 +130,7 @@ class DatasetAggregator(BaseDataset):
             / f"{step}.{file_metadata.format if step == 'raw' else 'parquet'}"
         )
 
-    def _normalize_file(self, file_metadata: tuple) -> pd.DataFrame:
+    def _normalize_file(self, file_metadata: pd.DataFrame) -> None:
         out_filename = self._dataset_filename(file_metadata, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
@@ -144,7 +144,9 @@ class DatasetAggregator(BaseDataset):
         if isinstance(df, pd.DataFrame):
             df.to_parquet(out_filename, index=False)
 
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+    def _read_parse_file(
+        self, file_metadata: pd.DataFrame, raw_filename: Path
+    ) -> pd.DataFrame | None:
         opts = {"dtype": str} if file_metadata.format == "csv" else {}
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
         try:
@@ -156,7 +158,7 @@ class DatasetAggregator(BaseDataset):
         except Exception as e:
             self.errors[str(e)].append(raw_filename.parent.name)
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: pd.DataFrame):
         raise NotImplementedError()
 
     def _remaining_to_normalize(self):
