@@ -42,7 +42,7 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
-type TreemapProps = { data: TreeData; isZoomActive: boolean; handleClick: (value: number) => void };
+type TreemapProps = { data: TreeData; isZoomActive: boolean; handleClick: Function };
 
 export default function Treemap({ data, isZoomActive, handleClick }: TreemapProps) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
