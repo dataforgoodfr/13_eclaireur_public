@@ -5,6 +5,7 @@ import { CommunityContact } from '@/app/models/communityContact';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { User } from 'lucide-react';
+import Image from 'next/image';
 
 type ContactListProps = {
   contacts: CommunityContact[];
@@ -41,7 +42,7 @@ export default function ContactList({ contacts }: ContactListProps) {
         <CardHeader className='flex'>
           <CardTitle className='capitalize'>
             {contact.photoSrc ? (
-              <img src={contact.photoSrc} width='140' height='140' alt='' className='mx-auto' />
+              <Image src={contact.photoSrc} width={140} height={140} alt='' className='mx-auto' />
             ) : (
               <User size={140} className='mx-auto' />
             )}
