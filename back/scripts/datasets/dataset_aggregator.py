@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-import urllib
+import urllib.request
 from collections import defaultdict
 from pathlib import Path
 from urllib.error import HTTPError
@@ -13,6 +13,7 @@ from tqdm import tqdm
 from back.scripts.loaders import LOADER_CLASSES
 from back.scripts.utils.config import get_combined_filename, get_project_base_path
 from back.scripts.utils.decorators import tracker
+from back.scripts.utils.typing import PandasRow
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,10 +37,10 @@ class DatasetAggregator:
     how files are read and parsed.
 
     Required methods for subclasses:
-        _read_parse_file(self, file_metadata: tuple) -> pd.DataFrame:
+        _read_parse_file(self, file_metadata: PandasRow) -> pd.DataFrame:
             From a file metadata, this function must read the raw file and apply the normalization logic.
             Args:
-                file_metadata: Tuple containing metadata about the file to process
+                file_metadata: NamedTuple containing metadata about the file to process
             Returns:
                 DataFrame containing the normalized data
 
@@ -81,7 +82,7 @@ class DatasetAggregator:
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
 
-    def _process_files(self):
+    def _process_files(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.format not in LOADER_CLASSES:
                 LOGGER.warning(f"Format {file_infos.format} not supported")
@@ -105,14 +106,14 @@ class DatasetAggregator:
     def _post_process(self):
         pass
 
-    def _process_file(self, file: tuple) -> None:
+    def _process_file(self, file: PandasRow) -> None:
         """
         Download and normalize a spécific file.
         """
         self._download_file(file)
         self._normalize_file(file)
 
-    def _download_file(self, file_metadata: tuple):
+    def _download_file(self, file_metadata: PandasRow) -> None:
         """
         Save locally the output of the URL.
         """
@@ -134,7 +135,7 @@ class DatasetAggregator:
             self.errors[str(e)].append(file_metadata.url)
         LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
-    def _dataset_filename(self, file_metadata: tuple, step: str):
+    def _dataset_filename(self, file_metadata: PandasRow, step: str) -> Path:
         """
         Expected path for a given file depending on the step (raw or norm).
         """
@@ -144,7 +145,7 @@ class DatasetAggregator:
             / f"{step}.{file_metadata.format if step == 'raw' else 'parquet'}"
         )
 
-    def _normalize_file(self, file_metadata: tuple) -> pd.DataFrame:
+    def _normalize_file(self, file_metadata: PandasRow) -> None:
         out_filename = self._dataset_filename(file_metadata, "norm")
         if out_filename.exists():
             LOGGER.debug(f"File {out_filename} already exists, skipping")
@@ -158,7 +159,9 @@ class DatasetAggregator:
         if isinstance(df, pd.DataFrame):
             df.to_parquet(out_filename, index=False)
 
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+    def _read_parse_file(
+        self, file_metadata: PandasRow, raw_filename: Path
+    ) -> pd.DataFrame | None:
         opts = {"dtype": str} if file_metadata.format == "csv" else {}
         loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
         try:
@@ -170,7 +173,7 @@ class DatasetAggregator:
         except Exception as e:
             self.errors[str(e)].append(raw_filename.parent.name)
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow):
         raise NotImplementedError()
 
     def _remaining_to_normalize(self):

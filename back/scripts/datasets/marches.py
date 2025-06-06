@@ -14,6 +14,7 @@ import pandas as pd
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.utils.decorators import tracker
+from back.scripts.utils.typing import PandasRow
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,7 +85,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         )
         self.official_schema.to_parquet(schema_filename)
 
-    def _read_parse_file(self, file_metadata: tuple, raw_filename: Path) -> pd.DataFrame | None:
+    def _read_parse_file(
+        self, file_metadata: PandasRow, raw_filename: Path
+    ) -> pd.DataFrame | None:
         self._read_parse_interim(raw_filename)
         return self._read_parse_final(raw_filename)
 
