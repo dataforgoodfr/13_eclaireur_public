@@ -18,6 +18,7 @@ import {
 import { formatCompactPrice } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
+import { NoData } from '../NoData';
 
 const ROWS_COUNT = 10;
 
@@ -28,6 +29,7 @@ export default function Ranking({
   data: Subvention[];
   availableYears: number[];
 }) {
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [linesDisplayed, setLinesDisplayed] = useState(0);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
@@ -66,7 +68,8 @@ export default function Ranking({
           <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={setSelectedYear} />
+          {/* TODO: Fix year selector with this table */}
+          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
           <DownloadButton />
         </div>
       </div>

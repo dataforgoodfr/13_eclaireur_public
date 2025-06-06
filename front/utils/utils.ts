@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { GRAPH_START_YEAR } from './constants';
 import { Direction } from './fetchers/types';
 import { CommunityType } from './types';
 
@@ -137,4 +138,14 @@ export function parseDirection(value: string | null): Direction | undefined {
   if (value === 'DESC') return 'DESC';
 
   return undefined;
+}
+
+export function getAllYearsFrom2018ToCurrent(): number[] {
+  const years: number[] = [];
+  let year: number = new Date().getFullYear();
+  while (year >= GRAPH_START_YEAR) {
+    years.push(year);
+    year--;
+  }
+  return years;
 }
