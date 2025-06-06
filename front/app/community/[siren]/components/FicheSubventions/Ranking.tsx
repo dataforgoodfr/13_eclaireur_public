@@ -1,7 +1,7 @@
 'use client';
+
 // TODO: Replace all `any` types with proper interfaces/types for better type safety.
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState } from 'react';
 
 import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';

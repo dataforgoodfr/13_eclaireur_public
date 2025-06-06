@@ -1,4 +1,3 @@
-
 // TODO: Replace all `any` types with proper interfaces/types for better type safety.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

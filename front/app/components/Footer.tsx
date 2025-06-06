@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const linkClassName =
   'flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800';
@@ -57,7 +57,7 @@ export default function Footer() {
                   alt='logo de Anticor'
                   className='absolute top-1/2 h-4 -translate-y-1/2'
                   height={16}
-                  width={16}  
+                  width={16}
                 />
                 <span className='pl-5 font-semibold'>Anticor</span>
               </a>

@@ -1,6 +1,5 @@
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { formatAmount, formatFirstLetterToUppercase, formatPrice } from '@/utils/utils';
 
 import { TooltipProps } from '../../app/community/[siren]/types/interface';

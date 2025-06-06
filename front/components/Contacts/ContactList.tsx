@@ -1,11 +1,12 @@
 'use client';
 
+import Image from 'next/image';
+
 import { useSelectedContactsContext } from '@/app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '@/app/models/communityContact';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { User } from 'lucide-react';
-import Image from 'next/image';
 
 type ContactListProps = {
   contacts: CommunityContact[];
