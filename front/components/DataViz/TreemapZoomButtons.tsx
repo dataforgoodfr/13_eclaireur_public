@@ -3,7 +3,7 @@ import { ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
-type TreemapZoomButtonsProps = { isZoomActive: boolean; handleClick: Function };
+type TreemapZoomButtonsProps = { isZoomActive: boolean; handleClick: () => void };
 
 export default function TreemapZoomButtons({ isZoomActive, handleClick }: TreemapZoomButtonsProps) {
   return (
