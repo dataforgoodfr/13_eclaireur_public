@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "La méthodologie ou les dessous de l'outil Éclaireur Public",
@@ -105,7 +106,7 @@ export default function Page() {
         ou pour le cas où les données sont inexploitables.
       </p>
       <p>
-        <img src='index-subventions.png' width='810' height='116' alt='' />
+        <Image src='index-subventions.png' width={810} height={116} alt='' />
       </p>
 
       <h3 className='my-6 text-lg font-bold'>
@@ -146,7 +147,7 @@ export default function Page() {
         meilleure est sa note.
       </p>
       <p>
-        <img src='index-mp.png' width='811' height='237' alt='' />
+        <Image src='index-mp.png' width={811} height={237} alt='' />
       </p>
       <h3 className='my-6 text-lg font-bold'>Calcul de l’indice de transparence gloabale</h3>
       <p className='my-6 text-lg'>
