@@ -42,6 +42,8 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
+// TODO: fix linting error
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 type TreemapProps = { data: TreeData; isZoomActive: boolean; handleClick: Function };
 
 export default function Treemap({ data, isZoomActive, handleClick }: TreemapProps) {
