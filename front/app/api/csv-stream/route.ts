@@ -22,7 +22,7 @@ function stringifyColumns(columns?: (string | number | symbol)[]): string {
 }
 
 function createSQLQueryParams<T extends Record<string, any>>(params: CSVParams<T>) {
-  let values: (number | string)[] = [];
+  const values: (number | string)[] = [];
 
   const selectorsStringified = stringifyColumns(params?.columns);
   let query = `SELECT ${selectorsStringified} FROM ${params.table}`;
@@ -100,6 +100,7 @@ export async function GET(request: Request) {
       headers,
     });
   } catch (error) {
+    console.error('Error fetching CSV:', error);
     return NextResponse.json(
       { error: 'Internal Server Error while fetching CSV' },
       { status: 500 },

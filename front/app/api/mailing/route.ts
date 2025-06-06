@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: err }, { status: 500 });
     }
   } catch (error) {
+    console.error('Error processing request:', error);
     return new NextResponse(JSON.stringify({ error: 'Error processing request' }), {
       status: 500,
     });

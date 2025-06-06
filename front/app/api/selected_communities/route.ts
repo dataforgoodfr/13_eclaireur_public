@@ -59,6 +59,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Error fetching selected communities:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

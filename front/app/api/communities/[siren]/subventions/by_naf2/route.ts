@@ -29,6 +29,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
 
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Error fetching subventions by NAF:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
