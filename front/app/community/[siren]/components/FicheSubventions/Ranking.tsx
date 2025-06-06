@@ -18,7 +18,6 @@ import {
 import { formatCompactPrice } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
-import { NoData } from '../NoData';
 
 const ROWS_COUNT = 10;
 
