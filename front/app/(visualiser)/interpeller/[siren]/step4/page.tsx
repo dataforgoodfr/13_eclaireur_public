@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Stepper from '@/components/Interpellate/Stepper';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default async function InterpellateStep4({
   params,
@@ -22,10 +23,10 @@ export default async function InterpellateStep4({
       </h2>
       <article className='w-2/5 text-center'>
         <Link href='/'>
-          <img
+          <Image
             src='https://placehold.co/150/png'
-            width='150'
-            height='150'
+            width={150}
+            height={150}
             alt='*'
             className='inline'
           />
@@ -35,10 +36,10 @@ export default async function InterpellateStep4({
       </article>
       <article className='w-2/5 text-center'>
         <Link href='/'>
-          <img
+          <Image
             src='https://placehold.co/150/png'
-            width='150'
-            height='150'
+            width={150}
+            height={150}
             alt='*'
             className='inline'
           />
