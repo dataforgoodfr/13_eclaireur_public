@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function MapPage() {
   return (
     <div className='flex w-full flex-row'>
-      <MapLayout/>
+      <MapLayout />
     </div>
   );
 }

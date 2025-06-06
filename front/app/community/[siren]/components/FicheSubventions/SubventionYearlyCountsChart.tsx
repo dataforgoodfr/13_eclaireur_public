@@ -55,7 +55,7 @@ function getLegendFormatter(value: Exclude<keyof BarChartData[number], 'year'>):
 }
 
 function formatLabel(value: number): string {
-  if (value === 0) return "Aucunes données publiées";
+  if (value === 0) return 'Aucunes données publiées';
   return formatCompact(value);
 }
 

@@ -49,5 +49,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />;
+  return (
+    <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />
+  );
 }

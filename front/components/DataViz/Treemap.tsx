@@ -170,7 +170,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick}/>
+      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick} />
     </div>
   );
 }
