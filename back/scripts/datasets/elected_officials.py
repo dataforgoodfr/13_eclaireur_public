@@ -6,6 +6,7 @@ import pandas as pd
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
 from back.scripts.utils.dataframe_operation import normalize_date
 from back.scripts.utils.datagouv_api import DataGouvAPI
+from back.scripts.utils.typing import PandasRow
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ class ElectedOfficialsWorkflow(DatasetAggregator):
         )
         return cls(resources, config)
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow) -> pd.DataFrame:
         present_columns = {k: v for k, v in RENAME_COMMON_COLUMNS.items() if k in df.columns}
         return (
             df[present_columns.keys()]

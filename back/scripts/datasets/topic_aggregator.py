@@ -24,6 +24,7 @@ from back.scripts.utils.dataframe_operation import (
     normalize_montant,
     safe_rename,
 )
+from back.scripts.utils.typing import PandasRow
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -120,7 +121,7 @@ class TopicAggregator(DatasetAggregator):
             .to_dict()
         )
 
-    def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
+    def _flag_extra_columns(self, df: pd.DataFrame, file_metadata: PandasRow) -> None:
         """
         Identify in the dataset columns that are neither in the official schema
         nor in the list of columns to ignore.
@@ -142,7 +143,7 @@ class TopicAggregator(DatasetAggregator):
         LOGGER.warning(f"File {file_metadata.url} has extra columns: {extra_columns}")
         raise RuntimeError("File has extra columns")
 
-    def _normalize_frame(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
+    def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow) -> pd.DataFrame:
         """
         Set of steps to transform a raw DataFrame into a normalized one.
         """
@@ -171,7 +172,7 @@ class TopicAggregator(DatasetAggregator):
             .rename(columns=to_snake_case)
         )
 
-    def _add_metadata(self, df: pd.DataFrame, file_metadata: pd.DataFrame) -> pd.DataFrame:
+    def _add_metadata(self, df: pd.DataFrame, file_metadata: PandasRow) -> pd.DataFrame:
         """
         Add to the normalized dataframe infos about the source of the raw file.
         """
@@ -191,9 +192,7 @@ class TopicAggregator(DatasetAggregator):
             **optional_features,
         )
 
-    def _clean_missing_values(
-        self, df: pd.DataFrame, file_metadata: pd.DataFrame
-    ) -> pd.DataFrame:
+    def _clean_missing_values(self, df: pd.DataFrame, file_metadata: PandasRow) -> pd.DataFrame:
         """
         Clean the dataframe by removing rows where all values are missing.
         """
@@ -226,7 +225,7 @@ class TopicAggregator(DatasetAggregator):
         return df[~mask]
 
     @staticmethod
-    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
+    def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: PandasRow) -> None:
         if len(df.columns) != len(set(df.columns)):
             LOGGER.error(f"Data with duplicate columns : {file_metadata.url_hash}")
             raise RuntimeError("Data with duplicate columns")
@@ -239,7 +238,7 @@ class TopicAggregator(DatasetAggregator):
         return frame[columns]
 
     @staticmethod
-    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: pd.DataFrame) -> None:
+    def _flag_inversion_siret(df: pd.DataFrame, file_metadata: PandasRow) -> None:
         """
         Flag datasets which have more unique attribuant siret than beneficiaire
         """
@@ -274,7 +273,7 @@ class TopicAggregator(DatasetAggregator):
         return frame.rename(columns=matching)
 
     def _add_date_from_metadata(
-        self, df: pd.DataFrame, file_metadata: pd.DataFrame
+        self, df: pd.DataFrame, file_metadata: PandasRow
     ) -> pd.DataFrame:
         metadata_year = self.year_from_metadata(file_metadata)
         if metadata_year:
@@ -284,7 +283,7 @@ class TopicAggregator(DatasetAggregator):
         return df
 
     @staticmethod
-    def year_from_metadata(file_metadata: pd.DataFrame) -> str | None:
+    def year_from_metadata(file_metadata: PandasRow) -> str | None:
         pat = re.compile(r"\b(20\d{2})\b")
 
         title = file_metadata.dataset_title or ""
