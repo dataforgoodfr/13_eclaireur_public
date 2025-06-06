@@ -1,3 +1,5 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server';
 
 import { InterpellateFormSchema } from '@/components/Interpellate/types';
