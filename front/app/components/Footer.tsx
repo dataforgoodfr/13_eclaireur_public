@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { withBaseURL } from '@/utils/utils';
 
@@ -38,10 +39,12 @@ export default function Footer() {
                 target='_blank'
                 className='relative -my-2 inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 hover:bg-neutral-300'
               >
-                <img
-                  src={withBaseURL('dataforgoodLogo.png')}
+                <Image
+                  src='/dataforgoodLogo.png'
                   alt='logo de Data For Good'
                   className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
+                  height={16}
+                  width={16}
                 />
                 <span className='pl-5 font-semibold'>Data For Good</span>
               </a>
@@ -51,12 +54,14 @@ export default function Footer() {
                 target='_blank'
                 className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
               >
-                <img
-                  src={withBaseURL('anticorLogo.png')}
+                <Image
+                  src='/anticorLogo.png'
                   alt='logo de Anticor'
                   className='absolute top-1/2 h-4 -translate-y-1/2'
+                  height={16}
+                  width={16}  
                 />
-                <span className='pl-12 font-semibold'>Anticor</span>
+                <span className='pl-5 font-semibold'>Anticor</span>
               </a>
               et
               <a
@@ -64,10 +69,12 @@ export default function Footer() {
                 target='_blank'
                 className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
               >
-                <img
-                  src={withBaseURL('transparencyLogo.png')}
+                <Image
+                  src='/transparencyLogo.png'
                   alt='logo de Transparency International'
                   className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
+                  height={16}
+                  width={16}
                 />
                 <span className='pl-5 font-semibold'>Transparency International</span>
               </a>
