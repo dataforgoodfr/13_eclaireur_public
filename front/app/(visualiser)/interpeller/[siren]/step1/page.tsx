@@ -18,7 +18,7 @@ export default async function InterpellateStep1({
   const { siren } = await params;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
-  const trends = { subventions: 1, marchesPublics: 0.01 };
+  // const trends = { subventions: 1, marchesPublics: 0.01 };
 
   return (
     <section className='my-16'>
