@@ -7,7 +7,7 @@ const populationLabel = 'Population';
 const populationUnit = 'habitants';
 const agentsLabel = "Nombre d'agents administratifs";
 const agentsUnit = 'agents';
-const totalBudgetLabel = 'Budget total';
+// const totalBudgetLabel = 'Budget total';
 const obligationPublicationText = `Soumise à l'obligation de publication`;
 const pasObligationPublicationText = `Non soumise à l'obligation de publication`;
 
