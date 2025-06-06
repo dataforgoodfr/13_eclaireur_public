@@ -15,7 +15,7 @@ type DistributionProps = { siren: string; availableYears: number[] };
 
 export default function Distribution({ siren, availableYears }: DistributionProps) {
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
-  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   function handleDownloadData() {

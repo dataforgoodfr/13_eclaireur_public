@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Loading from '@/components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
@@ -33,6 +33,11 @@ export default function MarchesPublicsSectorTreemap({
     { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
     maxAmount,
   );
+
+  // Reset le "zoom" lors du changement d'année
+  useEffect(() => {
+    setmaxAmount(null);
+  }, [year]);
 
   if (isPending || isError) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
