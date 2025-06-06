@@ -41,6 +41,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
       headers,
     });
   } catch (error) {
+    console.error('Error fetching CSV:', error);
     return NextResponse.json(
       { error: 'Internal Server Error while fetching CSV' },
       { status: 500 },

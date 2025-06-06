@@ -44,6 +44,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Error fetching advanced search data:', error);
     return NextResponse.json({ error: 'Internal Server Error with query search' }, { status: 500 });
   }
 }

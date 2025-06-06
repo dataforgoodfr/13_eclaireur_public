@@ -68,6 +68,7 @@ export async function GET(request: Request) {
       headers,
     });
   } catch (error) {
+    console.log('Error while fetching CSV:', error);
     return NextResponse.json(
       { error: 'Internal Server Error while fetching CSV' },
       { status: 500 },
