@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { withBaseURL } from '@/utils/utils';
-
 const linkClassName =
   'flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800';
 
