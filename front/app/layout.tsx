@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const baseURL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL_DEV ?? process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const metadata: Metadata = {
   title: {
