@@ -1,4 +1,6 @@
-import { Community } from '@/app/models/community';
+
+// TODO: Replace all `any` types with proper interfaces/types for better type safety.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type AdminType = 'region' | 'departement' | 'commune';
 
