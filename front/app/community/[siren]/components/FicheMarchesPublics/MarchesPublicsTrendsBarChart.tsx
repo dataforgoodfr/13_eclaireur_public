@@ -1,3 +1,6 @@
+// TODO: Replace all `any` types with proper interfaces/types for better type safety.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { formatCompact, formatCompactPrice } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
