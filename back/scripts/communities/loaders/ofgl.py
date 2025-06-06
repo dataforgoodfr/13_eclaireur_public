@@ -11,6 +11,7 @@ from back.scripts.utils.dataframe_operation import (
     normalize_identifiant,
 )
 from back.scripts.utils.decorators import tracker
+from back.scripts.utils.typing import PandasRow
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ class OfglLoader(DatasetAggregator):
 
     @tracker(ulogger=LOGGER, inputs=True)
     def _read_parse_file(
-        self, file_metadata: pd.DataFrame, raw_filename: Path
+        self, file_metadata: PandasRow, raw_filename: Path
     ) -> pd.DataFrame | None:
         # Because parquet format seems buggy on the platform for commune;
         # We are forced to use csv which need some typing help
