@@ -45,6 +45,7 @@ cpv_labels:
 
 communities_contacts:
   data_folder: back/data/communities_contacts
+  combined_filename: back/data/communities_contacts/communities_contacts.parquet
   url: null
 
 search:
@@ -86,6 +87,7 @@ file_age_to_check:
 
 elected_officials:
   data_folder: back/data/elected_officials
+  combined_filename: back/data/elected_officials/elected_officials.parquet
 
 sirene:
   data_folder: back/data/sirene
@@ -104,6 +106,7 @@ datagouv_api:
 
 declarations_interet:
   data_folder: back/data/declarations_interet
+  combined_filename: back/data/declarations_interet/elected_officials.parquet
   url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
 
 financial_accounts:
