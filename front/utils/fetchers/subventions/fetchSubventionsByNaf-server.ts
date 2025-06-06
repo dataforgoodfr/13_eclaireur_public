@@ -13,7 +13,7 @@ export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxAmount: number | null,
+  maxAmount?: number | null,
 ): [string, (string | number)[]] {
   const values: (string | number)[] = [siren];
 
