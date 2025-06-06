@@ -18,7 +18,7 @@ export default function Footer() {
         </div>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10'>
           <div className='col-span-1 grid grid-cols-2 gap-1 text-center text-sm md:text-base'>
-            <Link href={'/methodology'} className={linkClassName}>
+            <Link href={'/methodologie'} className={linkClassName}>
               Méthodologie
             </Link>
             <Link href={'/advanced-search'} className={linkClassName}>
