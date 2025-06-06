@@ -57,7 +57,7 @@ export default function MapWithCityMarkers({ center, cities }: MapWithCityMarker
           <Pin />
         </Marker>
       )),
-    [],
+    [cities],
   );
 
   return (
