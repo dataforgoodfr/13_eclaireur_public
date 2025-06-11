@@ -15,6 +15,7 @@ from back.scripts.utils.config import get_combined_filename, get_project_base_pa
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
+ERROR_LOGGER = logging.getLogger("errors_logger")  # Nouveau logger structuré
 
 
 def _sha256(s):
@@ -57,13 +58,13 @@ class DatasetAggregator:
 
     def __init__(self, files: pd.DataFrame, main_config: dict):
         self._config = main_config[self.get_config_key()]
-
         self.files_in_scope = files.pipe(self._ensure_url_hash)
 
         self.data_folder = get_project_base_path() / self._config["data_folder"]
         self.data_folder.mkdir(parents=True, exist_ok=True)
         self.output_filename = self.get_output_path(main_config)
         self.output_filename.parent.mkdir(parents=True, exist_ok=True)
+
         self.errors = []
 
     def _log_error(self, error_code, message, file_url, dataset, step, details=None):
@@ -76,7 +77,8 @@ class DatasetAggregator:
             "step": step,
             "details": details or {}
         }
-        self.errors.append(error)
+        self.errors.append(error)  # Ancien système
+        ERROR_LOGGER.error(message, extra=error)  # Nouveau logger JSONL
 
     def _ensure_url_hash(self, frame: pd.DataFrame) -> pd.DataFrame:
         hashes = frame["url"].apply(_sha256)
@@ -90,9 +92,9 @@ class DatasetAggregator:
             return
         self._process_files()
         self._concatenate_files()
-        with open(self.data_folder / "errors.jsonl", "w") as f:
-            for error in self.errors:
-                f.write(json.dumps(error, ensure_ascii=False) + "\n")
+        # Export de errors.json (ancien)
+        with open(self.data_folder / "errors.json", "w", encoding="utf-8") as f:
+            json.dump(self.errors, f, indent=2, ensure_ascii=False)
 
     def _process_files(self):
         for file_infos in tqdm(self._remaining_to_normalize()):
@@ -266,9 +268,6 @@ class DatasetAggregator:
 
     @property
     def aggregated_dataset(self):
-        """
-        Property to return the aggregated dataset.
-        """
         if not self.output_filename.exists():
             raise RuntimeError("Combined file does not exists. You must run .load() first.")
         return pd.read_parquet(self.output_filename)
