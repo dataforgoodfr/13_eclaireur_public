@@ -1,8 +1,8 @@
+import datetime
 import hashlib
 import json
 import logging
 import urllib
-import datetime
 from pathlib import Path
 from urllib.error import HTTPError
 
@@ -75,7 +75,7 @@ class DatasetAggregator:
             "file_url": file_url,
             "dataset": dataset,
             "step": step,
-            "details": details or {}
+            "details": details or {},
         }
         self.errors.append(error)  # Ancien système
         ERROR_LOGGER.error(message, extra=error)  # Nouveau logger JSONL
@@ -106,7 +106,7 @@ class DatasetAggregator:
                     file_url=getattr(file_infos, "url", None),
                     dataset=self.get_config_key(),
                     step="process_files",
-                    details={"title": getattr(file_infos, "title", None)}
+                    details={"title": getattr(file_infos, "title", None)},
                 )
                 continue
 
@@ -118,7 +118,7 @@ class DatasetAggregator:
                     file_url=None,
                     dataset=self.get_config_key(),
                     step="process_files",
-                    details={"title": getattr(file_infos, "title", None)}
+                    details={"title": getattr(file_infos, "title", None)},
                 )
                 continue
 
@@ -131,7 +131,7 @@ class DatasetAggregator:
                     message=str(e),
                     file_url=getattr(file_infos, "url", None),
                     dataset=self.get_config_key(),
-                    step="process_files"
+                    step="process_files",
                 )
         self._post_process()
         self._concatenate_files()
@@ -159,14 +159,16 @@ class DatasetAggregator:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
         except HTTPError as error:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
-            msg = f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
+            msg = (
+                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
+            )
             self._log_error(
                 error_code="HTTP_ERROR",
                 message=msg,
                 file_url=file_metadata.url,
                 dataset=self.get_config_key(),
                 step="download_file",
-                details={"exception": str(error)}
+                details={"exception": str(error)},
             )
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
@@ -175,7 +177,7 @@ class DatasetAggregator:
                 message=str(e),
                 file_url=file_metadata.url,
                 dataset=self.get_config_key(),
-                step="download_file"
+                step="download_file",
             )
         LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
@@ -218,7 +220,7 @@ class DatasetAggregator:
                 message=str(e),
                 file_url=file_metadata.url,
                 dataset=self.get_config_key(),
-                step="read_parse_file"
+                step="read_parse_file",
             )
 
     def _normalize_frame(self, df: pd.DataFrame, file_metadata: tuple):
@@ -268,6 +270,9 @@ class DatasetAggregator:
 
     @property
     def aggregated_dataset(self):
+        """
+        Property to return the aggregated dataset.
+        """
         if not self.output_filename.exists():
             raise RuntimeError("Combined file does not exists. You must run .load() first.")
         return pd.read_parquet(self.output_filename)
