@@ -200,10 +200,11 @@ class EncodedDataLoader(BaseLoader):
             try:
                 decoded_content = data.decode(encoding)
             except UnicodeDecodeError:
+                LOGGER.debug(f"Failed to decode using {encoding} encoding")
                 # Try the next encoding
                 continue
             else:
-                LOGGER.debug(f"Successfully decoded using {encoding} encoding")
+                LOGGER.info(f"Successfully decoded using {encoding} encoding")
                 decoded_data = self.process_from_decoded(decoded_content)
                 if decoded_data is not None:
                     return decoded_data
