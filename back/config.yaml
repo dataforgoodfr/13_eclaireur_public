@@ -123,6 +123,9 @@ logging:
   formatters:
     simple:
       format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    jsonl:
+      format: '{"timestamp": "%(asctime)s", "error_code": "%(error_code)s", "message": "%(message)s", "file_url": "%(file_url)s", "dataset": "%(dataset)s", "step": "%(step)s", "details": %(details)s}'
+      datefmt: "%Y-%m-%dT%H:%M:%SZ"
   handlers:
     console:
       class: logging.StreamHandler
@@ -134,7 +137,12 @@ logging:
       level: DEBUG
       formatter: simple
       filename: back/data/logs/log.txt
+    jsonl:
+      class: logging.FileHandler
+      level: ERROR
+      formatter: jsonl
+      filename: back/data/logs/errors.jsonl
   loggers:
     back:
       level: INFO
-      handlers: [console, file]
+      handlers: [console, file, jsonl]
