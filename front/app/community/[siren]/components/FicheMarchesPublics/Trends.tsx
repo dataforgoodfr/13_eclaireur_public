@@ -37,11 +37,17 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     });
   }
 
-  const contractNumberTrendsData: ChartData[] = initalList.map((el) => {
-    const found = contractNumberTrends.find((item) => item.annee === el.annee);
-    return { ...el, yValue: found?.yValue ?? el.yValue };
-  });
-  
+  function mergeWithInitialList(
+    trends: ChartData[],
+    initalList: ChartData[]
+  ): ChartData[] {
+    return initalList.map((el) => {
+      const found = trends.find((item) => item.annee === el.annee);
+      return { ...el, yValue: found?.yValue ?? el.yValue };
+    });
+  }
+
+  const contractNumberTrendsData = mergeWithInitialList(contractNumberTrends, initalList);
   
   const contractAmountTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
@@ -56,10 +62,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     }, {}),
   );
   
-  const contractAmountTrendsData: ChartData[] = initalList.map((el) => {
-    const found = contractAmountTrends.find((item) => item.annee === el.annee);
-    return { ...el, yValue: found?.yValue ?? el.yValue };
-  });
+  const contractAmountTrendsData = mergeWithInitialList(contractAmountTrends, initalList);
   
   return (
     <>
