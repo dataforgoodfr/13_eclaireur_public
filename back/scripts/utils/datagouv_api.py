@@ -2,11 +2,11 @@ import json
 import logging
 from itertools import chain
 from pathlib import Path
-from typing import Tuple
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import BaseLoader, retry_session
+from back.scripts.loaders.base_loader import retry_session
+from back.scripts.loaders.utils import LOADER_CLASSES
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,8 +19,8 @@ class DataGouvAPI:
     def get_stable_file_url(file_id: str) -> str:
         return f"https://www.data.gouv.fr/fr/datasets/r/{file_id}"
 
-    @staticmethod
-    def dataset_resources(dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
+    @classmethod
+    def dataset_resources(cls, dataset_id: str, savedir: Path | None = None) -> pd.DataFrame:
         """
         Fetch information about all resources of a given dataset.
         """
@@ -33,7 +33,7 @@ class DataGouvAPI:
         url = f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/"
         datasets = []
         while url:
-            metadata, url = __class__._next_page(url)
+            metadata, url = cls._next_page(url)
             datasets.append(
                 [
                     {
@@ -42,8 +42,8 @@ class DataGouvAPI:
                         "description": metadata["description"],
                         "frequency": metadata["frequency"],
                     }
-                    | __class__._resource_infos(resource)
-                    | __class__._organisation_infos(metadata["organization"])
+                    | cls._resource_infos(resource)
+                    | cls._organisation_infos(metadata["organization"])
                     for resource in metadata["resources"]
                 ]
             )
@@ -67,9 +67,9 @@ class DataGouvAPI:
             datasets.to_parquet(save_filename)
         return datasets
 
-    @staticmethod
+    @classmethod
     def organisation_datasets(
-        organization_id: str, savedir: Path | None = None
+        cls, organization_id: str, savedir: Path | None = None
     ) -> pd.DataFrame:
         """
         Fetch information about all datasets and resources of a given organization.
@@ -100,7 +100,7 @@ class DataGouvAPI:
         ]
         try:
             while url:
-                orga_datasets, url = __class__._next_page(url, params)
+                orga_datasets, url = cls._next_page(url, params)
                 datasets.append(
                     [
                         {
@@ -112,7 +112,7 @@ class DataGouvAPI:
                             "frequency": metadata["frequency"],
                             "created_at": resource["created_at"],
                         }
-                        | __class__._resource_infos(resource)
+                        | cls._resource_infos(resource)
                         for metadata in orga_datasets
                         for resource in metadata["resources"]
                     ]
@@ -141,7 +141,7 @@ class DataGouvAPI:
         return {"organization_id": organization["id"], "organization": organization["name"]}
 
     @staticmethod
-    def _next_page(url: str, params: dict | None = None) -> Tuple[dict, str]:
+    def _next_page(url: str, params: dict | None = None) -> tuple[dict, str]:
         """
         Fetch the content of a given page and eventually the link to the next page.
         """
@@ -151,12 +151,12 @@ class DataGouvAPI:
             response.raise_for_status()
         except Exception as e:
             logging.error(f"Error while downloading file from {url} : {e}")
-            return [], None
+            return {}, ""
         try:
             data = response.json()
         except json.JSONDecodeError as e:
             logging.error(f"Error while decoding json from {url} : {e}")
-            return [], None
+            return {}, ""
         return data.get("data", data), data.get("next_page")
 
 
@@ -165,7 +165,7 @@ def select_implemented_formats(df: pd.DataFrame) -> pd.DataFrame:
     Select datasets for which we implemented a reader for their formats.
     Log formats to be added.
     """
-    valid_formats = df["format"].isin(BaseLoader.valid_extensions())
+    valid_formats = df["format"].isin(LOADER_CLASSES.keys())
     incorrects = df.loc[~valid_formats, "format"].dropna().value_counts().to_dict()
     LOGGER.info("Non implemented file formats: %s", incorrects)
     return df[valid_formats]

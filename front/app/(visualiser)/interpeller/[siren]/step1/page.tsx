@@ -18,7 +18,7 @@ export default async function InterpellateStep1({
   const { siren } = await params;
   // TODO - retrieve scores
   const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
-  const trends = { subventions: 1, marchesPublics: 0.01 };
+  // const trends = { subventions: 1, marchesPublics: 0.01 };
 
   return (
     <section className='my-16'>
@@ -28,7 +28,7 @@ export default async function InterpellateStep1({
       <article className='px-8 py-12 outline'>
         <div className='flex justify-between'>
           <BadgeCommunity isExemplaire={true} />
-          <BudgetGlobal communityName='Nantes' />
+          <BudgetGlobal communitySiren={siren} />
         </div>
         <div className='mt-10 flex flex-col justify-between md:flex-row'>
           <MiniFicheCommunity communitySiren={siren} />

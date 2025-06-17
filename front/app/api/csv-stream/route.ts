@@ -1,3 +1,5 @@
+// TODO: Replace all `any` types with proper interfaces/types for better type safety.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 
 import { DataTable } from '@/utils/fetchers/constants';
@@ -22,7 +24,7 @@ function stringifyColumns(columns?: (string | number | symbol)[]): string {
 }
 
 function createSQLQueryParams<T extends Record<string, any>>(params: CSVParams<T>) {
-  let values: (number | string)[] = [];
+  const values: (number | string)[] = [];
 
   const selectorsStringified = stringifyColumns(params?.columns);
   let query = `SELECT ${selectorsStringified} FROM ${params.table}`;
@@ -100,6 +102,7 @@ export async function GET(request: Request) {
       headers,
     });
   } catch (error) {
+    console.error('Error fetching CSV:', error);
     return NextResponse.json(
       { error: 'Internal Server Error while fetching CSV' },
       { status: 500 },

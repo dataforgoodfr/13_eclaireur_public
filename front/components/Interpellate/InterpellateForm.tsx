@@ -1,9 +1,15 @@
 'use client';
 
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from 'react';
+import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { useSelectedContactsContext } from '@/app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
+import { CommunityContact } from '@/app/models/communityContact';
 import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,26 +26,42 @@ import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
-import MessageToPoliticians from './MessageToPoliticians';
+import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
 
 export type InterpellateFormProps = {
-  emails: string[];
   missingData: unknown;
   communityParam: string;
 };
+function getRecipientName(contacts: CommunityContact[]) {
+  if (contacts.length === 0) {
+    return 'No contact selected';
+  }
 
-export default function InterpellateForm({
-  emails = ['olivier.pretre@gmx.fr'],
-  missingData,
-  communityParam,
-}: InterpellateFormProps) {
+  return contacts[0].nom;
+}
+
+export default function InterpellateForm({ missingData, communityParam }: InterpellateFormProps) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const router = useRouter();
-  const formMessage = MessageToPoliticians;
   const {
     formState: { isSubmitting },
     setError,
   } = useForm();
+  const { selectedContacts } = useSelectedContactsContext();
+  const recipientName = getRecipientName(selectedContacts);
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstName(e.target.value);
+  };
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastName(e.target.value);
+  };
+
+  const fullName = `${firstName} ${lastName}`;
+  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
+  const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -47,7 +69,8 @@ export default function InterpellateForm({
       firstname: '',
       lastname: '',
       email: '',
-      emails: emails[0],
+      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production pour que ça fonctionne !!!
+      emails: 'olivier.pretre@gmx.fr', // TODO : commenter à la mise en production
       object:
         'Transparence des données publiques – Publication des investissements et marchés publics',
       message: formMessage,
@@ -56,11 +79,12 @@ export default function InterpellateForm({
 
   const onSubmit = async (data: FormSchema) => {
     const response = await postInterpellate(data);
-    const responseData = await response.json();
     if (!response.ok) {
       alert('Submitting form failed!');
       return;
     }
+
+    const responseData = await response.json();
 
     if (responseData.errors) {
       const errors = responseData.errors;
@@ -99,24 +123,30 @@ export default function InterpellateForm({
           <FormField
             control={form.control}
             name='firstname'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prénom</FormLabel>
-                <FormControl>
-                  <Input placeholder='Entrez votre prénom' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              return (
+                <FormItem className='mb-4'>
+                  <FormLabel>Prénom</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='Entrez votre prénom'
+                      {...field}
+                      onInput={handleFirstNameChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}
             name='lastname'
             render={({ field }) => (
-              <FormItem>
+              <FormItem className='mb-4'>
                 <FormLabel>Nom</FormLabel>
                 <FormControl>
-                  <Input placeholder='Entrez votre nom' {...field} />
+                  <Input placeholder='Entrez votre nom' {...field} onInput={handleLastNameChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,10 +173,10 @@ export default function InterpellateForm({
             control={form.control}
             name='emails'
             render={({ field }) => (
-              <FormItem>
+              <FormItem className='mb-4'>
                 <FormLabel>À</FormLabel>
                 <FormControl>
-                  <Input placeholder='Entrez votre adresse e-mail' disabled {...field} />
+                  <Input disabled className='bg-slate-300' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -156,10 +186,10 @@ export default function InterpellateForm({
             control={form.control}
             name='object'
             render={({ field }) => (
-              <FormItem>
+              <FormItem className='mb-4'>
                 <FormLabel>Objet</FormLabel>
                 <FormControl>
-                  <Input placeholder='Entrez votre nom' disabled {...field} />
+                  <Input disabled className='bg-slate-300' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -167,12 +197,13 @@ export default function InterpellateForm({
           />
 
           <div className='simulatedTextArea'>
-            <div className='text-sm font-medium'>Votre message</div>
+            <div className='mb-3 text-sm font-medium'>Votre message</div>
             <div
               id='simulatedTextAreaContent'
-              className='w-full cursor-not-allowed rounded-md border border-input bg-transparent text-base opacity-35 shadow-sm transition-colors md:text-sm'
-              dangerouslySetInnerHTML={{ __html: formMessage }}
-            ></div>
+              className='w-full cursor-not-allowed rounded-md border border-input bg-slate-300 text-base opacity-35 shadow-sm transition-colors md:text-sm'
+            >
+              <MessageToContacts from={fullName} to={recipientName} />
+            </div>
           </div>
 
           <div className='mt-4 flex items-center space-x-2'>

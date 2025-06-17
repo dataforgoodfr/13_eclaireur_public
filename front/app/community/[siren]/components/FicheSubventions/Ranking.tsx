@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: Replace all `any` types with proper interfaces/types for better type safety.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 
 import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';
@@ -26,6 +28,7 @@ export default function Ranking({
   data: Subvention[];
   availableYears: number[];
 }) {
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [linesDisplayed, setLinesDisplayed] = useState(0);
   const [selectedYear, setSelectedYear] = useState<YearOption>('All');
 
@@ -37,7 +40,12 @@ export default function Ranking({
       .replace(/[\[\]]/g, '') // Supprime les crochets
       .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
       .split(/',|",/) // Split sur des virgules
-      .map((item) => item.trim().replace(/^['"]|['"]$/g, ''));
+      .map((item) =>
+        item
+          .trim()
+          .replace(/^['"]|['"]$/g, '')
+          .toLocaleUpperCase(),
+      );
   }
 
   function getTopSubs(data: any[]) {
@@ -59,8 +67,9 @@ export default function Ranking({
           <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={setSelectedYear} />
-          <DownloadButton/>
+          {/* TODO: Fix year selector with this table */}
+          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
+          <DownloadButton />
         </div>
       </div>
       <Table className='min-h-[600px]'>

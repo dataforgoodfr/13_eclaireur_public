@@ -1,3 +1,5 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server';
 
 import { InterpellateFormSchema } from '@/components/Interpellate/types';
@@ -8,14 +10,6 @@ export async function POST(request: Request) {
   const body: unknown = await request.json();
 
   const result = InterpellateFormSchema.safeParse(body);
-  type TResultData = {
-    firstname: string;
-    lastname: string;
-    email: string;
-    emails: string[];
-    object: string;
-    message: string;
-  };
   const { success, data } = result;
   let firstname, lastname, email, emails, object, message;
   if (success && data) {

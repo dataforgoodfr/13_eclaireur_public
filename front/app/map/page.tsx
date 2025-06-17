@@ -1,29 +1,17 @@
-'use client';
+import type { Metadata } from 'next';
 
-import { useState } from 'react';
+import MapLayout from '@/components/Map/MapLayout';
 
-import FranceMap from '@/components/Map/open-tiles';
-import SelectCommunityType from '@/components/SelectCommunityType';
-import { useCommunities } from '@/utils/hooks/useCommunities';
-import { CommunityType } from '@/utils/types';
+export const metadata: Metadata = {
+  title: 'Cartographie',
+  description:
+    'Carte interactive affichant les données des collectivités pour mieux comprendre la répartition géographique des dépenses publiques et la transparence des collectivités.',
+};
 
 export default function MapPage() {
-  const [communityType, setCommunityType] = useState(CommunityType.Region);
-
-  const { isLoading, data } = useCommunities({
-    filters: { type: communityType, siren: undefined },
-    limit: 100,
-  });
-
   return (
-    <div className='global-margin my-20 flex flex-row gap-x-10'>
-      <div className='min-h-screen'>
-        <FranceMap />
-      </div>
-      <div>
-        <SelectCommunityType onChange={setCommunityType} />
-        {isLoading && 'Chargement...'}
-      </div>
+    <div className='flex w-full flex-row'>
+      <MapLayout />
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
 
   const contractNumberTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
-      const year = item.annee_notification;
+      const year = Number(item.annee_notification);
 
       if (!acc[year]) {
         acc[year] = { annee: year, yValue: 0 };
@@ -29,25 +29,47 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     }, {}),
   );
 
+  const initalList: ChartData[] = [];
+  for (let i = 0; i <= 7; i++) {
+    initalList.push({
+      annee: new Date(Date.now()).getFullYear() - 7 + i,
+      yValue: 0,
+    });
+  }
+
+  function mergeWithInitialList(
+    trends: ChartData[],
+    initalList: ChartData[]
+  ): ChartData[] {
+    return initalList.map((el) => {
+      const found = trends.find((item) => item.annee === el.annee);
+      return { ...el, yValue: found?.yValue ?? el.yValue };
+    });
+  }
+
+  const contractNumberTrendsData = mergeWithInitialList(contractNumberTrends, initalList);
+  
   const contractAmountTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
-      const year = item.annee_notification;
-
+      const year = Number(item.annee_notification);
+      
       if (!acc[year]) {
         acc[year] = { annee: year, yValue: 0 };
       }
       acc[year].yValue += parseFloat(String(item.montant)) || 0;
-
+      
       return acc;
     }, {}),
   );
-
+  
+  const contractAmountTrendsData = mergeWithInitialList(contractAmountTrends, initalList);
+  
   return (
     <>
       <div className='flex items-baseline justify-between'>
         <div>
           <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
-            Évolution des subventions au cours du temps
+            Évolution des marchés publics au cours du temps
           </h3>
           <GraphSwitch
             isActive={isContractDisplayed}
@@ -64,7 +86,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
         </div>
       </div>
       <MarchesPublicsTrendsBarChart
-        data={isContractDisplayed ? contractNumberTrends : contractAmountTrends}
+        data={isContractDisplayed ? contractNumberTrendsData : contractAmountTrendsData}
         isContractDisplayed={isContractDisplayed}
       />
     </>

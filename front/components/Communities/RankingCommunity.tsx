@@ -1,3 +1,6 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 type RankingCommunityProps = {
   communityName: string;
 };

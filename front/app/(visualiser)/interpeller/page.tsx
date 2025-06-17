@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -19,16 +20,16 @@ export default function Page() {
       <Stepper currentStep={1} />
       <article className='my-6 flex flex-col justify-start'>
         <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
-        <div className='ml-16 min-w-[400] self-center'>
+        <div className='mx-auto flex w-4/5 min-w-[400] justify-center'>
           <SearchBar onSelect={({ siren }) => goToStep1(siren)} />
         </div>
       </article>
       <article className='my-16'>
         <h2 className='my-6 text-xl font-bold uppercase'>Pourquoi interpeller mes élu.e.s ?</h2>
-        <img
+        <Image
           src='https://placehold.co/200/png'
-          width='200'
-          height='200'
+          width={200}
+          height={200}
           alt='*'
           className='float-right'
         />

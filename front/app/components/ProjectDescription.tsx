@@ -30,7 +30,7 @@ export default async function ProjectDescription() {
                 Pour ce faire, le projet Eclaireur Public vise à renforcer l’application de la loi à
                 travers 2 axes :
               </p>
-              <ul className='list-inside list-disc'>
+              <ul className='ml-5 list-disc'>
                 <li>
                   Inciter à ouvrir les données publiques de toutes les collectivités et
                   administrations,

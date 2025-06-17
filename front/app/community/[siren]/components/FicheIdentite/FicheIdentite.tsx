@@ -12,7 +12,7 @@ type FicheIdentiteProps = {
 
 export function FicheIdentite({ community }: FicheIdentiteProps) {
   // TODO - get and add the last update date
-  const lastUpdateText = `Derniere mise a jour`;
+  // const lastUpdateText = `Derniere mise a jour`;
   // TODO - retrieve scores
   const score = TransparencyScore.B;
   const trend = 1;

@@ -35,6 +35,7 @@ export default function ContactForm() {
   const [enteredName, setEnteredName] = useState('');
   const [enteredMessage, setEnteredMessage] = useState('');
   const [requestStatus, setRequestStatus] = useState(''); // 'pending', 'success', 'error'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [requestError, setRequestError] = useState('');
 
   useEffect(() => {
