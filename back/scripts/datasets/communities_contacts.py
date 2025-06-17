@@ -10,11 +10,11 @@ import polars as pl
 from polars import col
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 
 
-class CommunitiesContact:
+class CommunitiesContact(BaseDataset):
     """
     Fetch from data.gouv a specific file that contains emails and contact forms for all french administrations,
     including communities.
@@ -27,23 +27,9 @@ class CommunitiesContact:
     def get_config_key(cls) -> str:
         return "communities_contacts"
 
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return (
-            get_project_base_path()
-            / main_config[cls.get_config_key()]["data_folder"]
-            / "communities_contacts.parquet"
-        )
-
-    def __init__(self, config: dict):
-        self.main_config = config
-        self.config = config[self.get_config_key()]
-        self.data_folder = Path(self.config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-
-        self.output_filename = self.get_output_path(config)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.interm_filename = self.data_folder / "raw.tar.bz2"
-
         self.extracted_dir = self.data_folder / "extracted"
 
     def run(self):

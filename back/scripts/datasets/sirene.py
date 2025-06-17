@@ -8,6 +8,7 @@ from pathlib import Path
 import polars as pl
 from polars import col
 
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
@@ -35,7 +36,7 @@ RATE_LIMIT_DELAY = 1.5  # seconds between requests
 MAX_RETRIES = 3  # number of retries for failed downloads
 
 
-class SireneWorkflow:
+class SireneWorkflow(BaseDataset):
     """
     Dataset containing legal information of french entities, including communities and companies.
     The column `siren` a the identifier of a structure.
@@ -50,22 +51,10 @@ class SireneWorkflow:
     def get_config_key(cls) -> str:
         return "sirene"
 
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return (
-            get_project_base_path()
-            / main_config[cls.get_config_key()]["data_folder"]
-            / "sirene.parquet"
-        )
-
-    def __init__(self, main_config: dict):
-        self._config = main_config[self.get_config_key()]
-        self.data_folder = Path(self._config["data_folder"])
-        self.data_folder.mkdir(exist_ok=True, parents=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.input_filename = self.data_folder / "sirene.zip"
-        self.output_filename = self.get_output_path(main_config)
-
         # Track the last download time to enforce rate limiting
         self._last_download_time = 0
 
@@ -80,9 +69,9 @@ class SireneWorkflow:
     def _fetch_zip(self):
         if self.input_filename.exists():
             return
-        self._download_if_not_exists(self._config["url"], self.input_filename)
+        self._download_if_not_exists(self.config["url"], self.input_filename)
 
-    def _download_if_not_exists(self, url: str, file_path: Path = None) -> Path:
+    def _download_if_not_exists(self, url: str, file_path: Path | None = None) -> Path:
         """
         Download a file from a URL with rate limiting to avoid server throttling.
 
@@ -155,11 +144,11 @@ class SireneWorkflow:
         self._last_download_time = time.time()
 
     def _fetch_xls_files(self) -> None:
-        xls_links = self._config.get("xls_urls_naf", [])
+        xls_links = self.config.get("xls_urls_naf", [])
         for file_url in xls_links:
             self._download_if_not_exists(file_url)
 
-        xls_url_cat_ju = self._config.get("xls_urls_cat_ju")
+        xls_url_cat_ju = self.config.get("xls_urls_cat_ju")
         self._download_if_not_exists(xls_url_cat_ju)
 
     def join_naf_level(self, base_df: pl.DataFrame, level: str) -> pl.DataFrame:

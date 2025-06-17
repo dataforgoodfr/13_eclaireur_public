@@ -1,5 +1,3 @@
-// TODO: Replace all `any` types with proper interfaces/types for better type safety.
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { formatCompact, formatCompactPrice } from '@/utils/utils';
 import { Bar, BarChart, LabelList, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
@@ -18,20 +16,9 @@ function getLegendFormatter(isContractDisplayed: boolean): string {
   return label;
 }
 
-function renderLabel(props: any, isContractDisplayed: boolean) {
-  const { x, y, width, value } = props;
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 10}
-      fill='#4e4e4e'
-      textAnchor='middle'
-      dominantBaseline='middle'
-      fontSize='16'
-    >
-      {isContractDisplayed ? formatCompact(value) : formatCompactPrice(value)}
-    </text>
-  );
+function formatLabel(value: number): string {
+  if (value === 0) return 'Aucunes données publiées';
+  return formatCompact(value);
 }
 
 function renderYaxisLabel(value: number, isContractDisplayed: boolean): string {
@@ -69,11 +56,8 @@ export default function MarchesPublicsTrendsBarChart({
           <XAxis dataKey='annee' axisLine={true} tickLine={true} />
           <YAxis tickFormatter={(value) => renderYaxisLabel(value, isContractDisplayed)} />
           <Legend formatter={() => getLegendFormatter(isContractDisplayed)} />
-          <Bar dataKey={'yValue'} stackId='a' fill='#525252' barSize={120} radius={[10, 10, 0, 0]}>
-            <LabelList
-              position='top'
-              content={(props) => renderLabel(props, isContractDisplayed)}
-            />
+          <Bar dataKey={'yValue'} stackId='a' fill='#525252' radius={[10, 10, 0, 0]}>
+            <LabelList position='top' formatter={formatLabel} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
