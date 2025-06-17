@@ -15,7 +15,7 @@ export default function Suggestion({
         {nom} {code_postal && <>– {code_postal}</>}
       </span>
       <span>
-        {communityTypeText && <span> {communityTypeText}</span>}
+        {communityTypeText && <> {communityTypeText}</>}
         {siren && <span className='ml-8 text-[12px]'> siren : {siren}</span>}
       </span>
     </div>
