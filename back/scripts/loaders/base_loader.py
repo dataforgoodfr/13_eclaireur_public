@@ -11,8 +11,14 @@ from urllib3.util.retry import Retry
 
 from back.scripts.loaders.utils import LOADER_CLASSES
 
+LOGGER = logging.getLogger(__name__)
 
-def retry_session(retries, session=None, backoff_factor=0.3):
+
+def retry_session(
+    retries: int | None,
+    session: requests.Session | None = None,
+    backoff_factor: float = 0.3,
+):
     """
     Configure resquests for multiple retries.
     https://stackoverflow.com/questions/49121365/implementing-retry-for-requests-in-python
@@ -33,21 +39,31 @@ def retry_session(retries, session=None, backoff_factor=0.3):
 class BaseLoader:
     """
     Base class for data loaders.
+    Args:
+        file_extensions: Set of file extensions supported by the loader
+        file_media_type_regex: Regular expression to match file media type
     """
 
     file_extensions: set[str] | None = None
     # http://www.iana.org/assignments/media-types/media-types.xhtml
     file_media_type_regex: Pattern[str] | str | None = None
 
-    def __init__(self, file_url: str | Path, num_retries=3, delay_between_retries=5, **kwargs):
-        # file_url : URL of the file to load
-        # num_retries : Number of retries in case of failure
-        # delay_between_retries : Delay between retries in seconds
+    def __init__(
+        self,
+        file_url: str | Path,
+        num_retries: int | None = 3,
+        delay_between_retries: float = 5.0,
+        **kwargs,
+    ):
+        """
+        Args:
+            file_url : URL of the file to load
+            num_retries: Number of retries in case of failure
+            delay_between_retries: Delay between retries in seconds
+        """
         self.file_url = str(file_url)
         self.num_retries = num_retries
         self.delay_between_retries = delay_between_retries
-        self.logger = logging.getLogger(__name__)
-        self.is_url = self.get_file_is_url(self.file_url)
         self.kwargs = kwargs
 
     def load(self, force: bool = True):
@@ -58,7 +74,7 @@ class BaseLoader:
         if not force and not self.can_load_file(self.file_url):
             raise RuntimeError(f"File {self.file_url} is not supported by this loader")
 
-        if self.is_url:
+        if self.get_file_is_url(self.file_url):
             return self._load_from_url()
         else:
             return self._load_from_file()
@@ -80,10 +96,9 @@ class BaseLoader:
             with open(local_path, "rb") as file:
                 return self.process_data(file.read())
         except FileNotFoundError as e:
-            self.logger.error(f"File not found: {e}")
-            return None
+            LOGGER.error(f"File not found: {e}")
         except Exception as e:
-            print(e)
+            LOGGER.error(f"Failed to load data from {self.file_url}: {e}")
         return None
 
     def process_data(self, data):
@@ -173,3 +188,29 @@ class BaseLoader:
                 can_load = regex.search(file_media_type)
 
         return bool(can_load)
+
+
+class EncodedDataLoader(BaseLoader):
+    def get_accepted_encodings(self) -> list[str]:
+        # Try different encodings for the data, sorted by priority
+        return ["utf-8-sig", "windows-1252", "latin1", "utf-16"]
+
+    def process_data(self, data):
+        for encoding in self.get_accepted_encodings():
+            try:
+                decoded_content = data.decode(encoding)
+            except UnicodeDecodeError:
+                LOGGER.debug(f"Failed to decode using {encoding} encoding")
+                # Try the next encoding
+                continue
+            else:
+                LOGGER.info(f"Successfully decoded using {encoding} encoding")
+                decoded_data = self.process_from_decoded(decoded_content)
+                if decoded_data is not None:
+                    return decoded_data
+
+        LOGGER.error(f"Unable to process content from: {self.file_url}")
+        return None
+
+    def process_from_decoded(self, decoded_content: str):
+        raise NotImplementedError("This method should be implemented by subclasses.")

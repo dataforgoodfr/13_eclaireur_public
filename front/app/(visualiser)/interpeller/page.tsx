@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -25,10 +26,10 @@ export default function Page() {
       </article>
       <article className='my-16'>
         <h2 className='my-6 text-xl font-bold uppercase'>Pourquoi interpeller mes élu.e.s ?</h2>
-        <img
+        <Image
           src='https://placehold.co/200/png'
-          width='200'
-          height='200'
+          width={200}
+          height={200}
           alt='*'
           className='float-right'
         />

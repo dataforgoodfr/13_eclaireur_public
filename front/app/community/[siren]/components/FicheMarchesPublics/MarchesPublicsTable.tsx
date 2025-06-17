@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { useMarchesPublicsPaginated } from '@/utils/hooks/useMarchesPublicsPaginated';
 import { usePagination } from '@/utils/hooks/usePagination';
-import { formatNumber } from '@/utils/utils';
+import { formatAmount } from '@/utils/utils';
 
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
@@ -79,14 +79,6 @@ type Table = {
 };
 
 export function Table({ rows }: Table) {
-  function formatAmount(amount: number) {
-    return formatNumber(amount, {
-      notation: 'compact',
-      maximumFractionDigits: 1,
-      minimumFractionDigits: 1,
-    });
-  }
-
   return (
     <ShadCNTable>
       <TableHeader>

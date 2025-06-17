@@ -5,23 +5,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { getAllYearsFrom2018ToCurrent } from '@/utils/utils';
 
 import { YearOption } from '../types/interface';
 
 type YearSelectorProps = {
-  years: number[];
+  defaultValue: YearOption;
   onSelect: (option: YearOption) => void;
 };
 
-export default function YearSelector({ years, onSelect }: YearSelectorProps) {
+export default function YearSelector({ defaultValue, onSelect }: YearSelectorProps) {
   return (
-    <Select onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}>
+    <Select
+      onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}
+      defaultValue={defaultValue.toString()}
+    >
       <SelectTrigger className='w-[100px]'>
         <SelectValue placeholder='Tout voir' />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value='All'>Tout voir</SelectItem>
-        {years.map((year, index) => (
+        {getAllYearsFrom2018ToCurrent().map((year, index) => (
           <SelectItem key={index} value={String(year)}>
             {year}
           </SelectItem>

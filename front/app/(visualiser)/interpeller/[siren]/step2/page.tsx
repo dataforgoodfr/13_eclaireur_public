@@ -28,7 +28,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
   const contacts = await getContacts(siren);
   const emailContacts = contacts.filter((elt) => elt.type_contact === 'MAIL');
   const emailContactsLen = emailContacts.length;
-  const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
+  // const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
 
   return (
     <section id='interpellation-step2' className='my-16'>

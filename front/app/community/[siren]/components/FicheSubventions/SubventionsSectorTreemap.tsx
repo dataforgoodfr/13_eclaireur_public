@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Loading from '@/components/ui/Loading';
 import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
+import { NoData } from '../NoData';
 import { CHART_HEIGHT } from '../constants';
 
 type SubventionsSectorTreemapProps = {
@@ -29,8 +30,17 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     setmaxAmount(value);
   }
 
+  // Reset le "zoom" lors du changement d'année
+  useEffect(() => {
+    setmaxAmount(null);
+  }, [year]);
+
   if (isPending || isError) {
     return <Loading style={{ height: CHART_HEIGHT }} />;
+  }
+
+  if (data.length === 0) {
+    return <NoData />;
   }
 
   const treeLeaves: TreeLeaf[] = data.map(({ naf2, label, montant, grand_total }) => ({
@@ -49,5 +59,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     children: treeLeaves,
   };
 
-  return <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />;
+  return (
+    <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />
+  );
 }

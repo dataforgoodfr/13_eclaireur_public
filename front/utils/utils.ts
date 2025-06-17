@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { GRAPH_START_YEAR } from './constants';
 import { Direction } from './fetchers/types';
 import { CommunityType } from './types';
 
@@ -60,6 +61,14 @@ export function formatCompact(amount: number) {
   return formatNumber(amount, {
     notation: 'compact',
     maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+}
+
+export function formatAmount(amount: number) {
+  return formatNumber(amount, {
+    notation: 'compact',
+    maximumFractionDigits: 1,
     minimumFractionDigits: 0,
   });
 }
@@ -129,4 +138,14 @@ export function parseDirection(value: string | null): Direction | undefined {
   if (value === 'DESC') return 'DESC';
 
   return undefined;
+}
+
+export function getAllYearsFrom2018ToCurrent(): number[] {
+  const years: number[] = [];
+  let year: number = new Date().getFullYear();
+  while (year >= GRAPH_START_YEAR) {
+    years.push(year);
+    year--;
+  }
+  return years;
 }

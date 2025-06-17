@@ -24,14 +24,14 @@ const SCORE_TO_ADJECTIF = {
 
 type ScoreTileProps = {
   score: TransparencyScore;
-  x: number;
+  // x: number;
   size?: number;
   rectangleClassName?: ClassNameValue;
 } & SVGProps<SVGGElement>;
 
 function ScoreTile({
   score,
-  x,
+  // x,
   size = SQUARE_WIDTH,
   rectangleClassName,
   ...restProps

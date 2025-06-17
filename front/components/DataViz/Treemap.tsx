@@ -42,6 +42,8 @@ function generateColorMap(names: string[]): Record<string, string> {
   return colorMap;
 }
 
+// TODO: fix linting error
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 type TreemapProps = { data: TreeData; isZoomActive: boolean; handleClick: Function };
 
 export default function Treemap({ data, isZoomActive, handleClick }: TreemapProps) {
@@ -51,6 +53,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
     y: 0,
     name: '',
     value: 0,
+    percentage: 0,
   });
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -63,6 +66,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       y: e.clientY - 30,
       name: leaf.data.name,
       value: leaf.data.value,
+      percentage: leaf.data.type === 'leaf' ? leaf.data.part : 0,
     });
   }
 
@@ -168,7 +172,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick}/>
+      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick} />
     </div>
   );
 }

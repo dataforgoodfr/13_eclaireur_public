@@ -14,7 +14,8 @@ import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 type DistributionProps = { siren: string; availableYears: number[] };
 
 export default function Distribution({ siren, availableYears }: DistributionProps) {
-  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
+  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   function handleDownloadData() {
@@ -34,7 +35,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           />
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector years={availableYears} onSelect={setSelectedYear} />
+          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
           <DownloadSelector onClickDownloadData={handleDownloadData} />
         </div>
       </div>

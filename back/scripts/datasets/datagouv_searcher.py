@@ -1,11 +1,10 @@
 import logging
 import re
-from pathlib import Path
 
 import pandas as pd
 
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
-from back.scripts.utils.config import get_combined_filename, get_project_base_path
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.dataframe_operation import sort_by_format_priorities
 
 LOGGER = logging.getLogger(__name__)
@@ -13,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
 
-class DataGouvSearcher:
+class DataGouvSearcher(BaseDataset):
     """
     This class is responsible for subvention related files in the data.gouv catalog.
     The strategy is to look for datasets with specific keywords in their title and description.
@@ -24,19 +23,8 @@ class DataGouvSearcher:
     def get_config_key(cls) -> str:
         return "datagouv_search"
 
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return get_combined_filename(main_config, cls.get_config_key())
-
-    def __init__(self, main_config: dict):
-        self.main_config = main_config
-        self._config = main_config[self.get_config_key()]
-
-        self.data_folder = get_project_base_path() / self._config["data_folder"]
-        self.data_folder.mkdir(exist_ok=True, parents=True)
-
     def run(self):
-        if self.get_output_path(self.main_config).exists():
+        if self.output_filename.exists():
             return
         self.catalog = pd.read_parquet(DataGouvCatalog.get_output_path(self.main_config))
         from_dataset_infos = (
@@ -44,14 +32,14 @@ class DataGouvSearcher:
             .pipe(self._select_prefered_format)
             .pipe(remove_same_dataset_formats, column="base_url")
         )
-        from_dataset_infos.to_parquet(self.get_output_path(self.main_config))
+        from_dataset_infos.to_parquet(self.output_filename)
 
     def _select_datasets_by_title_and_desc(self) -> pd.DataFrame:
         """
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
         """
-        description_pattern = re.compile("|".join(self._config.get("description_filter") or []))
+        description_pattern = re.compile("|".join(self.config.get("description_filter") or []))
         flagged_by_description = (
             self.catalog["dataset_description"]
             .str.lower()
@@ -61,7 +49,7 @@ class DataGouvSearcher:
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
-        title_pattern = re.compile("|".join(self._config["title_filter"]))
+        title_pattern = re.compile("|".join(self.config["title_filter"]))
         flagged_by_title = (
             self.catalog["dataset_title"].str.lower().str.contains(title_pattern, na=False)
         )

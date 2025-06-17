@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
@@ -58,7 +60,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
   };
 
   const fullName = `${firstName} ${lastName}`;
-  const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
+  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
   const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
 
   const form = useForm<FormSchema>({

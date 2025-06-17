@@ -1,11 +1,11 @@
 import logging
-from pathlib import Path
 
 import pandas as pd
 
 from back.scripts.communities.loaders.ofgl import OfglLoader
+from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
-from back.scripts.utils.config import get_combined_filename, project_config
+from back.scripts.utils.config import project_config
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     normalize_column_names,
@@ -19,7 +19,7 @@ from back.scripts.utils.geolocator import GeoLocator
 LOGGER = logging.getLogger(__name__)
 
 
-class CommunitiesSelector:
+class CommunitiesSelector(BaseDataset):
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.
@@ -28,20 +28,6 @@ class CommunitiesSelector:
     @classmethod
     def get_config_key(cls) -> str:
         return "communities"
-
-    @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
-        return get_combined_filename(main_config, cls.get_config_key())
-
-    def __init__(self, main_config):
-        self.main_config = main_config
-        self.config = main_config[self.get_config_key()]
-
-        self.data_folder = Path(self.config["data_folder"])
-        self.data_folder.mkdir(parents=True, exist_ok=True)
-
-        self.output_filename = self.get_output_path(main_config)
-        self.output_filename.parent.mkdir(parents=True, exist_ok=True)
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self):

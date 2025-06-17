@@ -1,3 +1,5 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server';
 
 import nodemailer from 'nodemailer';
@@ -61,6 +63,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: err }, { status: 500 });
     }
   } catch (error) {
+    console.error('Error processing request:', error);
     return new NextResponse(JSON.stringify({ error: 'Error processing request' }), {
       status: 500,
     });
