@@ -14,6 +14,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ siren: str
 
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Error fetching marches publics yearly amounts:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
