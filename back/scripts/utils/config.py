@@ -12,6 +12,11 @@ def get_project_data_path():
 
 
 class Config:
+    """
+    Singleton class used to load unique configuration.
+    The configuration can be loaded only once and is then locked
+    """
+
     _instance: Self | None = None
 
     def __new__(cls, *args, **kwargs):
@@ -33,6 +38,12 @@ class Config:
         raise AttributeError("self._conf not found. Did you forget to .load the instance ?")
 
     def load(self, conf: dict) -> None:
+        """
+        Load the configuration from a dictionary into the singleton class if not already done, and lock it.
+
+        Raises:
+            RuntimeError: if the configuration has already been loaded.
+        """
         if self._locked:
             raise RuntimeError(
                 "The configuration has already been loaded and can no longer be modified."
