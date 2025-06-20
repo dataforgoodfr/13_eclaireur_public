@@ -97,8 +97,9 @@ export default function PerspectiveSelector({
 
       <div className='space-y-4'>
         <RadioGroup
-          value={selectedOption}
+          // value={selectedOption}
           onValueChange={onSelectedOptionChange}
+          defaultValue={rangeOptions[0].id}
           className='space-y-4'
         >
           {rangeOptions.map((option) => (

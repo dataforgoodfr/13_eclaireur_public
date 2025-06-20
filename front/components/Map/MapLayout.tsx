@@ -19,7 +19,7 @@ type MapLayoutProps = {
 export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
-  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('');
+  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population');
 
   const [viewState, setViewState] = useState<Partial<ViewState>>(
     territories['metropole'].viewState,
