@@ -40,18 +40,23 @@ export default function DotsLayer({
           ['<=', ['get', 'population'], populationRange[1]],
         ]}
         paint={{
+          // Bigger circle radius, scaled by population range:
           'circle-radius': [
             'interpolate',
             ['linear'],
             ['get', 'population'],
             minPopulationForRadius,
-            minRadius,
+            6, // Increased from 4 to 6 for min size
             maxPopulationForRadius,
-            maxRadius,
+            24, // Increased from 16 to 24 for max size
           ],
-          'circle-color': circleColor,
+
+          // Fill color with transparency:
+          'circle-color': 'rgba(25, 118, 210, 0.4)', // #1976d2 at ~40% opacity
+
+          // Border stroke:
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff',
+          'circle-stroke-color': '#1976d2',
         }}
       />
     </Source>
