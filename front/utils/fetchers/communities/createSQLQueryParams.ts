@@ -21,10 +21,15 @@ const TABLE_NAME = DataTable.Communities;
 export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: Pagination) {
   let values: (CommunityType | number | string)[] = [];
 
-  const selectorsStringified = stringifySelectors(options?.selectors);
+  const selectorsStringified = stringifySelectors(options?.selectors, 'c');
   let query = `
-    SELECT ${selectorsStringified}, count(*) OVER() AS full_count
-    FROM ${TABLE_NAME}
+    SELECT 
+      ${selectorsStringified},
+      b.subventions_score,
+      b.mp_score,
+      count(c.*) OVER() AS full_count
+    FROM ${TABLE_NAME} c
+    LEFT JOIN bareme b ON c.siren = b.siren AND b.annee = 2024
    `;
 
   if (options === undefined) {
@@ -45,7 +50,7 @@ export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: 
       return;
     }
 
-    whereConditions.push(`${key} = $${values.length + 1}`);
+    whereConditions.push(`c.${key} = $${values.length + 1}`);
     values.push(option);
   });
 
