@@ -29,13 +29,18 @@ import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
 
+// import type { CollectiviteMinMax } from './types';
+
 interface MapProps {
   selectedTerritoryData: TerritoryData | undefined;
   selectedChoroplethData: ChoroplethDataSource;
   viewState: Partial<ViewState>;
   setViewState: (vs: Partial<ViewState>) => void;
-  ranges: Record<string, [number, number]>;
+  // ranges: Record<string, [number, number]>;
   selectedRangeOption: string;
+  // minMaxValues: CollectiviteMinMax[];
+  currentAdminLevel: string; // Added to match the usage in the component,
+  populationMinMax: { min: number; max: number }; // Added to match the usage in the component,
 }
 
 export default function FranceMap({
@@ -43,8 +48,10 @@ export default function FranceMap({
   selectedChoroplethData,
   viewState,
   setViewState,
-  ranges, 
+  // ranges,
   selectedRangeOption,
+  // minMaxValues,
+  populationMinMax,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
@@ -136,7 +143,10 @@ export default function FranceMap({
         }}
       >
         <NavigationControl position='top-right' />
-        <ChoroplethLegend ranges={ranges} selectedRangeOption={selectedRangeOption}/>
+        <ChoroplethLegend
+          populationMinMax={populationMinMax}
+          selectedRangeOption={selectedRangeOption}
+        />
         <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
         <Source
           id='statesData'

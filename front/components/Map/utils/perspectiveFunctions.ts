@@ -24,3 +24,13 @@ export const createInitialRanges = (
     'budget-per-capita': [0, 5000],
   };
 };
+
+export const formatValue = (value: number, unit?: string) => {
+  if (unit === '€' && value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M€`;
+  }
+  if (unit === 'habitants' && value >= 1000) {
+    return `${(value / 1000).toFixed(0)}k ${unit}`;
+  }
+  return `${value.toLocaleString()} ${unit}`;
+};

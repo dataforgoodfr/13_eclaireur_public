@@ -27,10 +27,13 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
 
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
   const selectedChoroplethData = choroplethDataSource[selectedScore];
-  const currentLevel = getAdminTypeFromZoom(viewState.zoom || 5, selectedTerritory || 'metropole');
+  const currentAdminLevel = getAdminTypeFromZoom(
+    viewState.zoom || 5,
+    selectedTerritory || 'metropole',
+  );
 
   // Use the external function
-  const populationMinMax = getMinMaxForAdminLevel(minMaxValues, currentLevel);
+  const populationMinMax = getMinMaxForAdminLevel(minMaxValues, currentAdminLevel);
 
   // Initialize ranges state with external function
   const [ranges, setRanges] = useState<Record<string, [number, number]>>(() =>
@@ -68,8 +71,11 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           selectedChoroplethData={selectedChoroplethData}
           viewState={viewState}
           setViewState={setViewState}
-          ranges={ranges}
+          // ranges={ranges}
           selectedRangeOption={selectedRangeOption}
+          // minMaxValues={minMaxValues}
+          currentAdminLevel={currentAdminLevel}
+          populationMinMax={populationMinMax}
         />
       </div>
       <div className='flex min-h-screen w-1/3 flex-col bg-[#ffeccf] px-8 py-20'>
@@ -86,7 +92,7 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
         <hr className='my-12 border-t border-[#fdc04e]' />
         <PerspectiveSelector
           minMaxValues={minMaxValues}
-          adminLevel={currentLevel}
+          currentAdminLevel={currentAdminLevel}
           selectedOption={selectedRangeOption}
           onSelectedOptionChange={setSelectedRangeOption}
           ranges={ranges}

@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 
 import type { AdminType } from './types';
+import { formatValue } from './utils/perspectiveFunctions';
 
 interface CollectiviteMinMax {
   type: string;
@@ -23,7 +24,7 @@ interface RangeOption {
 
 interface PerspectiveSelectorProps {
   minMaxValues: CollectiviteMinMax[];
-  adminLevel: AdminType;
+  currentAdminLevel: AdminType;
   selectedOption: string;
   onSelectedOptionChange: (option: string) => void;
   ranges: Record<string, [number, number]>;
@@ -32,14 +33,14 @@ interface PerspectiveSelectorProps {
 
 export default function PerspectiveSelector({
   minMaxValues,
-  adminLevel,
+  currentAdminLevel,
   selectedOption,
   onSelectedOptionChange,
   ranges,
   onRangeChange,
 }: PerspectiveSelectorProps) {
   const getMinMaxForAdminLevel = () => {
-    const data = minMaxValues.find((item) => item.type === adminLevel);
+    const data = minMaxValues.find((item) => item.type === currentAdminLevel);
     return {
       min: data?.min_population || 0,
       max: data?.max_population || 1000000,
@@ -82,16 +83,6 @@ export default function PerspectiveSelector({
       step: 50,
     },
   ];
-
-  const formatValue = (value: number, unit: string) => {
-    if (unit === '€' && value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M€`;
-    }
-    if (unit === 'habitants' && value >= 1000) {
-      return `${(value / 1000).toFixed(0)}k ${unit}`;
-    }
-    return `${value.toLocaleString()} ${unit}`;
-  };
 
   return (
     <div className='mb-8'>
