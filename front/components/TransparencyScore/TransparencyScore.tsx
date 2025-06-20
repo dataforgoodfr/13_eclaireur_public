@@ -22,6 +22,11 @@ const SCORE_TO_ADJECTIF = {
   [TransparencyScore.E]: 'Opaque',
 };
 
+function getScoreAdjectif(score: TransparencyScore | null) {
+  if (score === null) return 'Non disponible';
+  return SCORE_TO_ADJECTIF[score];
+}
+
 type ScoreTileProps = {
   score: TransparencyScore;
   // x: number;
@@ -52,7 +57,7 @@ function ScoreTile({
 }
 
 type TransparencyScoreBarProps = {
-  score: TransparencyScore;
+  score: TransparencyScore | null;
 };
 
 export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBarProps) {
@@ -85,14 +90,16 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
             </g>
           );
         })}
-        <g className='font-bold'>
-          <ScoreTile
-            score={activeScore}
-            x={SQUARE_WIDTH * activeScoreIndex}
-            transform={`scale(${ACTIVE_SCORE_SCALE}) translate(${(SQUARE_WIDTH * activeScoreIndex) / ACTIVE_SCORE_SCALE + translateDueToScaleFactor}, ${translateDueToScaleFactor})`}
-            rectangleClassName='fill-slate-200'
-          />
-        </g>
+        {activeScore !== null && (
+          <g className='font-bold'>
+            <ScoreTile
+              score={activeScore}
+              x={SQUARE_WIDTH * activeScoreIndex}
+              transform={`scale(${ACTIVE_SCORE_SCALE}) translate(${(SQUARE_WIDTH * activeScoreIndex) / ACTIVE_SCORE_SCALE + translateDueToScaleFactor}, ${translateDueToScaleFactor})`}
+              rectangleClassName='fill-slate-200'
+            />
+          </g>
+        )}
       </g>
       <g transform={`translate(${SVG_CONFIG.margin}, ${SVG_CONFIG.margin})`}>
         <text
@@ -101,7 +108,7 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           textAnchor='middle'
           className='font-bold'
         >
-          {SCORE_TO_ADJECTIF[activeScore]}
+          {getScoreAdjectif(activeScore)}
         </text>
       </g>
     </svg>
