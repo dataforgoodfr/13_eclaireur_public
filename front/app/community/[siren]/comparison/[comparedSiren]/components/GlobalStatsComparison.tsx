@@ -1,6 +1,4 @@
 import { Community } from '@/app/models/community';
-import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import SectionSeparator from '@/components/utils/SectionSeparator';
 import { formatNumberInteger } from '@/utils/utils';
 

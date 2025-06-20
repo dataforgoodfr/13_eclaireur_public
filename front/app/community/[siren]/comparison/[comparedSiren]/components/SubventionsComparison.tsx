@@ -1,4 +1,3 @@
-import { MarchePublic } from '@/app/models/marchePublic';
 import { Subvention } from '@/app/models/subvention';
 import {
   Table as ShadCNTable,
