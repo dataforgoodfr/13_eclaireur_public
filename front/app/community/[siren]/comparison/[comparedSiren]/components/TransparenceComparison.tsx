@@ -1,6 +1,6 @@
 import { Community } from '@/app/models/community';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
+import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import SectionSeparator from '@/components/utils/SectionSeparator';
 
 type TransparenceComparisonProperties = {
@@ -8,7 +8,10 @@ type TransparenceComparisonProperties = {
   community2: Community;
 };
 
-export function TransparenceComparison({ community1, community2 }: TransparenceComparisonProperties) {
+export function TransparenceComparison({
+  community1,
+  community2,
+}: TransparenceComparisonProperties) {
   return (
     <>
       <SectionSeparator sectionTitle='Scores de transparence (2024)' />

@@ -42,7 +42,7 @@ function ComparingSubventions({ data }: { data: Subvention[] }) {
   const subventionsNumber = filteredData.length;
   const top5Subventions = filteredData.sort((a, b) => b.montant - a.montant).slice(0, 5);
   return (
-    <div className='md:mx-2 basis-1/2 flex-col space-y-2 text-center'>
+    <div className='basis-1/2 flex-col space-y-2 text-center md:mx-2'>
       <p>Montant total : {formatCompactPrice(totalAmount)}</p>
       <p>Nombre de subventions : {subventionsNumber}</p>
       <div className='md:mx-5'>
@@ -57,7 +57,9 @@ function ComparingSubventions({ data }: { data: Subvention[] }) {
           <TableBody>
             {top5Subventions.map(({ nom_beneficiaire, montant }, index) => (
               <TableRow key={index}>
-                <TableCell className='text-left md:text-xs'>{nom_beneficiaire.toLocaleUpperCase()}</TableCell>
+                <TableCell className='text-left md:text-xs'>
+                  {nom_beneficiaire.toLocaleUpperCase()}
+                </TableCell>
                 <TableCell className='text-right'>{formatCompactPrice(montant)}</TableCell>
               </TableRow>
             ))}
