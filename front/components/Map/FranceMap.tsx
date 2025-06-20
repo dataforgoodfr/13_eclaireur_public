@@ -31,8 +31,6 @@ import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
 
-// import type { CollectiviteMinMax } from './types';
-
 interface MapProps {
   selectedTerritoryData: TerritoryData | undefined;
   selectedChoroplethData: ChoroplethDataSource;
@@ -40,8 +38,8 @@ interface MapProps {
   setViewState: (vs: Partial<ViewState>) => void;
   ranges: Record<string, [number, number]>;
   selectedRangeOption: string;
-  currentAdminLevel: string; // Added to match the usage in the component,
-  populationMinMax: { min: number; max: number }; // Added to match the usage in the component,
+  currentAdminLevel: string;
+  populationMinMax: { min: number; max: number };
 }
 
 export default function FranceMap({
@@ -73,8 +71,6 @@ export default function FranceMap({
   const departementDots = createMapPointFeatures(departements as Community[]);
   const communeDots = createMapPointFeatures(communes as Community[]);
 
-  // const populationRange = ranges['population'] || [0, Infinity];
-  console.log('populationMinMax', populationMinMax);
   const communityMap = useMemo(() => {
     const map: Record<string, Community> = {};
     (regions ?? []).forEach((c) => {
@@ -92,7 +88,6 @@ export default function FranceMap({
     return map;
   }, [regions, departements, communes]);
 
-  // Update viewState when selectedTerritoryData changes
   useEffect(() => {
     const mapInstance = mapRef.current?.getMap();
     if (!mapInstance) return;
@@ -153,7 +148,6 @@ export default function FranceMap({
           selectedRangeOption={selectedRangeOption}
         />
         <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
-
         <Source
           id='statesData'
           type='vector'
