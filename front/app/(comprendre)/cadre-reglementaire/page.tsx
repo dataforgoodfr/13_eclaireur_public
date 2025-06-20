@@ -12,7 +12,6 @@ export default function Page() {
       <h2 className='my-12 text-xl font-bold'>
         L'open data des collectivités locales : un enjeu de transparence et de démocratie
       </h2>
-      Page(
       <p className='my-6 text-lg'>
         Depuis 2016, la loi pour une République numérique a instauré de nouvelles obligations pour
         les collectivités locales en matière d'ouverture des données publiques, aussi appelée "open

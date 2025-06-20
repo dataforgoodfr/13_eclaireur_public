@@ -38,8 +38,8 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
   {
     title: 'Perspectives',
-    href: '/',
-    description: 'Quelles sont les grandes tendances en matière de transparence des dépenses ?',
+    href: '/perspectives',
+    description: 'Quelles sont les grandes tendances en matière de transparence des dépenses publiques locales ?',
   },
 ];
 
@@ -63,9 +63,14 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
 
 const aProposMenus: { title: string; href: string; description: string }[] = [
   {
+    title: 'Qui sommes-nous ?',
+    href: '/qui-sommes-nous',
+    description: 'Transparency International France, ANTICOR, Data for Good',
+  },
+  {
     title: 'Le projet',
     href: '/le-projet',
-    description: 'Qui sommes-nous ?',
+    description: 'Comment la transparence éclaire les citoyens ?',
   },
   {
     title: 'Aide aux élus',

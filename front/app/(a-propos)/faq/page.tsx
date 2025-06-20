@@ -140,9 +140,9 @@ export default function Page() {
         <AccordionItem value='item-13'>
           <AccordionTrigger>Quelle est la méthodologie ?</AccordionTrigger>
           <AccordionContent>
-            Techniquement, Éclaireur Public c'est la collecte,le raffinement et la rationalisation
-            de données, c'est aussi l'élaboration d'un indice de transparence adapté à la
-            problématique de données sur les subventions les marchés publics.
+            Techniquement, Éclaireur Public, c'est la collecte, le raffinement et la rationalisation
+            de données. C'est aussi l'élaboration d'un indice de transparence adapté à la
+            problématique de données sur les subventions et les marchés publics.
             <br />
             La démarche est décrite de manière transparente sur la page{' '}
             <Link href='/cadre-reglrmentaire' className='border-b-2 border-black'>
