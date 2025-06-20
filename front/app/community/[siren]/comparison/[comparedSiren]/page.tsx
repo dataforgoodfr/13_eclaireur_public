@@ -12,6 +12,7 @@ import { GlobalStatsComparison } from './components/GlobalStatsComparison';
 import { Header } from './components/Header';
 import { HeaderComparison } from './components/HeaderComparison';
 import { MarchesPublicsComparison } from './components/MarchesPublicsComparison';
+import { SubventionsComparison } from './components/SubventionsComparison';
 import { TransparenceComparison } from './components/TransparenceComparison';
 
 type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
@@ -52,7 +53,10 @@ export default async function Page({ params }: PageProps) {
         <HeaderComparison community1={community1} community2={community2} />
         <GlobalStatsComparison community1={community1} community2={community2} />
         <TransparenceComparison community1={community1} community2={community2} />
+        {/* TODO factoriser en un seul composant les encarts marchés publics et subventions
+            A faire si le comportement général est validé fonctionnellement */}
         <MarchesPublicsComparison siren1={community1.siren} siren2={community2.siren} />
+        <SubventionsComparison siren1={community1.siren} siren2={community2.siren} />
       </div>
     </Suspense>
   );
