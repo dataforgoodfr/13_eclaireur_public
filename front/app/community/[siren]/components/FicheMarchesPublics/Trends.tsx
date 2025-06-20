@@ -37,10 +37,7 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
     });
   }
 
-  function mergeWithInitialList(
-    trends: ChartData[],
-    initalList: ChartData[]
-  ): ChartData[] {
+  function mergeWithInitialList(trends: ChartData[], initalList: ChartData[]): ChartData[] {
     return initalList.map((el) => {
       const found = trends.find((item) => item.annee === el.annee);
       return { ...el, yValue: found?.yValue ?? el.yValue };
@@ -48,22 +45,22 @@ export default function Trends({ data }: { data: MarchePublic[] }) {
   }
 
   const contractNumberTrendsData = mergeWithInitialList(contractNumberTrends, initalList);
-  
+
   const contractAmountTrends: ChartData[] = Object.values(
     data.reduce<Record<string, ChartData>>((acc, item) => {
       const year = Number(item.annee_notification);
-      
+
       if (!acc[year]) {
         acc[year] = { annee: year, yValue: 0 };
       }
       acc[year].yValue += parseFloat(String(item.montant)) || 0;
-      
+
       return acc;
     }, {}),
   );
-  
+
   const contractAmountTrendsData = mergeWithInitialList(contractAmountTrends, initalList);
-  
+
   return (
     <>
       <div className='flex items-baseline justify-between'>

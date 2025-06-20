@@ -5,6 +5,7 @@ import type { ViewState } from 'react-map-gl/maplibre';
 
 import FranceMap from './FranceMap';
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
+import PerspectiveSelector from './PerspectiveSelector';
 import TransparencyScoreControls from './TransparencyScoreControls';
 
 export type ChoroplethDataSource = {
@@ -143,6 +144,8 @@ export default function MapLayout() {
           selectedTerritory={selectedTerritory}
           onSelectTerritory={setSelectedTerritory}
         />
+        <hr className='my-12 border-t border-[#fdc04e]' />
+        <PerspectiveSelector />
       </div>
     </div>
   );
