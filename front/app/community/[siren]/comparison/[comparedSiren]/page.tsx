@@ -2,11 +2,8 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
-import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
 
 import { GlobalStatsComparison } from './components/GlobalStatsComparison';
 import { Header } from './components/Header';
