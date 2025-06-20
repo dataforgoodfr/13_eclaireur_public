@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
+
+import type { AdminType } from './types';
+
+interface CollectiviteMinMax {
+  type: string;
+  min_population: number;
+  max_population: number;
+}
 
 interface RangeOption {
   id: string;
@@ -15,56 +21,67 @@ interface RangeOption {
   step: number;
 }
 
-const rangeOptions: RangeOption[] = [
-  {
-    id: 'population',
-    label: 'Population de la collectivité',
-    min: 0,
-    max: 1000000,
-    unit: 'habitants',
-    step: 1000,
-  },
-  {
-    id: 'density',
-    label: 'Densité de population',
-    min: 0,
-    max: 500,
-    unit: 'hab/km²',
-    step: 5,
-  },
-  {
-    id: 'total-budget',
-    label: 'Montant du budget total',
-    min: 0,
-    max: 10000000,
-    unit: '€',
-    step: 10000,
-  },
-  {
-    id: 'budget-per-capita',
-    label: 'Budget par habitant',
-    min: 0,
-    max: 5000,
-    unit: '€',
-    step: 50,
-  },
-];
+interface PerspectiveSelectorProps {
+  minMaxValues: CollectiviteMinMax[];
+  adminLevel: AdminType;
+  selectedOption: string;
+  onSelectedOptionChange: (option: string) => void;
+  ranges: Record<string, [number, number]>;
+  onRangeChange: (optionId: string, value: [number, number]) => void;
+}
 
-export default function PerspectiveSelector() {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [ranges, setRanges] = useState<Record<string, [number, number]>>({
-    population: [0, 500000],
-    density: [0, 250],
-    'total-budget': [0, 5000000],
-    'budget-per-capita': [0, 2500],
-  });
-
-  const handleRangeChange = (optionId: string, value: [number, number]) => {
-    setRanges((prev) => ({
-      ...prev,
-      [optionId]: value,
-    }));
+export default function PerspectiveSelector({
+  minMaxValues,
+  adminLevel,
+  selectedOption,
+  onSelectedOptionChange,
+  ranges,
+  onRangeChange,
+}: PerspectiveSelectorProps) {
+  const getMinMaxForAdminLevel = () => {
+    const data = minMaxValues.find((item) => item.type === adminLevel);
+    return {
+      min: data?.min_population || 0,
+      max: data?.max_population || 1000000,
+    };
   };
+
+  const populationMinMax = getMinMaxForAdminLevel();
+
+  const rangeOptions: RangeOption[] = [
+    {
+      id: 'population',
+      label: 'Population de la collectivité',
+      min: populationMinMax.min,
+      max: populationMinMax.max,
+      unit: 'habitants',
+      step: Math.max(1000, Math.floor((populationMinMax.max - populationMinMax.min) / 100)),
+    },
+    {
+      id: 'density',
+      label: 'Densité de population',
+      min: 0,
+      max: 500,
+      unit: 'hab/km²',
+      step: 5,
+    },
+    {
+      id: 'total-budget',
+      label: 'Montant du budget total',
+      min: 0,
+      max: 10000000,
+      unit: '€',
+      step: 10000,
+    },
+    {
+      id: 'budget-per-capita',
+      label: 'Budget par habitant',
+      min: 0,
+      max: 5000,
+      unit: '€',
+      step: 50,
+    },
+  ];
 
   const formatValue = (value: number, unit: string) => {
     if (unit === '€' && value >= 1000000) {
@@ -75,8 +92,6 @@ export default function PerspectiveSelector() {
     }
     return `${value.toLocaleString()} ${unit}`;
   };
-
-  const selectedOptionData = rangeOptions.find((option) => option.id === selectedOption);
 
   return (
     <div className='mb-8'>
@@ -89,10 +104,14 @@ export default function PerspectiveSelector() {
         </span>
       </div>
 
-      <div className='mt-6 space-y-4'>
-        <RadioGroup value={selectedOption} onValueChange={setSelectedOption} className='space-y-4'>
+      <div className='space-y-4'>
+        <RadioGroup
+          value={selectedOption}
+          onValueChange={onSelectedOptionChange}
+          className='space-y-4'
+        >
           {rangeOptions.map((option) => (
-            <div key={option.id} className='space-y-4'>
+            <div key={option.id} className='space-y-3'>
               <div className='flex items-center space-x-2'>
                 <RadioGroupItem
                   value={option.id}
@@ -103,7 +122,6 @@ export default function PerspectiveSelector() {
                   {option.label}
                 </Label>
               </div>
-
               {selectedOption === option.id && (
                 <div className='space-y-3 rounded-lg p-4'>
                   <div className='flex justify-between text-sm text-gray-600'>
@@ -114,9 +132,7 @@ export default function PerspectiveSelector() {
                   <div className='px-2'>
                     <Slider
                       value={ranges[option.id]}
-                      onValueChange={(value) =>
-                        handleRangeChange(option.id, value as [number, number])
-                      }
+                      onValueChange={(value) => onRangeChange(option.id, value as [number, number])}
                       min={option.min}
                       max={option.max}
                       step={option.step}

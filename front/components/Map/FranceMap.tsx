@@ -20,10 +20,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
 import ChoroplethLegend from './Legend';
-import type { TerritoryData } from './MapLayout';
-import type { ChoroplethDataSource } from './MapLayout';
 import MapTooltip from './MapTooltip';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
+import type { TerritoryData } from './types';
+import type { ChoroplethDataSource } from './types';
 import type { HoverInfo } from './types';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
@@ -34,6 +34,8 @@ interface MapProps {
   selectedChoroplethData: ChoroplethDataSource;
   viewState: Partial<ViewState>;
   setViewState: (vs: Partial<ViewState>) => void;
+  ranges: Record<string, [number, number]>;
+  selectedRangeOption: string;
 }
 
 export default function FranceMap({
@@ -41,9 +43,10 @@ export default function FranceMap({
   selectedChoroplethData,
   viewState,
   setViewState,
+  ranges, 
+  selectedRangeOption,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
@@ -133,7 +136,7 @@ export default function FranceMap({
         }}
       >
         <NavigationControl position='top-right' />
-        <ChoroplethLegend />
+        <ChoroplethLegend ranges={ranges} selectedRangeOption={selectedRangeOption}/>
         <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
         <Source
           id='statesData'
