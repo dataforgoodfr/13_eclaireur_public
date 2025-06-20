@@ -71,7 +71,7 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           selectedChoroplethData={selectedChoroplethData}
           viewState={viewState}
           setViewState={setViewState}
-          // ranges={ranges}
+          ranges={ranges}
           selectedRangeOption={selectedRangeOption}
           // minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}

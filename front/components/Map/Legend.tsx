@@ -12,7 +12,6 @@ export default function ChoroplethLegend({
     { label: 'D', color: '#ffe082' }, // soft yellow
     { label: 'E', color: '#ffb74d' }, // soft orange
   ];
-  console.log(populationMinMax);
   return (
     <div className='absolute left-4 top-4 z-20 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white/95 px-4 py-3 shadow-lg'>
       <div>

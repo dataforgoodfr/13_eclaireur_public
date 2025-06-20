@@ -27,6 +27,7 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-query": "^5.66.4",
+    "@turf/centroid": "^7.2.0",
     "@types/pg": "^8.11.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

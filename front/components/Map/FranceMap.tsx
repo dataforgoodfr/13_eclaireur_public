@@ -19,12 +19,14 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
+import DotsLayer from './DotsLayer';
 import ChoroplethLegend from './Legend';
 import MapTooltip from './MapTooltip';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
 import type { TerritoryData } from './types';
 import type { ChoroplethDataSource } from './types';
 import type { HoverInfo } from './types';
+import { createMapPointFeatures } from './utils/createMapPointFeatures';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
@@ -36,9 +38,8 @@ interface MapProps {
   selectedChoroplethData: ChoroplethDataSource;
   viewState: Partial<ViewState>;
   setViewState: (vs: Partial<ViewState>) => void;
-  // ranges: Record<string, [number, number]>;
+  ranges: Record<string, [number, number]>;
   selectedRangeOption: string;
-  // minMaxValues: CollectiviteMinMax[];
   currentAdminLevel: string; // Added to match the usage in the component,
   populationMinMax: { min: number; max: number }; // Added to match the usage in the component,
 }
@@ -48,9 +49,8 @@ export default function FranceMap({
   selectedChoroplethData,
   viewState,
   setViewState,
-  // ranges,
+  ranges,
   selectedRangeOption,
-  // minMaxValues,
   populationMinMax,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
@@ -64,12 +64,17 @@ export default function FranceMap({
   const communesMaxZoom = selectedTerritoryData?.communesMaxZoom || 14;
   const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
-
   const { data: communes, isLoading: communesLoading } = useCommunes(visibleCommuneCodes);
   const { data: departements, isLoading: departementsLoading } =
     useDepartements(visibleDepartementCodes);
   const { data: regions, isLoading: regionsLoading } = useRegions(visibleRegionCodes);
 
+  const regionDots = createMapPointFeatures(regions as Community[]);
+  const departementDots = createMapPointFeatures(departements as Community[]);
+  const communeDots = createMapPointFeatures(communes as Community[]);
+
+  // const populationRange = ranges['population'] || [0, Infinity];
+  console.log('populationMinMax', populationMinMax);
   const communityMap = useMemo(() => {
     const map: Record<string, Community> = {};
     (regions ?? []).forEach((c) => {
@@ -148,6 +153,7 @@ export default function FranceMap({
           selectedRangeOption={selectedRangeOption}
         />
         <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
+
         <Source
           id='statesData'
           type='vector'
@@ -201,6 +207,39 @@ export default function FranceMap({
             choroplethParameter={choroplethParameter}
           />
         </Source>
+        {regionDots?.features?.length > 0 && (
+          <DotsLayer
+            id='regions'
+            data={regionDots}
+            minzoom={0}
+            maxzoom={regionsMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
+        {departementDots?.features?.length > 0 && (
+          <DotsLayer
+            id='departements'
+            data={departementDots}
+            minzoom={regionsMaxZoom}
+            maxzoom={departementsMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
+        {communeDots?.features?.length > 0 && (
+          <DotsLayer
+            id='communes'
+            data={communeDots}
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
       </Map>
     </div>
   );

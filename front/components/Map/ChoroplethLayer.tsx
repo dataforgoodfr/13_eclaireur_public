@@ -6,7 +6,7 @@ interface ChoroplethLayerProps {
   id: string;
   source: string; // <-- Add this
   sourceLayer: string;
-  type?: 'fill' | 'line';
+  type?: 'fill' | 'line' | 'perspective';
   minzoom: number;
   maxzoom: number;
   filter: FilterSpecification;
@@ -59,7 +59,6 @@ export default function ChoroplethLayer({
       />
     );
   }
-
   // type === 'line'
   return (
     <Layer

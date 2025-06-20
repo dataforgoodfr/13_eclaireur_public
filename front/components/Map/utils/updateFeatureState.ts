@@ -12,7 +12,6 @@ export default function updateFeatureStates(
     sourceLayer: 'administrative',
     filter: ['==', ['get', 'iso_a2'], territoryFilterCode],
   });
-
   features
     .filter((feature) => feature.properties?.level && feature.properties.level > 0)
     .forEach((feature) => {
@@ -38,7 +37,6 @@ export default function updateFeatureStates(
       const value = community
         ? scoreLetterToNumber(community[choroplethParameter as keyof Community] as string)
         : undefined;
-
       mapInstance.setFeatureState(
         {
           source: 'statesData',
@@ -47,6 +45,9 @@ export default function updateFeatureStates(
         },
         {
           [choroplethParameter]: value,
+          latitude: community?.latitude,
+          longitude: community?.longitude,
+          population: community?.population,
         },
       );
     });

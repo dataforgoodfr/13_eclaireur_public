@@ -37,3 +37,29 @@ export type ChoroplethDataSource = {
   name: string;
   dataName: string;
 };
+
+export type MapPoint = {
+  code_insee: string;
+  nom: string;
+  population: number;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+export type MapPointFeature = {
+  type: 'Feature';
+  geometry: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  properties: {
+    id: string;
+    name: string;
+    population: number;
+  };
+};
+
+export type MapPointFeatureCollection = {
+  type: 'FeatureCollection';
+  features: MapPointFeature[];
+};
