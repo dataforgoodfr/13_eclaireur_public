@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
+import { GraphSwitch } from '../DataViz/GraphSwitch';
 import DownloadButton from './DownloadButton';
 import { SubventionYearlyAmountsChart } from './SubventionYearlyAmountsChart';
 import { SubventionyearlyCountsChart } from './SubventionYearlyCountsChart';
-import { GraphSwitch } from '../DataViz/GraphSwitch';
 
 type EvolutionProps = {
   siren: string;
