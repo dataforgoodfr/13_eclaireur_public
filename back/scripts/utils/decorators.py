@@ -17,7 +17,7 @@ def tracker(
 
     Args:
         _func (Callable[...,Any] | None): if given, returns the decorated function. Else returns the decorator.
-        ulogger: Logger to use.
+        ulogger: Logger to use. Uses logging.getLogger() by default.
         inputs (bool): if True, logs the arguments of the function.
         outputs (bool): if True, logs the values returned by the function.
         log_start (bool): if True, logs a "start" message before running the function.
