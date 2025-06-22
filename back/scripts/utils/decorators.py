@@ -72,7 +72,7 @@ def tracker(
         return decorator_tracker(_func)
 
 
-def _log(ulogger, level: str, msg: str, extra: dict):
+def _log(ulogger, level: str, msg: str, extra: dict) -> None:
     """
     Method that logs messages using a given logger.
     - With the standard Logger, the message is formatted as a flat string with extra fields.
