@@ -9,7 +9,7 @@ def tracker(
     ulogger=None,
     inputs: bool = False,
     outputs: bool = False,
-    log_start=False,
+    log_start: bool = False,
     level="info",
 ):
     """
