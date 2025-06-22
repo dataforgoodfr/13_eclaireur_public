@@ -10,7 +10,7 @@ def tracker(
     inputs: bool = False,
     outputs: bool = False,
     log_start: bool = False,
-    level="info",
+    level: str = "info",
 ):
     """
     Create a Python factory decorator that returns a decorator to log the execution of a function.
