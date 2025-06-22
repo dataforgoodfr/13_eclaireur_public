@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 
 def _sha256(s: str | None) -> str | None:
     """
-    Generate SHA256 hash from a string. 
+    Generate SHA256 hash from a string.
 
     Args:
         s (str | None): string to hash.
@@ -69,7 +69,7 @@ class DatasetAggregator(BaseDataset):
         Ensure each url in the "url" column has a corresponding SHA-256 hash.
         If the "url_hash" column is missing, a new column is added to the dataframe, using hashed version of "url" column
         If "url_hash" column exists, the NA values are replaced by hashed version of "url" column.
-        Args: 
+        Args:
             frame(pd.DataFrame): DataFrame containing an "url" column.
         Returns:
             pd.DataFrame : The dataframe containing a new or updated "url_hash" column.

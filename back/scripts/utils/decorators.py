@@ -1,13 +1,19 @@
 import functools
 import logging
 import time
-from typing import Callable,Any
+from typing import Any, Callable
+
 
 def tracker(
-    _func:Callable[...,Any] | None = None, ulogger=None, inputs:bool=False, outputs:bool=False, log_start=False, level="info"
+    _func: Callable[..., Any] | None = None,
+    ulogger=None,
+    inputs: bool = False,
+    outputs: bool = False,
+    log_start=False,
+    level="info",
 ):
     """
-    Create a Python factory decorator that returns a decorator to log the execution of a function. 
+    Create a Python factory decorator that returns a decorator to log the execution of a function.
 
     Args:
         _func (Callable[...,Any] | None): if given, returns the decorated function. Else returns the decorator.
@@ -23,14 +29,15 @@ def tracker(
     if ulogger is None:
         ulogger = logging.getLogger()
 
-    def decorator_tracker(func: Callable[...,Any]) -> Callable[...,Any]:
+    def decorator_tracker(func: Callable[..., Any]) -> Callable[..., Any]:
         """
         Builds the decorator that wraps logging logic to a given function.
-        Args: 
+        Args:
             func (Callable[...,Any]): The function to decorate.
-        Returns: 
+        Returns:
             Callable: The wrapped function with logging logic.
         """
+
         @functools.wraps(func)
         def wrapper_logger(*args, **kwargs) -> Any:
             """

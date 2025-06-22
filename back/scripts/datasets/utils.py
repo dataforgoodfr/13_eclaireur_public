@@ -8,6 +8,7 @@ class BaseDataset:
     Base class for dataset definitions.
     Provides methods to retrieve dataset config.
     """
+
     @classmethod
     def get_config_key(cls) -> str:
         """
