@@ -25,7 +25,7 @@ export default function Page() {
       />
       <p className='my-6 text-lg'>
         Transparency International France est une association qui vise à promouvoir la transparence
-        afin qu’Etats, entreprises, société civiles et individus ne soient plus confrontés à la
+        afin qu’Etats, entreprises, sociétés civiles et individus ne soient plus confrontés à la
         corruption.
       </p>
       <p className='my-6 text-lg'>
@@ -41,7 +41,7 @@ export default function Page() {
       <Image className='float-right' src='/anticor.png' width={300} height={113} alt='' />
       <p className='my-6 text-lg'>
         ANTICOR est une association transpartisane qui vise à lutter contre la corruption afin de
-        réhzbiliter le rapport de confiance qui doit exiter entre les citoyens et leurs
+        réhabiliter le rapport de confiance qui doit exister entre les citoyens et leurs
         représentants – autant politiques qu’administratifs.
       </p>
       <p className='my-6 text-lg'>

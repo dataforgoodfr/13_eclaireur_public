@@ -142,7 +142,7 @@ export default function Page() {
           <AccordionContent>
             Techniquement, Éclaireur Public, c'est la collecte, le raffinement et la rationalisation
             de données. C'est aussi l'élaboration d'un indice de transparence adapté à la
-            problématique de données sur les subventions et les marchés publics.
+            problématique de données sur les subventions et sur les marchés publics.
             <br />
             La démarche est décrite de manière transparente sur la page{' '}
             <Link href='/cadre-reglrmentaire' className='border-b-2 border-black'>
