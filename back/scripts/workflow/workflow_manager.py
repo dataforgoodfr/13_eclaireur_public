@@ -66,7 +66,13 @@ class WorkflowManager:
         self.logger.info("Workflow started.")
 
         for workflow in self.get_workflows():
-            workflow(deepcopy(self.config)).run()
+            try:
+                workflow(deepcopy(self.config)).run()
+            except Exception as e:
+                self.logger.error(
+                    f"An error occurred while running the workflow {workflow.__name__}: {e}"
+                )
+                continue
 
         self.process_subvention("subventions", self.config["search"]["subventions"])
 
