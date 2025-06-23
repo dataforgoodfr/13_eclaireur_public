@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import type { TerritoryData } from './MapLayout';
+import type { TerritoryData } from './types';
 
 interface TerritorySelectProps {
   territories: Record<string, TerritoryData>;
