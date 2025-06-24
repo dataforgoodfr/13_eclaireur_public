@@ -18,7 +18,15 @@ from back.scripts.utils.typing import PandasRow
 LOGGER = logging.getLogger(__name__)
 
 
-def _sha256(s):
+def _sha256(s: str | None) -> str | None:
+    """
+    Generate SHA256 hash from a string.
+
+    Args:
+        s (str | None): string to hash.
+    Returns:
+        s (str | None): hexadecimal SHA256 hash of the input string, or None if input is NaN.
+    """
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
@@ -26,7 +34,7 @@ class DatasetAggregator(BaseDataset):
     """
     Base class for multiple dataset aggregation functionality.
 
-    From a list of urls to download, this class implements the stadard logic of :
+    From a list of urls to download, this class implements the standard logic of :
     - downloading the raw file into a dedicated folder;
     - converting the raw file into a normalized parquet file;
     - concatenating the individual parquet files into a single combined parquet file;
@@ -44,16 +52,28 @@ class DatasetAggregator(BaseDataset):
             Returns:
                 DataFrame containing the normalized data
 
-    Intermediate files directory and final combined filename are defined in the config,
+    Intermediate files directory and final combined filename are defined in the config.yaml file,
     respectively as "data_folder" and "combined_filename".
     """
 
     def __init__(self, files: pd.DataFrame, main_config: dict):
+        """
+        Initialize a DatasetAggregator Instance which inherits attributes from BaseDataset.
+        """
         super().__init__(main_config)
         self.files_in_scope = files.pipe(self._ensure_url_hash)
         self.errors = defaultdict(list)
 
     def _ensure_url_hash(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """
+        Ensure each url in the "url" column has a corresponding SHA-256 hash.
+        If the "url_hash" column is missing, a new column is added to the dataframe, using hashed version of "url" column
+        If "url_hash" column exists, the NA values are replaced by hashed version of "url" column.
+        Args:
+            frame(pd.DataFrame): DataFrame containing an "url" column.
+        Returns:
+            pd.DataFrame : The dataframe containing a new or updated "url_hash" column.
+        """
         hashes = frame["url"].apply(_sha256)
         if "url_hash" not in frame.columns:
             return frame.assign(url_hash=hashes)

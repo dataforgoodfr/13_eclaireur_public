@@ -6,7 +6,7 @@ import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publ
 import { FicheCard } from '../FicheCard';
 import Contracts from './Contracts';
 import Distribution from './Distribution';
-import Trends from './Trends';
+import Evolution from './Evolution';
 
 const tabs = {
   trends: 'trends',
@@ -19,7 +19,7 @@ async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
     filters: { acheteur_id: siren },
     // TODO - Remove limit when api to calculate data is done
-    limit: 100,
+    limit: 1,
   });
 
   return marchesPublicsResults;
@@ -41,7 +41,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
           </TabsList>
           <TabsContent value={tabs.trends}>
-            <Trends data={marchesPublics} />
+            <Evolution siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
             <Distribution siren={siren} availableYears={availableYears} />

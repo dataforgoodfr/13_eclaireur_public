@@ -4,9 +4,19 @@ from back.scripts.utils.config import get_project_base_path
 
 
 class BaseDataset:
+    """
+    Base class for dataset definitions.
+    Provides methods to retrieve dataset config.
+    """
+
     @classmethod
     def get_config_key(cls) -> str:
-        raise NotImplementedError("Method must be overriden")
+        """
+        Must be implemented by dataset subclasses to return their config key.
+        Raises:
+            NotImplementedError: if the method has not been overridden.
+        """
+        raise NotImplementedError("Method must be overridden")
 
     @classmethod
     def get_config(cls, main_config: dict) -> dict:
