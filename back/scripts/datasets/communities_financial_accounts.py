@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.loaders.utils import LOADER_CLASSES
+from back.scripts.loaders import BaseLoader
 from back.scripts.utils.dataframe_operation import normalize_date
 from back.scripts.utils.typing import PandasRow
 
@@ -31,7 +31,7 @@ class FinancialAccounts(DatasetAggregator):
     def _read_parse_file(
         self, file_metadata: PandasRow, raw_filename: Path
     ) -> pd.DataFrame | None:
-        loader = LOADER_CLASSES[file_metadata.format](raw_filename)
+        loader = BaseLoader.loader_factory(raw_filename)
         df = loader.load().assign(type=file_metadata.type)
         self.columns.update(df.columns)
         selected_columns = {

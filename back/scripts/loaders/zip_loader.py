@@ -93,9 +93,9 @@ class ZipLoader(BaseLoader):
         """
         # First, try to find the archive file loader class based on the filename
         filename = self.get_archive_prefix()
-        filename_extension = filename.rsplit(".", 1)[-1]
-        if filename_extension in LOADER_CLASSES:
-            return LOADER_CLASSES[filename_extension]
+        loader_class = BaseLoader.search_loader_class(filename)
+        if loader_class:
+            return loader_class
 
         # Second, try to find the archive file loader class based on the url path
         url_path = urlparse(self.file_url).path

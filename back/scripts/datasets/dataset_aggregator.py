@@ -11,7 +11,7 @@ import polars as pl
 from tqdm import tqdm
 
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.loaders import LOADER_CLASSES
+from back.scripts.loaders import LOADER_CLASSES, BaseLoader
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.typing import PandasRow
 
@@ -169,7 +169,7 @@ class DatasetAggregator(BaseDataset):
         self, file_metadata: PandasRow, raw_filename: Path
     ) -> pd.DataFrame | None:
         opts = {"dtype": str} if file_metadata.format == "csv" else {}
-        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
+        loader = BaseLoader.loader_factory(raw_filename, **opts)
         try:
             df = loader.load()
             if not isinstance(df, pd.DataFrame):
