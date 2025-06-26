@@ -15,7 +15,7 @@ class XMLLoader(EncodedDataLoader):
 
     def process_from_decoded(self, decoded_content):
         try:
-            df = pd.read_xml(StringIO(decoded_content))
+            df = pd.read_xml(StringIO(decoded_content), **self.get_loader_kwargs())
         except Exception as e:
             LOGGER.warning(f"Error while reading XML: {e}")
             return
