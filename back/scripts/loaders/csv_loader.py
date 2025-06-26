@@ -30,7 +30,8 @@ class CSVLoader(EncodedDataLoader):
         # Sometimes you don't know which loader class is going to be called, especially during a `BaseLoader.loader_factory`
         # columns attribute is useful for `parquet_loader` and usecols attribute for `csv_loader` and `excel_loader`
         if "columns" in kwargs:
-            kwargs["usecols"] = kwargs.pop("columns")
+            columns = kwargs.pop("columns")
+            kwargs["usecols"] = lambda c: c in columns
 
         return kwargs
 
