@@ -3,16 +3,21 @@ import { getQueryFromPool } from '@/utils/db';
 
 import { DataTable } from '../constants';
 
-const TABLE_NAME = DataTable.Bareme;
+const COMMUNITIES_TABLE_NAME = DataTable.Communities;
+const BAREME_TABLE_NAME = DataTable.Bareme;
 
 function createSQLQueryParams(siren: string, year: number): [string, (string | number)[]] {
   const values = [siren, year];
 
   const querySQL = `
       SELECT 
-        b.*
-      FROM ${TABLE_NAME} b
-      WHERE b.siren = $1 AND b.annee = $2
+        c.siren,
+        '$2' as annee, 
+        b.subventions_score,
+        b.mp_score
+      FROM ${COMMUNITIES_TABLE_NAME} c
+      LEFT JOIN ${BAREME_TABLE_NAME} b on b.siren = c.siren and b.annee = $2
+      WHERE c.siren = $1 
   `;
 
   return [querySQL, values];

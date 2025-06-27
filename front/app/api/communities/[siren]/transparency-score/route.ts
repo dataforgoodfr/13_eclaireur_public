@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { parseNumber } from '@/utils/utils';
 import { fetchTransparencyScore } from '@/utils/fetchers/communities/fetchTransparencyScore-server';
+import { parseNumber } from '@/utils/utils';
 
 export async function GET(request: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {
@@ -9,13 +9,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
     const { searchParams } = new URL(request.url);
     const year = parseNumber(searchParams.get('year'));
 
-    if (siren === undefined) {
-      throw new Error('Siren is not defined');
-    }
+    if (siren === undefined) throw new Error('Siren is not defined');
 
-    if (year === undefined) {
-      throw new Error('Year is not defined');
-    }
+    if (year === undefined) throw new Error('Year is not defined');
 
     const data = await fetchTransparencyScore(siren, year);
 
