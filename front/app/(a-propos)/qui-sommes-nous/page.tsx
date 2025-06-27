@@ -5,7 +5,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Qui sommes-nous ?',
   description:
-    'Eclaireur Public c\'est Anticor, Transparency International France, Data for Good et une cinquantaine de bénévoles',
+    "Eclaireur Public c'est Anticor, Transparency International France, Data for Good et une cinquantaine de bénévoles",
 };
 export default function Page() {
   return (

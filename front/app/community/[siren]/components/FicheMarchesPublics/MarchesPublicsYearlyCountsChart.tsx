@@ -39,7 +39,7 @@ export function MarchesPublicsYearlyCountsChart({ siren }: MarchesPublicsYearlyC
     return { ...el, count: found?.count ?? el.count };
   });
 
-  console.log(data)
+  console.log(data);
 
   return <BarChart data={chartData} />;
 }

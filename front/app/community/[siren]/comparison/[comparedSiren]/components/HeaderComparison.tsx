@@ -22,8 +22,8 @@ type ComparedHeaderProps = {
 
 function ComparedHeader({ community }: ComparedHeaderProps) {
   return (
-    <div className='flex-col rounded bg-gray-100 p-3 m-1'>
-      <p className='mb-2 text-xl font-bold text-center'>{community.nom}</p>
+    <div className='m-1 flex-col rounded bg-gray-100 p-3'>
+      <p className='mb-2 text-center text-xl font-bold'>{community.nom}</p>
       <CommunityDetails community={community} />
     </div>
   );

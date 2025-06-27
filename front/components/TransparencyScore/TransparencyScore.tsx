@@ -105,7 +105,7 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           className='font-bold'
         >
           {activeScore !== null && SCORE_TO_ADJECTIF[activeScore]}
-          {activeScore === null && "Non disponible"}
+          {activeScore === null && 'Non disponible'}
         </text>
       </g>
     </svg>

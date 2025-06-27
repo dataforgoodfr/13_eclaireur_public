@@ -66,7 +66,7 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
   }
 
   if (data.top5 === undefined) {
-    return (<div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Non disponible</div>);
+    return <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Non disponible</div>;
   }
 
   console.log(data.total_amount);
@@ -91,7 +91,9 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
           <TableBody>
             {data.top5.map(({ label, value }, index) => (
               <TableRow key={index}>
-                <TableCell className='text-left'>{label !== null ? label.toLocaleUpperCase() : "Non précisé"}</TableCell>
+                <TableCell className='text-left'>
+                  {label !== null ? label.toLocaleUpperCase() : 'Non précisé'}
+                </TableCell>
                 <TableCell className='text-right'>{formatCompactPrice(value)}</TableCell>
               </TableRow>
             ))}

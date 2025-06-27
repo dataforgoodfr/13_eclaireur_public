@@ -5,11 +5,11 @@ import type { Metadata } from 'next';
 import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
+import { ComparisonType } from './components/ComparisonType';
 import { Header } from './components/Header';
 import { HeaderComparison } from './components/HeaderComparison';
-import { TransparencyComparison } from './components/TransparencyComparison';
 import { MPSubvComparison } from './components/MPSubvComparison';
-import { ComparisonType } from './components/ComparisonType';
+import { TransparencyComparison } from './components/TransparencyComparison';
 
 type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
 
@@ -48,8 +48,16 @@ export default async function Page({ params }: PageProps) {
       <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
         <HeaderComparison community1={community1} community2={community2} />
         <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
-        <MPSubvComparison siren1={community1.siren} siren2={community2.siren} comparisonType={ComparisonType.Marches_Publics}/>
-        <MPSubvComparison siren1={community1.siren} siren2={community2.siren} comparisonType={ComparisonType.Subventions}/>
+        <MPSubvComparison
+          siren1={community1.siren}
+          siren2={community2.siren}
+          comparisonType={ComparisonType.Marches_Publics}
+        />
+        <MPSubvComparison
+          siren1={community1.siren}
+          siren2={community2.siren}
+          comparisonType={ComparisonType.Subventions}
+        />
       </div>
     </Suspense>
   );

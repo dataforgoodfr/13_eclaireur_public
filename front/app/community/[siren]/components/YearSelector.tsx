@@ -12,10 +12,14 @@ import { YearOption } from '../types/interface';
 type YearSelectorProps = {
   defaultValue: YearOption;
   onSelect: (option: YearOption) => void;
-  displayAll?: boolean; 
+  displayAll?: boolean;
 };
 
-export default function YearSelector({ defaultValue, onSelect, displayAll = true }: YearSelectorProps) {
+export default function YearSelector({
+  defaultValue,
+  onSelect,
+  displayAll = true,
+}: YearSelectorProps) {
   return (
     <Select
       onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}

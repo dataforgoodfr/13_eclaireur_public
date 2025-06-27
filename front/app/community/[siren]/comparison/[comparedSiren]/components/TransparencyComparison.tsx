@@ -1,10 +1,12 @@
-'use client'
+'use client';
+
+import { useState } from 'react';
 
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
 import Loading from '@/components/ui/Loading';
 import SectionSeparator from '@/components/utils/SectionSeparator';
 import { useTransparencyScore } from '@/utils/hooks/comparison/useTransparencyScore';
-import { useState } from 'react';
+
 import { YearOption } from '../../../types/interface';
 
 type TransparencyComparisonProperties = {
@@ -13,15 +15,19 @@ type TransparencyComparisonProperties = {
 };
 
 export function TransparencyComparison({ siren1, siren2 }: TransparencyComparisonProperties) {
-  const defaultYear = new Date().getFullYear()  ;
+  const defaultYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
 
   return (
     <>
-      <SectionSeparator sectionTitle='Scores de transparence' year={selectedYear} onSelectYear={setSelectedYear}/>
+      <SectionSeparator
+        sectionTitle='Scores de transparence'
+        year={selectedYear}
+        onSelectYear={setSelectedYear}
+      />
       <div className='flex justify-around'>
-        <ComparingScore siren={siren1} year={selectedYear as number}/>
-        <ComparingScore siren={siren2} year={selectedYear as number}/>
+        <ComparingScore siren={siren1} year={selectedYear as number} />
+        <ComparingScore siren={siren2} year={selectedYear as number} />
       </div>
     </>
   );
@@ -33,7 +39,6 @@ type ComparingScoreProperties = {
 };
 
 function ComparingScore({ siren, year }: ComparingScoreProperties) {
-
   const { data, isPending, isError } = useTransparencyScore(siren, year);
 
   if (isPending || isError) {
