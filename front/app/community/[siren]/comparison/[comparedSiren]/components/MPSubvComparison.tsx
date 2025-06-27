@@ -69,10 +69,6 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
     return <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Non disponible</div>;
   }
 
-  console.log(data.total_amount);
-  console.log(data.total_number);
-  console.log(data.siren);
-
   return (
     <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>
       <p>Montant total : {formatCompactPrice(data.total_amount)}</p>
