@@ -22,11 +22,6 @@ const SCORE_TO_ADJECTIF = {
   [TransparencyScore.E]: 'Opaque',
 };
 
-function getScoreAdjectif(score: TransparencyScore | null) {
-  if (score === null) return 'Non disponible';
-  return SCORE_TO_ADJECTIF[score];
-}
-
 type ScoreTileProps = {
   score: TransparencyScore;
   // x: number;
@@ -66,7 +61,8 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
   }
 
   const scoreValues = Object.values(TransparencyScore);
-  const activeScoreIndex = scoreValues.findIndex((scorevalue) => scorevalue === activeScore);
+  const activeScoreIndex =
+    activeScore === null ? 2 : scoreValues.findIndex((scorevalue) => scorevalue === activeScore);
 
   const translateDueToScaleFactor = -5;
 
@@ -108,7 +104,8 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           textAnchor='middle'
           className='font-bold'
         >
-          {getScoreAdjectif(activeScore)}
+          {activeScore !== null && SCORE_TO_ADJECTIF[activeScore]}
+          {activeScore === null && 'Non disponible'}
         </text>
       </g>
     </svg>

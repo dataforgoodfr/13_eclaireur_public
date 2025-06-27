@@ -8,7 +8,9 @@ function getAPIRoute(communitySiren: string) {
 /**
  * Fetch the marches publics counts for each year
  */
-export async function fetchMarchesPublicsYearlyCounts(communitySiren: string): Promise<YearlyCount[]> {
+export async function fetchMarchesPublicsYearlyCounts(
+  communitySiren: string,
+): Promise<YearlyCount[]> {
   const url = new URL(getAPIRoute(communitySiren), baseURL);
 
   const res = await fetch(url.toString(), { method: 'get' });
