@@ -47,7 +47,7 @@ export default async function Page({ params }: PageProps) {
       <Header community={community1} community2={community2} />
       <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
         <HeaderComparison community1={community1} community2={community2} />
-        <TransparenceComparison community1={community1} community2={community2} />
+        <TransparenceComparison siren1={community1.siren} siren2={community2.siren} />
         {/* TODO factoriser en un seul composant les encarts marchés publics et subventions
             A faire si le comportement général est validé fonctionnellement */}
         <MarchesPublicsComparison siren1={community1.siren} siren2={community2.siren} />
