@@ -149,8 +149,3 @@ export function getAllYearsFrom2018ToCurrent(): number[] {
   }
   return years;
 }
-
-export function getEnumFromString<T>(type: T, str: string): T[keyof T] {
-  const casted = str as keyof T;
-  return type[casted];
-}

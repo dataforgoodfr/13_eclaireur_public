@@ -13,10 +13,22 @@ function createSQLQueryParams(
   comparisonType: ComparisonType,
 ): [string, (string | number)[]] {
   const values = [siren, year];
-  const tableName = comparisonType == ComparisonType.Marches_Publics ? MARCHES_PUBLICS_TABLE_NAME : SUBVENTIONS_TABLE_NAME;
-  const sirenProperty = comparisonType == ComparisonType.Marches_Publics ? "acheteur_id" : "id_attribuant";
-  const yearProperty = comparisonType == ComparisonType.Marches_Publics ? "annee_notification" : "annee";
-  const labelProperty = comparisonType == ComparisonType.Marches_Publics ? "cpv_2_label" : "objet";
+    let tableName, sirenProperty, yearProperty, labelProperty:string;
+
+    switch(comparisonType){
+        case ComparisonType.Marches_Publics:
+            tableName = MARCHES_PUBLICS_TABLE_NAME;
+            sirenProperty = "acheteur_id";
+            yearProperty = "annee_notification";
+            labelProperty = "cpv_2_label";
+            break;
+        case ComparisonType.Subventions:
+            tableName = SUBVENTIONS_TABLE_NAME;
+            sirenProperty = "id_attribuant";
+            yearProperty = "annee";
+            labelProperty = "objet";
+            break;
+    }
 
   const querySQL = `
 WITH filtered_data AS (
