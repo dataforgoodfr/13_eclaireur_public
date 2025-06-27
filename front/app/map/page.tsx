@@ -22,7 +22,6 @@ export default async function MapPage() {
 FROM collectivites
 GROUP BY type;`;
   const minMaxValues = (await getQueryFromPool(query)) as CollectiviteMinMax[];
-  console.log('minMaxValues', minMaxValues);
   return (
     <div className='flex w-full flex-row'>
       <MapLayout minMaxValues={minMaxValues} />
