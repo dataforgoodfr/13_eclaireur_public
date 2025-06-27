@@ -39,6 +39,7 @@ export async function MarchesPublicsComparison({
 }
 
 function ComparingMarchesPublics({ data }: { data: MarchePublic[] }) {
+  // TODO Faire ces calculs dans le back et ajouter un filtre sur l'année
   const filteredData = data.filter((x) => Number(x.annee_notification) === 2024);
   const totalAmount = filteredData.reduce((n, { montant }) => n + montant, 0);
   const contractsNumber = filteredData.length;

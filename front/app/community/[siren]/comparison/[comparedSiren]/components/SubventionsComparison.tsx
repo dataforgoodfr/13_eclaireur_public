@@ -36,6 +36,7 @@ export async function SubventionsComparison({ siren1, siren2 }: SubventionsCompa
 }
 
 function ComparingSubventions({ data }: { data: Subvention[] }) {
+  // TODO Faire ces calculs dans le back et ajouter un filtre sur l'année
   const filteredData = data.filter((x) => Number(x.annee) === 2024);
   const totalAmount = filteredData.reduce((n, { montant }) => n + montant, 0);
   const subventionsNumber = filteredData.length;
