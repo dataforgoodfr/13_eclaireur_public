@@ -1,14 +1,5 @@
-// Types for collectivites data structure
-interface Collectivite {
-  siren: string;
-  code_insee?: string;
-  code_insee_region?: string;
-  nom: string;
-  type: string;
-  subventions_score?: number;
-  mp_score?: number;
-  [key: string]: unknown; // For additional fields from the database
-}
+import { Community } from '../../../app/models/community';
+
 
 const API_ROUTES = {
   REGIONS: '/api/map/regions',
@@ -19,7 +10,7 @@ const API_ROUTES = {
 /**
  * Fetches region data by region codes
  */
-export async function fetchRegionsByCode(regionCodes: string[]): Promise<Collectivite[]> {
+export async function fetchRegionsByCode(regionCodes: string[]): Promise<Community[]> {
   if (!regionCodes.length) return [];
 
   const url = new URL(API_ROUTES.REGIONS, window.location.origin);
@@ -38,7 +29,7 @@ export async function fetchRegionsByCode(regionCodes: string[]): Promise<Collect
 /**
  * Fetches departement data by departement codes
  */
-export async function fetchDepartementsByCode(departementCodes: string[]): Promise<Collectivite[]> {
+export async function fetchDepartementsByCode(departementCodes: string[]): Promise<Community[]> {
   if (!departementCodes.length) return [];
 
   const url = new URL(API_ROUTES.DEPARTEMENTS, window.location.origin);
@@ -57,7 +48,7 @@ export async function fetchDepartementsByCode(departementCodes: string[]): Promi
 /**
  * Fetches commune data by commune codes
  */
-export async function fetchCommunesByCode(communeCodes: string[]): Promise<Collectivite[]> {
+export async function fetchCommunesByCode(communeCodes: string[]): Promise<Community[]> {
   if (!communeCodes.length) return [];
 
   const url = new URL(API_ROUTES.COMMUNES, window.location.origin);
