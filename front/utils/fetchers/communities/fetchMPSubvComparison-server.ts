@@ -13,22 +13,21 @@ function createSQLQueryParams(
   comparisonType: ComparisonType,
 ): [string, (string | number)[]] {
   const values = [siren, year];
-    let tableName, sirenProperty, yearProperty, labelProperty:string;
-
-    switch(comparisonType){
-        case ComparisonType.Marches_Publics:
-            tableName = MARCHES_PUBLICS_TABLE_NAME;
-            sirenProperty = "acheteur_id";
-            yearProperty = "annee_notification";
-            labelProperty = "cpv_2_label";
-            break;
-        case ComparisonType.Subventions:
-            tableName = SUBVENTIONS_TABLE_NAME;
-            sirenProperty = "id_attribuant";
-            yearProperty = "annee";
-            labelProperty = "objet";
-            break;
-    }
+  let tableName, sirenProperty, yearProperty, labelProperty: string;
+  switch (comparisonType) {
+    case ComparisonType.Marches_Publics:
+      tableName = MARCHES_PUBLICS_TABLE_NAME;
+      sirenProperty = 'acheteur_id';
+      yearProperty = 'annee_notification';
+      labelProperty = 'cpv_2_label';
+      break;
+    case ComparisonType.Subventions:
+      tableName = SUBVENTIONS_TABLE_NAME;
+      sirenProperty = 'id_attribuant';
+      yearProperty = 'annee';
+      labelProperty = 'objet';
+      break;
+  }
 
   const querySQL = `
 WITH filtered_data AS (
@@ -97,6 +96,7 @@ export async function fetchMPSubvComparison(
 ): Promise<MPSubvComparison> {
   const params = createSQLQueryParams(siren, year, comparisonType);
   const rows = (await getQueryFromPool(...params)) as MPSubvComparison[];
-  if (rows.length === 0) return <MPSubvComparison>{}
+
+  if (rows.length === 0) return {} as MPSubvComparison;
   return rows[0];
 }
