@@ -1,5 +1,3 @@
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-
 export type MPSubvComparison = {
   /** Primary key [char9] */
   siren: string;
