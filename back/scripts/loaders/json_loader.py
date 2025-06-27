@@ -27,10 +27,10 @@ class JSONLoader(BaseLoader):
     def process_data(self, data):
         content = None
         if isinstance(data, str):
-            content = json.loads(data)
+            content = json.loads(data, **self.get_loader_kwargs())
         elif isinstance(data, bytes):
             # utile dans les cas où l'encodage n'est pas utf-8
-            content = json.load(BytesIO(data))
+            content = json.load(BytesIO(data), **self.get_loader_kwargs())
         else:
             raise Exception("Unhandled type")
 

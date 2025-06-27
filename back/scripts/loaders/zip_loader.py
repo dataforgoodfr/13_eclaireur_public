@@ -26,9 +26,13 @@ class ZipLoader(BaseLoader):
     def process_data(self, *args, **kwargs):
         if self.archived_file_loader_class is None:
             # TODO?: add a raw parameter in addition to the file_url
-            loader_class = BaseLoader.loader_factory(self.output_file_path, **self.kwargs)
+            loader_class = BaseLoader.loader_factory(
+                self.output_file_path, **self.get_loader_kwargs()
+            )
         else:
-            loader_class = self.archived_file_loader_class(self.output_file_path, **self.kwargs)
+            loader_class = self.archived_file_loader_class(
+                self.output_file_path, **self.get_loader_kwargs()
+            )
         return loader_class.load()
 
     def _load_from_url(self):
