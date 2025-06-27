@@ -11,41 +11,97 @@ export default function Page() {
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>Etats des lieux et Perspectives</h1>
       <p className='my-6 text-lg'>
-        {/* TODO - rédiger une intro */}
         La France est-elle un élève modèle en termes d'ouvertures de ses données publiques aux
-        différents échelons locaux ? Depuis la loi pour une République numérique de 2016, peut-on
-        constater une amélioration de la transparence sur ces données ? Quels enseignements tirer de
-        la faible performance de nos collectivités en matière de transparence ?
+        différents échelons locaux ?
+      </p>
+      <p className='my-6 text-lg'>
+        Depuis la loi pour une République numérique de 2016, peut-on constater une amélioration de
+        la transparence sur ces données ?
+      </p>
+      <p className='my-6 text-lg'>
+        Quels enseignements tirer de la faible performance de nos collectivités en matière de
+        transparence ?
+      </p>
+      <p className='my-6 text-lg'>
+        Attention spoiling : la transparence des données publiques des différentes collectivités
+        françaises est mauvaise.
       </p>
       <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
       <p className='my-6 text-lg'>
-        {/* TODO - à rédiger */}
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore voluptas atque unde
-        provident cupiditate eaque deleniti velit totam molestias? Sint id blanditiis expedita quae
-        vitae?
+        L'outil Eclaireur Public met en lumière ce que d'aucuns pressentaient au doigt mouillé, à
+        savoir que la transparence sur les dépenses publiques locales reste très limitée.
+      </p>
+      <p className='my-6 text-lg'>
+        Malgré les obligations légales et les initiatives en faveur de l'open data, la majorité des
+        collectivités ne publient pas ou peu de données exploitables concernant leurs finances. Les
+        données disponibles sont souvent incomplètes, difficiles à trouver ou à réutiliser, et ne
+        permettent pas une réelle comparaison entre territoires.
+      </p>
+      <p className='my-6 text-lg'>
+        Ce constat met en évidence un important retard dans la mise en œuvre de la transparence,
+        tant sur le plan technique que culturel.
+      </p>
+      <p className='my-6 text-lg'>
+        Sur l'ensemble des collectivités, tous échelons confondus, le score de transparence moyen
+        est E, soit une note qui se situe entre 0 et 4 sur 20.
+      </p>
+      <p>Le verdict est sans appel :</p>
+      <ul>
+        <li className='list-inside list-disc'>
+          90% des régions ont un score de transparence égal à E
+        </li>
+        <li className='list-inside list-disc'>
+          95% des départements ont un score de transparence égal à E
+        </li>
+        <li className='list-inside list-disc'>
+          98% des départements ont un score de transparence égal à E
+        </li>
+      </ul>
+      <p className='my-6 text-lg'>
+        Suggestions :<br />
+        - cartographie de la transparence des données publiques en Europe, dans le monde
+        <br />
+        - citation d'une personnalité sur la transparence des données
+        <br />
+        - Rappel sur les vertus de la transparence et sur les dérives de l'opacité
+        <br />
       </p>
 
       <h2 className='my-12 text-2xl font-bold'>Perspectives</h2>
       <p className='my-6 text-lg'>
-        {/* TODO : rédiger cette partie */}
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos porro sed alias numquam tempore
-        similique ex rem tempora illum sunt, veritatis dolor. Voluptatibus sit numquam hic magni
-        quidem voluptate blanditiis laboriosam mollitia suscipit, voluptates ratione illum, ea
-        consequatur pariatur at totam nobis? Illo excepturi minus laudantium nisi minima a ducimus
-        vitae asperiores, tempore distinctio eveniet accusamus voluptas dolor est nobis sed delectus
-        ut sunt eos. Doloribus in ab adipisci sed beatae, ea at libero, dolores ex saepe veniam
-        delectus sit magnam neque rem doloremque quae vel impedit voluptates voluptate ipsa! Quis
-        esse praesentium vitae dolorum et quod aut culpa laboriosam, aliquam inventore modi
-        similique numquam tempore tenetur hic. Aliquam exercitationem odio blanditiis nostrum
-        corrupti dolorem ratione totam enim voluptatem corporis. Sunt animi nisi laborum tenetur id
-        doloremque nemo quibusdam error sed excepturi neque porro cum iste, quas minima at, fugit
-        aliquam ratione, delectus labore. Doloremque voluptates perferendis aut aliquid! Dignissimos
-        mollitia consectetur tempore quas sint nemo, reiciendis facilis hic praesentium. Suscipit
-        eligendi provident vitae explicabo nihil, blanditiis, consectetur placeat ex officia ullam
-        quia illo adipisci, sit recusandae itaque eos. Ipsam ducimus atque laboriosam repudiandae
-        libero quo sapiente. Vel, ratione nihil maiores asperiores exercitationem laboriosam, nam
-        facere similique nemo officiis veritatis!
+        Le diagnostic réalisé grâce à notre initiative citoyenne nous conduit à tirer un ensemble
+        d'enseignements et de préconisations dont nous dressons une liste ici :
       </p>
+      <ul>
+        <li className='list-inside list-disc'>
+          D'abord les points positifs :
+          <ul className='ml-4'>
+            <li className='list-inside list-disc'>
+              Au niveau national, il convient de concéder qu'énormément d'efforts ont été réalisés
+              dans le bon sens de la transparence des données publiques. Le portail data.gouv.fr,
+              créé en 2009, compte aujourd'hui (15 sept 2025) 2,1 millions de jeux de données.
+            </li>
+            <li className='list-inside list-disc'>Avantage 2</li>
+            <li className='list-inside list-disc'>Avantage 3</li>
+          </ul>
+        </li>
+        <li className='mt-4 list-inside list-disc'>
+          Puis les points négatifs :
+          <ul className='ml-4'>
+            <li className='list-inside list-disc'>Désavantage 1</li>
+            <li className='list-inside list-disc'>Désavantage 2</li>
+            <li className='list-inside list-disc'>Désavantage 3</li>
+          </ul>
+        </li>
+        <li className='mt-4 list-inside list-disc'>
+          Les préconisations :
+          <ul className='ml-4'>
+            <li className='list-inside list-disc'>préconisation 1</li>
+            <li className='list-inside list-disc'>préconisation 2</li>
+            <li className='list-inside list-disc'>préconisation 3</li>
+          </ul>
+        </li>
+      </ul>
     </main>
   );
 }
