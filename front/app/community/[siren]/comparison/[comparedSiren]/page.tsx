@@ -5,7 +5,6 @@ import type { Metadata } from 'next';
 import Loading from '@/components/ui/Loading';
 import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
 
-import { GlobalStatsComparison } from './components/GlobalStatsComparison';
 import { Header } from './components/Header';
 import { HeaderComparison } from './components/HeaderComparison';
 import { MarchesPublicsComparison } from './components/MarchesPublicsComparison';
@@ -48,7 +47,6 @@ export default async function Page({ params }: PageProps) {
       <Header community={community1} community2={community2} />
       <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
         <HeaderComparison community1={community1} community2={community2} />
-        <GlobalStatsComparison community1={community1} community2={community2} />
         <TransparenceComparison community1={community1} community2={community2} />
         {/* TODO factoriser en un seul composant les encarts marchés publics et subventions
             A faire si le comportement général est validé fonctionnellement */}
