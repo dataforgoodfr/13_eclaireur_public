@@ -20,6 +20,7 @@ communities:
     temp_folder:
       path: back/data/communities/processed_data
       filename: cities_to_geolocate.csv
+    data_folder: back/data/communities/geolocator
 
   geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
 
