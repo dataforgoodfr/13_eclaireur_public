@@ -126,6 +126,7 @@ class CommunitiesSelector(BaseDataset):
             densite=lambda df: df["population"].div(df["superficie_km2"])
         )
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
             BaseLoader.loader_factory(
@@ -138,6 +139,7 @@ class CommunitiesSelector(BaseDataset):
         )
         return frame.merge(epci_mapping, on="siren", how="left")
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
         geolocator = GeoLocator(self.config["geolocator"])
 
