@@ -4,11 +4,10 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-import requests
+from requests import Response
 
 from back.scripts.loaders import BaseLoader
 from back.scripts.loaders.base_loader import retry_session
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 
 LOGGER = logging.getLogger(__name__)
@@ -25,71 +24,7 @@ class GeoLocator:
         self._config = geo_config
         self.data_folder = Path(self._config["data_folder"])
 
-    def _get_reg_dep_coords(self) -> pd.DataFrame:
-        """Return scrapped data for regions and departements."""
-        # TODO: Use CSVLoader
-        reg_dep_geoloc_df = (
-            pd.read_csv(
-                Path(self._config["reg_dep_coords_scrapped_data_file"]),
-                sep=";",
-                dtype={"cog": str},
-                decimal=",",
-            )
-            .drop(columns=["nom"])
-            .rename(columns={"cog": "code_insee"})
-        )
-        if reg_dep_geoloc_df.empty:
-            raise Exception("Regions and departements dataset should not be empty.")
-
-        return reg_dep_geoloc_df
-
-    # we are forced to used scrapped this following a break in the BANATIC dataset.
-    # see https://data-for-good.slack.com/archives/C08AW9JJ93P/p1739369130352499
-    def _get_epci_coords(self) -> pd.DataFrame:
-        """Return scrapped data for ECPI."""
-        df = (
-            pd.read_csv(
-                Path(self._config["epci_coords_scrapped_data_file"]),
-                sep=";",
-                dtype={"siren": str},
-            )
-            .drop(columns=["nom"])
-            .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
-        )
-        if df.empty:
-            raise Exception("EPCI coordinates file not found.")
-        return df
-
-    def _request_geolocator_api(self, payload: pd.DataFrame) -> pd.DataFrame:
-        """Save payload to CSV to send to API, and return the response as dataframe"""
-        payload_filename = self._config["temp_folder"]["filename"]
-        payload_folder = get_project_base_path() / self._config["temp_folder"]["path"]
-        payload_folder.mkdir(parents=True, exist_ok=True)
-        payload_path = payload_folder / payload_filename
-        payload.to_csv(payload_path, index=False)
-
-        with open(payload_path, "rb") as payload_file:
-            data = {
-                "citycode": "code_insee",
-                "result_columns": ["code_insee", "latitude", "longitude", "result_status"],
-            }
-            files = {"data": (payload_filename, payload_file, "text/csv")}
-
-            response = requests.post(self._config["geolocator_api_url"], data=data, files=files)
-            if response.status_code != 200:
-                raise Exception(f"Failed to fetch data from geolocator API: {response.text}")
-
-            df = pd.read_csv(StringIO(response.text))
-            if df.empty:
-                return df
-
-            return (
-                df.loc[df["result_status"] == "ok", ["code_insee", "latitude", "longitude"]]
-                .astype({"code_insee": str})
-                .assign(type="COM", code_insee=lambda df: df["code_insee"].str.zfill(5))
-            )
-
-    def get_request_file(self, url: str, filename: str):
+    def get_request_file(self, url: str, filename: str) -> Response | pd.DataFrame | None:
         filepath = self.data_folder / filename
         if filepath.exists():
             return BaseLoader.loader_factory(filepath).load()
@@ -148,6 +83,7 @@ class GeoLocator:
 
         gdf = gpd.read_file(StringIO(response.text))
 
+        # Le changement de repère géospatial est conseillé pour améliorer la précision des résultats
         gdf["centroid"] = gdf.geometry.to_crs("EPSG:3857").centroid.to_crs("EPSG:4326")
         gdf["longitude"] = gdf["centroid"].x
         gdf["latitude"] = gdf["centroid"].y
