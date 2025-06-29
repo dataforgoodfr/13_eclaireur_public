@@ -45,6 +45,14 @@ class GeoLocator:
         return self.data_folder / f"{geo_type}.csv"
 
     def get_request_file(self, geo_type: GeoTypeEnum) -> Response | pd.DataFrame | None:
+        """
+        Returns the request file for a given geo_type.
+        Try 3 times to get the file.
+        Returns:
+            None: if the request failed or the file cannot be read
+            pd.DataFrame: if the file is already downloaded
+            Response: if the file is not downloaded and the request is successful
+        """
         filepath = self.get_output_filename(geo_type)
         if filepath.exists():
             return BaseLoader.loader_factory(filepath).load()
@@ -63,6 +71,10 @@ class GeoLocator:
         return response
 
     def get_geo_type_url(self, geo_type: GeoTypeEnum) -> str:
+        """
+        Returns the API url for a given geo_type.
+        Raise ValueError if the geo_type is unknown
+        """
         match geo_type:
             case GeoTypeEnum.COM | GeoTypeEnum.MET:
                 return f"https://geo.api.gouv.fr/{geo_type}?fields=centre&geometry=centre"
@@ -72,7 +84,10 @@ class GeoLocator:
                 raise ValueError(f"Unknown admin type: {geo_type}")
 
     def request_geo_type(self, geo_type: GeoTypeEnum) -> pd.DataFrame:
-        # Va chercher les centroids des geo_type et les sauvegarder dans les colonnes longtitude/latitude
+        """
+        Returns a DataFrame containing the centroid geocoordinates for a given geo_type.
+        Centroid is stored in columns longitude and latitude
+        """
         response = self.get_request_file(geo_type=geo_type)
         if response is None:
             return pd.DataFrame()
@@ -104,12 +119,18 @@ class GeoLocator:
         return df
 
     def clean_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> pd.DataFrame:
+        """
+        Clean the DataFrame
+        """
         df = df.astype({geo_type.code_name: str})
         if "siren" in df.columns:
             df = df.pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         return df
 
     def export_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> None:
+        """
+        Export the DataFrame to a CSV file
+        """
         df.to_csv(self.get_output_filename(geo_type), index=False, encoding="utf-8", sep=";")
 
     def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
