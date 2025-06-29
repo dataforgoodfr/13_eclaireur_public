@@ -38,16 +38,16 @@ class GeoLocator:
         self.config = config
         self.data_folder = Path(self.config["data_folder"])
 
-    def get_admin_type_filepath(self, admin_type: GeoTypeEnum) -> Path:
-        return self.data_folder / f"{admin_type}.csv"
+    def get_geo_type_filepath(self, geo_type: GeoTypeEnum) -> Path:
+        return self.data_folder / f"{geo_type}.csv"
 
-    def get_request_file(self, admin_type: GeoTypeEnum) -> Response | pd.DataFrame | None:
-        filepath = self.get_admin_type_filepath(admin_type)
+    def get_request_file(self, geo_type: GeoTypeEnum) -> Response | pd.DataFrame | None:
+        filepath = self.get_geo_type_filepath(geo_type)
         if filepath.exists():
             return BaseLoader.loader_factory(filepath).load()
 
         filepath.parent.mkdir(exist_ok=True, parents=True)
-        url = self.get_admin_type_url(admin_type)
+        url = self.get_geo_type_url(geo_type)
         session = retry_session(retries=3)
         response = session.get(url)
 
@@ -59,23 +59,23 @@ class GeoLocator:
 
         return response
 
-    def get_admin_type_url(self, admin_type: GeoTypeEnum) -> str:
-        match admin_type:
+    def get_geo_type_url(self, geo_type: GeoTypeEnum) -> str:
+        match geo_type:
             case GeoTypeEnum.COM | GeoTypeEnum.MET:
-                return f"https://geo.api.gouv.fr/{admin_type}?fields=centre&geometry=centre"
+                return f"https://geo.api.gouv.fr/{geo_type}?fields=centre&geometry=centre"
             case GeoTypeEnum.REG | GeoTypeEnum.DEP:
-                return f"https://object.data.gouv.fr/contours-administratifs/2025/geojson/{admin_type}-1000m.geojson"
+                return f"https://object.data.gouv.fr/contours-administratifs/2025/geojson/{geo_type}-1000m.geojson"
             case _:
-                raise ValueError(f"Unknown admin type: {admin_type}")
+                raise ValueError(f"Unknown admin type: {geo_type}")
 
-    def request_geo_type(self, admin_type: GeoTypeEnum) -> pd.DataFrame:
+    def request_geo_type(self, geo_type: GeoTypeEnum) -> pd.DataFrame:
         # Va chercher les centroids des communes et epcis
         # cette information n'est pas disponible pour les regions et departements
-        response = self.get_request_file(admin_type=admin_type)
+        response = self.get_request_file(geo_type=geo_type)
         if isinstance(response, pd.DataFrame):
-            return self.clean_df(response, admin_type=admin_type)
+            return self.clean_df(response, geo_type=geo_type)
 
-        if admin_type in (GeoTypeEnum.COM, GeoTypeEnum.MET):
+        if geo_type in (GeoTypeEnum.COM, GeoTypeEnum.MET):
             df = pd.read_json(StringIO(response.text))
 
             df[["longitude", "latitude"]] = pd.json_normalize(df["centre"])[
@@ -92,20 +92,18 @@ class GeoLocator:
             df = pd.DataFrame(gdf)
 
         df = df[["code", "nom", "longitude", "latitude"]]
-        df = self.clean_df(df, admin_type=admin_type)
-        self.export_df(df, admin_type=admin_type)
+        df = self.clean_df(df, geo_type=geo_type)
+        self.export_df(df, geo_type=geo_type)
         return df
 
-    def clean_df(self, df: pd.DataFrame, admin_type: GeoTypeEnum) -> pd.DataFrame:
-        df = df.astype({"code": str}).rename(columns={"code": admin_type.code_name})
+    def clean_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> pd.DataFrame:
+        df = df.astype({"code": str}).rename(columns={"code": geo_type.code_name})
         if "siren" in df.columns:
             df = df.pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         return df
 
-    def export_df(self, df: pd.DataFrame, admin_type: GeoTypeEnum) -> None:
-        df.to_csv(
-            self.get_admin_type_filepath(admin_type), index=False, encoding="utf-8", sep=";"
-        )
+    def export_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> None:
+        df.to_csv(self.get_geo_type_filepath(geo_type), index=False, encoding="utf-8", sep=";")
 
     def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
         """Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes.
@@ -119,9 +117,9 @@ class GeoLocator:
             LOGGER.warning(f"Unknown geo types: {';'.join(geo_diff)}")
 
         to_concat_dfs = list()
-        for admin_type in GeoTypeEnum:
-            df = frame[frame["type"] == admin_type.name].merge(
-                self.request_geo_type(admin_type), on=[admin_type.code_name], how="left"
+        for geo_type in GeoTypeEnum:
+            df = frame[frame["type"] == geo_type.name].merge(
+                self.request_geo_type(geo_type), on=[geo_type.code_name], how="left"
             )
             to_concat_dfs.append(df)
 
