@@ -14,12 +14,6 @@ communities:
   odf_url: file:back/scripts/datasets/odf.csv
 
   geolocator:
-    epci_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/epci_geolocs.csv
-    reg_dep_coords_scrapped_data_file: back/data/communities/scrapped_data/geoloc/dep_reg_centers.csv
-    geolocator_api_url: https://api-adresse.data.gouv.fr/search/csv/
-    temp_folder:
-      path: back/data/communities/processed_data
-      filename: cities_to_geolocate.csv
     data_folder: back/data/communities/geolocator
 
   geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
