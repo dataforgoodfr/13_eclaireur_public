@@ -98,12 +98,13 @@ class GeoLocator:
             df = pd.DataFrame(gdf)
 
         df = df[["code", "nom", "longitude", "latitude"]]
+        df = df.rename(columns={"code": geo_type.code_name})
         df = self.clean_df(df, geo_type=geo_type)
         self.export_df(df, geo_type=geo_type)
         return df
 
     def clean_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> pd.DataFrame:
-        df = df.astype({"code": str}).rename(columns={"code": geo_type.code_name})
+        df = df.astype({geo_type.code_name: str})
         if "siren" in df.columns:
             df = df.pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         return df
