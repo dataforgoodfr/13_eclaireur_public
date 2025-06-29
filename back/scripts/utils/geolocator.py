@@ -43,8 +43,8 @@ class GeoLocator:
         return response
 
     def request_geo_type(self, admin_type: str) -> pd.DataFrame:
-        # ok pour communes/epcis
-        # pas de centre pour regions/departements
+        # Va chercher les centroids des communes et epcis
+        # cette information n'est pas disponible pour les regions et departements
         filename = f"{admin_type}.csv"
 
         response = self.get_request_file(
@@ -59,18 +59,17 @@ class GeoLocator:
         df = pd.read_json(StringIO(response.text))
 
         df[["longitude", "latitude"]] = pd.json_normalize(df["centre"])["coordinates"].tolist()
+        df = df[["code", "nom", "longitude", "latitude"]]
         if admin_type == "communes":
             df = df.rename(columns={"code": "code_insee"})
         elif admin_type == "epcis":
             df = df.rename(columns={"code": "siren"})
-        df = df.drop(columns=["centre"])
         df.to_csv(self.data_folder / filename, index=False, encoding="utf-8", sep=";")
         return df
 
     def request_contour(self, admin_type: str) -> pd.DataFrame:
         # On a pas de données exploitables, le mieux c'est encore de les calculer à partir des contours
         # Les coordonnées ne sont pas très précises, cela permet de réduire la quantité de données
-        # et actuellement, cela ne pose pas de problème car c'est uniquement pour un affichage sur la carte
         filename = f"{admin_type}.csv"
         response = self.get_request_file(
             filename=filename,
@@ -88,7 +87,7 @@ class GeoLocator:
         gdf["longitude"] = gdf["centroid"].x
         gdf["latitude"] = gdf["centroid"].y
 
-        gdf = gdf.drop(columns=["centroid", "geometry", "region"])
+        gdf = gdf[["code", "nom", "longitude", "latitude"]]
         gdf = gdf.rename(columns={"code": "code_insee"})
 
         gdf.to_csv(self.data_folder / filename, index=False, encoding="utf-8", sep=";")
