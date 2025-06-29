@@ -57,6 +57,11 @@ class DataGouvCatalog(BaseDataset):
         catalog = catalog.assign(
             **{k: v for k, v in extra_columns.items() if k not in catalog.columns}
         )
+        catalog = catalog.drop(
+            columns=[
+                "extras_validation-report:errors",
+            ]
+        )
         columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
         catalog = (
             pl.from_pandas(catalog)

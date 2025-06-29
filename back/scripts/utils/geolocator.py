@@ -97,16 +97,19 @@ class GeoLocator:
             how="left",
         )
 
+        to_concat = [reg_dep_ctu]
         epci = frame[~frame["type"].isin(["REG", "DEP", "CTU", "COM"])].merge(
             self._get_epci_coords(),
             on=["type", "siren"],
             how="left",
         )
-
+        to_concat.append(epci)
         cities = frame[frame["type"] == "COM"]
-        geolocator_response = self._request_geolocator_api(
-            cities[["code_insee", "nom"]].drop_duplicates()
-        )
-        cities = cities.merge(geolocator_response, on=["type", "code_insee"], how="left")
 
-        return pd.concat([reg_dep_ctu, epci, cities])
+        if not cities.empty:
+            geolocator_response = self._request_geolocator_api(
+                cities[["code_insee", "nom"]].drop_duplicates()
+            )
+            cities = cities.merge(geolocator_response, on=["type", "code_insee"], how="left")
+            to_concat.append(cities)
+        return pd.concat(to_concat)
