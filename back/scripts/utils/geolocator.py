@@ -38,11 +38,14 @@ class GeoLocator:
         self.config = config
         self.data_folder = Path(self.config["data_folder"])
 
-    def get_geo_type_filepath(self, geo_type: GeoTypeEnum) -> Path:
+    def get_output_filename(self, geo_type: GeoTypeEnum) -> Path:
+        """
+        Returns the output file for a given geo_type.
+        """
         return self.data_folder / f"{geo_type}.csv"
 
     def get_request_file(self, geo_type: GeoTypeEnum) -> Response | pd.DataFrame | None:
-        filepath = self.get_geo_type_filepath(geo_type)
+        filepath = self.get_output_filename(geo_type)
         if filepath.exists():
             return BaseLoader.loader_factory(filepath).load()
 
@@ -69,19 +72,20 @@ class GeoLocator:
                 raise ValueError(f"Unknown admin type: {geo_type}")
 
     def request_geo_type(self, geo_type: GeoTypeEnum) -> pd.DataFrame:
-        # Va chercher les centroids des communes et epcis
-        # cette information n'est pas disponible pour les regions et departements
+        # Va chercher les centroids des geo_type et les sauvegarder dans les colonnes longtitude/latitude
         response = self.get_request_file(geo_type=geo_type)
         if isinstance(response, pd.DataFrame):
             return self.clean_df(response, geo_type=geo_type)
 
         if geo_type in (GeoTypeEnum.COM, GeoTypeEnum.MET):
+            # Pour ces types, la donnée officielle est accessible
             df = pd.read_json(StringIO(response.text))
 
             df[["longitude", "latitude"]] = pd.json_normalize(df["centre"])[
                 "coordinates"
             ].tolist()
         else:
+            # Pour les autres types, on calcule les centroids à partir des contours de la zone
             gdf = gpd.read_file(StringIO(response.text))
 
             # Le changement de repère géospatial est conseillé pour améliorer la précision des résultats
@@ -103,7 +107,7 @@ class GeoLocator:
         return df
 
     def export_df(self, df: pd.DataFrame, geo_type: GeoTypeEnum) -> None:
-        df.to_csv(self.get_geo_type_filepath(geo_type), index=False, encoding="utf-8", sep=";")
+        df.to_csv(self.get_output_filename(geo_type), index=False, encoding="utf-8", sep=";")
 
     def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
         """Function to add geocoordinates to a DataFrame containing regions, departments, EPCI, and communes.
