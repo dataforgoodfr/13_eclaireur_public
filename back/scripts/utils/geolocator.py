@@ -23,6 +23,7 @@ class GeoTypeEnum(enum.StrEnum):
 
     @property
     def code_name(self):
+        # nom de la colonne 'code' sur laquelle on fait le merge
         return "siren" if self.name == "MET" else "code_insee"
 
 
@@ -96,12 +97,9 @@ class GeoLocator:
         return df
 
     def clean_df(self, df: pd.DataFrame, admin_type: GeoTypeEnum) -> pd.DataFrame:
-        if admin_type == GeoTypeEnum.MET:
-            df = df.rename(columns={"code": "siren"}).pipe(
-                normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN
-            )
-        else:
-            df = df.rename(columns={"code": "code_insee"}).astype({"code_insee": str})
+        df = df.astype({"code": str}).rename(columns={"code": admin_type.code_name})
+        if "siren" in df.columns:
+            df = df.pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
         return df
 
     def export_df(self, df: pd.DataFrame, admin_type: GeoTypeEnum) -> None:
@@ -114,6 +112,11 @@ class GeoLocator:
         1. handle regions, departements and CTU by querying the contours to calculate the centroid
         2. handle cities and ECPI by requesting the geolocator API
         3. concat results"""
+
+        # check type
+        geo_diff = set(frame["type"]) - GeoTypeEnum._member_map_.keys()
+        if geo_diff:
+            LOGGER.warning(f"Unknown geo types: {';'.join(geo_diff)}")
 
         to_concat_dfs = list()
         for admin_type in GeoTypeEnum:
