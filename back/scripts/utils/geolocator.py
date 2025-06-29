@@ -74,7 +74,9 @@ class GeoLocator:
     def request_geo_type(self, geo_type: GeoTypeEnum) -> pd.DataFrame:
         # Va chercher les centroids des geo_type et les sauvegarder dans les colonnes longtitude/latitude
         response = self.get_request_file(geo_type=geo_type)
-        if isinstance(response, pd.DataFrame):
+        if response is None:
+            return pd.DataFrame()
+        elif isinstance(response, pd.DataFrame):
             return self.clean_df(response, geo_type=geo_type)
 
         if geo_type in (GeoTypeEnum.COM, GeoTypeEnum.MET):
