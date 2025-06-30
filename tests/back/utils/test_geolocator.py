@@ -16,19 +16,45 @@ class TestCleanDF:
         for geo_type in GeoTypeEnum:
             assert geo_type.value in geoloc.get_geo_type_url(geo_type)
 
+    def test_get_geo_type_url_error(self, geoloc):
         with pytest.raises(ValueError):
             geoloc.get_geo_type_url("unknown")
 
     def test_convert_to_string(self, geoloc):
+        # Given
         geo_type = GeoTypeEnum.DEP
         df = pd.DataFrame({geo_type.code_name: [1, 2, 3]})
-        result = geoloc.clean_df(df, geo_type)
-        assert result[geo_type.code_name].dtype == "object"
 
-    def test_normalize_siren(self, geoloc):
+        # When
+        result = geoloc.clean_df(df, geo_type)
+
+        # Then
+        dtype = result[geo_type.code_name].dtype
+        expected_dtype = "object"
+        assert dtype == expected_dtype
+
+    def test_normalize_siren_dtype(self, geoloc):
+        # Given
         geo_type = GeoTypeEnum.COM
         df = pd.DataFrame({"siren": [123456789, 987654321], geo_type.code_name: [1, 2]})
+
+        # When
         result = geoloc.clean_df(df, geo_type)
 
-        assert result["siren"].dtype == "object"
-        assert result["siren"].iloc[0] == "123456789"
+        # Then
+        dtype = result["siren"].dtype
+        expected_dtype = "object"
+        assert dtype == expected_dtype
+
+    def test_normalize_siren_value(self, geoloc):
+        # Given
+        geo_type = GeoTypeEnum.COM
+        df = pd.DataFrame({"siren": [123456789, 987654321], geo_type.code_name: [1, 2]})
+
+        # When
+        result = geoloc.clean_df(df, geo_type)
+
+        # Then
+        value = result["siren"].iloc[0]
+        expected_value = "123456789"
+        assert value == expected_value
