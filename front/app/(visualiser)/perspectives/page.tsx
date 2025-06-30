@@ -54,7 +54,7 @@ export default function Page() {
           95% des départements ont un score de transparence égal à E
         </li>
         <li className='list-inside list-disc'>
-          98% des départements ont un score de transparence égal à E
+          98% des communes ont un score de transparence égal à E
         </li>
       </ul>
       <p className='my-6 text-lg'>
