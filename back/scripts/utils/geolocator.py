@@ -22,7 +22,7 @@ class GeoTypeEnum(enum.StrEnum):
     MET = "epcis"
 
     @property
-    def code_name(self):
+    def code_name(self) -> str:
         # nom de la colonne 'code' sur laquelle on fait le merge
         return "siren" if self.name == "MET" else "code_insee"
 
