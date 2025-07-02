@@ -3,6 +3,7 @@ import re
 
 import pandas as pd
 
+from back.interfaces.workflow import Workflow
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.dataframe_operation import sort_by_format_priorities
@@ -12,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 DATAGOUV_PREFERED_FORMAT = ["parquet", "csv", "xls", "json", "zip"]
 
 
-class DataGouvSearcher(BaseDataset):
+class DataGouvSearcher(BaseDataset, Workflow):
     """
     This class is responsible for subvention related files in the data.gouv catalog.
     The strategy is to look for datasets with specific keywords in their title and description.

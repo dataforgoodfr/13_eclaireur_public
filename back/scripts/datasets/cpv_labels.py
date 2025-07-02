@@ -1,5 +1,6 @@
 import logging
 
+from back.interfaces.workflow import Workflow
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.decorators import tracker
@@ -7,7 +8,7 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 
-class CPVLabelsWorkflow(BaseDataset):
+class CPVLabelsWorkflow(BaseDataset, Workflow):
     @classmethod
     def get_config_key(cls) -> str:
         return "cpv_labels"

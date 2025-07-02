@@ -43,15 +43,15 @@ class OfglLoader(DatasetAggregator):
     INSEE_COL = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
 
     @classmethod
-    def get_config_key(cls):
+    def get_config_key(cls) -> str:
         return "ofgl"
 
     @classmethod
-    def from_config(cls, main_config):
+    def from_config(cls, main_config: dict):
         files = pd.read_csv(main_config[cls.get_config_key()]["urls_csv"], sep=";")
         return cls(files, main_config)
 
-    def __init__(self, files: pd.DataFrame, main_config: dict):
+    def __init__(self, files, main_config: dict) -> None:
         super().__init__(files, main_config)
         self.columns = pd.DataFrame()
 

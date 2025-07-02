@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 
+from back.interfaces.workflow import Workflow
 from back.scripts.communities.loaders.ofgl import OfglLoader
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
@@ -19,7 +20,7 @@ from back.scripts.utils.geolocator import GeoLocator
 LOGGER = logging.getLogger(__name__)
 
 
-class CommunitiesSelector(BaseDataset):
+class CommunitiesSelector(BaseDataset, Workflow):
     """
     CommunitiesSelector manages and filters data from multiple loaders (OFGL, ODF, Sirene)
     to produce a curated list of French communities.

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from back.interfaces.workflow import Workflow
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.communities.loaders.ofgl import OfglLoader
 from back.scripts.datasets.communities_contacts import CommunitiesContact
@@ -47,7 +48,7 @@ class WorkflowManager:
         self.source_folder = get_project_data_path()
         self.source_folder.mkdir(exist_ok=True, parents=True)
 
-    def get_workflows(self) -> list:
+    def get_workflows_cls(self) -> list[Workflow]:
         return [
             CPVLabelsWorkflow,
             SireneWorkflow,
@@ -65,9 +66,9 @@ class WorkflowManager:
     def run_workflow(self):
         self.logger.info("Workflow started.")
 
-        for workflow in self.get_workflows():
+        for workflow_cls in self.get_workflows_cls():
             try:
-                workflow(deepcopy(self.config)).run()
+                workflow_cls(deepcopy(self.config)).run()
             except Exception as e:
                 self.logger.error(
                     f"An error occurred while running the workflow {workflow.__name__}: {e}"

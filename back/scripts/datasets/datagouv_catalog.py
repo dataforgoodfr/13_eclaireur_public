@@ -6,6 +6,7 @@ import pandas as pd
 import polars as pl
 from polars import col
 
+from back.interfaces.workflow import Workflow
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
@@ -16,7 +17,7 @@ from back.scripts.utils.decorators import tracker
 LOGGER = logging.getLogger(__name__)
 
 
-class DataGouvCatalog(BaseDataset):
+class DataGouvCatalog(BaseDataset, Workflow):
     """
     Dataset containing the complete list of urls available on data.gouv, updated daily.
 

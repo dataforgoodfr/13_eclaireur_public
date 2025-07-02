@@ -10,6 +10,7 @@ import pandas as pd
 import polars as pl
 from tqdm import tqdm
 
+from back.interfaces.workflow import Workflow
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders import LOADER_CLASSES, BaseLoader
 from back.scripts.utils.decorators import tracker
@@ -30,7 +31,7 @@ def _sha256(s: str | None) -> str | None:
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
-class DatasetAggregator(BaseDataset):
+class DatasetAggregator(BaseDataset, Workflow):
     """
     Base class for multiple dataset aggregation functionality.
 

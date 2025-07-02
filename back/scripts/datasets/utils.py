@@ -1,15 +1,17 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
 
 from back.scripts.utils.config import get_project_base_path
 
 
-class BaseDataset:
+class BaseDataset(ABC):
     """
     Base class for dataset definitions.
     Provides methods to retrieve dataset config.
     """
 
     @classmethod
+    @abstractmethod
     def get_config_key(cls) -> str:
         """
         Must be implemented by dataset subclasses to return their config key.

@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from tqdm import tqdm
 
+from back.interfaces.workflow import Workflow
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.utils.beautifulsoup_utils import (
     get_tag_bool,
@@ -42,7 +43,7 @@ def get_published_bool(tag, exclude=UNPUBLISHED_VALUES) -> bool | None:
     return get_tag_bool(tag, exclude=exclude)
 
 
-class DeclaInteretWorkflow(BaseDataset):
+class DeclaInteretWorkflow(BaseDataset, Workflow):
     """
     Dataset containing declarations of interest of elected officials.
 
