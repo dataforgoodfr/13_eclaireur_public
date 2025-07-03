@@ -58,6 +58,12 @@ class DataGouvCatalog(BaseDataset):
             **{k: v for k, v in extra_columns.items() if k not in catalog.columns}
         )
         columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
+
+        if "extras_validation-report:errors" in catalog.columns:
+            catalog["extras_validation-report:errors"] = catalog[
+                "extras_validation-report:errors"
+            ].astype(str)
+
         catalog = (
             pl.from_pandas(catalog)
             .rename(
