@@ -27,9 +27,54 @@ export default function Page() {
         Attention spoiling : la transparence des données publiques des différentes collectivités
         françaises est mauvaise.
       </p>
+      <h2 className='my-12 text-2xl font-bold'>
+        La France championne d'Europe et vice championne du monde de l'open data
+      </h2>
+      <p className='my-6 text-lg'>
+        Pour la quatrième année consécutive, la France se classe au premier rang de l'open data en
+        Europe selon le {' '}
+        <Link
+          href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf?q=sites/default/files/odm2024_full_report_0.pdf'
+          className='border-b-2 border-black'
+        >
+          rapport 2024 sur la maturité des données ouvertes
+        </Link>{' '}
+        commandé par la commission européenne. Et elle obtient la seconde place au niveau mondial
+        dans le dernier{' '}
+        <Link
+          href='https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/12/2023-oecd-open-useful-and-re-usable-data-ourdata-index_cc9e8a9e/a37f51c3-en.pdf'
+          className='border-b-2 border-black'
+        >
+          OurData Index
+        </Link>{' '}
+        publié par l’OCDE en 2023.
+      </p>
+      <p className='my-6 text-lg'>
+        Beaucoup de chemin a été parcouru en matière d’ouverture des données publiques. La
+        déclaration des droits de l’homme et du citoyen de 1789 érigeait déjà, dans sont article 15,
+        la transparence comme un grand principe : « La société a le droit de demander compte à tout
+        agent public de son administration ». Il a fallu attendre les lois de 1978 et 1979, à la
+        naissance de la CNIL, pour que soit formalisé dans la loi l’accès des citoyens aux archives
+        et documents administratifs.
+      </p>
+      <p className='my-6 text-lg'>
+        L’avènement des outils informatiques et de l’internet en particulier a logiquement abouti à
+        la loi pour une République numérique de 2016 qui, en théorie, impose à tous les
+        établissements publics la publication des données d’intérêt public.{' '}
+      </p>
+      <p className='my-6 text-lg'>
+        <Link href='https://data.gouv.fr' className='border-b-2 border-black'>
+          Data.gouv.fr
+        </Link>{' '}
+        est le navire amiral de la donnée publique. Lancée fin 2011, cette plateforme
+        gouvernementale recense et met à disposition toutes les données publiques publiées, en
+        théorie. Tous les établissements publiccs sont supposés publier leur données sur cette
+        plateforme.
+      </p>
       <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
       <p className='my-6 text-lg'>
-        L'outil Eclaireur Public met en lumière ce que d'aucuns pressentaient au doigt mouillé, à
+        En pratique, malgré des rapports très flatteurs sur la transparence des données publiques en
+        France, Eclaireur Public met en lumière ce que d'aucuns pressentaient au doigt mouillé, à
         savoir que la transparence sur les dépenses publiques locales reste très limitée.
       </p>
       <p className='my-6 text-lg'>
@@ -55,11 +100,7 @@ export default function Page() {
           95% des départements ont un score de transparence égal à E
         </li>
         <li className='list-inside list-disc'>
-<<<<<<< HEAD
           98% des communes ont un score de transparence égal à E
-=======
-          98% des départements ont un score de transparence égal à E
->>>>>>> e392e03 ([FRONT] fix content US-0109 et 0110)
         </li>
       </ul>
       <p className='my-6 text-lg'>
