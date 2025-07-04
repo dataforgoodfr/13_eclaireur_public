@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.communities.loaders.ofgl import OfglLoader
+from back.scripts.datasets.adapters.workflow.ofgl import OfglWorkflowFactory
 from back.scripts.datasets.communities_contacts import CommunitiesContact
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
@@ -54,7 +54,7 @@ class WorkflowManager:
             FinancialAccounts,
             ElectedOfficialsWorkflow.from_config,
             DeclaInteretWorkflow,
-            OfglLoader.from_config,
+            OfglWorkflowFactory.from_config,
             CommunitiesSelector,
             DataGouvCatalog,
             MarchesPublicsWorkflow.from_config,
