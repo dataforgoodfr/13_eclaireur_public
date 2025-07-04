@@ -3,6 +3,11 @@
 import { useState } from 'react';
 
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
+import {
+  SCORE_NON_DISPONIBLE,
+  SCORE_TO_ADJECTIF,
+  TransparencyScore,
+} from '@/components/TransparencyScore/constants';
 import Loading from '@/components/ui/Loading';
 import SectionSeparator from '@/components/utils/SectionSeparator';
 import { useTransparencyScore } from '@/utils/hooks/comparison/useTransparencyScore';
@@ -48,9 +53,27 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
   return (
     <div className='flex-col text-center'>
       <p>Transparence des subventions</p>
-      <TransparencyScoreBar score={data.subventions_score} />
+      <div className='max-md:hidden'>
+        <TransparencyScoreBar score={data.subventions_score} />
+      </div>
+      <p className='md:hidden'>
+        <b>
+          {data.subventions_score !== null
+            ? data.subventions_score.toString()
+            : SCORE_NON_DISPONIBLE}
+        </b>
+        {data.subventions_score !== null && (
+          <span> : {SCORE_TO_ADJECTIF[data.subventions_score]}</span>
+        )}
+      </p>
       <p>Transparence des marchés publics</p>
-      <TransparencyScoreBar score={data.mp_score} />
+      <div className='max-md:hidden'>
+        <TransparencyScoreBar score={data.mp_score} />
+      </div>
+      <p className='md:hidden'>
+        <b>{data.mp_score !== null ? data.mp_score.toString() : SCORE_NON_DISPONIBLE}</b>
+        {data.mp_score !== null && <span> : {SCORE_TO_ADJECTIF[data.mp_score]}</span>}
+      </p>
     </div>
   );
 }
