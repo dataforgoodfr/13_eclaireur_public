@@ -66,7 +66,7 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
   }
 
   if (data.top5 === undefined) {
-    return <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Non disponible</div>;
+    return <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Aucunes données publiées</div>;
   }
 
   return (
