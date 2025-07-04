@@ -39,7 +39,8 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   {
     title: 'Perspectives',
     href: '/perspectives',
-    description: 'Quelles sont les grandes tendances en matière de transparence des dépenses publiques locales ?',
+    description:
+      'Quelles sont les grandes tendances en matière de transparence des dépenses publiques locales ?',
   },
 ];
 
