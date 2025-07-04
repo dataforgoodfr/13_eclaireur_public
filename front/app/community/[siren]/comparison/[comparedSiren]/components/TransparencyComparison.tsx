@@ -30,7 +30,7 @@ export function TransparencyComparison({ siren1, siren2 }: TransparencyCompariso
         year={selectedYear}
         onSelectYear={setSelectedYear}
       />
-      <div className='flex justify-around'>
+      <div className='flex justify-around max-md:my-6 md:my-10'>
         <ComparingScore siren={siren1} year={selectedYear as number} />
         <ComparingScore siren={siren2} year={selectedYear as number} />
       </div>
@@ -51,7 +51,7 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
   }
 
   return (
-    <div className='flex-col text-center'>
+    <div className='flex-col text-center '>
       <p>Transparence des subventions</p>
       <div className='max-md:hidden'>
         <TransparencyScoreBar score={data.subventions_score} />

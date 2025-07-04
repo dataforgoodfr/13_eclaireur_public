@@ -36,7 +36,7 @@ export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvCompa
         year={selectedYear}
         onSelectYear={setSelectedYear}
       />
-      <div className='flex justify-around'>
+      <div className='flex justify-around max-md:my-6 md:my-10'>
         <ComparingMPSubv
           siren={siren1}
           year={selectedYear as number}
