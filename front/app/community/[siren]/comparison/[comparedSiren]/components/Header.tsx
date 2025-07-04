@@ -2,8 +2,6 @@ import { Community } from '@/app/models/community';
 
 import { FicheComparisonInput } from '../../../components/FicheHeader/FicheComparisonInput';
 import GoBack from '../../../components/GoBack';
-import { SeparatorHorizontal } from 'lucide-react';
-import { Separator } from '@radix-ui/react-select';
 
 type FicheHeaderProps = {
   community: Community;

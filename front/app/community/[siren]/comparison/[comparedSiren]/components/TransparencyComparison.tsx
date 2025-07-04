@@ -3,11 +3,7 @@
 import { useState } from 'react';
 
 import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import {
-  SCORE_NON_DISPONIBLE,
-  SCORE_TO_ADJECTIF,
-  TransparencyScore,
-} from '@/components/TransparencyScore/constants';
+import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF } from '@/components/TransparencyScore/constants';
 import Loading from '@/components/ui/Loading';
 import SectionSeparator from '@/components/utils/SectionSeparator';
 import { useTransparencyScore } from '@/utils/hooks/comparison/useTransparencyScore';
@@ -51,7 +47,7 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
   }
 
   return (
-    <div className='flex-col text-center '>
+    <div className='flex-col text-center'>
       <p>Transparence des subventions</p>
       <div className='max-md:hidden'>
         <TransparencyScoreBar score={data.subventions_score} />
