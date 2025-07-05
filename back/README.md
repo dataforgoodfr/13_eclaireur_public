@@ -305,6 +305,25 @@ Depuis un terminal:
 
     poetry run python back/main.py
 
+## Lancer le script dans un conteneur
+Pré-requis :
+- Docker 
+- Task 
+#### Installer task
+
+    pip install go-task-bin
+
+#### Construire l'image 
+
+    task build-image
+
+#### Lancer le conteneur
+
+    task run-container
+
+#### Pour voir les logs associés au script: 
+
+    docker logs -f 13_eclaireur_public-eclaireur-public-back
 
 ## Licenses
 
