@@ -94,7 +94,6 @@ export default function Page() {
           En savoir plus : le rôle de la région
         </Link>
       </p>
-      
     </main>
   );
 }
