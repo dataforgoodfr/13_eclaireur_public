@@ -34,11 +34,7 @@ class CsvReader(IReader[pd.DataFrame]):
         LOGGER.debug(f"Detected delimiter: '{delimiter}'")
 
         try:
-            if "chunksize" in loader_kwargs:
-                chunks = pd.read_csv(stream, **loader_kwargs)
-                df = pd.concat(chunks, ignore_index=True)
-            else:
-                df = pd.read_csv(stream, **loader_kwargs)
+            df = pd.read_csv(stream, **loader_kwargs)
         except Exception as e:
             LOGGER.warning(f"Error while reading CSV: {e}")
             return pd.DataFrame()
