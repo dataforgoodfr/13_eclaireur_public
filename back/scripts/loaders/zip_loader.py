@@ -4,7 +4,7 @@ import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
-from typing import IO, Type
+from typing import Type
 from urllib.parse import urlparse
 
 from back.scripts.loaders import BaseLoader
@@ -23,8 +23,29 @@ class ZipLoader(BaseLoader):
         self.archived_file_loader_class = archived_file_loader_class
         self.output_file_path = ""
 
-    def process_data(self, stream: IO[bytes]):
-        with tempfile.TemporaryDirectory() as tmpdir, zipfile.ZipFile(stream) as zip_ref:
+    def process_data(self, *args, **kwargs):
+        if self.archived_file_loader_class is None:
+            # TODO?: add a raw parameter in addition to the file_url
+            loader_class = BaseLoader.loader_factory(
+                self.output_file_path, **self.get_loader_kwargs()
+            )
+        else:
+            loader_class = self.archived_file_loader_class(
+                self.output_file_path, **self.get_loader_kwargs()
+            )
+        return loader_class.load()
+
+    def _load_from_url(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            filename = Path(tempdir) / "null.zip"
+            urllib.request.urlretrieve(self.file_url, filename)
+            if self.archived_file_loader_class is None:
+                self.archived_file_loader_class = self._loader_class_resolver_from_url()
+            self.file_url = str(filename)
+            return self._load_from_file()
+
+    def _load_from_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir, zipfile.ZipFile(self.file_url) as zip_ref:
             if self.archived_file_loader_class is None:
                 can_be_loaded_filenames = zip_ref.namelist()
             else:
@@ -53,31 +74,8 @@ class ZipLoader(BaseLoader):
                         raise RuntimeError(f"Too many files to load from {self.file_url}.")
 
             zip_ref.extract(filename, tmpdir)
-            output_file_path = Path(tmpdir) / filename
-
-            if self.archived_file_loader_class is None:
-                # TODO?: add a raw parameter in addition to the file_url
-                loader_class = BaseLoader.loader_factory(
-                    output_file_path, **self.get_loader_kwargs()
-                )
-            else:
-                loader_class = self.archived_file_loader_class(
-                    output_file_path, **self.get_loader_kwargs()
-                )
-            return loader_class.load()
-
-    def _load_from_url(self):
-        with tempfile.TemporaryDirectory() as tempdir:
-            filename = Path(tempdir) / "null.zip"
-            urllib.request.urlretrieve(self.file_url, filename)
-            if self.archived_file_loader_class is None:
-                self.archived_file_loader_class = self._loader_class_resolver_from_url()
-            self.file_url = str(filename)
-            return self._load_from_file()
-
-    def _load_from_file(self):
-        with open(self.file_url, "rb") as f:
-            return self.process_data(f)
+            self.output_file_path = Path(tmpdir) / filename
+            return self.process_data()
 
     def get_archive_prefix(self) -> str:
         """

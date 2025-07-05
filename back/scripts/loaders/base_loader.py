@@ -1,11 +1,8 @@
-import io
 import logging
 import os
 import re
-import shutil
-import tempfile
 from pathlib import Path
-from typing import IO, Pattern, Self
+from typing import Pattern, Self
 from urllib.parse import urlparse
 
 import requests
@@ -85,42 +82,11 @@ class BaseLoader:
 
     def _load_from_url(self):
         s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
-        remote_url = self.file_url
-        # Use a HEAD request to check the file size without downloading the whole file
-        try:
-            head_response = s.head(remote_url, allow_redirects=True)
-            head_response.raise_for_status()  # Raise an exception for bad status codes
-            content_length = head_response.headers.get("content-length")
-        except requests.exceptions.RequestException as e:
-            LOGGER.warning(f"Could not get file size for {remote_url}: {e}")
-            content_length = None
+        response = s.get(self.file_url)
+        if response.status_code == 200:
+            return self.process_data(response.content)
 
-        # If content_length is available and greater than 100MB, download to a temp file
-        if content_length and int(content_length) > 1000 * 1024 * 1024:
-            LOGGER.info("File size is > 1000GB. Downloading to a temporary file.")
-            # Create a temporary file
-            with tempfile.NamedTemporaryFile(
-                delete=False, suffix=Path(remote_url).name
-            ) as tmp_file:
-                temp_file_path = tmp_file.name
-                # Stream the download
-                with s.get(remote_url, stream=True) as r:
-                    r.raise_for_status()
-                    shutil.copyfileobj(r.raw, tmp_file)
-
-            try:
-                # Load from the temporary file
-                self.file_url = temp_file_path
-                return self._load_from_file()
-            finally:
-                # Clean up the temporary file
-                os.remove(temp_file_path)
-                self.file_url = remote_url  # restore original url
-        else:
-            # For smaller files, load directly into memory
-            response = s.get(remote_url)
-            response.raise_for_status()
-            return self.process_data(io.BytesIO(response.content))
+        raise RuntimeError(f"Failed to load data from {self.file_url}")
 
     def _load_from_file(self):
         parsed_url = urlparse(self.file_url)
@@ -129,14 +95,14 @@ class BaseLoader:
             if local_path.startswith("./"):
                 local_path = os.path.abspath(local_path)
             with open(local_path, "rb") as file:
-                return self.process_data(file)
+                return self.process_data(file.read())
         except FileNotFoundError as e:
             LOGGER.error(f"File not found: {e}")
         except Exception as e:
             LOGGER.error(f"Failed to load data from {self.file_url}: {e}")
         return None
 
-    def process_data(self, stream: IO[bytes]):
+    def process_data(self, data):
         raise NotImplementedError("This method should be implemented by subclasses.")
 
     def get_loader_kwargs(self) -> dict:
@@ -240,29 +206,22 @@ class EncodedDataLoader(BaseLoader):
         # Try different encodings for the data, sorted by priority
         return ["utf-8-sig", "windows-1252", "latin1", "utf-16"]
 
-    def process_data(self, stream: IO[bytes]):
+    def process_data(self, data):
         for encoding in self.get_accepted_encodings():
             try:
-                # Wrap the byte stream in a text stream with the specified encoding
-                text_stream = io.TextIOWrapper(stream, encoding=encoding)
-                LOGGER.info(f"Successfully decoded using {encoding} encoding")
-                decoded_data = self.process_from_decoded(text_stream)
-                if decoded_data is not None:
-                    # Detach the stream so it's not closed by the TextIOWrapper
-                    text_stream.detach()
-                    return decoded_data
+                decoded_content = data.decode(encoding)
             except UnicodeDecodeError:
                 LOGGER.debug(f"Failed to decode using {encoding} encoding")
-                # Reset the stream position for the next attempt
-                stream.seek(0)
+                # Try the next encoding
                 continue
-            except Exception:
-                # If any other error occurs, reset the stream and try the next encoding
-                stream.seek(0)
-                continue
+            else:
+                LOGGER.info(f"Successfully decoded using {encoding} encoding")
+                decoded_data = self.process_from_decoded(decoded_content)
+                if decoded_data is not None:
+                    return decoded_data
 
         LOGGER.error(f"Unable to process content from: {self.file_url}")
         return None
 
-    def process_from_decoded(self, decoded_stream: io.TextIOWrapper):
+    def process_from_decoded(self, decoded_content: str):
         raise NotImplementedError("This method should be implemented by subclasses.")

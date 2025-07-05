@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import IO
+from io import BytesIO
 
 import pandas as pd
 
@@ -26,7 +26,7 @@ class ExcelLoader(BaseLoader):
 
         return kwargs
 
-    def process_data(self, stream: IO[bytes]) -> pd.DataFrame:
-        df = pd.read_excel(stream, **self.get_loader_kwargs())
+    def process_data(self, data: bytes) -> pd.DataFrame:
+        df = pd.read_excel(BytesIO(data), **self.get_loader_kwargs())
         LOGGER.debug(f"Excel Data from {self.file_url} loaded.")
         return df
