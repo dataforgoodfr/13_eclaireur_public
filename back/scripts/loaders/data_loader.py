@@ -1,42 +1,40 @@
 import logging
-from typing import IO
+from typing import IO, Generic, TypeVar
 from urllib.parse import urlparse
 
 import pandas as pd
 
 from back.scripts.adapters.loaders.fetcher import HttpFetcher, LocalFetcher
-from back.scripts.interfaces.loader import IDecoder, IFetcher, IReader
+from back.scripts.interfaces.loader import T_DF, IDecoder, IFetcher, IReader
 
 LOGGER = logging.getLogger(__name__)
 
 
-class DataLoader:
+class DataLoader(Generic[T_DF]):
     """
     Orchestrates the data loading process using a fetcher, decoder, and reader.
     """
 
-    def __init__(self, fetcher: IFetcher, reader: IReader, decoder: IDecoder | None = None):
+    def __init__(
+        self, fetcher: IFetcher, reader: IReader[T_DF], decoder: IDecoder | None = None
+    ):
         self.fetcher = fetcher
         self.reader = reader
         self.decoder = decoder
 
-    def load(self, uri: str, **kwargs) -> pd.DataFrame:
+    def load(self, uri: str, **kwargs) -> T_DF:
         LOGGER.debug(f"Loading data from: {uri}")
-        try:
-            with self.fetcher.fetch(uri) as byte_stream:
-                stream: IO = byte_stream
-                if self.decoder:
-                    stream = self.decoder.decode(byte_stream)
+        with self.fetcher.fetch(uri) as byte_stream:
+            stream: IO = byte_stream
+            if self.decoder:
+                stream = self.decoder.decode(byte_stream)
 
-                return self.reader.read(stream, **kwargs)
-        except Exception as e:
-            LOGGER.error(f"Failed to load data from {uri}: {e}")
-            return pd.DataFrame()
+            return self.reader.read(stream, **kwargs)
 
 
 def create_data_loader(
-    uri: str, reader: IReader, decoder: IDecoder | None = None
-) -> DataLoader:
+    uri: str, reader: IReader[T_DF], decoder: IDecoder | None = None
+) -> DataLoader[T_DF]:
     """
     Factory function to create a DataLoader with the appropriate fetcher.
     """

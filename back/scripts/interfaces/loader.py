@@ -1,7 +1,10 @@
 from io import TextIOWrapper
-from typing import IO, Protocol
+from typing import IO, Generic, Protocol, TypeVar
 
 import pandas as pd
+import polars as pl
+
+T_DF = TypeVar("T_DF", pd.DataFrame, pl.LazyFrame)
 
 
 class IFetcher(Protocol):
@@ -40,20 +43,20 @@ class IDecoder(Protocol):
         ...
 
 
-class IReader(Protocol):
+class IReader(Protocol, Generic[T_DF]):
     """
-    Interface for a component that parses a stream into a pandas DataFrame.
+    Interface for a component that parses a stream into a DataFrame.
     """
 
-    def read(self, stream: IO, **kwargs) -> pd.DataFrame:
+    def read(self, stream: IO, **kwargs) -> T_DF:
         """
-        Reads data from a stream and converts it into a pandas DataFrame.
+        Reads data from a stream and converts it into a DataFrame.
 
         Args:
             stream: The stream to read from (can be bytes or text).
             **kwargs: Additional arguments for the reader.
 
         Returns:
-            A pandas DataFrame containing the data.
+            A DataFrame containing the data.
         """
         ...
