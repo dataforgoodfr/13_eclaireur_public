@@ -1,0 +1,24 @@
+version: "3"
+
+tasks:
+  build-image:
+    cmds:
+      - |
+        echo "local build"
+        docker buildx build \
+        --tag backend:latest \
+        .
+  run-container:
+    cmds:
+      - |
+        if [ "$(docker ps -aq -f name=^{{.CONTAINER_NAME}})$" ] ; then 
+        echo "This container already exists, removing it..."
+        docker rm -f {{.CONTAINER_NAME}} 
+        fi
+        docker run -d --name {{.CONTAINER_NAME}} backend:latest 
+        echo 'Start Container {{.CONTAINER_NAME}}, to see the logs run: docker logs -f {{.CONTAINER_NAME}}'
+    vars:
+      CONTAINER_NAME: '13_eclaireur_public-eclaireur-public-back'
+
+  
+
