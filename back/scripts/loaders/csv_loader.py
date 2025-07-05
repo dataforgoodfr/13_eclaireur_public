@@ -1,76 +1,48 @@
-import csv
 import logging
 import re
-from io import StringIO, TextIOWrapper
 
 import pandas as pd
 
-from back.scripts.loaders import EncodedDataLoader
+from back.scripts.loaders.adapters.decoder import StreamDecoder
+from back.scripts.loaders.adapters.reader import CsvReader
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.data_loader import create_data_loader
 from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
-STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
-WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
 @register_loader
-class CSVLoader(EncodedDataLoader):
+class CSVLoader(BaseLoader):
+    """
+    Adapter class for loading CSV files.
+
+    This class fits into the existing BaseLoader framework but delegates
+    the actual loading process to a composition-based DataLoader, which
+    is initialized with the class.
+
+    We only use the factory and the config loading from the BaseLoader.
+    """
+
     file_extensions = {"csv"}
     file_media_type_regex = re.compile(r"csv", flags=re.IGNORECASE)
-    """
-    Initialize the CSV loader for either URL or local file.
-    """
 
-    def get_loader_kwargs(self):
-        kwargs = super().get_loader_kwargs()
-        kwargs |= {
-            "on_bad_lines": "skip",
-            "low_memory": False,
-        }
-        # Sometimes you don't know which loader class is going to be called, especially during a `BaseLoader.loader_factory`
-        # columns attribute is useful for `parquet_loader` and usecols attribute for `csv_loader` and `excel_loader`
-        if "columns" in kwargs:
-            columns = kwargs.pop("columns")
-            kwargs["usecols"] = lambda c: c in columns
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reader = CsvReader()
+        decoder = StreamDecoder()
+        self.data_loader = create_data_loader(self.file_url, reader=reader, decoder=decoder)
 
-        return kwargs
+    def load(self, force: bool = True) -> pd.DataFrame:
+        """
+        Overrides the BaseLoader's load method to use the new compositional DataLoader.
+        """
+        if not self.file_url:
+            raise RuntimeError("Empty file URL provided")
 
-    def process_from_decoded(self, decoded_stream: TextIOWrapper) -> pd.DataFrame | None:
-        loader_kwargs = self.get_loader_kwargs()
+        if not force and not self.can_load_file(self.file_url):
+            raise RuntimeError(f"File {self.file_url} is not supported by this loader")
 
-        # If the delimiter is not specified, try to detect it
-        sample = decoded_stream.read(4096)
-        decoded_stream.seek(0)  # Rewind the stream after reading the sample
+        LOGGER.debug(f"Delegating loading of {self.file_url} to composition-based DataLoader.")
 
-        sample = STARTING_NEWLINE.sub("", sample)
-        sample = WINDOWS_NEWLINE.sub("\n", sample)
-
-        sniffer = csv.Sniffer()
-
-        try:
-            dialect = sniffer.sniff(sample)
-            loader_kwargs["header"] = 0 if sniffer.has_header(sample) else None
-        except csv.Error as e:
-            LOGGER.warning(f"CSV Sniffer error: {e}")
-            # Try to find the most common delimiter
-            counts = {sep: sample.count(sep) for sep in (",", ";", "\t")}
-            delimiter = max(counts, key=counts.get)
-        else:
-            delimiter = dialect.delimiter
-
-        loader_kwargs["delimiter"] = delimiter
-        LOGGER.debug(f"Detected delimiter: '{delimiter}'")
-
-        try:
-            # Handle chunking if requested
-            if "chunksize" in loader_kwargs:
-                chunks = pd.read_csv(decoded_stream, **loader_kwargs)
-                df = pd.concat(chunks, ignore_index=True)
-            else:
-                df = pd.read_csv(decoded_stream, **loader_kwargs)
-        except Exception as e:
-            LOGGER.warning(f"Error while reading CSV: {e}")
-            return
-
-        LOGGER.debug(f"CSV Data from {self.file_url} loaded successfully. Shape: {df.shape}")
-        return df
+        return self.data_loader.load(self.file_url, **self.kwargs)
