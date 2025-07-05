@@ -23,8 +23,6 @@ class DataGouvCatalog(BaseDataset):
     the siren of the publishing organisation.
     """
 
-    DATASET_ID = "5d13a8b6634f41070a43dff3"
-
     @classmethod
     def get_config_key(cls) -> str:
         return "datagouv_catalog"
