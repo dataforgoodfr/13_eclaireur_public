@@ -3,8 +3,8 @@ import re
 
 import pandas as pd
 
-from back.scripts.loaders.adapters.decoder import StreamDecoder
-from back.scripts.loaders.adapters.reader import CsvReader
+from back.scripts.adapters.loaders.decoder import StreamDecoder
+from back.scripts.adapters.loaders.reader import CsvReader
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.loaders.data_loader import create_data_loader
 from back.scripts.loaders.utils import register_loader
