@@ -1,7 +1,7 @@
 import csv
 import logging
 import re
-from io import StringIO
+from io import StringIO, TextIOWrapper
 
 import pandas as pd
 
@@ -35,14 +35,17 @@ class CSVLoader(EncodedDataLoader):
 
         return kwargs
 
-    def process_from_decoded(self, decoded_content) -> pd.DataFrame | None:
+    def process_from_decoded(self, decoded_stream: TextIOWrapper) -> pd.DataFrame | None:
         loader_kwargs = self.get_loader_kwargs()
 
         # If the delimiter is not specified, try to detect it
-        decoded_content = STARTING_NEWLINE.sub("", decoded_content)
-        decoded_content = WINDOWS_NEWLINE.sub("\n", decoded_content)
+        sample = decoded_stream.read(4096)
+        decoded_stream.seek(0)  # Rewind the stream after reading the sample
+
+        sample = STARTING_NEWLINE.sub("", sample)
+        sample = WINDOWS_NEWLINE.sub("\n", sample)
+
         sniffer = csv.Sniffer()
-        sample = decoded_content[: min(4096, len(decoded_content))]
 
         try:
             dialect = sniffer.sniff(sample)
@@ -50,7 +53,7 @@ class CSVLoader(EncodedDataLoader):
         except csv.Error as e:
             LOGGER.warning(f"CSV Sniffer error: {e}")
             # Try to find the most common delimiter
-            counts = {sep: decoded_content.count(sep) for sep in (",", ";", "\t")}
+            counts = {sep: sample.count(sep) for sep in (",", ";", "\t")}
             delimiter = max(counts, key=counts.get)
         else:
             delimiter = dialect.delimiter
@@ -59,7 +62,12 @@ class CSVLoader(EncodedDataLoader):
         LOGGER.debug(f"Detected delimiter: '{delimiter}'")
 
         try:
-            df = pd.read_csv(StringIO(decoded_content), **loader_kwargs)
+            # Handle chunking if requested
+            if "chunksize" in loader_kwargs:
+                chunks = pd.read_csv(decoded_stream, **loader_kwargs)
+                df = pd.concat(chunks, ignore_index=True)
+            else:
+                df = pd.read_csv(decoded_stream, **loader_kwargs)
         except Exception as e:
             LOGGER.warning(f"Error while reading CSV: {e}")
             return

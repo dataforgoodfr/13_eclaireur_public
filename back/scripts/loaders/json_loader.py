@@ -1,18 +1,18 @@
 import json
 import logging
 import re
-from io import BytesIO
+from io import TextIOWrapper
 
 import pandas as pd
 
-from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.base_loader import EncodedDataLoader
 from back.scripts.loaders.utils import register_loader
 
 LOGGER = logging.getLogger(__name__)
 
 
 @register_loader
-class JSONLoader(BaseLoader):
+class JSONLoader(EncodedDataLoader):
     """
     Loader for JSON files.
     """
@@ -24,15 +24,8 @@ class JSONLoader(BaseLoader):
         super().__init__(*args, **kwargs)
         self.key = key
 
-    def process_data(self, data):
-        content = None
-        if isinstance(data, str):
-            content = json.loads(data, **self.get_loader_kwargs())
-        elif isinstance(data, bytes):
-            # utile dans les cas où l'encodage n'est pas utf-8
-            content = json.load(BytesIO(data), **self.get_loader_kwargs())
-        else:
-            raise Exception("Unhandled type")
+    def process_from_decoded(self, decoded_stream: TextIOWrapper):
+        content = json.load(decoded_stream, **self.get_loader_kwargs())
 
         if self.key is not None:
             content = content.get(self.key, {})
