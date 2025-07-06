@@ -2,6 +2,7 @@ from io import TextIOWrapper
 from typing import IO, Protocol
 
 import pandas as pd
+import polars as pl
 
 
 class IFetcher(Protocol):
@@ -55,5 +56,24 @@ class IReader(Protocol):
 
         Returns:
             A pandas DataFrame containing the data.
+        """
+        ...
+
+
+class IPolarReader(Protocol):
+    """
+    Interface for a component that parses a stream into a polars LazyFrame.
+    """
+
+    def read(self, stream: IO, **kwargs) -> pl.LazyFrame:
+        """
+        Reads data from a stream and converts it into a polars LazyFrame.
+
+        Args:
+            stream: The stream to read from (can be bytes or text).
+            **kwargs: Additional arguments for the reader.
+
+        Returns:
+            A polars LazyFrame containing the data.
         """
         ...
