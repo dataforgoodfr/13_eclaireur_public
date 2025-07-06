@@ -33,7 +33,7 @@ class CSVLoader(BaseLoader):
         decoder = StreamDecoder()
         self.data_loader = create_data_loader(self.file_url, reader=reader, decoder=decoder)
 
-    def load(self, force: bool = True) -> pd.DataFrame:
+    def load(self, force: bool = True) -> pd.DataFrame | None:
         """
         Overrides the BaseLoader's load method to use the new compositional DataLoader.
         """
@@ -45,4 +45,9 @@ class CSVLoader(BaseLoader):
 
         LOGGER.debug(f"Delegating loading of {self.file_url} to composition-based DataLoader.")
 
-        return self.data_loader.load(self.file_url, **self.kwargs)
+        try:
+            return self.data_loader.load(self.file_url, **self.kwargs)
+        except FileNotFoundError:
+            return None
+        except Exception as e:
+            raise RuntimeError(f"Failed to load data from {self.file_url}") from e

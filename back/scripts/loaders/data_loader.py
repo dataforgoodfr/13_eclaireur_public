@@ -32,16 +32,12 @@ class DataLoader:
         LOGGER.debug(f"Loading data from: {uri}")
         if not self.reader:
             raise ValueError("Pandas reader is not configured.")
-        try:
-            with self.fetcher.fetch(uri) as byte_stream:
-                stream: IO = byte_stream
-                if self.decoder:
-                    stream = self.decoder.decode(byte_stream)
+        with self.fetcher.fetch(uri) as byte_stream:
+            stream: IO = byte_stream
+            if self.decoder:
+                stream = self.decoder.decode(byte_stream)
 
-                return self.reader.read(stream, **kwargs)
-        except Exception as e:
-            LOGGER.error(f"Failed to load data from {uri}: {e}")
-            return pd.DataFrame()
+            return self.reader.read(stream, **kwargs)
 
     def load_lazy(self, uri: str, **kwargs) -> pl.LazyFrame:
         """
