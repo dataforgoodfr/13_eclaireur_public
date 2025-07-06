@@ -13,7 +13,7 @@ STARTING_NEWLINE = re.compile(r"^(\r?\n)+")
 WINDOWS_NEWLINE = re.compile(r"\r\n?")
 
 
-class CsvReader(IReader[pd.DataFrame]):
+class CsvReader(IReader):
     """
     Reads data from a CSV stream into a pandas DataFrame.
     """
