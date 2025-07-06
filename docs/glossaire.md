@@ -15,7 +15,7 @@
   Portail officiel de l’État français dédié à la mise à disposition des données publiques ouvertes (open data). Il rassemble un grand nombre de jeux de données utiles au projet.
 
 - **Geolocator**  
-  Service permettant d’ajouter aux données les coordonnées géographiques (latitude, longitude) et autres informations de localisation des collectivités.
+  Classe qui enrichit un DataFrame d'entités géographiques (communes, départements, EPCI, etc.) avec leurs coordonnées (longitude/latitude). Elle s'appuie sur les codes INSEE ou SIREN pour récupérer les centroïdes via une API officielle ou des fichiers GeoJSON.
 
 ## Concepts et outils techniques
 
@@ -44,7 +44,7 @@
   - **JSON** : format structuré, souvent utilisé pour les données semi-structurées.
 
 - **Topic Aggregator**  
-  Composant logiciel chargé de regrouper et agréger les différents fichiers de données correspondant à un même thème ou sujet.
+  Classe qui permet de standardiser des jeux de données issus de collectivités, souvent mal structurés ou non homogènes. Elle applique un modèle de référence afin de faciliter l’agrégation, la comparaison et l’exploitation des données.
 
 - **Single URLs / Datafiles**  
   Sources de données individuelles non centralisées, récupérées directement via des URLs spécifiques.
