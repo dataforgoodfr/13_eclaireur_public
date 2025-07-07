@@ -60,7 +60,7 @@ export default function Page() {
       <p className='my-6 text-lg'>
         L’avènement des outils informatiques et de l’internet en particulier a logiquement abouti à
         la loi pour une République numérique de 2016 qui, en théorie, impose à tous les
-        établissements publics la publication des données d’intérêt public.{' '}
+        établissements publics la publication des données d’intérêt public.
       </p>
       <p className='my-6 text-lg'>
         <Link href='https://data.gouv.fr' className='border-b-2 border-black'>
@@ -68,7 +68,7 @@ export default function Page() {
         </Link>{' '}
         est le navire amiral de la donnée publique. Lancée fin 2011, cette plateforme
         gouvernementale recense et met à disposition toutes les données publiques publiées, en
-        théorie. Tous les établissements publiccs sont supposés publier leur données sur cette
+        théorie. Tous les établissements publiccs sont supposés publier leurs données sur cette
         plateforme.
       </p>
       <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
