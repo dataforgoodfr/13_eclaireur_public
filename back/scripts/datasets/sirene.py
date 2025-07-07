@@ -1,15 +1,12 @@
 import logging
-import tempfile
 import time
 import urllib.request
-import zipfile
 from pathlib import Path
 
 import polars as pl
 from polars import col
 
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
