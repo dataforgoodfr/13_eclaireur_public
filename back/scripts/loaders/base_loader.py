@@ -112,9 +112,7 @@ class BaseLoader:
         return self.kwargs
 
     @classmethod
-    def loader_factory(
-        cls, file_url: str | Path, lazy_load: bool = False, **loader_kwargs
-    ) -> Self:
+    def loader_factory(cls, file_url: str | Path, **loader_kwargs) -> Self:
         # Factory method to create the appropriate loader based on the file URL
         file_url = str(file_url)
         loader_class = cls.search_loader_class(file_url)
