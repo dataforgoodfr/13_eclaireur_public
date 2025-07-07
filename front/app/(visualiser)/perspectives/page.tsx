@@ -68,7 +68,7 @@ export default function Page() {
         </Link>{' '}
         est le navire amiral de la donnée publique. Lancée fin 2011, cette plateforme
         gouvernementale recense et met à disposition toutes les données publiques publiées, en
-        théorie. Tous les établissements publiccs sont supposés publier leurs données sur cette
+        théorie. Tous les établissements publics sont supposés publier leurs données sur cette
         plateforme.
       </p>
       <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
