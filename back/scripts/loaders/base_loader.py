@@ -127,8 +127,11 @@ class BaseLoader:
 
     @classmethod
     def get_file_extension(cls, file_url: str) -> str:
-        if not cls.get_file_is_url(file_url) and "." in file_url:
+        is_url = cls.get_file_is_url(file_url)
+        if not is_url and "." in file_url:
             return file_url.rsplit(".", 1)[-1]
+        if is_url and "." in urlparse(file_url).path:
+            return urlparse(file_url).path.rsplit(".", 1)[-1]
         return ""
 
     @classmethod
