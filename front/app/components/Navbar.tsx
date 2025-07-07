@@ -18,7 +18,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, Wrench } from 'lucide-react';
 
 const visualiserMenus: { title: string; href: string; description: string }[] = [
   {
@@ -92,13 +92,13 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
 
 export default function Navbar() {
   return (
-    <div className='fixed z-50 flex h-[80px] w-full items-center justify-between bg-white px-10 shadow'>
-      <Link className='mr-6' href='/'>
-        <h1 className='w-[100px] rounded bg-black px-2 py-1 font-bold uppercase text-white'>
+    <div className='fixed z-50 flex h-[100px] w-full flex-wrap justify-between bg-white px-10 shadow'>
+      <Link href='/'>
+        <h1 className='mt-2 w-[100px] rounded bg-black px-2 py-1 font-bold uppercase text-white'>
           Éclaireur Public
         </h1>
       </Link>
-      <NavigationMenu className='h-18 flex items-center py-2'>
+      <NavigationMenu className='flex h-16'>
         {/* Desktop */}
         <NavigationMenuList className='max-md:hidden'>
           <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
@@ -137,6 +137,11 @@ export default function Navbar() {
           </Sheet>
         </div>
       </NavigationMenu>
+      <div className='absolute bottom-0 left-0 w-full bg-card-secondary-foreground-1 py-1 pl-1 text-center text-sm'>
+        <Wrench className='inline scale-x-[-1]' size='16' />
+        <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
+        fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
+      </div>
     </div>
   );
 }
@@ -173,7 +178,7 @@ function NavigationMenuGroup({ title, menus }: NavigationMenuGroupProps) {
     <NavigationMenuItem>
       <NavigationMenuTrigger>{title}</NavigationMenuTrigger>
       <NavigationMenuContent>
-        <ul className='grid w-[500px] gap-3 p-4'>
+        <ul className='w-[500px] gap-3 p-4'>
           {menus.map((menu) => (
             <ListItem key={menu.title} title={menu.title} href={menu.href}>
               {menu.description}
