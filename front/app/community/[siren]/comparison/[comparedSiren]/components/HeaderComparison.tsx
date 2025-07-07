@@ -1,6 +1,6 @@
 import { Community } from '@/app/models/community';
-import { CommunityType } from '@/utils/types';
-import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
+
+import { CommunityDetails } from '../../../components/CommunityDetails';
 
 type HeaderComparisonProps = {
   community1: Community;
@@ -10,32 +10,21 @@ type HeaderComparisonProps = {
 export function HeaderComparison({ community1, community2 }: HeaderComparisonProps) {
   return (
     <div className='flex justify-around'>
-      <ComparedHeader
-        nom={community1.nom}
-        communityType={community1.type}
-        population={community1.population}
-      />
-      <ComparedHeader
-        nom={community2.nom}
-        communityType={community2.type}
-        population={community2.population}
-      />
+      <ComparedHeader community={community1} />
+      <ComparedHeader community={community2} />
     </div>
   );
 }
 
-type ComparedHeaderProperties = {
-  nom: string;
-  communityType: CommunityType;
-  population: number;
+type ComparedHeaderProps = {
+  community: Community;
 };
 
-function ComparedHeader({ nom, communityType: type, population }: ComparedHeaderProperties) {
+function ComparedHeader({ community }: ComparedHeaderProps) {
   return (
-    <div className='flex-col text-center'>
-      <p className='mb-2 text-xl font-bold'>{nom}</p>
-      <p>{stringifyCommunityType(type)}</p>
-      <p>{formatNumberInteger(population)} habitants</p>
+    <div className='m-1 flex-col rounded bg-gray-100 p-3'>
+      <p className='mb-2 text-center text-xl font-bold'>{community.nom}</p>
+      <CommunityDetails community={community} />
     </div>
   );
 }

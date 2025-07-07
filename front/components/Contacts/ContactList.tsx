@@ -15,8 +15,6 @@ type ContactListProps = {
 export default function ContactList({ contacts }: ContactListProps) {
   const { selectedContacts, addContact, removeContact } = useSelectedContactsContext();
 
-  console.log(selectedContacts);
-
   function handleCheckboxChange(isChecked: boolean, contact: CommunityContact) {
     if (isChecked) {
       addContact(contact);

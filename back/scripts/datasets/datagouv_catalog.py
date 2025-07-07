@@ -8,9 +8,8 @@ from polars import col
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.loaders.base_loader import BaseLoader, retry_session
 from back.scripts.utils.dataframe_operation import expand_json_columns, normalize_column_names
-from back.scripts.utils.datagouv_api import DataGouvAPI
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -24,8 +23,6 @@ class DataGouvCatalog(BaseDataset):
     the siren of the publishing organisation.
     """
 
-    DATASET_ID = "5d13a8b6634f41070a43dff3"
-
     @classmethod
     def get_config_key(cls) -> str:
         return "datagouv_catalog"
@@ -36,6 +33,8 @@ class DataGouvCatalog(BaseDataset):
             return
 
         url = self.config.get("catalog_url") or self._catalog_url()
+        if url is None:
+            return
 
         catalog = BaseLoader.loader_factory(url).load()
         if not isinstance(catalog, pd.DataFrame):
@@ -57,6 +56,10 @@ class DataGouvCatalog(BaseDataset):
         catalog = catalog.assign(
             **{k: v for k, v in extra_columns.items() if k not in catalog.columns}
         )
+        if "extras_validation-report:errors" in catalog.columns:
+            catalog["extras_validation-report:errors"] = catalog[
+                "extras_validation-report:errors"
+            ].astype(str)
         columns = np.loadtxt(Path(__file__).parent / "datagouv_catalog_columns.txt", dtype=str)
         catalog = (
             pl.from_pandas(catalog)
@@ -87,23 +90,40 @@ class DataGouvCatalog(BaseDataset):
 
         catalog.write_parquet(self.output_filename)
 
-    def _catalog_url(self):
+    def _catalog_url(self) -> str | None:
         """
         Fetch the url of the resource catalog from the page of the dataset.
-        The catalog is updated daily, with a title change so there is high chance
-        that the resource_id we are interested changes daily too.
+        The catalog is updated daily, with a title and resource_id change.
+        So, we try to get the url of the parquet file from the API first.
 
         The page itself allows to download a parquet which is dynamically created.
         It weights 7x less but does not appear on the catalog and seems to have a different url daily.
         See the page for investigation : https://www.data.gouv.fr/fr/datasets/catalogue-des-donnees-de-data-gouv-fr/#
         """
-        catalog_dataset = DataGouvAPI.dataset_resources(
-            self.DATASET_ID, savedir=self.data_folder
-        ).pipe(lambda df: df[df["resource_url"].str.contains("export-resource")])
-        if catalog_dataset.empty:
-            raise Exception("No catalog dataset found.")
+        session = retry_session(retries=3)
+        response = session.get(
+            "https://www.data.gouv.fr/api/1/datasets/catalogue-des-donnees-de-data-gouv-fr/"
+        )
 
-        return catalog_dataset["resource_url"].iloc[0]
+        try:
+            response.raise_for_status()
+        except Exception as e:
+            LOGGER.error(f"Failed to fetch data from DataGouv API: {response.text}, {e}")
+            return None
+
+        if response.status_code != 200:
+            LOGGER.error(f"Failed to fetch data from DataGouv API: {response.text}")
+            return None
+
+        catalogs = response.json()
+        for catalog in catalogs["resources"]:
+            if catalog["title"].startswith("export-resource-"):
+                break
+        else:
+            LOGGER.error("No catalog found.")
+            return None
+
+        return catalog["extras"]["analysis:parsing:parquet_url"]
 
     def _add_siren(self, df: pl.DataFrame) -> pl.DataFrame:
         communities = pl.read_parquet(
