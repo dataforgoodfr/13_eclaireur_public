@@ -212,10 +212,9 @@ class SireneWorkflow(BaseDataset):
             return
 
         base_df = (
-            pl.scan_parquet(
-                self.input_filename, dtypes={"trancheEffectifsUniteLegale": pl.String}
-            )
+            pl.scan_parquet(self.input_filename)
             .select(
+                col("trancheEffectifsUniteLegale").cast(pl.String),
                 col("siren").cast(pl.String).str.zfill(9),
                 (col("etatAdministratifUniteLegale") == "A").alias("is_active"),
                 pl.coalesce(
