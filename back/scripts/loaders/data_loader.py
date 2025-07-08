@@ -48,21 +48,9 @@ class DataLoader:
 
         if not self.polar_reader:
             raise ValueError("Polar reader is not configured.")
-
-        is_remote = urlparse(uri).scheme.startswith("http")
-
-        if is_remote:
-            raise NotImplementedError(
-                "Lazy loading from remote URIs is not supported. Please provide a local file path."
-            )
-
-        # At this point, 'uri' is confirmed to be a local file path.
-        try:
-            return self.polar_reader.read(uri, **kwargs)
-        except Exception as e:
-            LOGGER.error(f"Failed to lazy load data from {uri}: {e}")
-            # Re-raising the exception to be handled by the caller
-            return pl.LazyFrame()
+        with self.fetcher.fetch(uri) as byte_stream:
+            stream: IO = byte_stream
+            return self.polar_reader.read(stream, **kwargs)
 
 
 def create_data_loader(
