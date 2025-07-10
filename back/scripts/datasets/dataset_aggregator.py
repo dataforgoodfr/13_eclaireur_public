@@ -219,12 +219,3 @@ class DatasetAggregator(BaseDataset):
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.output_filename)
-
-    @property
-    def aggregated_dataset(self):
-        """
-        Property to return the aggregated dataset.
-        """
-        if not self.output_filename.exists():
-            raise RuntimeError("Combined file does not exists. You must run .load() first.")
-        return pd.read_parquet(self.output_filename)
