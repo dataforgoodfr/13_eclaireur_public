@@ -128,9 +128,7 @@ class DatasetAggregator(BaseDataset):
             urllib.request.urlretrieve(file_metadata.url, output_filename)
         except HTTPError as error:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
-            msg = (
-                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
-            )
+            msg = f"HTTP error {error.code}"
             self.errors[msg].append(file_metadata.url)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
