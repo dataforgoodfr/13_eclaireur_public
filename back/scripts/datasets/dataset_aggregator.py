@@ -105,7 +105,7 @@ class DatasetAggregator(BaseDataset):
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
 
-    def _post_process(self):
+    def _post_process(self) -> None:
         pass
 
     def _process_file(self, file: PandasRow) -> None:
@@ -178,7 +178,7 @@ class DatasetAggregator(BaseDataset):
     def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow):
         raise NotImplementedError()
 
-    def _remaining_to_normalize(self):
+    def _remaining_to_normalize(self) -> list:
         """
         Select among the input files the ones for which we do not have yet the normalized file.
         """
@@ -201,7 +201,7 @@ class DatasetAggregator(BaseDataset):
             .itertuples()
         )
 
-    def _add_normalized_filenames(self):
+    def _add_normalized_filenames(self) -> None:
         """
         Add to the DataFrame of input files the expected name of the normalized file.
         """
@@ -209,7 +209,7 @@ class DatasetAggregator(BaseDataset):
         fns = [str(self._dataset_filename(file, "norm")) for file in all_files]
         self.files_in_scope = self.files_in_scope.assign(filename=fns)
 
-    def _concatenate_files(self):
+    def _concatenate_files(self) -> None:
         """
         Concatenate all the normalized files which have succeeded into a single parquet file.
         This step is made in polars as the sum of all dataset by be heavy on memory.
