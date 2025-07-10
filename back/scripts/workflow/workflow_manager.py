@@ -21,7 +21,6 @@ from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
-from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.dataframe_operation import (
     clean_file_format,
     correct_format_from_url,
@@ -45,9 +44,6 @@ class WorkflowManager:
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        self.source_folder = get_project_data_path()
-        self.source_folder.mkdir(exist_ok=True, parents=True)
-
     def get_workflows(self) -> list:
         return [
             CPVLabelsWorkflow,
@@ -63,7 +59,7 @@ class WorkflowManager:
             CommunitiesContact,
         ]
 
-    def run_workflow(self):
+    def run_workflow(self) -> None:
         self.logger.info("Workflow started.")
 
         for workflow in self.get_workflows():
@@ -79,7 +75,7 @@ class WorkflowManager:
 
         self.logger.info("Workflow completed.")
 
-    def check_file_age(self, config):
+    def check_file_age(self, config: dict) -> None:
         """
         Check file age and log a warning if file is too aged according to config.yaml file, section: file_age_to_check
         """
@@ -99,7 +95,7 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def process_subvention(self, topic, topic_config):
+    def process_subvention(self, topic: str, topic_config: dict) -> None:
         self.logger.info(f"Processing subvention {topic}.")
         topic_files_in_scope = None
 
@@ -128,8 +124,6 @@ class WorkflowManager:
 
         topic_agg = TopicAggregator(topic_files_in_scope, topic, self.config["datafile_loader"])
         topic_agg.run()
-
-        return topic_files_in_scope, topic_agg.aggregated_dataset
 
 
 def drop_grenoble_duplicates(df: pd.DataFrame) -> pd.DataFrame:
