@@ -11,7 +11,7 @@ import polars as pl
 from tqdm import tqdm
 
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.loaders import LOADER_CLASSES, BaseLoader
+from back.scripts.loaders import BaseLoader
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.typing import PandasRow
 
@@ -91,10 +91,6 @@ class DatasetAggregator(BaseDataset):
 
     def _process_files(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
-            if file_infos.format not in LOADER_CLASSES:
-                LOGGER.warning(f"Format {file_infos.format} not supported")
-                continue
-
             if file_infos.url is None or pd.isna(file_infos.url):
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
