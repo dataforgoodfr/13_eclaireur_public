@@ -23,6 +23,7 @@ from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.dataframe_operation import (
+    clean_file_format,
     correct_format_from_url,
     sort_by_format_priorities,
 )
@@ -118,6 +119,7 @@ class WorkflowManager:
             .dropna(subset=["url"])
             .pipe(correct_format_from_url)
             .pipe(drop_grenoble_duplicates)
+            .pipe(clean_file_format)
             .pipe(sort_by_format_priorities)
             .drop_duplicates(subset=["url"], keep="first")
             .pipe(remove_same_dataset_formats)
