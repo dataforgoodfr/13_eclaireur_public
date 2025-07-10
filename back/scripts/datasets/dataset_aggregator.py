@@ -84,6 +84,7 @@ class DatasetAggregator(BaseDataset):
         if self.output_filename.exists():
             return
         self._process_files()
+        self._post_process()
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
@@ -103,11 +104,6 @@ class DatasetAggregator(BaseDataset):
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
-
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
-        self._post_process()
-        self._concatenate_files()
 
     def _post_process(self):
         pass
