@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.config import Config, get_project_base_path
 
 
 class BaseDataset:
@@ -19,11 +19,11 @@ class BaseDataset:
         raise NotImplementedError("Method must be overridden")
 
     @classmethod
-    def get_config(cls, main_config: dict) -> dict:
+    def get_config(cls, main_config: dict | Config) -> dict:
         return main_config[cls.get_config_key()]
 
     @classmethod
-    def get_output_path(cls, main_config: dict) -> Path:
+    def get_output_path(cls, main_config: dict | Config) -> Path:
         return get_project_base_path() / cls.get_config(main_config)["combined_filename"]
 
     def __init__(self, main_config: dict, *args, **kwargs):
