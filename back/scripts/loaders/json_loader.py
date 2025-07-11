@@ -93,3 +93,20 @@ class JSONLoader(BaseLoader):
             flattened[prefix] = x
 
         return flattened
+
+
+@register_loader
+class JSONLLoader(BaseLoader):
+    """
+    Loader for JSONL files.
+    """
+
+    file_extensions = {"jsonl"}
+
+    def process_data(self, data) -> pd.DataFrame:
+        df = pd.read_json(BytesIO(data), **self.get_loader_kwargs())
+        LOGGER.debug(f"JSONL Data from {self.file_url} loaded.")
+        return df
+
+    def get_loader_kwargs(self) -> dict:
+        return super().get_loader_kwargs() | {"lines": True}
