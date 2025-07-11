@@ -16,7 +16,7 @@ class ExcelLoader(BaseLoader):
     Loader for Excel files.
     """
 
-    file_extensions = {"xls", "xlsx", "excel"}
+    file_extensions = {"xls", "xlsx", "excel", "ods", "odf", "odt"}
     file_media_type_regex = re.compile(r"(excel|spreadsheet|xls|xlsx)", flags=re.IGNORECASE)
 
     def get_loader_kwargs(self):
