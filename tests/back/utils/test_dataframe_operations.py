@@ -6,6 +6,7 @@ import pytest
 
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
+    clean_file_format,
     expand_json_columns,
     is_dayfirst,
     normalize_commune_code,
@@ -248,3 +249,19 @@ class TestNormalizeCommuneCode:
         result = normalize_commune_code(df, "commune_code")
         expected = pd.DataFrame({"commune_code": ["01000", "52430", None]})
         pd.testing.assert_frame_equal(result, expected)
+
+
+class TestCleanFileFormat:
+    def test_clean_file_format_different_formats(self):
+        data = {"format": ["application/json", "TEXT/CSV", "csv/utf8", "pdf", "unknown"]}
+        df = pd.DataFrame(data)
+        expected_data = {"format": ["json", "csv", "csv", "pdf", "unknown"]}
+        expected_df = pd.DataFrame(expected_data)
+        result = clean_file_format(df)
+        pd.testing.assert_frame_equal(result, expected_df)
+
+    def test_clean_file_format_missing_format_column(self):
+        data = {"other_column": ["value1", "value2"]}
+        df = pd.DataFrame(data)
+        with pytest.raises(KeyError):
+            clean_file_format(df)

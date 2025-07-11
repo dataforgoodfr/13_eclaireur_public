@@ -248,6 +248,10 @@ def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean_file_format(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Cleans and standardizes the format column in the DataFrame by removing
+    specific prefixes and normalizing format names.
+    """
     s_format = (
         df["format"]
         .str.lower()
