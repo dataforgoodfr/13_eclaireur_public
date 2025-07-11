@@ -75,6 +75,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
+            .pipe(cls.drop_rows_with_null_dates_or_amounts)
         )
 
     @staticmethod
@@ -508,4 +509,13 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return marches.join(id_mapping, on="id_mp", how="left").drop(
             ["id_mp", "id_mp_titulaire"]
+        )
+
+    @staticmethod
+    def drop_rows_with_null_dates_or_amounts(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        Supprime les lignes où 'date_publication_donnees' ou 'montant' sont nulles.
+        """
+        return marches.filter(
+            pl.col("date_publication_donnees").is_not_null() & pl.col("montant").is_not_null()
         )
