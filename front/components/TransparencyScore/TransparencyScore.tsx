@@ -2,8 +2,8 @@ import { SVGProps } from 'react';
 
 import { cn } from '@/utils/utils';
 import { ClassNameValue } from 'tailwind-merge';
+import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF, TransparencyScore } from '@/components/TransparencyScore/constants';
 
-import { TransparencyScore } from './constants';
 
 const SQUARE_WIDTH = 60;
 const ACTIVE_SCORE_SCALE = 1.2;
@@ -12,14 +12,6 @@ const SVG_CONFIG = {
   viewBoxWidth: SQUARE_WIDTH * 5 + 40,
   viewBoxHeight: SQUARE_WIDTH * 2,
   margin: 20,
-};
-
-const SCORE_TO_ADJECTIF = {
-  [TransparencyScore.A]: 'Optimal',
-  [TransparencyScore.B]: 'Transparent',
-  [TransparencyScore.C]: 'Moyen',
-  [TransparencyScore.D]: 'Insuffisant',
-  [TransparencyScore.E]: 'Opaque',
 };
 
 type ScoreTileProps = {
@@ -105,7 +97,7 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           className='font-bold'
         >
           {activeScore !== null && SCORE_TO_ADJECTIF[activeScore]}
-          {activeScore === null && 'Non disponible'}
+          {activeScore === null && SCORE_NON_DISPONIBLE}
         </text>
       </g>
     </svg>

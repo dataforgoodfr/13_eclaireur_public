@@ -80,7 +80,7 @@ elected_officials:
 sirene:
   data_folder: back/tests/data/sirene
   combined_filename: back/tests/data/sirene/sirene.parquet
-  url: file:./tests/back/datasets/fixtures/StockUniteLegale_utf8.zip
+  url: file:./tests/back/datasets/fixtures/sirene_raw.parquet
   xls_urls_naf:
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"
     - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n2.xls"

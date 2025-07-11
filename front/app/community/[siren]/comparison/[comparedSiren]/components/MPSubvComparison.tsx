@@ -36,7 +36,7 @@ export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvCompa
         year={selectedYear}
         onSelectYear={setSelectedYear}
       />
-      <div className='flex justify-around'>
+      <div className='flex justify-around max-md:my-6 md:my-10'>
         <ComparingMPSubv
           siren={siren1}
           year={selectedYear as number}
@@ -66,17 +66,19 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
   }
 
   if (data.top5 === undefined) {
-    return <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Non disponible</div>;
+    return (
+      <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Aucunes données publiées</div>
+    );
   }
 
   return (
-    <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>
+    <div className='sm:mx-2 basis-1/2 flex-col space-y-2 text-center'>
       <p>Montant total : {formatCompactPrice(data.total_amount)}</p>
       <p>
         Nombre de {getName(comparisonType)} : {data.total_number}
       </p>
       <div className='md:mx-5'>
-        <ShadCNTable>
+        <ShadCNTable className='text-xs sm:text-sm'>
           <TableCaption>Top 5 des {getName(comparisonType)}</TableCaption>
           <TableHeader>
             <TableRow>

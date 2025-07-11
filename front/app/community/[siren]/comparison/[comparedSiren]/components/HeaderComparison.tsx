@@ -9,7 +9,7 @@ type HeaderComparisonProps = {
 
 export function HeaderComparison({ community1, community2 }: HeaderComparisonProps) {
   return (
-    <div className='flex justify-around'>
+    <div className='flex justify-around max-md:my-6 md:my-10'>
       <ComparedHeader community={community1} />
       <ComparedHeader community={community2} />
     </div>
