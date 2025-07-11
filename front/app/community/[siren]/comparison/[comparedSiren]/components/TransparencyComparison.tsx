@@ -53,11 +53,11 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
         <TransparencyScoreBar score={data.subventions_score} />
       </div>
       <p className='md:hidden'>
-        <b>
+        <strong>
           {data.subventions_score !== null
             ? data.subventions_score.toString()
             : SCORE_NON_DISPONIBLE}
-        </b>
+        </strong>
         {data.subventions_score !== null && (
           <span> : {SCORE_TO_ADJECTIF[data.subventions_score]}</span>
         )}
@@ -67,7 +67,7 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
         <TransparencyScoreBar score={data.mp_score} />
       </div>
       <p className='md:hidden'>
-        <b>{data.mp_score !== null ? data.mp_score.toString() : SCORE_NON_DISPONIBLE}</b>
+        <strong>{data.mp_score !== null ? data.mp_score.toString() : SCORE_NON_DISPONIBLE}</strong>
         {data.mp_score !== null && <span> : {SCORE_TO_ADJECTIF[data.mp_score]}</span>}
       </p>
     </div>
