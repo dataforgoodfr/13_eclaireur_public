@@ -1,15 +1,12 @@
 import logging
-import tempfile
 import time
 import urllib.request
-import zipfile
 from pathlib import Path
 
 import polars as pl
 from polars import col
 
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.decorators import tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -54,7 +51,7 @@ class SireneWorkflow(BaseDataset):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.input_filename = self.data_folder / "sirene.zip"
+        self.input_filename = self.data_folder / "sirene_raw.parquet"
         # Track the last download time to enforce rate limiting
         self._last_download_time = 0
 
@@ -71,16 +68,13 @@ class SireneWorkflow(BaseDataset):
             return
         self._download_if_not_exists(self.config["url"], self.input_filename)
 
-    def _download_if_not_exists(self, url: str, file_path: Path | None = None) -> Path:
+    def _download_if_not_exists(self, url: str, file_path: Path | None = None) -> None:
         """
         Download a file from a URL with rate limiting to avoid server throttling.
 
         Args:
             url: The URL to download from
             file_path: Optional path to save the file to. If not provided, will use the filename from the URL.
-
-        Returns:
-            Path to the downloaded file
         """
         if file_path is None:
             file_name = url.split("/")[-1]
@@ -88,7 +82,7 @@ class SireneWorkflow(BaseDataset):
 
         if file_path.exists():
             LOGGER.info(f"File already exists: {file_path}")
-            return file_path
+            return
 
         LOGGER.info(f"Downloading {url} to {file_path}")
 
@@ -116,7 +110,7 @@ class SireneWorkflow(BaseDataset):
                 self._last_download_time = time.time()
 
                 LOGGER.info(f"Successfully downloaded {url}")
-                return file_path
+                return
 
             except Exception as e:
                 LOGGER.warning(f"Download attempt {attempt + 1}/{MAX_RETRIES} failed: {e}")
@@ -128,8 +122,6 @@ class SireneWorkflow(BaseDataset):
                 else:
                     LOGGER.error(f"Failed to download {url} after {MAX_RETRIES} attempts")
                     raise
-
-        return file_path
 
     def _enforce_rate_limit(self):
         """Enforce a minimum delay between downloads to avoid rate limiting."""
@@ -151,7 +143,7 @@ class SireneWorkflow(BaseDataset):
         xls_url_cat_ju = self.config.get("xls_urls_cat_ju")
         self._download_if_not_exists(xls_url_cat_ju)
 
-    def join_naf_level(self, base_df: pl.DataFrame, level: str) -> pl.DataFrame:
+    def join_naf_level(self, base_df: pl.DataFrame, level: int) -> pl.DataFrame:
         """
         Effectue la jointure avec le fichier correspondant au niveau (n1, n2, n3, n4, n5) sur base_df.
 
@@ -187,7 +179,7 @@ class SireneWorkflow(BaseDataset):
     def join_juridical_level(
         self,
         base_df: pl.DataFrame,
-        level: str,
+        level: int,
         categories_ju_data: list[pl.DataFrame],
         code_ju_col: str = "code_ju",
     ) -> pl.DataFrame:
@@ -219,38 +211,30 @@ class SireneWorkflow(BaseDataset):
         if self.output_filename.exists():
             return
 
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            with zipfile.ZipFile(self.input_filename) as zip_ref:
-                zip_ref.extractall(tmpdirname)
-                csv_fn = Path(tmpdirname) / "StockUniteLegale_utf8.csv"
-
-                base_df = (
-                    pl.scan_csv(
-                        csv_fn, schema_overrides={"trancheEffectifsUniteLegale": pl.String}
-                    )
-                    .select(
-                        col("siren").cast(pl.String).str.zfill(9),
-                        (col("etatAdministratifUniteLegale") == "A").alias("is_active"),
-                        pl.coalesce(
-                            col("nomUsageUniteLegale"),
-                            col("denominationUniteLegale"),
-                            col("nomUniteLegale"),
-                        ).alias("raison_sociale"),
-                        col("prenomUsuelUniteLegale").alias("raison_sociale_prenom"),
-                        col("activitePrincipaleUniteLegale")
-                        .str.replace_all(".", "", literal=True)
-                        .alias("naf8"),
-                        col("categorieJuridiqueUniteLegale").alias("code_ju"),
-                        col("trancheEffectifsUniteLegale")
-                        .replace_strict(EFFECTIF_CODE_TO_EMPLOYEES, default=None)
-                        .cast(pl.Int32)
-                        .alias("tranche_effectif"),
-                        col("nomenclatureActivitePrincipaleUniteLegale").alias(
-                            "nomenclature_naf"
-                        ),
-                    )
-                    .collect()
-                )
+        base_df = (
+            pl.scan_parquet(self.input_filename)
+            .select(
+                col("trancheEffectifsUniteLegale").cast(pl.String),
+                col("siren").cast(pl.String).str.zfill(9),
+                (col("etatAdministratifUniteLegale") == "A").alias("is_active"),
+                pl.coalesce(
+                    col("nomUsageUniteLegale"),
+                    col("denominationUniteLegale"),
+                    col("nomUniteLegale"),
+                ).alias("raison_sociale"),
+                col("prenomUsuelUniteLegale").alias("raison_sociale_prenom"),
+                col("activitePrincipaleUniteLegale")
+                .str.replace_all(".", "", literal=True)
+                .alias("naf8"),
+                col("categorieJuridiqueUniteLegale").alias("code_ju"),
+                col("trancheEffectifsUniteLegale")
+                .replace_strict(EFFECTIF_CODE_TO_EMPLOYEES, default=None)
+                .cast(pl.Int32)
+                .alias("tranche_effectif"),
+                col("nomenclatureActivitePrincipaleUniteLegale").alias("nomenclature_naf"),
+            )
+            .collect()
+        )
 
         for level in range(1, 6):
             base_df = self.join_naf_level(base_df, level)
