@@ -21,6 +21,7 @@ from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
+from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.dataframe_operation import (
     clean_file_format,
     correct_format_from_url,
@@ -43,6 +44,9 @@ class WorkflowManager:
         self.args = args
         self.config = config
         self.logger = logging.getLogger(__name__)
+
+        self.source_folder = get_project_data_path()
+        self.source_folder.mkdir(exist_ok=True, parents=True)
 
     def get_workflows(self) -> list:
         return [
