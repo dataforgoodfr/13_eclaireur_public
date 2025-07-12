@@ -1,4 +1,3 @@
-import typing
 from pathlib import Path
 
 import polars as pl
@@ -6,7 +5,6 @@ from polars import col
 
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
-from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.utils.config import get_project_base_path
 
 
@@ -16,7 +14,7 @@ class SubventionsEnricher:
         return "subventions"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
+    def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             TopicAggregator.get_output_path(
                 TopicAggregator.substitute_config(
@@ -45,7 +43,7 @@ class SubventionsEnricher:
         output.sink_parquet(cls.get_output_path(main_config))
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.LazyFrame]) -> pl.LazyFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         """
         Enrich the raw subvention dataset
         """

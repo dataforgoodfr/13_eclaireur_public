@@ -1,4 +1,3 @@
-import typing
 from pathlib import Path
 
 import polars as pl
@@ -17,14 +16,14 @@ class FinancialEnricher(BaseEnricher):
         return "financial_accounts"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
+    def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             CommunitiesSelector.get_output_path(main_config),
             FinancialAccounts.get_output_path(main_config),
         ]
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         communities, financial = inputs
         financial_filtred = cls._add_financial_type(financial)
 
