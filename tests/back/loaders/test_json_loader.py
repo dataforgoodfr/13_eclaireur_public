@@ -42,3 +42,16 @@ def test_jsonl():
         exp_filename = fixtures_path / "out_jsonl_features.csv"
 
         assert filecmp.cmp(str(out_filename), str(exp_filename))
+
+
+def test_jsonl_with_jsonloader():
+    filename = fixtures_path / "test_jsonl_features.jsonl"
+    result = JSONLoader(filename).load()
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        out_filename = Path(tmpdirname) / "test.csv"
+        result.to_csv(out_filename, index=False)
+
+        exp_filename = fixtures_path / "out_jsonl_features.csv"
+
+        assert filecmp.cmp(str(out_filename), str(exp_filename))
