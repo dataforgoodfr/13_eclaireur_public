@@ -12,6 +12,9 @@ LOGGER = logging.getLogger(__name__)
 class BaseEnricher:
     """Designed to be subclassed, subclasses must override get_dataset_name and get_input_paths and _clean_and_enrich."""
 
+    def __init__(self):
+        raise Exception("Utility class.")
+
     @classmethod
     def get_dataset_name(cls) -> str:
         raise NotImplementedError("Method must be overriden")

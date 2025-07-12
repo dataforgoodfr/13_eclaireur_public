@@ -25,9 +25,6 @@ class SubventionsEnricher:
             SireneWorkflow.get_output_path(main_config),
         ]
 
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_output_path(cls, main_config: dict) -> Path:
         return (

@@ -8,9 +8,6 @@ from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class FinancialEnricher(BaseEnricher):
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_dataset_name(cls) -> str:
         return "financial_accounts"
