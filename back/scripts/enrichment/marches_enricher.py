@@ -399,6 +399,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .drop(["is_duplicate", "rank", "priority"])
         )
 
+    @staticmethod
     def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
         """
         Certains MP sont en doublons mais avec la colonne actesSousTraitance différente.
