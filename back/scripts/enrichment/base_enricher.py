@@ -38,6 +38,8 @@ class BaseEnricher:
     @classmethod
     @tracker(ulogger=LOGGER, log_start=True)
     def enrich(cls, main_config: dict) -> None:
+        if cls.get_output_path(main_config).exists():
+            return
         inputs = map(pl.read_parquet, cls.get_input_paths(main_config))
         output = cls._clean_and_enrich(inputs)
         output.write_parquet(cls.get_output_path(main_config))
