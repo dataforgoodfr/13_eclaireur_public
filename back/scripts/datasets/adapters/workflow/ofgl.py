@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-import pandas as pd
 import polars as pl
 from tqdm import tqdm
 
@@ -14,19 +13,19 @@ from back.scripts.datasets.interfaces.file_parser import IFileParser
 from back.scripts.interfaces.workflow import IWorkflow, IWorkflowFactory
 from back.scripts.loaders import BaseLoader
 from back.scripts.utils.config import get_project_base_path
-from back.scripts.utils.dataframe_operation import (
-    IdentifierFormat,
-    normalize_column_names,
-    normalize_identifiant,
+from back.scripts.utils.dataframe_operation import IdentifierFormat
+from back.scripts.utils.polars_operation import (
+    normalize_column_names_pl,
+    normalize_identifiant_pl,
 )
 
 LOGGER = logging.getLogger(__name__)
 
 COM_CSV_DTYPES = {
-    "Code Siren Collectivité": str,
-    "Code Insee Collectivité": str,
-    "Code Insee 2023 Département": str,
-    "Code Insee 2023 Région": str,
+    "Code Siren Collectivité": pl.Utf8,
+    "Code Insee Collectivité": pl.Utf8,
+    "Code Insee 2023 Département": pl.Utf8,
+    "Code Insee 2023 Région": pl.Utf8,
 }
 READ_COLUMNS = {
     "Exercice": None,
@@ -41,41 +40,46 @@ READ_COLUMNS = {
 INSEE_COL_MAPPING = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
 
 
-class OfglFileParser(IFileParser):
+class OfglFileParser(IFileParser[pl.LazyFrame]):
     """
-    Parses a single raw OFGL data file.
+    Parses a single raw OFGL data file using Polars.
     """
 
-    def parse(self, file_metadata: FileMetadata, raw_filename: Path) -> pd.DataFrame | None:
+    def parse(self, file_metadata: FileMetadata, raw_filename: Path) -> pl.LazyFrame | None:
         """
         Reads and parses a raw OFGL data file, applying the specific OFGL normalization logic.
         """
         opts = {
-            "columns": READ_COLUMNS.keys(),
-            "dtype": COM_CSV_DTYPES,
-            "chunksize": 1000,
+            # "with_column_names": list(READ_COLUMNS.keys()),
+            "schema_overrides": COM_CSV_DTYPES,
+            "separator": ";",
         }
         loader = BaseLoader.loader_factory(raw_filename, **opts)
 
-        df = (
-            loader.load()
-            .rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
-            .pipe(normalize_column_names)
-            .assign(
-                type=file_metadata.extra_data.get("code"),
-                outre_mer=lambda df: (df["outre_mer"] == "Oui").fillna(False),
+        df_lazy = loader.load_lazy()
+
+        df_lazy = (
+            df_lazy.rename({k: v for k, v in READ_COLUMNS.items() if v}, strict=False)
+            .pipe(normalize_column_names_pl)
+            .with_columns(
+                pl.lit(file_metadata.extra_data.get("code")).alias("type"),
+                pl.col("outre_mer")
+                .str.to_lowercase()
+                .eq("oui")
+                .fill_null(False)
+                .alias("outre_mer"),
             )
         )
 
         insee_col_key = file_metadata.extra_data.get("code")
         insee_col = INSEE_COL_MAPPING.get(insee_col_key)
-        if insee_col:
-            df = df.assign(code_insee=lambda df: df[insee_col])
+        if insee_col and insee_col in df_lazy.columns:
+            df_lazy = df_lazy.with_columns(pl.col(insee_col).alias("code_insee"))
 
         return (
-            df.sort_values("exercice", ascending=False)
-            .drop_duplicates(subset=["siren"], keep="first")
-            .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
+            df_lazy.sort("exercice", descending=True)
+            .unique(subset=["siren"], keep="first")
+            .pipe(normalize_identifiant_pl, id_col="siren", format=IdentifierFormat.SIREN)
         )
 
 
@@ -124,10 +128,11 @@ class OfglWorkflow(IWorkflow):
             if not raw_path:
                 continue
 
-            parsed_df = self.parser.parse(file_meta, raw_path)
-            if parsed_df is not None:
+            parsed_lazy_df = self.parser.parse(file_meta, raw_path)
+            if parsed_lazy_df is not None:
                 norm_path.parent.mkdir(exist_ok=True, parents=True)
-                parsed_df.to_parquet(norm_path, index=False)
+                # Use sink_parquet for lazy frames
+                parsed_lazy_df.sink_parquet(norm_path)
 
         self._concatenate_files()
 
@@ -139,6 +144,7 @@ class OfglWorkflow(IWorkflow):
             return
 
         LOGGER.info(f"Concatenating {len(all_norm_files)} OFGL files...")
+        # The rest of the concatenation logic remains the same as it already uses Polars
         dfs = [pl.scan_parquet(f) for f in all_norm_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.output_path)
