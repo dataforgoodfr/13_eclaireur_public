@@ -3,7 +3,7 @@ version: "3"
 tasks:
 
   docker:
-    des: Namespace for Docker-related tasks
+    desc: Namespace for Docker-related tasks
     aliases: [d]
     cmds:
       - task: docker:build
