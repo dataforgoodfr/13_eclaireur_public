@@ -315,7 +315,7 @@ Pré-requis :
 
 #### Construire l'image 
 
-    task build-image
+    task docker:build
 
 #### Lancer le conteneur
 
