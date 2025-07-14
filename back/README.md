@@ -310,8 +310,7 @@ Pré-requis :
 - Docker 
 - Task 
 #### Installer task
-
-    pip install go-task-bin
+https://taskfile.dev/installation/
 
 #### Construire l'image 
 
@@ -320,10 +319,6 @@ Pré-requis :
 #### Lancer le conteneur
 
     task docker:run
-
-#### Pour voir les logs associés au script: 
-
-    docker logs -f 13_eclaireur_public-eclaireur-public-back
 
 ## Licenses
 

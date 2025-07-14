@@ -28,9 +28,9 @@ tasks:
         docker rm -f {{.CONTAINER_NAME}} 
         fi
         docker run -d --name {{.CONTAINER_NAME}} \
-        --volume $(pwd)/back/data:/data \
+        --volume $(pwd)/back/data:/back/data \
         backend:latest
-        echo 'Start Container {{.CONTAINER_NAME}}, to see the logs run: docker logs -f {{.CONTAINER_NAME}}'
+      - docker logs -f {{.CONTAINER_NAME}}
 
   
 
