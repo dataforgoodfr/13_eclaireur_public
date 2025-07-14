@@ -319,7 +319,7 @@ Pré-requis :
 
 #### Lancer le conteneur
 
-    task run-container
+    task docker:run
 
 #### Pour voir les logs associés au script: 
 
