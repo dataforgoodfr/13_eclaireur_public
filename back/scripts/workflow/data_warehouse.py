@@ -59,7 +59,43 @@ class DataWarehouseWorkflow:
                         f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name= '{table_name}')"
                     )
                     table_exists = conn.execute(table_exists_query).scalar()
+
                     if table_exists:
                         conn.execute(text(f"TRUNCATE {table_name}"))
-
+                        add_missing_columns_to_sql_table(conn, table_name, df)
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
+
+    def add_missing_columns_to_sql_table(conn, table_name: str, df: pl.DataFrame):
+        """Ajoute les colonnes manquantes dans la table SQL à partir du DataFrame Polars."""
+
+        schema = df.schema
+        columns_sql = conn.execute(
+            text(f"""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name = '{table_name}'
+        """)
+        ).fetchall()
+        existing_cols = {col[0] for col in columns_sql}
+
+        missing_cols = set(schema.keys()) - existing_cols
+        if not missing_cols:
+            return
+
+        # Mapping Polars -> SQL
+        type_mapping = {
+            pl.Int64: "BIGINT",
+            pl.Int32: "INTEGER",
+            pl.Float64: "DOUBLE PRECISION",
+            pl.Float32: "REAL",
+            pl.Boolean: "BOOLEAN",
+            pl.Utf8: "TEXT",
+            pl.Date: "DATE",
+            pl.Datetime: "TIMESTAMP",
+        }
+
+        for col in missing_cols:
+            pl_type = schema[col]
+            sql_type = type_mapping.get(pl_type, "TEXT")
+            sql = text(f'ALTER TABLE "{table_name}" ADD COLUMN "{col}" {sql_type};')
+            conn.execute(sql)
+            conn.commit()
