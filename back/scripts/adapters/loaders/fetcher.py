@@ -12,6 +12,8 @@ from back.scripts.interfaces.loader import IFetcher
 
 LOGGER = logging.getLogger(__name__)
 
+RETRY_STATUS_CODES = (413, 429, 503)
+
 
 def retry_session(
     retries: int | None,
@@ -27,6 +29,7 @@ def retry_session(
         read=retries,
         connect=retries,
         backoff_factor=backoff_factor,
+        status_forcelist=RETRY_STATUS_CODES,
     )
     adapter = HTTPAdapter(max_retries=retry)
     session.mount("http://", adapter)
@@ -44,7 +47,7 @@ class HttpFetcher(IFetcher):
         self.delay_between_retries = delay_between_retries
 
     def fetch(self, uri: str) -> IO[bytes]:
-        s = retry_session(self.num_retries, backoff_factor=self.delay_between_retries)
+        s = retry_session(retries=self.num_retries, backoff_factor=self.delay_between_retries)
         response = s.get(uri)
         response.raise_for_status()
         return io.BytesIO(response.content)
