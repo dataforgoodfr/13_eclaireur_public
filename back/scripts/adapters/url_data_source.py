@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Iterable
 
 from back.scripts.datasets.entities import FileMetadata
-from back.scripts.datasets.interfaces.data_source import IDataSource
+from back.scripts.interfaces.data_source import IDataSource
 
 
 def _sha256(s: str | None) -> str | None:

@@ -4,12 +4,12 @@ from pathlib import Path
 import polars as pl
 from tqdm import tqdm
 
-from back.scripts.datasets.adapters.http_downloader import HttpFileDownloader
-from back.scripts.datasets.adapters.url_data_source import UrlDataSource
+from back.scripts.adapters.http_downloader import HttpFileDownloader
+from back.scripts.adapters.url_data_source import UrlDataSource
 from back.scripts.datasets.entities import FileMetadata
-from back.scripts.datasets.interfaces.data_source import IDataSource
-from back.scripts.datasets.interfaces.file_downloader import IFileDownloader
-from back.scripts.datasets.interfaces.file_parser import IFileParser
+from back.scripts.interfaces.data_source import IDataSource
+from back.scripts.interfaces.file_downloader import IFileDownloader
+from back.scripts.interfaces.file_parser import IFileParser
 from back.scripts.interfaces.workflow import IWorkflow, IWorkflowFactory
 from back.scripts.loaders import BaseLoader
 from back.scripts.utils.config import get_project_base_path
