@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 
 from back.scripts.datasets.entities import FileMetadata
-from back.scripts.datasets.interfaces.file_downloader import IFileDownloader
+from back.scripts.interfaces.file_downloader import IFileDownloader
 
 LOGGER = logging.getLogger(__name__)
 

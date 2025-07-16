@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from back.scripts.datasets.adapters.workflow.ofgl import OfglWorkflowFactory
+from back.scripts.adapters.workflow.ofgl import OfglWorkflowFactory
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import project_config
