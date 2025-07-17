@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import polars as pl
@@ -6,6 +7,9 @@ from polars import col
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.decorators import tracker
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SubventionsEnricher:
@@ -34,6 +38,7 @@ class SubventionsEnricher:
         )
 
     @classmethod
+    @tracker(ulogger=LOGGER, log_start=True)
     def enrich(cls, main_config: dict) -> None:
         inputs = map(pl.scan_parquet, cls.get_input_paths(main_config))
         output = cls._clean_and_enrich(inputs)
