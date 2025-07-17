@@ -7,9 +7,10 @@ from polars import col
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.enrichment.base_enricher import BaseEnricher
+from back.scripts.utils.config import get_project_base_path
 
 
-class SubventionsEnricher(BaseEnricher):
+class SubventionsEnricher:
     @classmethod
     def get_dataset_name(cls) -> str:
         return "subventions"
@@ -30,7 +31,21 @@ class SubventionsEnricher(BaseEnricher):
         raise Exception("Utility class.")
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
+    def get_output_path(cls, main_config: dict) -> Path:
+        return (
+            get_project_base_path()
+            / main_config["warehouse"]["data_folder"]
+            / f"{cls.get_dataset_name()}.parquet"
+        )
+
+    @classmethod
+    def enrich(cls, main_config: dict) -> None:
+        inputs = map(pl.scan_parquet, cls.get_input_paths(main_config))
+        output = cls._clean_and_enrich(inputs)
+        output.sink_parquet(cls.get_output_path(main_config))
+
+    @classmethod
+    def _clean_and_enrich(cls, inputs: typing.List[pl.LazyFrame]) -> pl.LazyFrame:
         """
         Enrich the raw subvention dataset
         """
