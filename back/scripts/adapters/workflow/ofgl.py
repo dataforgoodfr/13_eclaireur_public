@@ -7,6 +7,10 @@ from tqdm import tqdm
 from back.scripts.adapters.http_downloader import HttpFileDownloader
 from back.scripts.adapters.url_data_source import UrlDataSource
 from back.scripts.datasets.entities import FileMetadata
+from back.scripts.entities.ofgl import (
+    OfglCommuneRecordDataframe,
+    OfglDepartementRegionGfpRecordDataframe,
+)
 from back.scripts.interfaces.data_source import IDataSource
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
@@ -41,6 +45,13 @@ READ_COLUMNS = {
 }
 INSEE_COL_MAPPING = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
 
+SCHEMA_MAPPING = {
+    "DEP": OfglDepartementRegionGfpRecordDataframe,
+    "MET": OfglCommuneRecordDataframe,
+    "REG": OfglCommuneRecordDataframe,
+    "COM": OfglCommuneRecordDataframe,
+}
+
 
 class OfglFileParser(IFileParser[pl.LazyFrame]):
     """
@@ -57,9 +68,12 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
             "separator": ";",
         }
         loader = BaseLoader.loader_factory(raw_filename, **opts)
-
         df_lazy = loader.load_lazy()
-
+        validation_df = SCHEMA_MAPPING.get(file_metadata.extra_data.get("code")).validate(
+            df_lazy
+        )
+        val_path = raw_filename.parent / "validation.parquet"
+        validation_df.sink_parquet(val_path, lazy=True)
         df_lazy = (
             df_lazy.rename({k: v for k, v in READ_COLUMNS.items() if v}, strict=False)
             .pipe(normalize_column_names_pl)
@@ -115,6 +129,10 @@ class OfglWorkflow(IWorkflow):
         """Determines the local path for the normalized parquet file."""
         return self.data_folder / file_metadata.url_hash / "norm.parquet"
 
+    def _get_validation_path(self, file_metadata: FileMetadata) -> Path:
+        """Determines the local path for the validation parquet file."""
+        return self.data_folder / file_metadata.url_hash / "validation.parquet"
+
     def run(self) -> None:
         if self.output_path.exists():
             LOGGER.info(f"OFGL dataset already exists at {self.output_path}, skipping.")
@@ -123,6 +141,7 @@ class OfglWorkflow(IWorkflow):
         all_files = self.data_source.get_files()
         for file_meta in tqdm(all_files, desc="Processing OFGL files"):
             norm_path = self._get_norm_path(file_meta)
+            val_path = self._get_validation_path(file_meta)
             if norm_path.exists():
                 continue
 
