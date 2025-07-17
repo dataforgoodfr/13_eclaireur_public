@@ -21,24 +21,22 @@ class StreamDecoder(IDecoder):
     Decodes a byte stream into a text stream.
     """
 
-    def decode(self, stream: IO[bytes]) -> TextIOWrapper:
+    def decode(self, stream: IO[bytes], chunk_size: int = 4096) -> TextIOWrapper:
+        """
+        Decodes a byte stream into a text stream by testing a chunk of the stream
+        against a list of accepted encodings.
+        """
+        chunk = stream.read(chunk_size)
+        stream.seek(0)
+
         for encoding in AcceptedEncodings:
             try:
-                # Wrap the byte stream in a text stream with the specified encoding
-                text_stream = io.TextIOWrapper(stream, encoding=encoding.value)
+                # Attempt to decode the chunk
+                chunk.decode(encoding.value)
                 LOGGER.info(f"Successfully decoded using {encoding.value} encoding")
-                # Return the stream without closing the underlying byte stream
-                text_stream.detach()
-                stream.seek(0)
                 return io.TextIOWrapper(stream, encoding=encoding.value)
             except UnicodeDecodeError:
                 LOGGER.debug(f"Failed to decode using {encoding.value} encoding")
-                # Reset the stream position for the next attempt
-                stream.seek(0)
-                continue
-            except Exception:
-                # If any other error occurs, reset the stream and try the next encoding
-                stream.seek(0)
                 continue
 
         raise RuntimeError("Unable to decode the stream with any of the accepted encodings.")
