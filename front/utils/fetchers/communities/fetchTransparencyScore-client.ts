@@ -1,28 +1,20 @@
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { MPSubvComparison } from '@/app/models/comparison';
+import { Bareme } from '@/app/models/bareme';
 
 function getAPIRoute(siren: string) {
-  return `/api/communities/${siren}/mp-subv-comparison`;
+  return `/api/communities/${siren}/transparency-score`;
 }
 
 /**
- * Fetch the data to compare the Marches Publics or Subventions of a community
+ * Fetch the transparency score of a community for a given year
  */
-export async function fetchMPSubvComparison(
-  siren: string,
-  year: number,
-  comparisonType: ComparisonType,
-): Promise<MPSubvComparison> {
+export async function fetchTransparencyScore(siren: string, year: number): Promise<Bareme> {
   const url = new URL(getAPIRoute(siren), window.location.origin);
   url.searchParams.append('year', year.toString());
-  url.searchParams.append('comparisonType', comparisonType.toString());
 
   const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to fetch transparency score with siren ${siren}, year ${year} and comparisonType ${comparisonType}`,
-    );
+    throw new Error(`Failed to fetch transparency score with siren ${siren} and year ${year}`);
   }
 
   return await res.json();
