@@ -45,7 +45,7 @@ class SubventionsEnricher:
         output.sink_parquet(cls.get_output_path(main_config))
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.LazyFrame]) -> pl.LazyFrame:
         """
         Enrich the raw subvention dataset
         """
