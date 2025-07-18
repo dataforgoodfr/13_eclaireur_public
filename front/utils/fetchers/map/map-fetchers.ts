@@ -1,6 +1,5 @@
 import { Community } from '../../../app/models/community';
 
-
 const API_ROUTES = {
   REGIONS: '/api/map/regions',
   DEPARTEMENTS: '/api/map/departements',

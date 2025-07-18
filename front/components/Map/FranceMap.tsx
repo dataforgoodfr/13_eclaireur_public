@@ -41,6 +41,10 @@ interface MapProps {
   currentAdminLevel: string;
   populationMinMax: { min: number; max: number };
 }
+const franceMetropoleBounds: [[number, number], [number, number]] = [
+  [-15, 35],
+  [20, 55],
+];
 
 export default function FranceMap({
   selectedTerritoryData,
@@ -129,6 +133,7 @@ export default function FranceMap({
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
+        maxBounds={territoryFilterCode === 'FR' ? franceMetropoleBounds : undefined}
         onLoad={() => {
           const mapInstance = mapRef.current?.getMap();
           if (mapInstance) {
@@ -142,7 +147,7 @@ export default function FranceMap({
           }
         }}
       >
-        <NavigationControl position='top-right' />
+        <NavigationControl position='top-right' showCompass={false} />
         <ChoroplethLegend
           populationMinMax={populationMinMax}
           selectedRangeOption={selectedRangeOption}
