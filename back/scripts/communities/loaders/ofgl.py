@@ -67,10 +67,9 @@ class OfglLoader(DatasetAggregator):
 
         loader = BaseLoader.loader_factory(raw_filename, **opts)
         df = loader.load()
-        if df :
+        if df:
             df = (
-                df
-                .rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
+                df.rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
                 .pipe(normalize_column_names)
                 .assign(
                     type=file_metadata.code,
@@ -80,7 +79,7 @@ class OfglLoader(DatasetAggregator):
 
             insee_col = self.INSEE_COL.get(file_metadata.code)
             if insee_col:
-                df = df.assign(code_insee=lambda df: df[insee_col]) 
+                df = df.assign(code_insee=lambda df: df[insee_col])
 
             df = (
                 df.sort_values("exercice", ascending=False)
