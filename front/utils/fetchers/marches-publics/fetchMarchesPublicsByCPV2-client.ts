@@ -2,7 +2,6 @@ import { MarchePublicSector } from '@/app/models/marchePublic';
 
 import { Pagination } from '../types';
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/marches_publics/by_cpv_2`;
 }
@@ -18,7 +17,7 @@ export async function fetchMarchesPublicsByCPV2(
   pagination: Pagination,
   maxAmount: number | null,
 ): Promise<MarchePublicSector[]> {
-  const url = new URL(getAPIRoute(communitySiren), baseURL);
+  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
 
   if (year !== null) url.searchParams.append('year', year.toString());
   if (maxAmount !== null) url.searchParams.append('maxAmount', maxAmount.toString());
@@ -27,11 +26,11 @@ export async function fetchMarchesPublicsByCPV2(
   url.searchParams.append('page', page.toString());
   url.searchParams.append('limit', limit.toString());
 
-  const res = await fetch(url.toString(), { method: 'get' });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch mp by cpv2 with siren ' + communitySiren);
   }
 
-  return (await res.json()) as Promise<MarchePublicSector[]>;
+  return await res.json();
 }

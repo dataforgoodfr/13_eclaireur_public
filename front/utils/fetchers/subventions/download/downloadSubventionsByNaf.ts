@@ -2,7 +2,6 @@ import { downloadURL } from '@/utils/downloader/downloadURL';
 
 import { Pagination } from '../../types';
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/subventions/by_naf2/download`;
 }
@@ -12,7 +11,7 @@ export function createSubventionsByNafCSVDownloadingURL(
   year: number | null,
   pagination?: Pagination,
 ): URL {
-  const url = new URL(getAPIRoute(communitySiren), baseURL);
+  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
 
   if (year !== null) url.searchParams.append('year', year.toString());
 
