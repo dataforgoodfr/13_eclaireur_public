@@ -9,6 +9,7 @@ L'intégralité du contenu du dossier `./back/` concerne la partie backend du pr
 - [Pipeline d'intégration des données](#pipeline-dintégration-des-données)
   - [Table des matières](#table-des-matières)
   - [Structure du back](#structure-du-back)
+  - [Flux de Données](#flux-de-données)
   - [Contribuer](#contribuer)
     - [Acces Repo](#acces-repo)
     - [Environnement de développement](#environnement-de-développement)
@@ -53,6 +54,139 @@ L'intégralité du contenu du dossier `./back/` concerne la partie backend du pr
 - `README.md`: ce fichier
 
 
+
+## Flux de Données
+
+Le diagramme suivant illustre le flux de traitement des données orchestré par le script `workflow_manager.py`.
+
+### Étape 1: Exécution des Workflows de Base
+
+#### Workflows Indépendants
+
+1.  **`CPVLabelsWorkflow`**:
+    *   **Rôle**: Charge les libellés CPV (Common Procurement Vocabulary).
+    *   **Entrées**: Un fichier distant spécifié par `cpv_labels.url` dans la configuration.
+    *   **Sortie**: `data/cpv_labels.parquet`
+
+2.  **`SireneWorkflow`**:
+    *   **Rôle**: Traite les données SIRENE pour les informations légales sur les entités françaises.
+    *   **Entrées**:
+        *   Un fichier zip distant depuis `sirene.url`.
+        *   Plusieurs fichiers Excel distants pour les codes NAF depuis `sirene.xls_urls_naf`.
+        *   Un fichier Excel distant pour les catégories juridiques depuis `sirene.xls_urls_cat_ju`.
+    *   **Sortie**: `data/sirene.parquet`
+
+3.  **`FinancialAccounts`**:
+    *   **Rôle**: Agrège les comptes financiers des collectivités.
+    *   **Entrées**:
+        *   Un fichier CSV local (`financial_accounts.files_csv`) qui liste les fichiers de données à télécharger et à traiter.
+        *   Un fichier CSV local (`financial_accounts.columns_mapping`) pour le mappage des colonnes.
+    *   **Sortie**: `data/financial_accounts.parquet`
+
+4.  **`ElectedOfficialsWorkflow`**:
+    *   **Rôle**: Collecte des informations sur les élus.
+    *   **Entrées**: Récupère la liste des ressources depuis l'API DataGouv pour le jeu de données `5c34c4d1634f4173183a64f1`.
+    *   **Sortie**: `data/elected_officials.parquet`
+
+5.  **`DeclaInteretWorkflow`**:
+    *   **Rôle**: Traite les déclarations d'intérêts des élus.
+    *   **Entrées**: Un fichier XML distant depuis `declarations_interet.url`.
+    *   **Sortie**: `data/declarations_interet.parquet`
+
+6.  **`OfglLoader`**:
+    *   **Rôle**: Charge les données de l'OFGL (Observatoire des finances et de la gestion publique locales).
+    *   **Entrées**: Un fichier CSV local (`ofgl.urls_csv`) contenant les URLs à télécharger.
+    *   **Sortie**: `data/ofgl.parquet`
+
+#### Workflows Dépendants
+
+7.  **`CommunitiesSelector`**:
+    *   **Rôle**: Crée une liste organisée de collectivités françaises.
+    *   **Entrées**:
+        *   `data/ofgl.parquet`
+        *   `data/sirene.parquet`
+        *   Un fichier distant pour les données ODF depuis `communities.odf_url`.
+        *   Un fichier distant pour les données EPCI depuis `communities.epci_url`.
+        *   Récupère les métriques géographiques depuis l'API DataGouv pour le jeu de données spécifié dans `communities.geo_metrics_dataset_id`.
+    *   **Sortie**: `data/communities.parquet`
+
+8.  **`DataGouvCatalog`**:
+    *   **Rôle**: Récupère et traite l'intégralité du catalogue DataGouv.
+    *   **Entrées**:
+        *   `data/communities.parquet`
+        *   Récupère le catalogue depuis l'API DataGouv (jeu de données `5d13a8b6634f41070a43dff3`) ou une URL directe depuis `datagouv_catalog.catalog_url`.
+    *   **Sortie**: `data/datagouv_catalog.parquet`
+
+9.  **`MarchesPublicsWorkflow`**:
+    *   **Rôle**: Agrège les données des marchés publics.
+    *   **Entrées**:
+        *   `data/datagouv_catalog.parquet` (pour trouver les ressources du jeu de données `5cd57bf68b4c4179299eb0e9`).
+        *   Un schéma JSON distant depuis `marches_publics.schema`.
+    *   **Sortie**: `data/marches_publics.parquet`
+
+10. **`DataGouvSearcher`**:
+    *   **Rôle**: Recherche dans le catalogue DataGouv les jeux de données relatifs aux subventions.
+    *   **Entrées**: `data/datagouv_catalog.parquet`.
+    *   **Sortie**: `data/datagouv_search.parquet`
+
+11. **`CommunitiesContact`**:
+    *   **Rôle**: Récupère les informations de contact des administrations françaises.
+    *   **Entrées**:
+        *   `data/datagouv_catalog.parquet` (pour trouver la ressource du jeu de données `53699fe4a3a729239d206227`).
+        *   Une URL directe depuis `communities_contacts.url` peut également être utilisée.
+    *   **Sortie**: `data/communities_contacts.parquet`
+
+```mermaid
+graph TD
+
+    subgraph "Étape 1: Exécution des Workflows de Base"
+        direction LR
+
+        A[CPVLabelsWorkflow] -- reads from config --> A_OUT((data/cpv_labels.parquet))
+        B[SireneWorkflow] -- reads from config --> B_OUT((data/sirene.parquet))
+        C[FinancialAccounts] -- reads from config --> C_OUT((data/financial_accounts.parquet))
+        D[ElectedOfficialsWorkflow] -- reads from DataGouv API --> D_OUT((data/elected_officials.parquet))
+        DI[DeclaInteretWorkflow] -- reads from config --> DI_OUT((data/declarations_interet.parquet))
+        E[OfglLoader] -- reads from config --> E_OUT((data/ofgl.parquet))
+
+        F[CommunitiesSelector]
+        G[DataGouvCatalog]
+        H[MarchesPublicsWorkflow]
+        I[DataGouvSearcher]
+        J[CommunitiesContact]
+
+        E_OUT --> F
+        B_OUT --> F
+        F --> F_OUT((data/communities.parquet))
+
+        F_OUT --> G
+        G -- reads from DataGouv API --> G
+        G --> G_OUT((data/datagouv_catalog.parquet))
+
+        G_OUT --> H
+        H --> H_OUT((data/marches_publics.parquet))
+
+        G_OUT --> I
+        I --> I_OUT((data/datagouv_search.parquet))
+
+        G_OUT --> J
+        J --> J_OUT((data/communities_contacts.parquet))
+    end
+
+    subgraph "Étape 2: Traitement des Subventions"
+        K[process_subvention]
+        L[SingleUrlsBuilder]
+        M[TopicAggregator]
+        N((Données de subvention<br>agrégées en sortie))
+    end
+
+    I_OUT -- Fichier Parquet --> K
+    L -- URLs --> K
+    K -- Données combinées --> M
+    M --> N
+
+    J_OUT -.-> K
+```
 
 ## Contribuer
 
@@ -171,6 +305,20 @@ Depuis un terminal:
 
     poetry run python back/main.py
 
+## Lancer le script dans un conteneur
+Pré-requis :
+- Docker 
+- Task 
+#### Installer task
+https://taskfile.dev/installation/
+
+#### Construire l'image 
+
+    task docker:build
+
+#### Lancer le conteneur
+
+    task docker:run
 
 ## Licenses
 

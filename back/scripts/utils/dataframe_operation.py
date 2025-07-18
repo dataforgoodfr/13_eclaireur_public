@@ -247,6 +247,21 @@ def correct_format_from_url(df: pd.DataFrame) -> pd.DataFrame:
     return df.assign(format=url_format)
 
 
+def clean_file_format(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Cleans and standardizes the format column in the DataFrame by removing
+    specific prefixes and normalizing format names.
+    """
+    s_format = (
+        df["format"]
+        .str.lower()
+        .str.removeprefix("application/")
+        .str.removeprefix("text/")
+        .str.replace("csv/utf8", "csv", regex=False)
+    )
+    return df.assign(format=s_format)
+
+
 def sort_by_format_priorities(df: pd.DataFrame, keep: bool = False) -> pd.DataFrame:
     out = df.assign(
         priority=df["format"]

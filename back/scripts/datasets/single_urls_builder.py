@@ -1,8 +1,11 @@
 import logging
 
-import pandas as pd
+from back.scripts.communities.communities_selector import CommunitiesSelector
+from back.scripts.loaders.base_loader import BaseLoader
+from back.scripts.utils.config import project_config
+from back.scripts.utils.dataframe_operation import IdentifierFormat, normalize_identifiant
 
-from back.scripts.utils.config import get_project_base_path, project_config
+LOGGER = logging.getLogger(__name__)
 
 
 class SingleUrlsBuilder:
@@ -12,16 +15,16 @@ class SingleUrlsBuilder:
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.scope = pd.read_parquet(
-            get_project_base_path() / project_config["communities"]["combined_filename"]
-        )
+        self.scope = BaseLoader.loader_factory(
+            CommunitiesSelector.get_output_path(project_config)
+        ).load()
 
     def get_datafiles(self, search_config):
-        single_urls_source_file = get_project_base_path() / search_config["single_urls_file"]
+        single_urls_source_file = search_config["single_urls_file"]
         return (
-            pd.read_csv(single_urls_source_file, sep=";", dtype={"siren": str})
-            .assign(siren=lambda df: df["siren"].str.zfill(9))
+            BaseLoader.loader_factory(single_urls_source_file)
+            .load()
+            .pipe(normalize_identifiant, id_col="siren", format=IdentifierFormat.SIREN)
             .merge(self.scope[["siren", "nom", "type"]], on="siren", how="left")
             .assign(source="single_url")
         )

@@ -2,8 +2,8 @@ import { SVGProps } from 'react';
 
 import { cn } from '@/utils/utils';
 import { ClassNameValue } from 'tailwind-merge';
+import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF, TransparencyScore } from '@/components/TransparencyScore/constants';
 
-import { TransparencyScore } from './constants';
 
 const SQUARE_WIDTH = 60;
 const ACTIVE_SCORE_SCALE = 1.2;
@@ -12,14 +12,6 @@ const SVG_CONFIG = {
   viewBoxWidth: SQUARE_WIDTH * 5 + 40,
   viewBoxHeight: SQUARE_WIDTH * 2,
   margin: 20,
-};
-
-const SCORE_TO_ADJECTIF = {
-  [TransparencyScore.A]: 'Optimal',
-  [TransparencyScore.B]: 'Transparent',
-  [TransparencyScore.C]: 'Moyen',
-  [TransparencyScore.D]: 'Insuffisant',
-  [TransparencyScore.E]: 'Opaque',
 };
 
 type ScoreTileProps = {
@@ -52,7 +44,7 @@ function ScoreTile({
 }
 
 type TransparencyScoreBarProps = {
-  score: TransparencyScore;
+  score: TransparencyScore | null;
 };
 
 export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBarProps) {
@@ -61,7 +53,8 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
   }
 
   const scoreValues = Object.values(TransparencyScore);
-  const activeScoreIndex = scoreValues.findIndex((scorevalue) => scorevalue === activeScore);
+  const activeScoreIndex =
+    activeScore === null ? 2 : scoreValues.findIndex((scorevalue) => scorevalue === activeScore);
 
   const translateDueToScaleFactor = -5;
 
@@ -85,14 +78,16 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
             </g>
           );
         })}
-        <g className='font-bold'>
-          <ScoreTile
-            score={activeScore}
-            x={SQUARE_WIDTH * activeScoreIndex}
-            transform={`scale(${ACTIVE_SCORE_SCALE}) translate(${(SQUARE_WIDTH * activeScoreIndex) / ACTIVE_SCORE_SCALE + translateDueToScaleFactor}, ${translateDueToScaleFactor})`}
-            rectangleClassName='fill-slate-200'
-          />
-        </g>
+        {activeScore !== null && (
+          <g className='font-bold'>
+            <ScoreTile
+              score={activeScore}
+              x={SQUARE_WIDTH * activeScoreIndex}
+              transform={`scale(${ACTIVE_SCORE_SCALE}) translate(${(SQUARE_WIDTH * activeScoreIndex) / ACTIVE_SCORE_SCALE + translateDueToScaleFactor}, ${translateDueToScaleFactor})`}
+              rectangleClassName='fill-slate-200'
+            />
+          </g>
+        )}
       </g>
       <g transform={`translate(${SVG_CONFIG.margin}, ${SVG_CONFIG.margin})`}>
         <text
@@ -101,7 +96,8 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           textAnchor='middle'
           className='font-bold'
         >
-          {SCORE_TO_ADJECTIF[activeScore]}
+          {activeScore !== null && SCORE_TO_ADJECTIF[activeScore]}
+          {activeScore === null && SCORE_NON_DISPONIBLE}
         </text>
       </g>
     </svg>

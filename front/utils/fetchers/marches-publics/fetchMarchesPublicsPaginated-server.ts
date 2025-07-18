@@ -44,8 +44,6 @@ function createSQLQueryParams(
   query += ` LIMIT $${values.length + 1} OFFSET ($${values.length + 2} - 1) * $${values.length + 1}`;
   values.push(...[limit, page]);
 
-  console.log(query);
-
   return [query, values];
 }
 
@@ -63,8 +61,6 @@ export async function fetchMarchesPublicsPaginated(
 ): Promise<PaginatedMarchePublic[]> {
   const params = createSQLQueryParams(siren, year, pagination, by);
   const rows = (await getQueryFromPool(...params)) as PaginatedMarchePublic[];
-
-  console.log(rows);
 
   return rows;
 }

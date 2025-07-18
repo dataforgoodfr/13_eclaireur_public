@@ -16,21 +16,17 @@ class ExcelLoader(BaseLoader):
     Loader for Excel files.
     """
 
-    file_extensions = {"xls", "xlsx", "excel"}
+    file_extensions = {"xls", "xlsx", "excel", "ods", "odf", "odt"}
     file_media_type_regex = re.compile(r"(excel|spreadsheet|xls|xlsx)", flags=re.IGNORECASE)
 
-    def __init__(
-        self, *args, dtype: dict | None = None, columns: list[str] | None = None, **kwargs
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self.dtype = dtype
-        self.columns = columns
+    def get_loader_kwargs(self):
+        kwargs = super().get_loader_kwargs()
+        if "columns" in kwargs:
+            kwargs["usecols"] = kwargs.pop("columns")
+
+        return kwargs
 
     def process_data(self, data: bytes) -> pd.DataFrame:
-        df = pd.read_excel(BytesIO(data), dtype=self.dtype)
-
-        if self.columns is not None:
-            df = df[self.columns]
-
+        df = pd.read_excel(BytesIO(data), **self.get_loader_kwargs())
         LOGGER.debug(f"Excel Data from {self.file_url} loaded.")
         return df

@@ -96,37 +96,37 @@ class CommunitiesSelector(BaseDataset):
         if geo_metrics_filename.exists():
             LOGGER.info("Loading geometrics dataset from local cache")
             geo_metrics_df = pd.read_parquet(geo_metrics_filename)
-            return frame.merge(geo_metrics_df, on="code_insee", how="left")
+        else:
+            dataset_id = self.config["geo_metrics_dataset_id"]
 
-        dataset_id = self.config["geo_metrics_dataset_id"]
+            resources_df = DataGouvAPI.dataset_resources(dataset_id)
+            if resources_df.empty:
+                raise ValueError(f"No resources found for dataset ID {dataset_id}")
 
-        resources_df = DataGouvAPI.dataset_resources(dataset_id)
-        if resources_df.empty:
-            raise ValueError(f"No resources found for dataset ID {dataset_id}")
+            resource_url = resources_df.loc[
+                resources_df["format"].str.lower() == "csv", "resource_url"
+            ].iloc[0]
 
-        resource_url = resources_df.loc[
-            resources_df["format"].str.lower() == "csv", "resource_url"
-        ].iloc[0]
-
-        geo_metrics_df = (
-            BaseLoader.loader_factory(
-                resource_url,
-                dtype={"code_insee": str},
-                columns=["code_insee", "superficie_km2", "code_postal"],
+            geo_metrics_df = (
+                BaseLoader.loader_factory(
+                    resource_url,
+                    dtype={"code_insee": str},
+                    columns=["code_insee", "superficie_km2", "code_postal"],
+                )
+                .load()
+                .pipe(normalize_commune_code, id_col="code_insee")
+                .pipe(normalize_commune_code, id_col="code_postal")
+                .drop_duplicates(subset=["code_insee"])
             )
-            .load()
-            .pipe(normalize_commune_code, id_col="code_insee")
-            .pipe(normalize_commune_code, id_col="code_postal")
-            .drop_duplicates(subset=["code_insee"])
-        )
 
-        LOGGER.info("Saving geometrics dataset to local cache")
-        geo_metrics_df.to_parquet(geo_metrics_filename)
+            LOGGER.info("Saving geometrics dataset to local cache")
+            geo_metrics_df.to_parquet(geo_metrics_filename)
 
         return frame.merge(geo_metrics_df, on="code_insee", how="left").assign(
             densite=lambda df: df["population"].div(df["superficie_km2"])
         )
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def add_epci_infos(self, frame: pd.DataFrame) -> pd.DataFrame:
         epci_mapping = (
             BaseLoader.loader_factory(
@@ -139,6 +139,7 @@ class CommunitiesSelector(BaseDataset):
         )
         return frame.merge(epci_mapping, on="siren", how="left")
 
+    @tracker(ulogger=LOGGER, log_start=True)
     def add_geocoordinates(self, frame: pd.DataFrame) -> pd.DataFrame:
         geolocator = GeoLocator(self.config["geolocator"])
 

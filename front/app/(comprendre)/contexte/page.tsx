@@ -12,10 +12,19 @@ export default function Page() {
     <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
       <h1 className='text-3xl font-bold'>Le contexte</h1>
       <p className='my-6 text-lg'>
-        {/* TODO - rédiger une intro */}
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore voluptas atque unde
-        provident cupiditate eaque deleniti velit totam molestias? Sint id blanditiis expedita quae
-        vitae?
+        D'aucuns s'accordent pour louer les bienfaits d'une meilleure transparence des dépenses
+        publiques.
+        <br />
+        La défiance toujours plus grandissante des citoyens envers l'impôt démontre
+        l'imcompréhension de la dépense publique à tous les échelons.
+        <br />
+        Les services publics comme l'éducation, la santé, ainsi que ceux au niveau local tels que le
+        ramassage des ordures, l'entretien de la voirie, les services municipaux etc... demeurent
+        des concepts plus ou moins abstraits. Qu'une meilleure transparence rendrait de facto plus
+        palpables et concrets.
+        <br />
+        Alors quels services publics, quelles compétences relèvent de quelles collectivités ? Revue
+        de détail.
       </p>
       <h2 className='my-12 text-2xl font-bold'>Les échelons des collectivités territoriales</h2>
       <p className='my-6 text-lg'>
@@ -84,29 +93,6 @@ export default function Page() {
         >
           En savoir plus : le rôle de la région
         </Link>
-      </p>
-      <h2 className='my-12 text-2xl font-bold'>
-        L'enjeu de la transparence sur les dépenses publiques selon les collectivités
-      </h2>
-      <p className='my-6 text-lg'>
-        {/* TODO : rédiger cette partie */}
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos porro sed alias numquam tempore
-        similique ex rem tempora illum sunt, veritatis dolor. Voluptatibus sit numquam hic magni
-        quidem voluptate blanditiis laboriosam mollitia suscipit, voluptates ratione illum, ea
-        consequatur pariatur at totam nobis? Illo excepturi minus laudantium nisi minima a ducimus
-        vitae asperiores, tempore distinctio eveniet accusamus voluptas dolor est nobis sed delectus
-        ut sunt eos. Doloribus in ab adipisci sed beatae, ea at libero, dolores ex saepe veniam
-        delectus sit magnam neque rem doloremque quae vel impedit voluptates voluptate ipsa! Quis
-        esse praesentium vitae dolorum et quod aut culpa laboriosam, aliquam inventore modi
-        similique numquam tempore tenetur hic. Aliquam exercitationem odio blanditiis nostrum
-        corrupti dolorem ratione totam enim voluptatem corporis. Sunt animi nisi laborum tenetur id
-        doloremque nemo quibusdam error sed excepturi neque porro cum iste, quas minima at, fugit
-        aliquam ratione, delectus labore. Doloremque voluptates perferendis aut aliquid! Dignissimos
-        mollitia consectetur tempore quas sint nemo, reiciendis facilis hic praesentium. Suscipit
-        eligendi provident vitae explicabo nihil, blanditiis, consectetur placeat ex officia ullam
-        quia illo adipisci, sit recusandae itaque eos. Ipsam ducimus atque laboriosam repudiandae
-        libero quo sapiente. Vel, ratione nihil maiores asperiores exercitationem laboriosam, nam
-        facere similique nemo officiis veritatis!
       </p>
     </main>
   );

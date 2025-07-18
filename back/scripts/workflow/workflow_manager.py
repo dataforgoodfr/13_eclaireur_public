@@ -23,6 +23,7 @@ from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
 from back.scripts.utils.config import get_project_data_path
 from back.scripts.utils.dataframe_operation import (
+    clean_file_format,
     correct_format_from_url,
     sort_by_format_priorities,
 )
@@ -62,17 +63,23 @@ class WorkflowManager:
             CommunitiesContact,
         ]
 
-    def run_workflow(self):
+    def run_workflow(self) -> None:
         self.logger.info("Workflow started.")
 
         for workflow in self.get_workflows():
-            workflow(deepcopy(self.config)).run()
+            try:
+                workflow(deepcopy(self.config)).run()
+            except Exception as e:
+                self.logger.error(
+                    f"An error occurred while running the workflow {workflow.__name__}: {e}"
+                )
+                continue
 
         self.process_subvention("subventions", self.config["search"]["subventions"])
 
         self.logger.info("Workflow completed.")
 
-    def check_file_age(self, config):
+    def check_file_age(self, config: dict) -> None:
         """
         Check file age and log a warning if file is too aged according to config.yaml file, section: file_age_to_check
         """
@@ -92,7 +99,7 @@ class WorkflowManager:
                         f"{filename} file is older than {max_age_in_days} days. It is advised to refresh your data."
                     )
 
-    def process_subvention(self, topic, topic_config):
+    def process_subvention(self, topic: str, topic_config: dict) -> None:
         self.logger.info(f"Processing subvention {topic}.")
         topic_files_in_scope = None
 
@@ -112,6 +119,7 @@ class WorkflowManager:
             .dropna(subset=["url"])
             .pipe(correct_format_from_url)
             .pipe(drop_grenoble_duplicates)
+            .pipe(clean_file_format)
             .pipe(sort_by_format_priorities)
             .drop_duplicates(subset=["url"], keep="first")
             .pipe(remove_same_dataset_formats)
@@ -120,8 +128,6 @@ class WorkflowManager:
 
         topic_agg = TopicAggregator(topic_files_in_scope, topic, self.config["datafile_loader"])
         topic_agg.run()
-
-        return topic_files_in_scope, topic_agg.aggregated_dataset
 
 
 def drop_grenoble_duplicates(df: pd.DataFrame) -> pd.DataFrame:

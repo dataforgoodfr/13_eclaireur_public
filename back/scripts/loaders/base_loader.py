@@ -60,6 +60,7 @@ class BaseLoader:
             file_url : URL of the file to load
             num_retries: Number of retries in case of failure
             delay_between_retries: Delay between retries in seconds
+            kwargs: Keyword arguments used when loading the file
         """
         self.file_url = str(file_url)
         self.num_retries = num_retries
@@ -104,6 +105,13 @@ class BaseLoader:
     def process_data(self, data):
         raise NotImplementedError("This method should be implemented by subclasses.")
 
+    def get_loader_kwargs(self) -> dict:
+        """
+        Returns:
+            Dictionary of keyword arguments used when loading the file
+        """
+        return self.kwargs
+
     @classmethod
     def loader_factory(cls, file_url: str | Path, **loader_kwargs) -> Self:
         # Factory method to create the appropriate loader based on the file URL
@@ -119,8 +127,11 @@ class BaseLoader:
 
     @classmethod
     def get_file_extension(cls, file_url: str) -> str:
-        if not cls.get_file_is_url(file_url) and "." in file_url:
+        is_url = cls.get_file_is_url(file_url)
+        if not is_url and "." in file_url:
             return file_url.rsplit(".", 1)[-1]
+        if is_url and "." in urlparse(file_url).path:
+            return urlparse(file_url).path.rsplit(".", 1)[-1]
         return ""
 
     @classmethod

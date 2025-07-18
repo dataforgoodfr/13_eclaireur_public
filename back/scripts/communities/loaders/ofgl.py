@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from back.scripts.datasets.dataset_aggregator import DatasetAggregator
-from back.scripts.loaders import LOADER_CLASSES
+from back.scripts.loaders import BaseLoader
 from back.scripts.utils.dataframe_operation import (
     IdentifierFormat,
     normalize_column_names,
@@ -29,7 +29,9 @@ READ_COLUMNS = {
     "Code Insee Collectivité": "code_insee",
     "Code Siren Collectivité": "siren",
     "Code Insee 2023 Département": "code_insee_dept",
+    "Code Insee 2024 Département": "code_insee_dept",
     "Code Insee 2023 Région": "code_insee_region",
+    "Code Insee 2024 Région": "code_insee_region",
 }
 
 
@@ -63,7 +65,7 @@ class OfglLoader(DatasetAggregator):
         # We are forced to use csv which need some typing help
         opts = {"columns": READ_COLUMNS.keys(), "dtype": COM_CSV_DTYPES}
 
-        loader = LOADER_CLASSES[file_metadata.format](raw_filename, **opts)
+        loader = BaseLoader.loader_factory(raw_filename, **opts)
         df = (
             loader.load()
             .rename(columns={k: v for k, v in READ_COLUMNS.items() if v})
