@@ -178,3 +178,11 @@ loc_env/
 
 psql_env.sh
 .DS_Store
+node_modules/**/*
+bun.lock
+
+# Playwright
+playwright-report/
+test-results/
+tests-examples/
+

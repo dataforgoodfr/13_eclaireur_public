@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# storybook
+storybook-static/
+
+# backstopjs
+backstop_data/bitmaps_test/
+backstop_data/html_report/
+backstop_data/ci_report/
+# Keep reference images in git for comparison
+# backstop_data/bitmaps_reference/
+
+# playwright
+test-results/
+playwright-report/
+/playwright/.cache/
