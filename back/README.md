@@ -53,7 +53,74 @@ L'intégralité du contenu du dossier `./back/` concerne la partie backend du pr
  - `.gitignore`: fichier contenant les références ignorées par git
 - `README.md`: ce fichier
 
+---
 
+# 🗂️ Pipeline de Traitement des Données
+
+##  Objectif
+
+Le pipeline a pour but de :
+
+- Collecter, nettoyer, uniformiser et enrichir des jeux de données publics, notamment sur les **subventions territoriales**.
+- Rendre ces données exploitables via une **interface web** destinée aux citoyens, journalistes, chercheurs ou associations.
+
+---
+
+##  Architecture Générale
+
+Le pipeline de traitement des données s’articule en **trois grandes étapes**, allant de la récupération brute des données jusqu’à leur standardisation finale dans un format exploitable.
+
+
+🔗 **Schéma complet du pipeline** (POC Anticor) :  
+ [Lien Excalidraw](https://excalidraw.com/#room=f3a228d37457f02aa822,PmpHg9tvB0P0Zs4KuLExIA)
+
+---
+
+##  Étapes du Pipeline
+
+### 1. **Collecte des données (communities)**
+
+Cette première étape vise à agréger un maximum de données publiques issues de différentes sources administratives.
+
+**Sources principales :**
+
+- **OFGL** (Observatoire des finances et de la gestion publique locales)  
+  → Données financières (budgets, dépenses) des communes, intercommunalités, départements, régions.
+
+- **ODF** (Open Data France)  
+  → Données mises en ligne par les collectivités locales via leurs portails Open Data.
+
+- **INSEE** (base SIRENE)  
+  → Informations légales et statistiques sur les entités publiques (SIRET/SIREN).
+
+- **GeoLocator**  
+  → Ajout des coordonnées géographiques (latitude/longitude) des entités (communes, départements, EPCI…).
+
+---
+
+### 2. **Fusion et enrichissement des données**
+
+Objectif : nettoyer, croiser et enrichir les données brutes collectées.
+
+**Sources additionnelles :**
+
+- **data.gouv.fr**  
+  → Recherche automatisée de fichiers liés aux subventions et marchés publics.
+
+- **Single URLs**  
+  → Données collectées à l’unité, hors plateformes centralisées (liens directs identifiés manuellement).
+
+---
+
+### 3. **Normalisation des données communities**
+
+Cette étape repose notamment sur des **classes comme `TopicAggregator`**, qui permettent de :
+
+- Gérer la **variabilité structurelle** des jeux de données publics (colonnes incohérentes, types flous, formats locaux, etc.).
+- Appliquer une **structure normalisée** conforme à une méthodologie d’analyse.
+- Préparer les données pour **l’agrégation, la comparaison et la visualisation** dans l’interface web.
+
+---
 
 ## Flux de Données
 
