@@ -4,7 +4,6 @@ import { downloadURL } from '@/utils/downloader/downloadURL';
 import { CommunitiesAdvancedSearchFilters } from '../fetchCommunitiesAdvancedSearch-server';
 
 const API_ROUTE = '/api/advanced_search/download';
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 /**
  * Create downloading URL to download advanced all search results
@@ -18,7 +17,7 @@ export function createAdvancedSearchDownloadingURL(
 ): URL {
   const { type, population, mp_score, subventions_score } = filters;
 
-  const url = new URL(API_ROUTE, baseURL);
+  const url = new URL(API_ROUTE, window.location.origin);
 
   if (type) url.searchParams.append('type', type);
   if (population) url.searchParams.append('population', population.toString());

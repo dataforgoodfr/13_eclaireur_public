@@ -2,7 +2,6 @@ import { SubventionSector } from '@/app/models/subvention';
 
 import { Pagination } from '../types';
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/subventions/by_naf2`;
 }
@@ -18,7 +17,7 @@ export async function fetchSubventionsByNaf(
   pagination: Pagination,
   maxAmount: number | null,
 ): Promise<SubventionSector[]> {
-  const url = new URL(getAPIRoute(communitySiren), baseURL);
+  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
 
   if (year !== null) url.searchParams.append('year', year.toString());
   if (maxAmount !== null) url.searchParams.append('maxAmount', maxAmount.toString());
@@ -27,11 +26,11 @@ export async function fetchSubventionsByNaf(
   url.searchParams.append('page', page.toString());
   url.searchParams.append('limit', limit.toString());
 
-  const res = await fetch(url.toString(), { method: 'get' });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch subventions by naf with siren ' + communitySiren);
   }
 
-  return (await res.json()) as Promise<SubventionSector[]>;
+  return await res.json();
 }
