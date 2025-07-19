@@ -100,7 +100,7 @@ Cette première étape vise à agréger un maximum de données publiques issues 
 
 ### 2. **Fusion et enrichissement des données**
 
-Objectif : nettoyer, croiser et enrichir les données brutes collectées.
+Cette étape vise à nettoyer, croiser et enrichir les jeux de données collectés précédemment.
 
 **Sources additionnelles :**
 
