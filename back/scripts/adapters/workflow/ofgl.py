@@ -7,10 +7,7 @@ from tqdm import tqdm
 from back.scripts.adapters.http_downloader import HttpFileDownloader
 from back.scripts.adapters.url_data_source import UrlDataSource
 from back.scripts.datasets.entities import FileMetadata
-from back.scripts.entities.ofgl import (
-    OfglCommuneRecordDataframe,
-    OfglDepartementRegionGfpRecordDataframe,
-)
+from back.scripts.entities.ofgl import Ofgl2024RecordDataframe
 from back.scripts.interfaces.data_source import IDataSource
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
@@ -45,13 +42,6 @@ READ_COLUMNS = {
 }
 INSEE_COL_MAPPING = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
 
-SCHEMA_MAPPING = {
-    "DEP": OfglDepartementRegionGfpRecordDataframe,
-    "MET": OfglCommuneRecordDataframe,
-    "REG": OfglCommuneRecordDataframe,
-    "COM": OfglCommuneRecordDataframe,
-}
-
 
 class OfglFileParser(IFileParser[pl.LazyFrame]):
     """
@@ -69,9 +59,7 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
         }
         loader = BaseLoader.loader_factory(raw_filename, **opts)
         df_lazy = loader.load_lazy()
-        validation_df = SCHEMA_MAPPING.get(file_metadata.extra_data.get("code")).validate(
-            df_lazy
-        )
+        validation_df = Ofgl2024RecordDataframe.validate(df_lazy)
         val_path = raw_filename.parent / "validation.parquet"
         validation_df.sink_parquet(val_path, lazy=True)
         df_lazy = (
