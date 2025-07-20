@@ -118,7 +118,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             """
             root_structure = array_location.split(".")
             for top_level in root_structure:
-                if top_level in content: # what to do when 'root_structure == "unknown"'
+                if top_level in content:  # what to do when 'root_structure == "unknown"'
                     content = content[top_level]
             return content
 
