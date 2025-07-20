@@ -25,8 +25,8 @@ LOGGER = logging.getLogger(__name__)
 COM_CSV_DTYPES = {
     "Code Siren Collectivité": pl.Utf8,
     "Code Insee Collectivité": pl.Utf8,
-    "Code Insee 2023 Département": pl.Utf8,
-    "Code Insee 2023 Région": pl.Utf8,
+    "Code Insee 2024 Département": pl.Utf8,
+    "Code Insee 2024 Région": pl.Utf8,
 }
 READ_COLUMNS = {
     "Exercice": None,
@@ -35,9 +35,7 @@ READ_COLUMNS = {
     "Population totale": "population",
     "Code Insee Collectivité": "code_insee",
     "Code Siren Collectivité": "siren",
-    "Code Insee 2023 Département": "code_insee_dept",
     "Code Insee 2024 Département": "code_insee_dept",
-    "Code Insee 2023 Région": "code_insee_region",
     "Code Insee 2024 Région": "code_insee_region",
 }
 INSEE_COL_MAPPING = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
