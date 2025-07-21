@@ -29,7 +29,9 @@ READ_COLUMNS = {
     "Code Insee Collectivité": "code_insee",
     "Code Siren Collectivité": "siren",
     "Code Insee 2023 Département": "code_insee_dept",
+    "Code Insee 2024 Département": "code_insee_dept",
     "Code Insee 2023 Région": "code_insee_region",
+    "Code Insee 2024 Région": "code_insee_region",
 }
 
 

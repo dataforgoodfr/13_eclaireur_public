@@ -305,6 +305,20 @@ Depuis un terminal:
 
     poetry run python back/main.py
 
+## Lancer le script dans un conteneur
+Pré-requis :
+- Docker 
+- Task 
+#### Installer task
+https://taskfile.dev/installation/
+
+#### Construire l'image 
+
+    task docker:build
+
+#### Lancer le conteneur
+
+    task docker:run
 
 ## Licenses
 

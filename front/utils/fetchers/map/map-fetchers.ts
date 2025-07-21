@@ -1,3 +1,5 @@
+import { Community } from '../../../app/models/community';
+
 const API_ROUTES = {
   REGIONS: '/api/map/regions',
   DEPARTEMENTS: '/api/map/departements',
@@ -7,11 +9,10 @@ const API_ROUTES = {
 /**
  * Fetches region data by region codes
  */
-export async function fetchRegionsByCode(regionCodes: string[]): Promise<any[]> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!regionCodes.length || !baseURL) return [];
+export async function fetchRegionsByCode(regionCodes: string[]): Promise<Community[]> {
+  if (!regionCodes.length) return [];
 
-  const url = new URL(API_ROUTES.REGIONS, baseURL);
+  const url = new URL(API_ROUTES.REGIONS, window.location.origin);
   regionCodes.forEach((code) => url.searchParams.append('codes', code));
 
   const res = await fetch(url.toString(), { method: 'GET' });
@@ -27,11 +28,10 @@ export async function fetchRegionsByCode(regionCodes: string[]): Promise<any[]> 
 /**
  * Fetches departement data by departement codes
  */
-export async function fetchDepartementsByCode(departementCodes: string[]): Promise<any[]> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!departementCodes.length || !baseURL) return [];
+export async function fetchDepartementsByCode(departementCodes: string[]): Promise<Community[]> {
+  if (!departementCodes.length) return [];
 
-  const url = new URL(API_ROUTES.DEPARTEMENTS, baseURL);
+  const url = new URL(API_ROUTES.DEPARTEMENTS, window.location.origin);
   departementCodes.forEach((code) => url.searchParams.append('codes', code));
 
   const res = await fetch(url.toString(), { method: 'GET' });
@@ -47,11 +47,10 @@ export async function fetchDepartementsByCode(departementCodes: string[]): Promi
 /**
  * Fetches commune data by commune codes
  */
-export async function fetchCommunesByCode(communeCodes: string[]): Promise<any[]> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!communeCodes.length || !baseURL) return [];
+export async function fetchCommunesByCode(communeCodes: string[]): Promise<Community[]> {
+  if (!communeCodes.length) return [];
 
-  const url = new URL(API_ROUTES.COMMUNES, baseURL);
+  const url = new URL(API_ROUTES.COMMUNES, window.location.origin);
 
   const res = await fetch(url.toString(), {
     method: 'POST',

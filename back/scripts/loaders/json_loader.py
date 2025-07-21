@@ -26,13 +26,19 @@ class JSONLoader(BaseLoader):
 
     def process_data(self, data):
         content = None
-        if isinstance(data, str):
-            content = json.loads(data, **self.get_loader_kwargs())
-        elif isinstance(data, bytes):
-            # utile dans les cas où l'encodage n'est pas utf-8
-            content = json.load(BytesIO(data), **self.get_loader_kwargs())
-        else:
-            raise Exception("Unhandled type")
+        try:
+            if isinstance(data, str):
+                content = json.loads(data)
+            elif isinstance(data, bytes):
+                # utile dans les cas où l'encodage n'est pas utf-8
+                content = json.load(BytesIO(data))
+            else:
+                raise Exception("Unhandled type")
+        except json.JSONDecodeError as e:
+            LOGGER.warning(f"Error while reading JSON: {e}. Try JsonL instead.")
+            return JSONLLoader(file_url=self.file_url, **self.get_loader_kwargs()).process_data(
+                data
+            )
 
         if self.key is not None:
             content = content.get(self.key, {})
@@ -93,3 +99,20 @@ class JSONLoader(BaseLoader):
             flattened[prefix] = x
 
         return flattened
+
+
+@register_loader
+class JSONLLoader(BaseLoader):
+    """
+    Loader for JSONL files.
+    """
+
+    file_extensions = {"jsonl"}
+
+    def process_data(self, data) -> pd.DataFrame:
+        df = pd.read_json(BytesIO(data), **self.get_loader_kwargs())
+        LOGGER.debug(f"JSONL Data from {self.file_url} loaded.")
+        return df
+
+    def get_loader_kwargs(self) -> dict:
+        return super().get_loader_kwargs() | {"lines": True}

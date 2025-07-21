@@ -1,9 +1,12 @@
 import { SVGProps } from 'react';
 
+import {
+  SCORE_NON_DISPONIBLE,
+  SCORE_TO_ADJECTIF,
+  TransparencyScore,
+} from '@/components/TransparencyScore/constants';
 import { cn } from '@/utils/utils';
 import { ClassNameValue } from 'tailwind-merge';
-import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF, TransparencyScore } from '@/components/TransparencyScore/constants';
-
 
 const SQUARE_WIDTH = 60;
 const ACTIVE_SCORE_SCALE = 1.2;

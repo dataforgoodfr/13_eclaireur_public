@@ -11,7 +11,7 @@ import polars as pl
 from tqdm import tqdm
 
 from back.scripts.datasets.utils import BaseDataset
-from back.scripts.loaders import LOADER_CLASSES, BaseLoader
+from back.scripts.loaders import BaseLoader
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.typing import PandasRow
 
@@ -84,16 +84,13 @@ class DatasetAggregator(BaseDataset):
         if self.output_filename.exists():
             return
         self._process_files()
+        self._post_process()
         self._concatenate_files()
         with open(self.data_folder / "errors.json", "w") as f:
             json.dump(self.errors, f)
 
     def _process_files(self) -> None:
         for file_infos in tqdm(self._remaining_to_normalize()):
-            if file_infos.format not in LOADER_CLASSES:
-                LOGGER.warning(f"Format {file_infos.format} not supported")
-                continue
-
             if file_infos.url is None or pd.isna(file_infos.url):
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
@@ -104,12 +101,7 @@ class DatasetAggregator(BaseDataset):
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
 
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
-        self._post_process()
-        self._concatenate_files()
-
-    def _post_process(self):
+    def _post_process(self) -> None:
         pass
 
     def _process_file(self, file: PandasRow) -> None:
@@ -132,9 +124,7 @@ class DatasetAggregator(BaseDataset):
             urllib.request.urlretrieve(file_metadata.url, output_filename)
         except HTTPError as error:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
-            msg = (
-                f"HTTP error {error.code} while expecting {file_metadata.resource_status} code"
-            )
+            msg = f"HTTP error {error.code}"
             self.errors[msg].append(file_metadata.url)
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
@@ -182,7 +172,7 @@ class DatasetAggregator(BaseDataset):
     def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow):
         raise NotImplementedError()
 
-    def _remaining_to_normalize(self):
+    def _remaining_to_normalize(self) -> list:
         """
         Select among the input files the ones for which we do not have yet the normalized file.
         """
@@ -205,7 +195,7 @@ class DatasetAggregator(BaseDataset):
             .itertuples()
         )
 
-    def _add_normalized_filenames(self):
+    def _add_normalized_filenames(self) -> None:
         """
         Add to the DataFrame of input files the expected name of the normalized file.
         """
@@ -213,7 +203,7 @@ class DatasetAggregator(BaseDataset):
         fns = [str(self._dataset_filename(file, "norm")) for file in all_files]
         self.files_in_scope = self.files_in_scope.assign(filename=fns)
 
-    def _concatenate_files(self):
+    def _concatenate_files(self) -> None:
         """
         Concatenate all the normalized files which have succeeded into a single parquet file.
         This step is made in polars as the sum of all dataset by be heavy on memory.
@@ -223,12 +213,3 @@ class DatasetAggregator(BaseDataset):
         dfs = [pl.scan_parquet(f) for f in all_files]
         df = pl.concat(dfs, how="diagonal_relaxed")
         df.sink_parquet(self.output_filename)
-
-    @property
-    def aggregated_dataset(self):
-        """
-        Property to return the aggregated dataset.
-        """
-        if not self.output_filename.exists():
-            raise RuntimeError("Combined file does not exists. You must run .load() first.")
-        return pd.read_parquet(self.output_filename)

@@ -9,7 +9,6 @@ const getCommunityDataFromFeature = (
   const props = feature.properties || {};
   const adminType = feature.layer ? getAdminTypeFromLayerId(feature.layer.id) : undefined;
   let code: string | undefined;
-
   if (adminType === 'region') {
     code = feature.id?.toString().slice(-2);
   } else {

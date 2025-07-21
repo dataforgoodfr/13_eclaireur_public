@@ -16,8 +16,8 @@ from back.scripts.utils.psql_connector import PSQLConnector
 
 class DataWarehouseWorkflow:
     def __init__(self, config: dict):
-        self._config = config
-        self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
+        self.config = config
+        self.warehouse_folder = Path(self.config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
         self.send_to_db = {
@@ -32,23 +32,23 @@ class DataWarehouseWorkflow:
         }
 
     def run(self) -> None:
-        ElectedOfficialsEnricher.enrich(self._config)
-        FinancialEnricher.enrich(self._config)
-        SubventionsEnricher.enrich(self._config)
-        MarchesPublicsEnricher.enrich(self._config)
-        BaremeEnricher.enrich(self._config)
-        CommunitiesEnricher.enrich(self._config)
+        ElectedOfficialsEnricher.enrich(self.config)
+        FinancialEnricher.enrich(self.config)
+        SubventionsEnricher.enrich(self.config)
+        MarchesPublicsEnricher.enrich(self.config)
+        BaremeEnricher.enrich(self.config)
+        CommunitiesEnricher.enrich(self.config)
         self._send_to_postgres()
 
     def _send_to_postgres(self):
-        if not self._config["workflow"]["save_to_db"]:
+        if not self.config["workflow"]["save_to_db"]:
             return
         connector = PSQLConnector()
 
         # replace_tables determines wether we should clean
         # the table and reinsert with new schema
         # or keep the same schema.
-        if_table_exists = "replace" if self._config["workflow"]["replace_tables"] else "append"
+        if_table_exists = "replace" if self.config["workflow"]["replace_tables"] else "append"
 
         with connector.engine.connect() as conn:
             for table_name, filename in self.send_to_db.items():
