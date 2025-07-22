@@ -103,14 +103,6 @@ jobs:
           path: front/backstop_data/
           retention-days: 30
 
-      - name: Deploy BackstopJS Report to GitHub Pages
-        if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed' && github.ref == 'refs/heads/main' && secrets.GITHUB_TOKEN != ''
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: front/backstop_data/html_report
-          destination_dir: backstop-reports/${{ github.run_number }}
-
       - name: Comment PR with report link
         if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed' && github.event_name == 'pull_request_target'
         uses: actions/github-script@v7
