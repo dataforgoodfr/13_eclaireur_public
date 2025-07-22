@@ -22,7 +22,7 @@ jobs:
         run: npm run test
 
       - name: Upload test results (optional)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-results
           path: ./test-results
