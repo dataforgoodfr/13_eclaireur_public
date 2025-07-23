@@ -1,4 +1,3 @@
-name: Review App on PRs
 on:
     pull_request_target:
       types: [opened, closed, synchronize, reopened]
@@ -47,7 +46,7 @@ jobs:
                 GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
                 GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
                 GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
-                
+
             with:
                 type: node
                 set-env: true
