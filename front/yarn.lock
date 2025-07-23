@@ -2947,6 +2947,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@storybook/experimental-nextjs-vite@^8.6.14":
 =======
 "@storybook/experimental-nextjs-vite@8":
@@ -2954,6 +2955,9 @@
 =======
 "@storybook/experimental-nextjs-vite@^8.6.14":
 >>>>>>> 2c5c350 (fix(ci): MAJ  la configuration du livre de contes et la manipulation des données simulées)
+=======
+"@storybook/experimental-nextjs-vite@8":
+>>>>>>> 5e8f8f2 (feat(tests): Ajout des stories pour les composants côté client avec React Query)
   version "8.6.14"
   resolved "https://registry.yarnpkg.com/@storybook/experimental-nextjs-vite/-/experimental-nextjs-vite-8.6.14.tgz#3f401fc23a34d7aa2fb07625c2073ad733e0ce04"
   integrity sha512-U0wNQV0LLnz6OpMx3AmxxoqC9d2l3Jmmxce6KcJu71gwMzdZL4i0N4wOlFVz+iI3tCrIcJsGkYShcxeSpQpoRA==
