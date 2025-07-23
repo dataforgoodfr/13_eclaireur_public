@@ -158,6 +158,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   approve-backstop:
+    # Trigger only on PR closed event
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
     runs-on: ubuntu-latest
     permissions:
