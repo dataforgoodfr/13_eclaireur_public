@@ -80,24 +80,25 @@ jobs:
       - name: Create or update Clever Cloud review app
         run: |
           clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-          APP_ALIAS=${{ github.event.repository.name }}-PR-${{ github.event.number }}
 
-          clever create --type node $APP_ALIAS --alias $APP_ALIAS --region par --org ${{ secrets.ORGA_ID }} || echo "App may already exist"
+          APP_ALIAS="${{ github.event.repository.name }}-PR-${{ github.event.number }}"
 
-          APP_ID=$(clever apps --json | jq -r ".[] | select(.alias==\"$APP_ALIAS\") | .id")
+          # Create app if it doesn't exist
+          clever create --type node "$APP_ALIAS" \
+            --alias "$APP_ALIAS" \
+            --region par \
+            --org "${{ secrets.ORGA_ID }}" || echo "App may already exist"
 
-          if [ -z "$APP_ID" ]; then
-            echo "Failed to get app ID for alias $APP_ALIAS"
-            exit 1
-          fi
+          # Link local context to the app (needed before env and deploy)
+          clever link --org "${{ secrets.ORGA_ID }}" "$APP_ALIAS"
 
-          clever link "$APP_ID"
-
+          # Set all environment variables starting with GH_ in Clever Cloud app
           for var in $(env | awk -F= '/^GH_/ { print $1 }'); do
             real_var=${var#GH_}
-            clever env set $real_var "${!var}"
+            clever env set "$real_var" "${!var}"
           done
 
+          # Deploy app, forcing redeploy
           clever deploy --force
 
       - name: Comment PR with preview link
