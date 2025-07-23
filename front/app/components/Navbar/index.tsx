@@ -137,7 +137,11 @@ export default function Navbar() {
             size='sm'
             className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
           >
-            <Megaphone className='h-4 w-4' />
+            <Link
+              href='/interpeller'
+            >
+              <Megaphone className='h-4 w-4' />
+            </Link>
           </Button>
           {/* Mobile Menu */}
           <div className='md:hidden'>
@@ -176,9 +180,12 @@ function MobileNavigationMenu() {
           </div>
 
           {/* Interpeller Button */}
-          <Button className='mb-4 h-12 w-full rounded-none rounded-br-xl rounded-tl-xl bg-primary text-xl font-semibold text-white'>
-            <Megaphone className='mr-2 h-4 w-4' />
-            Interpeller
+          <Button
+            className='mb-4 h-12 w-full rounded-none rounded-br-xl rounded-tl-xl bg-primary text-xl font-semibold text-white'>
+            <Link href='/interpeller'>
+              <Megaphone className='mr-2 h-4 w-4' />
+              Interpeller
+            </Link>
           </Button>
 
           {/* Accordion Menu */}
