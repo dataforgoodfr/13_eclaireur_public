@@ -15,7 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { Megaphone, Menu, Search } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 
 import { AccordionMenu } from './AccordionMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
@@ -140,7 +140,12 @@ export default function Navbar() {
             <Link
               href='/interpeller'
             >
-              <Megaphone className='h-4 w-4' />
+              <Image
+                src='/eclaireur/interpeller.svg'
+                alt='Interpeller'
+                width={20}
+                height={20}
+              />
             </Link>
           </Button>
           {/* Mobile Menu */}
@@ -183,7 +188,12 @@ function MobileNavigationMenu() {
           <Button
             className='mb-4 h-12 w-full rounded-none rounded-br-xl rounded-tl-xl bg-primary text-xl font-semibold text-white'>
             <Link href='/interpeller'>
-              <Megaphone className='mr-2 h-4 w-4' />
+              <Image
+                src='/eclaireur/interpeller.png'
+                alt='Interpeller'
+                width={20}
+                height={20}
+              />
               Interpeller
             </Link>
           </Button>
