@@ -95,19 +95,14 @@ export default function Navbar() {
     <div className='fixed z-50 w-full border-b bg-white shadow-sm'>
       <div className='flex h-16 items-center justify-between px-6 lg:px-8'>
         {/* Logo */}
-        <Link href='/' className='flex items-center space-x-3'>
-          <div className='flex h-12 w-12 items-center justify-center rounded-full bg-secondary'>
+        <Link href='/' className='flex items-center space-x-2'>
+          <div className='flex h-14 w-36 items-center justify-center'>
             <Image
-              src='/logo-e.svg'
+              src='/eclaireur/logo-navmenu.png'
               alt='Éclaireur Public Logo'
-              width={24}
-              height={24}
-              className='text-secondary-foreground'
+              width={340}
+              height={100}
             />
-          </div>
-          <div className='flex flex-col leading-tight'>
-            <span className='text-base font-bold uppercase text-primary'>Éclaireur</span>
-            <span className='text-base font-bold text-primary'>PUBLIC</span>
           </div>
         </Link>
 
