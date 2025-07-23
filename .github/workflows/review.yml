@@ -1,143 +1,53 @@
 name: Review App on PRs
-
 on:
-  pull_request_target:
-    types: [opened, reopened, synchronize, closed]
-    branches: [main]
+    pull_request_target:
+      types: [opened, closed, synchronize, reopened]
+      branches: [ main ]
+      paths:
+      - 'front/**'
 
-jobs:
-  deploy_review_app:
-    if: github.event.action != 'closed'
-    name: Build & Deploy Frontend Preview
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: Check out PR code
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-
-      - name: Check if front/ changed
-        id: changes
-        run: |
-          git fetch origin main
-          CHANGED=$(git diff --name-only origin/main...HEAD | grep '^front/' || true)
-          if [ -z "$CHANGED" ]; then
-            echo "No changes in front/. Skipping deploy."
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "Changes detected in front/"
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Exit if no changes in front/
-        if: steps.changes.outputs.skip == 'true'
-        run: exit 0
-
-      - name: Install Node & dependencies
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: yarn
-
-      - name: Build Next.js frontend
-        run: |
-          cd front
-          yarn install --frozen-lockfile
-          yarn build
-        env:
-          # Only set these if secrets exist (for forks with full deployment setup)
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          ORGA_ID: ${{ secrets.ORGA_ID }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
-          GH_CC_CACHE_DEPENDENCIES: ${{ secrets.CC_CACHE_DEPENDENCIES }}
-          GH_CC_CGI_IMPLEMENTATION: ${{ secrets.CC_CGI_IMPLEMENTATION }}
-          GH_CC_NODE_DEV_DEPENDENCIES: ${{ secrets.CC_NODE_DEV_DEPENDENCIES }}
-          GH_CC_WEBROOT: ${{ secrets.CC_WEBROOT }}
-          GH_HOST: ${{ secrets.HOST }}
-          GH_NODE_ENV: ${{ secrets.NODE_ENV }}
-          GH_PORT: ${{ secrets.PORT }}
-          NEXT_PUBLIC_BASE_URL: http://localhost:3000
-          NEXT_PUBLIC_MAPTILES_API_KEY: ${{ secrets.NEXT_PUBLIC_MAPTILES_API_KEY }}
-          POSTGRESQL_ADDON_HOST: ${{ secrets.POSTGRESQL_ADDON_HOST }}
-          POSTGRESQL_ADDON_DB: ${{ secrets.POSTGRESQL_ADDON_DB }}
-          POSTGRESQL_ADDON_USER: ${{ secrets.POSTGRESQL_ADDON_USER }}
-          POSTGRESQL_ADDON_PORT: ${{ secrets.POSTGRESQL_ADDON_PORT }}
-          POSTGRESQL_ADDON_PASSWORD: ${{ secrets.POSTGRESQL_ADDON_PASSWORD }}
-          POSTGRESQL_ADDON_URI: ${{ secrets.POSTGRESQL_ADDON_URI }}
-
-      - name: Install Clever Tools
-        run: npm install -g clever-tools
-
-      - name: Create or update Clever Cloud review app
-        run: |
-          clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-
-          APP_ALIAS="${{ github.event.repository.name }}-PR-${{ github.event.number }}"
-
-          # Create app if it doesn't exist
-          clever create --type node "$APP_ALIAS" \
-            --alias "$APP_ALIAS" \
-            --region par \
-            --org "${{ secrets.ORGA_ID }}" || echo "App may already exist"
-
-          # Link local context to the app (needed before env and deploy)
-          clever link --org "${{ secrets.ORGA_ID }}" "$APP_ALIAS"
-
-          # Set all environment variables starting with GH_ in Clever Cloud app
-          for var in $(env | awk -F= '/^GH_/ { print $1 }'); do
-            real_var=${var#GH_}
-            clever env set "$real_var" "${!var}"
-          done
-
-          # Deploy app, forcing redeploy
-          clever deploy --force
-
-      - name: Comment PR with preview link
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.number }}
-          body: |
-            ✅ Review app deployed
-
-            | Commit | Preview |
-            |--------|---------|
-            | `${{ github.sha }}` | https://${{ github.event.repository.name }}-PR-${{ github.event.number }}.cleverapps.io |
-
-  delete_review_app:
-    if: github.event.action == 'closed'
-    name: Delete Clever Cloud review app
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-
-    steps:
-      - name: Install Clever Tools
-        run: npm install -g clever-tools
-
-      - name: Try to delete app if it exists
-        run: |
-          clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-          APP_ALIAS=${{ github.event.repository.name }}-PR-${{ github.event.number }}
-
-          clever link --alias "$APP_ALIAS" || {
-            echo "Review app $APP_ALIAS does not exist. Skipping deletion."
-            exit 0
-          }
-
-          clever delete --alias "$APP_ALIAS" --yes
-
-      - name: Comment on PR
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.number }}
-          body: |
-            🧹 Review app deleted — PR closed.
+jobs: 
+    deploy:
+        name: Deploy/redeploy review app
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
+            contents: read
+        steps:
+          - uses: actions/checkout@v4
+            if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' }}
+          - name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+              repository: ${{ github.event.pull_request.head.repo.full_name }}
+              ref: ${{ github.event.pull_request.head.ref }}
+              token: ${{ secrets.GITHUB_TOKEN }}
+              fetch-depth: 0
+    
+          - name: Create review app
+            uses: CleverCloud/clever-cloud-review-app@v2.0.0
+            env:
+                CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+                CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+                ORGA_ID: ${{ secrets.ORGA_ID }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
+                GH_CC_CACHE_DEPENDENCIES: ${{secrets.CC_CACHE_DEPENDENCIES}}
+                GH_CC_CGI_IMPLEMENTATION: ${{secrets.CC_CGI_IMPLEMENTATION}}
+                GH_CC_NODE_DEV_DEPENDENCIES: ${{secrets.CC_NODE_DEV_DEPENDENCIES}}
+                GH_CC_WEBROOT: ${{secrets.CC_WEBROOT}}
+                GH_HOST: ${{secrets.HOST}}
+                GH_NODE_ENV : ${{secrets.NODE_ENV}}
+                GH_PORT: ${{secrets.PORT}}
+                GH_NEXT_PUBLIC_BASE_URL: https://${{ github.event.pull_request.base.repo.name }}-PR-${{ github.event.number }}.cleverapps.io
+                GH_POSTGRESQL_ADDON_HOST: ${{secrets.POSTGRESQL_ADDON_HOST}}
+                GH_POSTGRESQL_ADDON_DB:  ${{secrets.POSTGRESQL_ADDON_DB}}
+                GH_POSTGRESQL_ADDON_USER:  ${{secrets.POSTGRESQL_ADDON_USER}}
+                GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
+                GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
+                GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
+                
+            with:
+                type: node
+                set-env: true
