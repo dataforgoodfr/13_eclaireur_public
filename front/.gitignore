@@ -54,3 +54,5 @@ backstop_data/ci_report/
 test-results/
 playwright-report/
 /playwright/.cache/
+
+*storybook.log
