@@ -5,15 +5,15 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Accordion } from '@radix-ui/react-accordion';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { Menu, Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
+import SearchCommunity from '@/components/SearchBar/SearchCommunity';
 import { AccordionMenu } from './AccordionMenu';
 
 type MenuProps = { title: string; href: string; description: string };
@@ -25,11 +25,13 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: MobileMenuProps) {
+
     const [isOpen, setIsOpen] = useState(false);
 
     const handleMenuClick = () => {
         setIsOpen(false);
     };
+
 
     return (
         <div className='md:hidden'>
@@ -47,14 +49,16 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
                     side='bottom'
                 >
                     {/* Search Bar */}
-                    <div className='relative mb-6'>
+                    <SearchCommunity className='relative mb-6' />
+
+                    {/* <div className='relative mb-6'>
                         <Input
                             type='search'
                             placeholder='Rechercher...'
                             className='h-12 w-full rounded-none rounded-br-xl rounded-tl-xl border border-primary/20 pl-4 pr-10 text-primary focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
                         />
                         <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/60' />
-                    </div>
+                    </div> */}
 
                     {/* Interpeller Button */}
                     <div className='mb-6'>
