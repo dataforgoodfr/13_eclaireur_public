@@ -14,7 +14,10 @@ type SearchBarProps = {
   onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
-export default function SearchBar({ className = 'relative hidden md:block', onSelect }: SearchBarProps) {
+export default function SearchBar({
+  className = 'relative hidden md:block',
+  onSelect,
+}: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
@@ -33,18 +36,20 @@ export default function SearchBar({ className = 'relative hidden md:block', onSe
 
   return (
     <div className={className}>
-      <Input
-        type='search'
-        placeholder='Rechercher...'
-        className='w-64 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-10 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
-        onChange={handleInputChange}
-        onFocus={handleOnFocus}
-        onBlur={(e) => {
-          if (e.relatedTarget === null) handleOnBlur();
-        }}
-      />
-      <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 border-primary text-primary focus:border-primary' />
-      {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
+      <div className="flex items-center relative m-2">
+        <Input
+          type='search'
+          placeholder='Rechercher...'
+          className='w-64 rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+          onChange={handleInputChange}
+          onFocus={handleOnFocus}
+          onBlur={(e) => {
+            if (e.relatedTarget === null) handleOnBlur();
+          }}
+        />
+        <Search className='relative -ml-8 h-4 w-4 text-primary' />
+        {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
+      </div>
     </div>
   );
 }
