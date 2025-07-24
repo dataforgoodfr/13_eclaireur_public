@@ -111,5 +111,24 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "imports": {
+    "#utils/db": {
+      "storybook": "./utils/db.mock.ts",
+      "default": "./utils/db.ts"
+    },
+    "#utils/fetchers/marches-publics/fetchMarchesPublics-server": {
+      "storybook": "./utils/fetchers/marches-publics/fetchMarchesPublics-server.mock.ts",
+      "default": "./utils/fetchers/marches-publics/fetchMarchesPublics-server.ts"
+    },
+    "#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears": {
+      "storybook": "./utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock.ts",
+      "default": "./utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.ts"
+    },
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
   }
 }

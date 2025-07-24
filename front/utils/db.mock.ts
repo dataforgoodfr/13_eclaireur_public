@@ -1,3 +1,6 @@
+import * as actual from '@/utils/db';
 import { fn } from '@storybook/test';
 
-export const getQueryFromPool = fn().mockName('getQueryFromPool');
+export * from '@/utils/db';
+
+export const getQueryFromPool = fn(actual.getQueryFromPool).mockName('getQueryFromPool');

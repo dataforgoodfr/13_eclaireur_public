@@ -1,8 +1,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
-import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
+import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
+import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
 import Contracts from './Contracts';
@@ -27,6 +27,7 @@ async function getMarchesPublics(siren: string) {
 }
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
+  // const marchesPublics = [];
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
   // const availableYears = [2021, 2022, 2023];
   return (
