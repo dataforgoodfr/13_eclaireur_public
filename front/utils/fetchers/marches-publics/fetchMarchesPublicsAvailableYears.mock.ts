@@ -1,5 +1,12 @@
 import { fn } from '@storybook/test';
-import { fetchMarchesPublicsAvailableYears } from './fetchMarchesPublicsAvailableYears';
+import * as actual from './fetchMarchesPublicsAvailableYears';
 
-export const mockFetchMarchesPublicsAvailableYears = fn(fetchMarchesPublicsAvailableYears).mockName('fetchMarchesPublicsAvailableYears');
-export { mockFetchMarchesPublicsAvailableYears as fetchMarchesPublicsAvailableYears };
+
+// import * as actual from './session'
+
+export * from './fetchMarchesPublicsAvailableYears';
+export const fetchMarchesPublicsAvailableYears = fn(actual.fetchMarchesPublicsAvailableYears).mockName('fetchMarchesPublicsAvailableYears')
+
+
+// export const mockFetchMarchesPublicsAvailableYears = fn(fetchMarchesPublicsAvailableYears).mockName('fetchMarchesPublicsAvailableYears');
+// export { mockFetchMarchesPublicsAvailableYears as fetchMarchesPublicsAvailableYears };

@@ -1,10 +1,10 @@
 
-import { getQueryFromPool } from '@/utils/db.mock';
+import { getQueryFromPool } from '#utils/db';
 import { mockFetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server.mock';
-import { mockFetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock';
+import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Suspense } from 'react';
 import { FicheMarchesPublics } from './FicheMarchesPublics';
+// import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears';
 
 const mockData = [
   {
@@ -57,31 +57,35 @@ const mockData = [
 const meta = {
   component: FicheMarchesPublics,
   parameters: {
-    layout: 'centered',
+    // layout: 'centered',
     react: {
       rsc: true,
-      suspense: true
+      // suspense: true
     }
   },
-  decorators: [
-    (Story) => {
-      mockFetchMarchesPublics.mockResolvedValue(mockData);
-      mockFetchMarchesPublicsAvailableYears.mockResolvedValue([2021, 2022, 2024]);
-      getQueryFromPool.mockResolvedValue([
-        { year: 2021 },
-        { year: 2022 },
-        { year: 2025 }
-      ]);
+  async beforeEach() {
+    mockFetchMarchesPublics.mockResolvedValue(mockData);
+    fetchMarchesPublicsAvailableYears.mockResolvedValue([
+      2021, 2022, 2024,
+    ]);
+    getQueryFromPool.mockResolvedValue([
+      { year: 2021 },
+      { year: 2022 },
+      { year: 2025 },
+    ]);
+  },
+  // decorators: [
+  //   (Story) => {
 
-      return (
-        <div style={{ width: '800px' }}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Story />
-          </Suspense>
-        </div>
-      );
-    }
-  ]
+  //     return (
+  //       <div style={{ width: '800px' }}>
+  //         {/* <Suspense fallback={<div>Loading...</div>}> */}
+  //         <Story />
+  //         {/* </Suspense> */}
+  //       </div>
+  //     );
+  //   }
+  // ]
 } satisfies Meta<typeof FicheMarchesPublics>;
 
 export default meta;
@@ -92,14 +96,14 @@ export const Default: Story = {
   args: {
     siren: '213105554',
   },
-  parameters: {
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [['community', '213105554']],
-      }
-    },
-  },
+  // parameters: {
+  //   nextjs: {
+  //     appDirectory: true,
+  //     // navigation: {
+  //     //   segments: [['community', '213105554']],
+  //     // }
+  //   },
+  // },
 };
 
 export const NoData: Story = {
@@ -117,7 +121,7 @@ export const NoData: Story = {
   decorators: [
     (Story) => {
       mockFetchMarchesPublics.mockResolvedValue([]);
-      mockFetchMarchesPublicsAvailableYears.mockResolvedValue([]);
+      fetchMarchesPublicsAvailableYears.mockResolvedValue([]);
       getQueryFromPool.mockResolvedValue([]);
 
       return <Story />;

@@ -1,5 +1,4 @@
 import type { StorybookConfig } from '@storybook/nextjs';
-import { resolve } from 'node:path';
 
 const config: StorybookConfig = {
   "stories": [
@@ -31,21 +30,6 @@ const config: StorybookConfig = {
   ],
   webpackFinal: async (config) => {
     if (config.resolve) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        // Mock the database utility to avoid pg-native issues
-        '@/utils/db': resolve(__dirname, '../utils/db.mock.ts'),
-        // Mock marches publics fetchers
-        '@/utils/fetchers/marches-publics/fetchMarchesPublics-server': resolve(
-          __dirname,
-          '../utils/fetchers/marches-publics/fetchMarchesPublics-server.mock.ts'
-        ),
-        '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears': resolve(
-          __dirname,
-          '../utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock.ts'
-        ),
-      };
-
       // Add fallbacks for Node.js modules
       config.resolve.fallback = {
         ...config.resolve.fallback,
