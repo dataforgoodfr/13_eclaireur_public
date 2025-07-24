@@ -82,7 +82,7 @@ class DataWarehouseWorkflow:
         ).fetchall()
         existing_cols = {col[0] for col in columns_sql}
 
-        missing_cols = set(schema.keys()) - existing_cols
+        missing_cols = schema.keys() - existing_cols
         if not missing_cols:
             return
 
@@ -98,9 +98,13 @@ class DataWarehouseWorkflow:
             pl.Datetime: "TIMESTAMP",
         }
 
-        for col in missing_cols:
-            pl_type = schema[col]
-            sql_type = type_mapping.get(pl_type, "TEXT")
-            sql = text(f'ALTER TABLE "{table_name}" ADD COLUMN "{col}" {sql_type};')
-            conn.execute(sql)
+        if missing_cols:
+            add_columns = []
+            for col in missing_cols:
+                pl_type = schema[col]
+                sql_type = type_mapping.get(pl_type, "TEXT")
+                add_columns.append(f'ADD COLUMN "{col}" {sql_type}')
+
+            alter_query = f'ALTER TABLE "{table_name}" {", ".join(add_columns)};'
+            conn.execute(text(alter_query))
             conn.commit()
