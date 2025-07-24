@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 from sqlalchemy import text
 
@@ -19,16 +20,17 @@ class DataWarehouseWorkflow:
         self._config = config
         self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
+        self.chunksize = 10000
 
         self.send_to_db = {
-            "collectivites": CommunitiesEnricher.get_output_path(config),
-            "marches_publics": MarchesPublicsEnricher.get_output_path(config),
-            "subventions": SubventionsEnricher.get_output_path(config),
-            "comptes_collectivites": FinancialEnricher.get_output_path(config),
-            "elus": ElectedOfficialsEnricher.get_output_path(config),
-            "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
-            "communities_contacts": CommunitiesContact.get_output_path(config),
-            "bareme": BaremeEnricher.get_output_path(config),
+            "collectivites_test": CommunitiesEnricher.get_output_path(config),
+            "marches_publics_test": MarchesPublicsEnricher.get_output_path(config),
+            "subventions_test": SubventionsEnricher.get_output_path(config),
+            "comptes_collectivites_test": FinancialEnricher.get_output_path(config),
+            "elus_test": ElectedOfficialsEnricher.get_output_path(config),
+            "declarations_interet_test": DeclaInteretWorkflow.get_output_path(config),
+            "communities_contacts_test": CommunitiesContact.get_output_path(config),
+            "bareme_test": BaremeEnricher.get_output_path(config),
         }
 
     def run(self) -> None:
@@ -50,7 +52,7 @@ class DataWarehouseWorkflow:
         # or keep the same schema.
         if_table_exists = "replace" if self._config["workflow"]["replace_tables"] else "append"
 
-        with connector.engine.connect() as conn:
+        with connector.engine.begin() as conn:
             for table_name, filename in self.send_to_db.items():
                 df = pl.read_parquet(filename)
 
@@ -62,9 +64,12 @@ class DataWarehouseWorkflow:
 
                     if table_exists:
                         conn.execute(text(f"TRUNCATE {table_name}"))
-                        add_missing_columns_to_sql_table(conn, table_name, df)
-                df.write_database(table_name, conn, if_table_exists=if_table_exists)
+                        self.add_missing_columns_to_sql_table(conn, table_name, df)
+                    df.to_pandas().to_sql(
+                        table_name, conn, if_exists=if_table_exists, chunksize=self.chunksize
+                    )
 
+    @staticmethod
     def add_missing_columns_to_sql_table(conn, table_name: str, df: pl.DataFrame):
         """Ajoute les colonnes manquantes dans la table SQL à partir du DataFrame Polars."""
 
