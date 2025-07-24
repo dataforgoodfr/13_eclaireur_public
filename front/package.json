@@ -44,6 +44,7 @@
     "fs": "^0.0.1-security",
     "lucide-react": "^0.475.0",
     "maplibre-gl": "^5.2.0",
+    "msw": "^2.10.4",
     "next": "^15.2.4",
     "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
