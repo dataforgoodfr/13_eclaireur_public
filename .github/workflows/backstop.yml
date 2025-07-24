@@ -1,4 +1,5 @@
 name: BackstopJS Visual Regression Tests
+
 on:
   push:
     branches: [main, develop]
@@ -8,11 +9,6 @@ on:
     paths:
       - "front/**"
   workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "PR number to test (optional, for manual runs on PRs)"
-        required: false
-        type: string
 
 jobs:
   visual-regression:
@@ -24,7 +20,6 @@ jobs:
       pull-requests: write
 
     env:
-      # Only set these if secrets exist (for forks with full deployment setup)
       CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
       CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
       ORGA_ID: ${{ secrets.ORGA_ID }}
@@ -46,6 +41,9 @@ jobs:
       POSTGRESQL_ADDON_PASSWORD: ${{ secrets.POSTGRESQL_ADDON_PASSWORD }}
       POSTGRESQL_ADDON_URI: ${{ secrets.POSTGRESQL_ADDON_URI }}
 
+    outputs:
+      has-diffs: ${{ steps.detect-diffs.outputs.diffs }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -66,70 +64,78 @@ jobs:
         uses: actions/cache@v4
         id: playwright-cache
         with:
-          path: |
-            ~/.cache/ms-playwright
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: |
           cd front
           yarn install --frozen-lockfile
+
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
           cd front
           yarn playwright install --with-deps chromium
+
       - name: Build Storybook
-        id: build-storybook
         run: |
           cd front
           yarn storybook:build
+
       - name: Serve Storybook
-        id: storybook-server
         run: |
           cd front
           npx http-server ./storybook-static -p 6006 > /dev/null 2>&1 &
           npx wait-on http://localhost:6006/iframe.html
+
       - name: Run BackstopJS tests
-        id: backstop-test
+        id: detect-diffs
         run: |
           cd front
-          yarn backstop:test || (echo "::warning::Visual differences detected" && true)
-      - name: Upload BackstopJS complete report with assets
-        if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed'
+          yarn backstop:test && echo "diffs=false" >> $GITHUB_OUTPUT || echo "diffs=true" >> $GITHUB_OUTPUT
+
+      - name: Upload BackstopJS complete report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backstop-complete-report
           path: front/backstop_data/
           retention-days: 30
 
+      - name: Upload report to GitHub Pages
+        if: steps.detect-diffs.outputs.diffs == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: front/backstop_data/html_report
+
       - name: Comment PR with report link
-        if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed' && github.event_name == 'pull_request_target'
+        if: steps.detect-diffs.outputs.diffs == 'true' && github.event_name == 'pull_request_target'
         uses: actions/github-script@v7
         with:
           script: |
-            const hasDiffs = "${{ steps.backstop-test.outcome == 'failure' }}";
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const comment = `
             ## 📸 Visual Regression Test Results
-            ${hasDiffs === 'true' ? '⚠️ Visual differences detected' : '✅ All visual tests passed'}
+            ⚠️ Visual differences detected
             ### 📊 Test Artifacts
-            - 🔗 **[BackstopJS Complete Report](${runUrl}#artifacts)** - Download "backstop-complete-report" for the full interactive HTML report with all assets
-            ${hasDiffs === 'true' ? 
-              "**Note:** This is not a failure - the report shows visual differences that need review." : ""}
-            ### 📋 Report Contents
-            - Visual comparisons between reference and test images
-            - Detailed diff highlighting
-            - Interactive browser for reviewing scenarios
-            **Artifacts available for 30 days.** Click the links above and download the artifacts from the GitHub Actions run page.`;
+            - 🔗 **[BackstopJS Complete Report](${runUrl}#artifacts)** - Download or view "backstop-complete-report"
+            - 🌐 **GitHub Pages Report** (deployed after PR is merged)
+            ### 📋 Report Includes:
+            - Visual comparisons (reference vs. test)
+            - Highlighted diffs
+            - Interactive viewer
+            **Artifacts are retained for 30 days.**`;
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: comment
             });
+
       - name: Notify if Storybook failed
-        if: steps.storybook-server.outcome == 'failure'
+        if: failure()
         uses: actions/github-script@v7
         with:
           script: |
@@ -137,13 +143,23 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "❌ Visual regression tests failed because the Storybook server could not start. Check the workflow logs for details."
+              body: "❌ Visual regression tests failed. Storybook or test runner may not have started correctly. Please check the workflow logs."
             });
+
+  deploy-pages:
+    needs: visual-regression
+    if: needs.visual-regression.outputs.has-diffs == 'true'
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy BackstopJS Report to GitHub Pages
+        uses: actions/deploy-pages@v4
+
   approve-backstop:
-    # Trigger only on PR closed event
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
@@ -165,7 +181,7 @@ jobs:
           cd front
           yarn install --frozen-lockfile
 
-      - name: Approve BackstopJS tests
+      - name: Approve BackstopJS references
         run: |
           cd front
           yarn backstop:approve
