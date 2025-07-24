@@ -9,15 +9,9 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
-import { Accordion } from '@radix-ui/react-accordion';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { Megaphone, Menu, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 
-import { AccordionMenu } from './AccordionMenu';
+import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
 
 const visualiserMenus: { title: string; href: string; description: string }[] = [
@@ -95,19 +89,15 @@ export default function Navbar() {
     <div className='fixed z-50 w-full border-b bg-white shadow-sm'>
       <div className='flex h-16 items-center justify-between px-6 lg:px-8'>
         {/* Logo */}
-        <Link href='/' className='flex items-center space-x-3'>
-          <div className='flex h-12 w-12 items-center justify-center rounded-full bg-secondary'>
+        <Link href='/' className='flex items-center space-x-2'>
+          <div className='flex h-14 w-36 items-center justify-center'>
             <Image
-              src='/logo-e.svg'
+              src='/eclaireur/logo-navmenu.png'
+              priority
               alt='Éclaireur Public Logo'
-              width={24}
-              height={24}
-              className='text-secondary-foreground'
+              width={340}
+              height={100}
             />
-          </div>
-          <div className='flex flex-col leading-tight'>
-            <span className='text-base font-bold uppercase text-primary'>Éclaireur</span>
-            <span className='text-base font-bold text-primary'>PUBLIC</span>
           </div>
         </Link>
 
@@ -116,7 +106,7 @@ export default function Navbar() {
           <NavigationMenuList>
             <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
             <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
-            <NavigationMenuItem>
+            <NavigationMenuItem className='hidden lg:flex'>
               <Link href='/advanced-search' legacyBehavior passHref>
                 <NavigationMenuLink className='text-base font-medium text-primary hover:text-primary/80'>
                   Télécharger
@@ -142,65 +132,25 @@ export default function Navbar() {
             size='sm'
             className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
           >
-            <Megaphone className='h-4 w-4' />
+            <Link
+              href='/interpeller'
+            >
+              <Image
+                src='/eclaireur/interpeller.svg'
+                alt='Interpeller'
+                width={20}
+                height={20}
+              />
+            </Link>
           </Button>
           {/* Mobile Menu */}
-          <div className='md:hidden'>
-            <MobileNavigationMenu />
-          </div>
+          <MobileMenu
+            visualiserMenus={visualiserMenus}
+            comprendreMenus={comprendreMenus}
+            aProposMenus={aProposMenus}
+          />
         </div>
       </div>
-    </div>
-  );
-}
-
-function MobileNavigationMenu() {
-  return (
-    <div className='md:hidden'>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant='ghost' size='sm' className='rounded-full p-2'>
-            <Menu className='h-5 w-5 text-primary hover:bg-primary/10' />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent
-          sideOffset={20}
-          className='top-16 z-50 w-screen overflow-auto rounded-none rounded-b-3xl border-none bg-white px-4 py-6 shadow-md'
-          align='start'
-          side='top'
-        >
-          {/* Search Bar */}
-          <div className='relative mb-4'>
-            <Input
-              type='search'
-              placeholder='Rechercher...'
-              className='h-12 w-full rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-10 text-primary ring-primary-400 focus:m-0 focus-visible:ring-primary focus-visible:ring-offset-0'
-            />
-            <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-primary' />
-          </div>
-
-          {/* Interpeller Button */}
-          <Button className='mb-4 h-12 w-full rounded-none rounded-br-xl rounded-tl-xl bg-primary text-xl font-semibold text-white'>
-            <Megaphone className='mr-2 h-4 w-4' />
-            Interpeller
-          </Button>
-
-          {/* Accordion Menu */}
-          <Accordion type='single' collapsible className='w-full'>
-            <AccordionMenu title='Visualiser' menus={visualiserMenus} />
-            <AccordionMenu title='Comprendre' menus={comprendreMenus} />
-            <div className='border-b border-primary-200'>
-              <Link href='/advanced-search'>
-                <div className='py-4 text-left text-lg font-semibold text-primary transition-colors hover:text-primary/80'>
-                  Télécharger
-                </div>
-              </Link>
-            </div>
-            <AccordionMenu title='À propos' menus={aProposMenus} last={true} />
-          </Accordion>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }

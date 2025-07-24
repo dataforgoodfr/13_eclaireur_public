@@ -16,7 +16,8 @@
     "backstop:test": "backstop test --config=backstop.config.js",
     "backstop:approve": "backstop approve --config=backstop.config.js",
     "backstop:reference": "backstop reference --config=backstop.config.js",
-    "backstop:report": "backstop openReport --config=backstop.config.js"
+    "backstop:report": "backstop openReport --config=backstop.config.js",
+    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.config.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",
