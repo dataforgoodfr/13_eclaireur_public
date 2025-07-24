@@ -2,14 +2,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
-import { Search } from 'lucide-react';
+
+import SearchCommunity from '@/components/SearchBar/SearchCommunity';
 
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
@@ -85,6 +85,7 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
 ];
 
 export default function Navbar() {
+
   return (
     <div className='fixed z-50 w-full border-b bg-white shadow-sm'>
       <div className='flex h-16 items-center justify-between px-6 lg:px-8'>
@@ -119,15 +120,16 @@ export default function Navbar() {
 
         {/* Search and Settings */}
         <div className='flex items-center space-x-4'>
-          <div className='relative hidden md:block'>
+          <SearchCommunity />
 
+          {/* <div className='relative hidden md:block'>
             <Input
               type='search'
               placeholder='Rechercher...'
               className='w-64 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-10 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
             />
             <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 border-primary text-primary focus:border-primary' />
-          </div>
+          </div> */}
           <Button
             size='sm'
             className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
