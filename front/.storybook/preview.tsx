@@ -1,7 +1,7 @@
-import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Preview } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initialize, mswLoader } from 'msw-storybook-addon';
+import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import '../app/globals.css';
 
 // Initialize MSW

@@ -1,8 +1,8 @@
 'use client';
 
-import { ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
-import { Community } from '@/app/models/community';
+import type { Community } from '@/app/models/community';
 import { debounce } from '@/utils/utils';
 import { Search } from 'lucide-react';
 
@@ -36,18 +36,20 @@ export default function SearchBar({
 
   return (
     <div className={className}>
-      <div className="flex items-center relative m-2">
-        <Input
-          type='search'
-          placeholder='Rechercher...'
-          className='w-64 rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
-          onChange={handleInputChange}
-          onFocus={handleOnFocus}
-          onBlur={(e) => {
-            if (e.relatedTarget === null) handleOnBlur();
-          }}
-        />
-        <Search className='relative -ml-8 h-4 w-4 text-primary' />
+      <div className="relative m-2">
+        <div className="flex items-center">
+          <Input
+            type='search'
+            placeholder='Rechercher...'
+            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            onChange={handleInputChange}
+            onFocus={handleOnFocus}
+            onBlur={(e) => {
+              if (e.relatedTarget === null) handleOnBlur();
+            }}
+          />
+          <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary' />
+        </div>
         {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
       </div>
     </div>

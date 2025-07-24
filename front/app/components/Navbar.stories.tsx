@@ -23,14 +23,19 @@ const meta: Meta<typeof Navbar> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {},
+    args: {
+        isBeta: false
+    },
 };
 
 export const WithBackground: Story = {
-    args: {},
+    args: {
+        isBeta: false
+    },
     decorators: [
         (Story) => (
             <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
@@ -50,7 +55,9 @@ export const WithBackground: Story = {
 };
 
 export const Mobile: Story = {
-    args: {},
+    args: {
+        isBeta: false
+    },
     parameters: {
         layout: 'fullscreen',
     },
@@ -77,8 +84,23 @@ export const Mobile: Story = {
     ],
 };
 
+export const WithBetaBanner: Story = {
+    args: {
+        isBeta: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'This story shows the navbar with the beta banner enabled.',
+            },
+        },
+    },
+};
+
 export const MobileMenuOpen: Story = {
-    args: {},
+    args: {
+        isBeta: false
+    },
     parameters: {
         layout: 'fullscreen',
         docs: {
@@ -94,18 +116,10 @@ export const MobileMenuOpen: Story = {
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-
-        // Wait a bit for the component to render
         await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Find and click the mobile menu button (hamburger menu)
         const menuButton = canvas.getByRole('button');
         await userEvent.click(menuButton);
-
-        // Wait for the menu to open
         await new Promise(resolve => setTimeout(resolve, 300));
-
-        // Verify the menu is open by checking for the search input in the mobile menu
         const searchInputs = canvas.getAllByPlaceholderText('Rechercher...');
         await expect(searchInputs.length).toBeGreaterThan(1);
     },
