@@ -120,7 +120,7 @@ export function formatFirstLetterToUppercase(str: string): string {
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
-  if (type === CommunityType.CA) return `Communauté d'agglomeration`;
+  if (type === CommunityType.CA) return `Communauté d'agglomération`;
   if (type === CommunityType.CC) return 'Communauté de communes';
   if (type === CommunityType.CTU) return 'Collectivité territoriale unique';
   if (type === CommunityType.Commune) return 'Commune';
