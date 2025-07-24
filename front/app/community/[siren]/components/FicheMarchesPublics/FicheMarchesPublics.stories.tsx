@@ -5,6 +5,7 @@ import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publi
 import type { Meta, StoryObj } from '@storybook/react';
 import { http, HttpResponse } from 'msw';
 import { FicheMarchesPublics } from './FicheMarchesPublics';
+// import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears';
 
 const yearlyAmountsData = [
   { "year": 2019, "amount": 1820000 },
