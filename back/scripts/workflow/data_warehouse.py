@@ -23,14 +23,14 @@ class DataWarehouseWorkflow:
         self.chunksize = 10000
 
         self.send_to_db = {
-            "collectivites_test": CommunitiesEnricher.get_output_path(config),
-            "marches_publics_test": MarchesPublicsEnricher.get_output_path(config),
-            "subventions_test": SubventionsEnricher.get_output_path(config),
-            "comptes_collectivites_test": FinancialEnricher.get_output_path(config),
-            "elus_test": ElectedOfficialsEnricher.get_output_path(config),
-            "declarations_interet_test": DeclaInteretWorkflow.get_output_path(config),
-            "communities_contacts_test": CommunitiesContact.get_output_path(config),
-            "bareme_test": BaremeEnricher.get_output_path(config),
+            "collectivites": CommunitiesEnricher.get_output_path(config),
+            "marches_publics": MarchesPublicsEnricher.get_output_path(config),
+            "subventions": SubventionsEnricher.get_output_path(config),
+            "comptes_collectivites": FinancialEnricher.get_output_path(config),
+            "elus": ElectedOfficialsEnricher.get_output_path(config),
+            "declarations_interet": DeclaInteretWorkflow.get_output_path(config),
+            "communities_contacts": CommunitiesContact.get_output_path(config),
+            "bareme": BaremeEnricher.get_output_path(config),
         }
 
     def run(self) -> None:
