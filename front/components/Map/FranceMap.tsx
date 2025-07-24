@@ -19,12 +19,14 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
+import DotsLayer from './DotsLayer';
 import ChoroplethLegend from './Legend';
-import type { TerritoryData } from './MapLayout';
-import type { ChoroplethDataSource } from './MapLayout';
 import MapTooltip from './MapTooltip';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
+import type { TerritoryData } from './types';
+import type { ChoroplethDataSource } from './types';
 import type { HoverInfo } from './types';
+import { createMapPointFeatures } from './utils/createMapPointFeatures';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
@@ -34,16 +36,26 @@ interface MapProps {
   selectedChoroplethData: ChoroplethDataSource;
   viewState: Partial<ViewState>;
   setViewState: (vs: Partial<ViewState>) => void;
+  ranges: Record<string, [number, number]>;
+  selectedRangeOption: string;
+  currentAdminLevel: string;
+  populationMinMax: { min: number; max: number };
 }
+const franceMetropoleBounds: [[number, number], [number, number]] = [
+  [-15, 35],
+  [20, 55],
+];
 
 export default function FranceMap({
   selectedTerritoryData,
   selectedChoroplethData,
   viewState,
   setViewState,
+  ranges,
+  selectedRangeOption,
+  populationMinMax,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
@@ -54,11 +66,14 @@ export default function FranceMap({
   const communesMaxZoom = selectedTerritoryData?.communesMaxZoom || 14;
   const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
-
   const { data: communes, isLoading: communesLoading } = useCommunes(visibleCommuneCodes);
   const { data: departements, isLoading: departementsLoading } =
     useDepartements(visibleDepartementCodes);
   const { data: regions, isLoading: regionsLoading } = useRegions(visibleRegionCodes);
+
+  const regionDots = createMapPointFeatures(regions as Community[]);
+  const departementDots = createMapPointFeatures(departements as Community[]);
+  const communeDots = createMapPointFeatures(communes as Community[]);
 
   const communityMap = useMemo(() => {
     const map: Record<string, Community> = {};
@@ -77,7 +92,6 @@ export default function FranceMap({
     return map;
   }, [regions, departements, communes]);
 
-  // Update viewState when selectedTerritoryData changes
   useEffect(() => {
     const mapInstance = mapRef.current?.getMap();
     if (!mapInstance) return;
@@ -119,6 +133,7 @@ export default function FranceMap({
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
+        maxBounds={territoryFilterCode === 'FR' ? franceMetropoleBounds : undefined}
         onLoad={() => {
           const mapInstance = mapRef.current?.getMap();
           if (mapInstance) {
@@ -132,8 +147,11 @@ export default function FranceMap({
           }
         }}
       >
-        <NavigationControl position='top-right' />
-        <ChoroplethLegend />
+        <NavigationControl position='top-right' showCompass={false} />
+        <ChoroplethLegend
+          populationMinMax={populationMinMax}
+          selectedRangeOption={selectedRangeOption}
+        />
         <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
         <Source
           id='statesData'
@@ -188,6 +206,39 @@ export default function FranceMap({
             choroplethParameter={choroplethParameter}
           />
         </Source>
+        {regionDots?.features?.length > 0 && (
+          <DotsLayer
+            id='regions'
+            data={regionDots}
+            minzoom={0}
+            maxzoom={regionsMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
+        {departementDots?.features?.length > 0 && (
+          <DotsLayer
+            id='departements'
+            data={departementDots}
+            minzoom={regionsMaxZoom}
+            maxzoom={departementsMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
+        {communeDots?.features?.length > 0 && (
+          <DotsLayer
+            id='communes'
+            data={communeDots}
+            minzoom={departementsMaxZoom}
+            maxzoom={communesMaxZoom}
+            minPopulationForRadius={populationMinMax.min}
+            maxPopulationForRadius={populationMinMax.max}
+            populationRange={ranges['population']}
+          />
+        )}
       </Map>
     </div>
   );

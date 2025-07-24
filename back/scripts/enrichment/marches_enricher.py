@@ -1,5 +1,4 @@
 import json
-import typing
 from pathlib import Path
 
 import pandas as pd
@@ -20,22 +19,19 @@ from back.scripts.utils.dataframe_operation import (
 
 
 class MarchesPublicsEnricher(BaseEnricher):
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_dataset_name(cls) -> str:
         return "marches_publics"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
+    def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             MarchesPublicsWorkflow.get_output_path(main_config),
             CPVLabelsWorkflow.get_output_path(main_config),
         ]
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         # Data analysts, please add your code here!
         marches, cpv_labels, *_ = inputs
 
@@ -75,6 +71,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
+            .pipe(cls.drop_rows_with_null_dates_or_amounts)
         )
 
     @staticmethod
@@ -400,6 +397,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .drop(["is_duplicate", "rank", "priority"])
         )
 
+    @staticmethod
     def drop_sous_traitance_duplicates(marches: pl.DataFrame) -> pl.DataFrame:
         """
         Certains MP sont en doublons mais avec la colonne actesSousTraitance différente.
@@ -508,4 +506,13 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return marches.join(id_mapping, on="id_mp", how="left").drop(
             ["id_mp", "id_mp_titulaire"]
+        )
+
+    @staticmethod
+    def drop_rows_with_null_dates_or_amounts(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        Supprime les lignes où 'date_publication_donnees' ou 'montant' sont nulles.
+        """
+        return marches.filter(
+            pl.col("date_publication_donnees").is_not_null() & pl.col("montant").is_not_null()
         )

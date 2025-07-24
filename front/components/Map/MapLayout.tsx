@@ -1,127 +1,68 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
 import FranceMap from './FranceMap';
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
+import PerspectiveSelector from './PerspectiveSelector';
 import TransparencyScoreControls from './TransparencyScoreControls';
+import { choroplethDataSource, territories } from './constants';
+import type { CollectiviteMinMax } from './types';
+import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
+import { createInitialRanges, getMinMaxForAdminLevel } from './utils/perspectiveFunctions';
 
-export type ChoroplethDataSource = {
-  name: string;
-  dataName: string;
+type MapLayoutProps = {
+  minMaxValues: CollectiviteMinMax[];
 };
 
-export const choroplethDataSource: Record<string, ChoroplethDataSource> = {
-  subventions_score: {
-    name: 'Subventions Score',
-    dataName: 'subventions_score',
-  },
-  mp_score: {
-    name: 'Marches Public Score',
-    dataName: 'mp_score',
-  },
-};
-
-// Define the territory data type
-export type TerritoryData = {
-  name: string;
-  viewState: Partial<ViewState>;
-  regionsMaxZoom: number;
-  departementsMaxZoom: number;
-  communesMaxZoom: number;
-  filterCode: string;
-};
-
-export const territories: Record<string, TerritoryData> = {
-  metropole: {
-    name: 'France métropolitaine',
-    viewState: {
-      longitude: 2.2137,
-      latitude: 46.2276,
-      zoom: 5,
-    },
-    regionsMaxZoom: 6,
-    departementsMaxZoom: 8,
-    communesMaxZoom: 14,
-    filterCode: 'FR',
-  },
-  reunion: {
-    name: 'La Réunion',
-    viewState: {
-      longitude: 55.5364,
-      latitude: -21.1151,
-      zoom: 7,
-    },
-    regionsMaxZoom: 8.5,
-    departementsMaxZoom: 10,
-    communesMaxZoom: 14,
-    filterCode: 'RE',
-  },
-  guyane: {
-    name: 'Guyane',
-    viewState: {
-      longitude: -53.1258,
-      latitude: 3.9339,
-      zoom: 6,
-    },
-    regionsMaxZoom: 7,
-    departementsMaxZoom: 7.5,
-    communesMaxZoom: 11,
-    filterCode: 'GF',
-  },
-  mayotte: {
-    name: 'Mayotte',
-    viewState: {
-      longitude: 45.1662,
-      latitude: -12.8275,
-      zoom: 10,
-    },
-    regionsMaxZoom: 9,
-    departementsMaxZoom: 11,
-    communesMaxZoom: 13,
-    filterCode: 'YT',
-  },
-  guadeloupe: {
-    name: 'Guadeloupe',
-    viewState: {
-      longitude: -61.551,
-      latitude: 16.265,
-      zoom: 8,
-    },
-    regionsMaxZoom: 9,
-    departementsMaxZoom: 10.5,
-    communesMaxZoom: 13,
-    filterCode: 'GP',
-  },
-  martinique: {
-    name: 'Martinique',
-    viewState: {
-      longitude: -61.0242,
-      latitude: 14.6415,
-      zoom: 8,
-    },
-    regionsMaxZoom: 10,
-    departementsMaxZoom: 10.5,
-    communesMaxZoom: 13,
-    filterCode: 'MQ',
-  },
-};
-
-export default function MapLayout() {
+export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
+  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population');
+
   const [viewState, setViewState] = useState<Partial<ViewState>>(
     territories['metropole'].viewState,
   );
+
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
   const selectedChoroplethData = choroplethDataSource[selectedScore];
+  const currentAdminLevel = getAdminTypeFromZoom(
+    viewState.zoom || 5,
+    selectedTerritory || 'metropole',
+  );
+
+  // Use the external function
+  const populationMinMax = getMinMaxForAdminLevel(minMaxValues, currentAdminLevel);
+
+  // Initialize ranges state with external function
+  const [ranges, setRanges] = useState<Record<string, [number, number]>>(() =>
+    createInitialRanges(populationMinMax.min, populationMinMax.max),
+  );
+
+  // Move handleRangeChange to useCallback for better performance
+  const handleRangeChange = useCallback((optionId: string, value: [number, number]) => {
+    setRanges((prev) => ({
+      ...prev,
+      [optionId]: value,
+    }));
+  }, []);
+
   // Update viewState when selectedTerritory changes
   useEffect(() => {
     if (selectedTerritory && territories[selectedTerritory]) {
       setViewState(territories[selectedTerritory].viewState);
     }
   }, [selectedTerritory]);
+
+  // Update population range when admin level or territory changes
+  useEffect(() => {
+    setRanges((prev) => ({
+      ...prev,
+      population: [populationMinMax.min, populationMinMax.max],
+    }));
+  }, [populationMinMax.min, populationMinMax.max]);
+
   return (
     <div className='flex min-h-screen w-full'>
       <div className='flex w-2/3 items-center justify-center bg-white'>
@@ -130,6 +71,11 @@ export default function MapLayout() {
           selectedChoroplethData={selectedChoroplethData}
           viewState={viewState}
           setViewState={setViewState}
+          ranges={ranges}
+          selectedRangeOption={selectedRangeOption}
+          // minMaxValues={minMaxValues}
+          currentAdminLevel={currentAdminLevel}
+          populationMinMax={populationMinMax}
         />
       </div>
       <div className='flex min-h-screen w-1/3 flex-col bg-[#ffeccf] px-8 py-20'>
@@ -142,6 +88,15 @@ export default function MapLayout() {
           territories={territories}
           selectedTerritory={selectedTerritory}
           onSelectTerritory={setSelectedTerritory}
+        />
+        <hr className='my-12 border-t border-[#fdc04e]' />
+        <PerspectiveSelector
+          minMaxValues={minMaxValues}
+          currentAdminLevel={currentAdminLevel}
+          selectedOption={selectedRangeOption}
+          onSelectedOptionChange={setSelectedRangeOption}
+          ranges={ranges}
+          onRangeChange={handleRangeChange}
         />
       </div>
     </div>

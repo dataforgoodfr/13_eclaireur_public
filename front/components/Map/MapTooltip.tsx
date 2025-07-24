@@ -13,7 +13,6 @@ export default function MapTooltip({ hoverInfo, communityMap }: MapTooltipProps)
 
   const { feature, type, x, y } = hoverInfo;
   const data = getCommunityDataFromFeature(feature, communityMap);
-
   return (
     <div
       className='pointer-events-none absolute z-50 rounded-lg bg-white px-3 py-2 text-sm text-gray-900 shadow-md'

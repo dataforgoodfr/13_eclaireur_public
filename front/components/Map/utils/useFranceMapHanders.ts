@@ -64,7 +64,6 @@ export function useFranceMapHandlers({
       setHoverInfo(null);
     }
   };
-
   // Handles click on map features
   const onClick = (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];

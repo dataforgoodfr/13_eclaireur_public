@@ -1,0 +1,180 @@
+name: BackstopJS Visual Regression Tests
+on:
+  push:
+    branches: [main, develop]
+  pull_request_target:
+    types: [opened, closed, synchronize, reopened]
+    branches: [main, develop]
+    paths:
+      - "front/**"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to test (optional, for manual runs on PRs)"
+        required: false
+        type: string
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      pull-requests: write
+
+    env:
+      # Only set these if secrets exist (for forks with full deployment setup)
+      CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+      CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+      ORGA_ID: ${{ secrets.ORGA_ID }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
+      GH_CC_CACHE_DEPENDENCIES: ${{ secrets.CC_CACHE_DEPENDENCIES }}
+      GH_CC_CGI_IMPLEMENTATION: ${{ secrets.CC_CGI_IMPLEMENTATION }}
+      GH_CC_NODE_DEV_DEPENDENCIES: ${{ secrets.CC_NODE_DEV_DEPENDENCIES }}
+      GH_CC_WEBROOT: ${{ secrets.CC_WEBROOT }}
+      GH_HOST: ${{ secrets.HOST }}
+      GH_NODE_ENV: ${{ secrets.NODE_ENV }}
+      GH_PORT: ${{ secrets.PORT }}
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      NEXT_PUBLIC_MAPTILES_API_KEY: ${{ secrets.NEXT_PUBLIC_MAPTILES_API_KEY }}
+      POSTGRESQL_ADDON_HOST: ${{ secrets.POSTGRESQL_ADDON_HOST }}
+      POSTGRESQL_ADDON_DB: ${{ secrets.POSTGRESQL_ADDON_DB }}
+      POSTGRESQL_ADDON_USER: ${{ secrets.POSTGRESQL_ADDON_USER }}
+      POSTGRESQL_ADDON_PORT: ${{ secrets.POSTGRESQL_ADDON_PORT }}
+      POSTGRESQL_ADDON_PASSWORD: ${{ secrets.POSTGRESQL_ADDON_PASSWORD }}
+      POSTGRESQL_ADDON_URI: ${{ secrets.POSTGRESQL_ADDON_URI }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event_name == 'workflow_dispatch' && github.repository || github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+          cache-dependency-path: "front/yarn.lock"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: |
+          cd front
+          yarn install --frozen-lockfile
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: |
+          cd front
+          yarn playwright install --with-deps chromium
+      - name: Build Storybook
+        id: build-storybook
+        run: |
+          cd front
+          yarn storybook:build
+      - name: Serve Storybook
+        id: storybook-server
+        run: |
+          cd front
+          npx http-server ./storybook-static -p 6006 > /dev/null 2>&1 &
+          npx wait-on http://localhost:6006/iframe.html
+      - name: Run BackstopJS tests
+        id: backstop-test
+        run: |
+          cd front
+          yarn backstop:test || (echo "::warning::Visual differences detected" && true)
+      - name: Upload BackstopJS complete report with assets
+        if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backstop-complete-report
+          path: front/backstop_data/
+          retention-days: 30
+
+      - name: Comment PR with report link
+        if: steps.storybook-server.outcome == 'success' && steps.backstop-test.outcome != 'failed' && github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasDiffs = "${{ steps.backstop-test.outcome == 'failure' }}";
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const comment = `
+            ## 📸 Visual Regression Test Results
+            ${hasDiffs === 'true' ? '⚠️ Visual differences detected' : '✅ All visual tests passed'}
+            ### 📊 Test Artifacts
+            - 🔗 **[BackstopJS Complete Report](${runUrl}#artifacts)** - Download "backstop-complete-report" for the full interactive HTML report with all assets
+            ${hasDiffs === 'true' ? 
+              "**Note:** This is not a failure - the report shows visual differences that need review." : ""}
+            ### 📋 Report Contents
+            - Visual comparisons between reference and test images
+            - Detailed diff highlighting
+            - Interactive browser for reviewing scenarios
+            **Artifacts available for 30 days.** Click the links above and download the artifacts from the GitHub Actions run page.`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      - name: Notify if Storybook failed
+        if: steps.storybook-server.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "❌ Visual regression tests failed because the Storybook server could not start. Check the workflow logs for details."
+            });
+  approve-backstop:
+    # Trigger only on PR closed event
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+          cache-dependency-path: "front/yarn.lock"
+
+      - name: Install dependencies
+        run: |
+          cd front
+          yarn install --frozen-lockfile
+
+      - name: Approve BackstopJS tests
+        run: |
+          cd front
+          yarn backstop:approve
+
+      - name: Commit and push approved references
+        run: |
+          cd front
+          git config user.name "anticor"
+          git config user.email "anticor@users.noreply.github.com"
+          git add backstop_data/bitmaps_reference
+          git commit -m "chore: approve BackstopJS references post-merge [skip ci]" || echo "No changes to commit"
+          git push

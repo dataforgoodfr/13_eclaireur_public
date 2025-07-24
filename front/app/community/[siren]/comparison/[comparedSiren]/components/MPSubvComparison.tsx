@@ -72,7 +72,7 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
   }
 
   return (
-    <div className='sm:mx-2 basis-1/2 flex-col space-y-2 text-center'>
+    <div className='basis-1/2 flex-col space-y-2 text-center sm:mx-2'>
       <p>Montant total : {formatCompactPrice(data.total_amount)}</p>
       <p>
         Nombre de {getName(comparisonType)} : {data.total_number}

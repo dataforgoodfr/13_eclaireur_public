@@ -1,4 +1,3 @@
-import typing
 from datetime import datetime
 from pathlib import Path
 
@@ -10,22 +9,19 @@ from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
 class CommunitiesEnricher(BaseEnricher):
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_dataset_name(cls) -> str:
         return "communities"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
+    def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             CommunitiesSelector.get_output_path(main_config),
             BaremeEnricher.get_output_path(main_config),
         ]
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         communities, bareme = inputs
 
         current_year = datetime.now().year
