@@ -11,6 +11,7 @@ import {
 
 import SearchCommunity from '@/components/SearchBar/SearchCommunity';
 
+import { Wrench } from 'lucide-react';
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
 
@@ -83,11 +84,17 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
     description: '',
   },
 ];
-
+const BandeauBeta = () => (
+  <div className='fixed top-16 z-0 w-full bg-card-secondary-foreground-1 py-1 pl-1 text-center text-sm'>
+    <Wrench className='inline scale-x-[-1]' size='16' />
+    <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
+    fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
+  </div>
+);
 export default function Navbar() {
-
+  const isBeta = true
   return (
-    <div className='fixed z-50 w-full border-b bg-white shadow-sm'>
+    <>
       <div className='flex h-16 items-center justify-between px-6 lg:px-8'>
         {/* Logo */}
         <Link href='/' className='flex items-center space-x-2'>
@@ -117,19 +124,11 @@ export default function Navbar() {
             <NavigationMenuGroup title='À propos' menus={aProposMenus} />
           </NavigationMenuList>
         </NavigationMenu>
+        {isBeta && <BandeauBeta />}
 
         {/* Search and Settings */}
         <div className='flex items-center space-x-4'>
           <SearchCommunity />
-
-          {/* <div className='relative hidden md:block'>
-            <Input
-              type='search'
-              placeholder='Rechercher...'
-              className='w-64 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-10 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
-            />
-            <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 border-primary text-primary focus:border-primary' />
-          </div> */}
           <Button
             size='sm'
             className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
@@ -153,6 +152,6 @@ export default function Navbar() {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }
