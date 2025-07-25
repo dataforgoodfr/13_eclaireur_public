@@ -1,6 +1,11 @@
-import * as actual from '@/utils/db';
 import { fn } from '@storybook/test';
 
-export * from '@/utils/db';
+// Create a mock Pool instance
+const mockPool = {
+    connect: fn().mockName('connect'),
+    query: fn().mockName('query'),
+    end: fn().mockName('end'),
+};
 
-export const getQueryFromPool = fn(actual.getQueryFromPool).mockName('getQueryFromPool');
+export const getQueryFromPool = fn().mockName('getQueryFromPool');
+export default mockPool;
