@@ -11,18 +11,16 @@ export async function fetchCommunitiesBySearch(
   query: string,
   page = 1,
 ): Promise<Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
-  const url = new URL(API_ROUTE, baseURL);
+  const url = new URL(API_ROUTE, window.location.origin);
 
   url.searchParams.append('query', query);
   url.searchParams.append('page', page.toString());
 
-  const res = await fetch(url.toString(), { method: 'get' });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch communities with query ' + query);
   }
 
-  return (await res.json()) as Promise<Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>[]>;
+  return await res.json();
 }

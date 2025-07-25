@@ -5,7 +5,6 @@ import { Pagination } from '../types';
 import { CommunitiesAdvancedSearchFilters } from './fetchCommunitiesAdvancedSearch-server';
 
 const API_ROUTE = '/api/advanced_search';
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 /**
  * Fetch communities using API routes
@@ -19,7 +18,7 @@ export async function fetchCommunitiesAdvancedSearch(
 ): Promise<AdvancedSearchCommunity[]> {
   const { type, population, mp_score, subventions_score } = filters;
 
-  const url = new URL(API_ROUTE, baseURL);
+  const url = new URL(API_ROUTE, window.location.origin);
 
   if (type) url.searchParams.append('type', type);
   if (population) url.searchParams.append('population', population.toString());
@@ -32,11 +31,11 @@ export async function fetchCommunitiesAdvancedSearch(
   url.searchParams.append('by', order.by);
   url.searchParams.append('direction', order.direction);
 
-  const res = await fetch(url.toString(), { method: 'get' });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch communities');
   }
 
-  return (await res.json()) as Promise<AdvancedSearchCommunity[]>;
+  return await res.json();
 }
