@@ -3,12 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install": "next build",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js"
+    "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "backstop:test": "backstop test --config=backstop.config.js",
+    "backstop:approve": "backstop approve --config=backstop.config.js",
+    "backstop:reference": "backstop reference --config=backstop.config.js",
+    "backstop:report": "backstop openReport --config=backstop.config.js",
+    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.config.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",
@@ -27,7 +36,6 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-query": "^5.66.4",
-    "@turf/centroid": "^7.2.0",
     "@types/pg": "^8.11.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -36,11 +44,13 @@
     "fs": "^0.0.1-security",
     "lucide-react": "^0.475.0",
     "maplibre-gl": "^5.2.0",
+    "msw": "^2.10.4",
     "next": "^15.2.4",
     "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
     "pg-copy-streams": "^6.0.6",
     "pg-promise": "^11.13.0",
+    "playwright": "^1.54.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",
@@ -54,6 +64,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "1.47.2",
+    "@storybook/addon-essentials": "^9.0.0-alpha.12",
+    "@storybook/addon-interactions": "^9.0.0-alpha.10",
+    "@storybook/addon-links": "^9.0.17",
+    "@storybook/blocks": "^9.0.0-alpha.17",
+    "@storybook/nextjs": "^9.0.17",
+    "@storybook/test": "^9.0.0-alpha.2",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
     "@types/node": "^20",
@@ -62,12 +79,20 @@
     "@types/pg-copy-streams": "^1.2.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "backstopjs": "^6.3.25",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "msw-storybook-addon": "^2.0.5",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "storybook": "^9.0.17",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import typing
+import logging
 from pathlib import Path
 
 import polars as pl
@@ -6,8 +6,10 @@ from polars import col
 
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator
-from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.utils.config import get_project_base_path
+from back.scripts.utils.decorators import tracker
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SubventionsEnricher:
@@ -16,7 +18,7 @@ class SubventionsEnricher:
         return "subventions"
 
     @classmethod
-    def get_input_paths(cls, main_config: dict) -> typing.List[Path]:
+    def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             TopicAggregator.get_output_path(
                 TopicAggregator.substitute_config(
@@ -27,9 +29,6 @@ class SubventionsEnricher:
             SireneWorkflow.get_output_path(main_config),
         ]
 
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_output_path(cls, main_config: dict) -> Path:
         return (
@@ -39,13 +38,14 @@ class SubventionsEnricher:
         )
 
     @classmethod
+    @tracker(ulogger=LOGGER, log_start=True)
     def enrich(cls, main_config: dict) -> None:
         inputs = map(pl.scan_parquet, cls.get_input_paths(main_config))
         output = cls._clean_and_enrich(inputs)
         output.sink_parquet(cls.get_output_path(main_config))
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.LazyFrame]) -> pl.LazyFrame:
+    def _clean_and_enrich(cls, inputs: list[pl.LazyFrame]) -> pl.LazyFrame:
         """
         Enrich the raw subvention dataset
         """

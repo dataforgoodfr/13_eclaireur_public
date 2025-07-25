@@ -1,8 +1,8 @@
 'use client';
 
-import { ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
-import { Community } from '@/app/models/community';
+import type { Community } from '@/app/models/community';
 import { debounce } from '@/utils/utils';
 import { Search } from 'lucide-react';
 
@@ -10,10 +10,14 @@ import { Input } from '../ui/input';
 import Suggestions from './SearchSuggestions';
 
 type SearchBarProps = {
+  className?: string;
   onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
-export default function SearchBar({ onSelect }: SearchBarProps) {
+export default function SearchBar({
+  className = 'relative hidden md:block',
+  onSelect,
+}: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
@@ -31,20 +35,23 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
   const showSuggestions = query.length > 0 && isFocused;
 
   return (
-    <div className='relative w-4/5'>
-      <div className='relative'>
-        <Search className='absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground' />
-        <Input
-          className='pl-8 pr-4'
-          placeholder='Rechercher par Code postal, Commune, Département, Région'
-          onChange={handleInputChange}
-          onFocus={handleOnFocus}
-          onBlur={(e) => {
-            if (e.relatedTarget === null) handleOnBlur();
-          }}
-        />
+    <div className={className}>
+      <div className="relative m-2">
+        <div className="flex items-center">
+          <Input
+            type='search'
+            placeholder='Rechercher...'
+            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            onChange={handleInputChange}
+            onFocus={handleOnFocus}
+            onBlur={(e) => {
+              if (e.relatedTarget === null) handleOnBlur();
+            }}
+          />
+          <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary' />
+        </div>
+        {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
       </div>
-      {showSuggestions && <Suggestions query={query} onSelect={onSelect} />}
     </div>
   );
 }

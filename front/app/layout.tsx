@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Kanit } from 'next/font/google';
 
 import Footer from '@/app/components/Footer';
 import Navbar from '@/app/components/Navbar';
@@ -8,15 +8,13 @@ import { Toaster } from '@/components/ui/toaster';
 import Providers from './Providers';
 import './globals.css';
 
-const geistSans = Geist({
+const kanit = Kanit({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   variable: '--font-geist-sans',
+  display: 'swap', // Optional: improves performance by loading
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 const baseURL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -54,6 +52,9 @@ export const metadata: Metadata = {
     'Audit des dépenses',
     'Participation citoyenne',
   ],
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -64,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang='fr'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
+        className={`${kanit.variable}  flex h-screen flex-col antialiased`}
       >
         <Providers>
           <Navbar />

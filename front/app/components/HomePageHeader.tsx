@@ -20,7 +20,12 @@ export default function HomePageHeader() {
             La plateforme citoyenne pour rendre transparentes et accessibles les dépenses publiques
             des collectivités locales.
           </h2>
-          <SearchBar onSelect={({ siren }) => navigateToCommunityPage(siren)} />
+          <div className='mx-auto flex w-4/5 min-w-[400] justify-center'>
+            <SearchBar
+              className="relative hidden w-64 md:block md:w-96 lg:w-[32rem]"
+              onSelect={({ siren }) => navigateToCommunityPage(siren)}
+            />
+          </div>
         </div>
       </div>
     </div>

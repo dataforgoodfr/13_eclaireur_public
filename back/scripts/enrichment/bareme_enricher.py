@@ -12,9 +12,6 @@ from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 
 
 class BaremeEnricher(BaseEnricher):
-    def __init__(self):
-        raise Exception("Utility class.")
-
     @classmethod
     def get_dataset_name(cls) -> str:
         return "bareme"
