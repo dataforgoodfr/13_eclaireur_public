@@ -1,5 +1,5 @@
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { YearOption } from '@/app/community/[siren]/types/interface';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { YearOption } from '#app/community/[siren]/types/interface';
 
 type SectionSeparatorProperties = {
   sectionTitle: string;

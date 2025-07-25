@@ -1,5 +1,5 @@
-import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
-import { formatPrice } from '@/utils/utils';
+import { fetchCommunityAccounts } from '#utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
+import { formatPrice } from '#utils/utils';
 
 async function getCommunityAccounts(siren: string) {
   const communitiesAccountsResults = await fetchCommunityAccounts({ filters: { siren } });

@@ -1,4 +1,4 @@
-import { Community } from '@/app/models/community';
+import { Community } from '#app/models/community';
 
 import getAdminTypeFromLayerId from './getAdminTypeFromLayerId';
 

@@ -1,4 +1,4 @@
-import { MarchePublic, PaginatedMarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic, PaginatedMarchePublic } from '#app/models/marchePublic';
 
 import { Pagination } from '../types';
 

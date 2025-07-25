@@ -1,7 +1,6 @@
+import { Community } from '#app/models/community';
 import { type Meta, type StoryObj } from '@storybook/react';
-import { http } from 'msw';
 import Page from './page';
-import { Community } from '@/app/models/community';
 
 // Mock data for a community
 const mockCommunity: Community = {
@@ -39,7 +38,7 @@ const mockFetchCommunities = async (options?: any, pagination?: any): Promise<Co
 };
 
 // Mock the module where fetchCommunities is imported
-jest.mock('@/utils/fetchers/communities/fetchCommunities-server', () => ({
+jest.mock('#utils/fetchers/communities/fetchCommunities-server', () => ({
   fetchCommunities: jest.fn(mockFetchCommunities),
 }));
 

@@ -1,4 +1,4 @@
-import { type FormSchema } from '@/components/Interpellate/types';
+import { type FormSchema } from '#components/Interpellate/types';
 
 export async function postInterpellate(data: FormSchema) {
   return await fetch('/api/interpellate', {

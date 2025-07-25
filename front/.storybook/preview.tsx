@@ -37,7 +37,6 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => {
-      // console.log('Rendering Story component...');
       return (
         <QueryClientProvider client={queryClient} >
           <Story />

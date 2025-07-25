@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '#components/ui/button';
 import { Accordion } from '@radix-ui/react-accordion';
 import {
     DropdownMenu,

@@ -1,4 +1,4 @@
-import { TableCell } from '@/components/ui/table';
+import { TableCell } from '#components/ui/table';
 
 type PercentageBarCellProps = {
   /** Percentage value from 0 to 100 */

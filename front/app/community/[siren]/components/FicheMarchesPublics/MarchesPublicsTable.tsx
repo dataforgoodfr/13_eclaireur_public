@@ -1,8 +1,8 @@
 'use client';
 
-import { WithPagination } from '@/components/Pagination';
-import Loading from '@/components/ui/Loading';
-import { Badge } from '@/components/ui/badge';
+import { WithPagination } from '#components/Pagination';
+import Loading from '#components/ui/Loading';
+import { Badge } from '#components/ui/badge';
 import {
   Table as ShadCNTable,
   TableBody,
@@ -10,10 +10,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useMarchesPublicsPaginated } from '@/utils/hooks/useMarchesPublicsPaginated';
-import { usePagination } from '@/utils/hooks/usePagination';
-import { formatAmount } from '@/utils/utils';
+} from '#components/ui/table';
+import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
+import { usePagination } from '#utils/hooks/usePagination';
+import { formatAmount } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';

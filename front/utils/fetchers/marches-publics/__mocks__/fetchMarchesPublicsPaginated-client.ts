@@ -1,4 +1,4 @@
-import { PaginatedMarchePublic } from '@/app/models/marchePublic';
+import { PaginatedMarchePublic } from '#app/models/marchePublic';
 import { Pagination } from '../types';
 
 // Mock data for different scenarios
@@ -76,21 +76,21 @@ export async function fetchMarchesPublicsPaginated(
 ): Promise<PaginatedMarchePublic[]> {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  
+
   // Get the base data for this siren
   const baseData = mockData[communitySiren] || mockData['213105554'];
-  
+
   // Filter by year if specified
-  const yearFilteredData = year 
+  const yearFilteredData = year
     ? baseData.filter(item => item.annee_notification === year)
     : baseData;
-  
+
   // Apply pagination
   const { page, limit } = pagination;
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
   const paginatedData = yearFilteredData.slice(startIndex, endIndex);
-  
+
   // Return paginated data with total count
   return paginatedData.map(item => ({
     ...item,

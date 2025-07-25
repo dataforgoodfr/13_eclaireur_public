@@ -1,10 +1,10 @@
 
-import { getQueryFromPool } from '#utils/db';
-import { mockFetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server.mock';
-import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock';
+import { getQueryFromPool } from '#utils/db.mock';
+import { mockFetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server.mock';
+import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Suspense } from 'react';
 import { FicheMarchesPublics } from './FicheMarchesPublics';
-// import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears';
 
 const mockData = [
   {
@@ -74,18 +74,17 @@ const meta = {
       { year: 2025 },
     ]);
   },
-  // decorators: [
-  //   (Story) => {
-
-  //     return (
-  //       <div style={{ width: '800px' }}>
-  //         {/* <Suspense fallback={<div>Loading...</div>}> */}
-  //         <Story />
-  //         {/* </Suspense> */}
-  //       </div>
-  //     );
-  //   }
-  // ]
+  decorators: [
+    (Story) => {
+      return (
+        <div style={{ width: '800px' }}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Story />
+          </Suspense>
+        </div>
+      );
+    }
+  ]
 } satisfies Meta<typeof FicheMarchesPublics>;
 
 export default meta;

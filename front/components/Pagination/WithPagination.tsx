@@ -1,6 +1,6 @@
 import { HTMLAttributes, PropsWithChildren } from 'react';
 
-import { cn } from '@/utils/utils';
+import { cn } from '#utils/utils';
 
 import { Pagination, PaginationProps } from './Pagination';
 

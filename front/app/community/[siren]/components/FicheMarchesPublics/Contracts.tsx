@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { usePagination } from '@/utils/hooks/usePagination';
+import DownloadButton from '#app/community/[siren]/components/DownloadDataButton';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
 import MarchesPublicsTable from './MarchesPublicsTable';

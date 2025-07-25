@@ -1,6 +1,6 @@
+import { usePagination } from '#utils/hooks/usePagination';
 import type { Meta, StoryObj } from '@storybook/react';
 import MarchesPublicsTable from './MarchesPublicsTable';
-import { usePagination } from '@/utils/hooks/usePagination';
 
 // Helper component to provide pagination props
 function MarchesPublicsTableWithPagination(props: any) {

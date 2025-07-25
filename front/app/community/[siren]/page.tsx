@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';

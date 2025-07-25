@@ -1,5 +1,5 @@
-import { Elu } from '@/app/models/elu';
-import { getQueryFromPool } from '@/utils/db';
+import { Elu } from '#app/models/elu';
+import { getQueryFromPool } from '#utils/db';
 
 import { Pagination } from '../types';
 import { ElusOptions, createSQLQueryParams } from './createSQLQueryParams';

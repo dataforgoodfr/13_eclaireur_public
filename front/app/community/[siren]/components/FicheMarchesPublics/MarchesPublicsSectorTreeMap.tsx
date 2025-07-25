@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import Loading from '@/components/ui/Loading';
-import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
+import Loading from '#components/ui/Loading';
+import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';

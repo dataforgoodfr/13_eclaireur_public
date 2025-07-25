@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { fetchCommunitiesAdvancedSearch } from '@/utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
-import { CommunityType } from '@/utils/types';
-import { parseDirection, parseNumber } from '@/utils/utils';
+import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { fetchCommunitiesAdvancedSearch } from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
+import { CommunityType } from '#utils/types';
+import { parseDirection, parseNumber } from '#utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;

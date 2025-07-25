@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '#components/ui/switch';
 
 type GraphSwitchProps = {
   label1: ReactNode;

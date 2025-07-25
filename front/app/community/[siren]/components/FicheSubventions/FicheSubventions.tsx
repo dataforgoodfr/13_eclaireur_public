@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
-import { fetchSubventionsAvailableYears } from '@/utils/fetchers/subventions/fetchSubventionsAvailableYears';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+import { fetchSubventions } from '#utils/fetchers/subventions/fetchSubventions-server';
+import { fetchSubventionsAvailableYears } from '#utils/fetchers/subventions/fetchSubventionsAvailableYears';
 
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';

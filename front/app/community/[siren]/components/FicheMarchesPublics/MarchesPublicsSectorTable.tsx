@@ -1,10 +1,10 @@
 'use client';
 
-import { WithPagination } from '@/components/Pagination';
-import Loading from '@/components/ui/Loading';
-import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
-import { usePagination } from '@/utils/hooks/usePagination';
-import { roundNumber } from '@/utils/utils';
+import { WithPagination } from '#components/Pagination';
+import Loading from '#components/ui/Loading';
+import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
+import { usePagination } from '#utils/hooks/usePagination';
+import { roundNumber } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';

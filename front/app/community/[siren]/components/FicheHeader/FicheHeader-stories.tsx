@@ -1,6 +1,6 @@
+import { Community } from '#app/models/community';
 import type { Meta, StoryObj } from '@storybook/react';
 import { FicheHeader } from './FicheHeader';
-import { Community } from '@/app/models/community';
 
 // Mock data for a community
 const mockCommunity: Community = {

@@ -1,4 +1,4 @@
-import { getQueryFromPool } from '@/utils/db';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 

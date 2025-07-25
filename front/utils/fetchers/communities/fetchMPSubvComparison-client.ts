@@ -1,5 +1,5 @@
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { MPSubvComparison } from '@/app/models/comparison';
+import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
+import { MPSubvComparison } from '#app/models/comparison';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 function getAPIRoute(siren: string) {

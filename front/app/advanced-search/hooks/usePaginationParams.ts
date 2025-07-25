@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Pagination } from '@/utils/fetchers/types';
-import { parseNumber } from '@/utils/utils';
+import { Pagination } from '#utils/fetchers/types';
+import { parseNumber } from '#utils/utils';
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 10;

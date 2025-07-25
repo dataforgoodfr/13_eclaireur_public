@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { getQueryFromPool } from '@/utils/db';
-import { ElusOptions, createSQLQueryParams } from '@/utils/fetchers/elus/createSQLQueryParams';
-import { Pagination } from '@/utils/fetchers/types';
+import { getQueryFromPool } from '#utils/db';
+import { ElusOptions, createSQLQueryParams } from '#utils/fetchers/elus/createSQLQueryParams';
+import { Pagination } from '#utils/fetchers/types';
 
 async function getDataFromPool(options: ElusOptions, pagination?: Pagination) {
   const params = createSQLQueryParams(options, pagination);
@@ -37,9 +37,9 @@ export async function GET(request: Request) {
     const pagination =
       page !== undefined && limit !== undefined
         ? {
-            limit,
-            page,
-          }
+          limit,
+          page,
+        }
         : undefined;
     const data = await getDataFromPool({ filters: { type, siren }, limit }, pagination);
 

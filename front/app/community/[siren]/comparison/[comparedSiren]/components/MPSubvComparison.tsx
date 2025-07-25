@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import Loading from '@/components/ui/Loading';
+import Loading from '#components/ui/Loading';
 import {
   Table as ShadCNTable,
   TableBody,
@@ -11,10 +11,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import SectionSeparator from '@/components/utils/SectionSeparator';
-import { useMPSubvComparison } from '@/utils/hooks/comparison/useMPSubvComparison';
-import { formatCompactPrice } from '@/utils/utils';
+} from '#components/ui/table';
+import SectionSeparator from '#components/utils/SectionSeparator';
+import { useMPSubvComparison } from '#utils/hooks/comparison/useMPSubvComparison';
+import { formatCompactPrice } from '#utils/utils';
 
 import { YearOption } from '../../../types/interface';
 import { ComparisonType } from './ComparisonType';

@@ -1,4 +1,4 @@
-import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchCommunitiesAdvancedSearch } from '../fetchers/advanced-search/fetchCommunitiesAdvancedSearch-client';

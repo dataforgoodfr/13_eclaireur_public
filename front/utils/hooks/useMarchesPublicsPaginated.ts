@@ -1,4 +1,4 @@
-import { MarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic } from '#app/models/marchePublic';
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchMarchesPublicsPaginated } from '../fetchers/marches-publics/fetchMarchesPublicsPaginated-client';

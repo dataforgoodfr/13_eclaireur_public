@@ -1,5 +1,5 @@
-import InterpellateForm from '@/components/Interpellate/InterpellateForm';
-import Stepper from '@/components/Interpellate/Stepper';
+import InterpellateForm from '#components/Interpellate/InterpellateForm';
+import Stepper from '#components/Interpellate/Stepper';
 
 export default async function InterpellateStep3({
   params,

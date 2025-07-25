@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
 
-import Footer from '@/app/components/Footer';
-import Navbar from '@/app/components/Navbar';
-import { Toaster } from '@/components/ui/toaster';
+import Footer from '#app/components/Footer';
+import Navbar from '#app/components/Navbar';
+import { Toaster } from '#components/ui/toaster';
 
 import Providers from './Providers';
 import './globals.css';

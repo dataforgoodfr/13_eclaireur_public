@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { fetchSubventionsByNaf } from '@/utils/fetchers/subventions/fetchSubventionsByNaf-server';
-import { parseNumber } from '@/utils/utils';
+import { fetchSubventionsByNaf } from '#utils/fetchers/subventions/fetchSubventionsByNaf-server';
+import { parseNumber } from '#utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
