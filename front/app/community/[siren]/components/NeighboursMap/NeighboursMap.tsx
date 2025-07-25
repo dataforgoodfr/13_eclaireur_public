@@ -1,8 +1,8 @@
 import MapWithCityMarkers, {
   City,
-} from '@/app/community/[siren]/components/NeighboursMap/MapWithCityMarkers';
-import { Community } from '@/app/models/community';
-import { fetchCommunitiesByRadius } from '@/utils/fetchers/communities/fetchCommunitiesByRadius-server';
+} from '#app/community/[siren]/components/NeighboursMap/MapWithCityMarkers';
+import { Community } from '#app/models/community';
+import { fetchCommunitiesByRadius } from '#utils/fetchers/communities/fetchCommunitiesByRadius-server';
 
 type CommunityPageProps = { community: Community };
 

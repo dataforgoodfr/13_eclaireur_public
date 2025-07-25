@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 
 import type { Metadata } from 'next';
 
-import InterpellateFAQ from '@/components/Interpellate/InterpellateFAQ';
+import InterpellateFAQ from '#components/Interpellate/InterpellateFAQ';
 
 import { SelectedContactsProvider } from './Contexts/SelectedContactsContext';
 

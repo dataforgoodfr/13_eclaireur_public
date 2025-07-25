@@ -1,7 +1,6 @@
-import React from 'react';
+import { NoData } from '#app/community/[siren]/components/NoData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { FicheCard } from '../FicheCard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { NoData } from '@/app/community/[siren]/components/NoData';
 
 export async function FicheSubventions({ siren }: { siren: string }) {
   if (siren === 'nodata') {

@@ -1,7 +1,7 @@
 'use client';
 
-import Loading from '@/components/ui/Loading';
-import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
+import Loading from '#components/ui/Loading';
+import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { useOrderParams } from '../hooks/useOrderParams';

@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Stepper from '@/components/Interpellate/Stepper';
-import { buttonVariants } from '@/components/ui/button';
+import Stepper from '#components/Interpellate/Stepper';
+import { buttonVariants } from '#components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
 export default async function InterpellateStep4({

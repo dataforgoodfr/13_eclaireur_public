@@ -1,5 +1,5 @@
-import { CommunityType } from '@/utils/types';
-import { stringifyCommunityType } from '@/utils/utils';
+import { CommunityType } from '#utils/types';
+import { stringifyCommunityType } from '#utils/utils';
 
 import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Selector } from './Selector';

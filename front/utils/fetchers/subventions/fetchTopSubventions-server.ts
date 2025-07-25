@@ -1,5 +1,5 @@
-import { Subvention } from '@/app/models/subvention';
-import { getQueryFromPool } from '@/utils/db';
+import { Subvention } from '#app/models/subvention';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 

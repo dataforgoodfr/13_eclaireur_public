@@ -1,5 +1,5 @@
 // utils/fetchers/subventions/__mocks__/fetchSubventions-server.ts
-import { Subvention } from '@/app/models/subvention'
+import { Subvention } from '#app/models/subvention'
 import { SubventionsParams } from '../createSQLQueryParams'
 
 const mockSubventionsData: Subvention[] = [

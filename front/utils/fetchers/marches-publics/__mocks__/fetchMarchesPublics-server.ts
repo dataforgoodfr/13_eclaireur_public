@@ -1,5 +1,5 @@
 // utils/fetchers/marches-publics/__mocks__/fetchMarchesPublics-server.ts
-import { MarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic } from '#app/models/marchePublic';
 import { MarchesPublicsParams } from '../createSQLQueryParams';
 
 const mockMarchesPublicsData: MarchePublic[] = [

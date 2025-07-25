@@ -1,6 +1,6 @@
-import advancedSearchImg from '@/public/advancedSearchImg.png';
-import carteImg from '@/public/carteImg.png';
-import interpellateImg from '@/public/interpellateImg.png';
+import advancedSearchImg from '#public/advancedSearchImg.png';
+import carteImg from '#public/carteImg.png';
+import interpellateImg from '#public/interpellateImg.png';
 
 import CtaCard from './CtaCard';
 

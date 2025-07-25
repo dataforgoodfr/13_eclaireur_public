@@ -1,4 +1,4 @@
-import { Elu } from '@/app/models/elu';
+import { Elu } from '#app/models/elu';
 
 import { Pagination } from '../types';
 import { ElusOptions } from './createSQLQueryParams';

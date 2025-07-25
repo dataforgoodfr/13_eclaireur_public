@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Order } from '@/utils/fetchers/types';
-import { parseDirection } from '@/utils/utils';
+import { Order } from '#utils/fetchers/types';
+import { parseDirection } from '#utils/utils';
 
 export type AdvancedSearchOrder = Order<
   'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score' | 'subventions_budget'

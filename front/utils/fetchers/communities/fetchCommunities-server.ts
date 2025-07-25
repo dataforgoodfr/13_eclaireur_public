@@ -1,5 +1,5 @@
-import { Community } from '@/app/models/community';
-import { getQueryFromPool } from '@/utils/db';
+import { Community } from '#app/models/community';
+import { getQueryFromPool } from '#utils/db';
 
 import { Pagination } from '../types';
 import { CommunitiesOptions, createSQLQueryParams } from './createSQLQueryParams';
