@@ -1,5 +1,5 @@
-import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
-import { downloadURL } from '@/utils/downloader/downloadURL';
+import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { downloadURL } from '#utils/downloader/downloadURL';
 
 import { CommunitiesAdvancedSearchFilters } from '../fetchCommunitiesAdvancedSearch-server';
 

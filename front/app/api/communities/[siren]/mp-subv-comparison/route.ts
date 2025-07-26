@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { fetchMPSubvComparison } from '@/utils/fetchers/communities/fetchMPSubvComparison-server';
-import { parseNumber } from '@/utils/utils';
+import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
+import { fetchMPSubvComparison } from '#utils/fetchers/communities/fetchMPSubvComparison-server';
+import { parseNumber } from '#utils/utils';
 
 export async function GET(request: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {

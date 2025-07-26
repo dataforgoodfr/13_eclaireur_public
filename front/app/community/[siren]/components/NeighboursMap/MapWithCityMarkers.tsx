@@ -9,7 +9,7 @@ import {
   Popup,
 } from 'react-map-gl/maplibre';
 
-import { Community } from '@/app/models/community';
+import { Community } from '#app/models/community';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import Pin from './Pin';

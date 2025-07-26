@@ -1,6 +1,6 @@
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { MPSubvComparison } from '@/app/models/comparison';
-import { getQueryFromPool } from '@/utils/db';
+import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
+import { MPSubvComparison } from '#app/models/comparison';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 
@@ -8,28 +8,28 @@ const MARCHES_PUBLICS_TABLE_NAME = DataTable.MarchesPublics;
 const SUBVENTIONS_TABLE_NAME = DataTable.Subventions;
 
 function createSQLQueryParams(
-  siren: string,
-  year: number,
-  comparisonType: ComparisonType,
+    siren: string,
+    year: number,
+    comparisonType: ComparisonType,
 ): [string, (string | number)[]] {
-  const values = [siren, year];
-  let tableName, sirenProperty, yearProperty, labelProperty: string;
-  switch (comparisonType) {
-    case ComparisonType.Marches_Publics:
-      tableName = MARCHES_PUBLICS_TABLE_NAME;
-      sirenProperty = 'acheteur_id';
-      yearProperty = 'annee_notification';
-      labelProperty = 'cpv_2_label';
-      break;
-    case ComparisonType.Subventions:
-      tableName = SUBVENTIONS_TABLE_NAME;
-      sirenProperty = 'id_attribuant';
-      yearProperty = 'annee';
-      labelProperty = 'objet';
-      break;
-  }
+    const values = [siren, year];
+    let tableName, sirenProperty, yearProperty, labelProperty: string;
+    switch (comparisonType) {
+        case ComparisonType.Marches_Publics:
+            tableName = MARCHES_PUBLICS_TABLE_NAME;
+            sirenProperty = 'acheteur_id';
+            yearProperty = 'annee_notification';
+            labelProperty = 'cpv_2_label';
+            break;
+        case ComparisonType.Subventions:
+            tableName = SUBVENTIONS_TABLE_NAME;
+            sirenProperty = 'id_attribuant';
+            yearProperty = 'annee';
+            labelProperty = 'objet';
+            break;
+    }
 
-  const querySQL = `
+    const querySQL = `
 WITH filtered_data AS (
     SELECT
         ${sirenProperty} as siren,
@@ -83,20 +83,20 @@ FROM
     total_calculations tc;
   `;
 
-  return [querySQL, values];
+    return [querySQL, values];
 }
 
 /**
  * Fetch the transparency score of a community for a given year
  */
 export async function fetchMPSubvComparison(
-  siren: string,
-  year: number,
-  comparisonType: ComparisonType,
+    siren: string,
+    year: number,
+    comparisonType: ComparisonType,
 ): Promise<MPSubvComparison> {
-  const params = createSQLQueryParams(siren, year, comparisonType);
-  const rows = (await getQueryFromPool(...params)) as MPSubvComparison[];
+    const params = createSQLQueryParams(siren, year, comparisonType);
+    const rows = (await getQueryFromPool(...params)) as MPSubvComparison[];
 
-  if (rows.length === 0) return {} as MPSubvComparison;
-  return rows[0];
+    if (rows.length === 0) return {} as MPSubvComparison;
+    return rows[0];
 }

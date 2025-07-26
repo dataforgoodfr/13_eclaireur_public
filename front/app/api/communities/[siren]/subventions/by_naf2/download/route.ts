@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { getCopyStream } from '@/app/api/csv-stream/utils';
-import { createSQLQueryParams } from '@/utils/fetchers/subventions/fetchSubventionsByNaf-server';
-import { parseNumber } from '@/utils/utils';
+import { getCopyStream } from '#app/api/csv-stream/utils';
+import { createSQLQueryParams } from '#utils/fetchers/subventions/fetchSubventionsByNaf-server';
+import { parseNumber } from '#utils/utils';
 
 const DEFAULT_FILE_NAME = 'subventions_by_naf2.csv';
 const MAX_NUMBER_ROWS = 1_000_000;

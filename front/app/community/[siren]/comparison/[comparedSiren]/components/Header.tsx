@@ -1,6 +1,6 @@
-import { FicheComparisonInput } from '@/app/community/[siren]/components/FicheHeader/FicheComparisonInput';
-import GoBack from '@/app/community/[siren]/components/GoBack';
-import { Community } from '@/app/models/community';
+import { FicheComparisonInput } from '#app/community/[siren]/components/FicheHeader/FicheComparisonInput';
+import GoBack from '#app/community/[siren]/components/GoBack';
+import { Community } from '#app/models/community';
 
 type FicheHeaderProps = {
   community: Community;

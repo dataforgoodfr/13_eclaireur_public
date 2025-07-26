@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchSubventions } from '@/utils/fetchers/subventions/fetchSubventions-server';
-import { fetchSubventionsAvailableYears } from '@/utils/fetchers/subventions/fetchSubventionsAvailableYears';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+import { fetchSubventions } from '#utils/fetchers/subventions/fetchSubventions-server';
+import { fetchSubventionsAvailableYears } from '#utils/fetchers/subventions/fetchSubventionsAvailableYears';
 
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
@@ -20,7 +20,7 @@ async function getSubventions(siren: string) {
 
 type FicheSubventionsProps = { siren: string };
 
-export async function FicheSubventions({ siren }: FicheSubventionsProps) {
+export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);
 

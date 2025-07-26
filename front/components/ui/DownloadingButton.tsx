@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PropsWithChildren } from 'react';
 
-import { createCSVDownloadingLink } from '@/utils/fetchers/csv/fetchCSV-client';
+import { createCSVDownloadingLink } from '#utils/fetchers/csv/fetchCSV-client';
 
 type DownloadingButtonProps<T extends Record<string, any>> = PropsWithChildren<{
   params: Parameters<typeof createCSVDownloadingLink<T>>[0];

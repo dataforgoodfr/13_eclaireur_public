@@ -1,4 +1,4 @@
-import { Elu } from '@/app/models/elu';
+import { Elu } from '#app/models/elu';
 
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';

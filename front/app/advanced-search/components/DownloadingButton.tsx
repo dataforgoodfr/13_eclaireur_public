@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-import { createAdvancedSearchDownloadingURL } from '@/utils/fetchers/advanced-search/download/downloadAdvancedSearch-client';
+import { Button } from '#components/ui/button';
+import { createAdvancedSearchDownloadingURL } from '#utils/fetchers/advanced-search/download/downloadAdvancedSearch-client';
 
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { useOrderParams } from '../hooks/useOrderParams';

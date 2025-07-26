@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { Label } from '@/components/ui/label';
+import { Label } from '#components/ui/label';
 import {
   Select,
   SelectContent,
@@ -9,7 +9,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '#components/ui/select';
 
 const NONE_VALUE = 'Tout';
 

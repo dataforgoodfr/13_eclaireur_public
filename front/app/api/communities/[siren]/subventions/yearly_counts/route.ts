@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fetchSubventionYearlyCounts } from '@/utils/fetchers/subventions/fetchSubventionYearlyCounts-server';
+import { fetchSubventionYearlyCounts } from '#utils/fetchers/subventions/fetchSubventionYearlyCounts-server';
 
 export async function GET(_: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {

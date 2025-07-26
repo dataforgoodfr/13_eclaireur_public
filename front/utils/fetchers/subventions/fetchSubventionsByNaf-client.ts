@@ -1,4 +1,4 @@
-import { SubventionSector } from '@/app/models/subvention';
+import { SubventionSector } from '#app/models/subvention';
 
 import { Pagination } from '../types';
 

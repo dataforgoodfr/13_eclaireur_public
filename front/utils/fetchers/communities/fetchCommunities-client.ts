@@ -1,4 +1,4 @@
-import { Community } from '@/app/models/community';
+import { Community } from '#app/models/community';
 
 import { Pagination } from '../types';
 import { CommunitiesOptions } from './createSQLQueryParams';

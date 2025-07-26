@@ -8,11 +8,11 @@ import { useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
-import { useSelectedContactsContext } from '@/app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
-import { CommunityContact } from '@/app/models/communityContact';
-import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
+import { CommunityContact } from '#app/models/communityContact';
+import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
+import { Button, buttonVariants } from '#components/ui/button';
+import { Checkbox } from '#components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -20,9 +20,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { postInterpellate } from '@/utils/fetchers/interpellate/postInterpellate';
+} from '#components/ui/form';
+import { Input } from '#components/ui/input';
+import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 

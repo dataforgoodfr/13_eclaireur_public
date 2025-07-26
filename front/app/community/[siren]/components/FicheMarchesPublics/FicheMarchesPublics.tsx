@@ -1,9 +1,10 @@
-import { NoData } from '@/app/community/[siren]/components/NoData';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchMarchesPublics } from '@/utils/fetchers/marches-publics/fetchMarchesPublics-server';
-import { fetchMarchesPublicsAvailableYears } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+
+import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
+import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 import { FicheCard } from '../FicheCard';
+import { NoData } from '../NoData';
 import Contracts from './Contracts';
 import Distribution from './Distribution';
 import Evolution from './Evolution';
@@ -24,11 +25,11 @@ async function getMarchesPublics(siren: string) {
 
   return marchesPublicsResults;
 }
-
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  const availableYears = await fetchMarchesPublicsAvailableYears(siren);
-
+  // const marchesPublics = [];
+  const availableYears = await fetchMarchesPublicsAvailableYears(siren)
+  // const availableYears = [2021, 2022, 2023];
   return (
     <FicheCard>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>

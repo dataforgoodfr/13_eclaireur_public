@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '#components/ui/dropdown-menu';
 import { ArrowDownToLine } from 'lucide-react';
 
 type DownloadDropDownProps = {

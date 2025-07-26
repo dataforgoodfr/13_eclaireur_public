@@ -1,5 +1,5 @@
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { CommunityType } from '@/utils/types';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { CommunityType } from '#utils/types';
 
 import { Paginated } from './pagination';
 

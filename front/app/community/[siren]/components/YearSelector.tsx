@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { getAllYearsFrom2018ToCurrent } from '@/utils/utils';
+} from '#components/ui/select';
+import { getAllYearsFrom2018ToCurrent } from '#utils/utils';
 
 import { YearOption } from '../types/interface';
 

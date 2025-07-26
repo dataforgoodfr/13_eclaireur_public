@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
-import MapLayout from '@/components/Map/MapLayout';
-import type { CollectiviteMinMax } from '@/components/Map/types';
-import { getQueryFromPool } from '@/utils/db';
+import MapLayout from '#components/Map/MapLayout';
+import type { CollectiviteMinMax } from '#components/Map/types';
+import { getQueryFromPool } from '#utils/db';
 
 export const metadata: Metadata = {
   title: 'Cartographie',

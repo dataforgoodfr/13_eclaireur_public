@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 
-import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 import {
   CommunitiesAdvancedSearchFilters,
   createSQLQueryParams,
-} from '@/utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
-import { Pagination } from '@/utils/fetchers/types';
-import { CommunityType } from '@/utils/types';
-import { parseDirection, parseNumber } from '@/utils/utils';
+} from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
+import { Pagination } from '#utils/fetchers/types';
+import { CommunityType } from '#utils/types';
+import { parseDirection, parseNumber } from '#utils/utils';
 
 import { getCopyStream } from '../../csv-stream/utils';
 

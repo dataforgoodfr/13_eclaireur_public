@@ -1,8 +1,8 @@
 'use client';
 
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Slider } from '@/components/ui/slider';
+import { Label } from '#components/ui/label';
+import { RadioGroup, RadioGroupItem } from '#components/ui/radio-group';
+import { Slider } from '#components/ui/slider';
 
 import type { AdminType } from './types';
 import { formatValue } from './utils/perspectiveFunctions';
