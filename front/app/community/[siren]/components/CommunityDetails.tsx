@@ -1,18 +1,5 @@
-impor type { Community } from '#app/models/community';
-import { type } from 'os';
-import { CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
-import { from } from 'pg-copy-streams';
-import { Community } from '#app/models/community.js';
-import { formatNumberInteger, stringifyCommunityType } from '#utils/utils';
-
-const collectivitesLabel = 'Collectivités';
-const populationLabel = 'Population';
-const populationUnit = 'habitants';
-const agentsLabel = "Nombre d'agents administratifs";
-const agentsUnit = 'agents';
-// const totalBudgetLabel = 'Budget total';
-const obligationPublicationText = `Soumise à l'obligation de publication`;
-const pasObligationPublicationText = `Non soumise à l'obligation de publication`;
+import type { Community } from '#app/models/community';
+import { formatNumberInteger } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
