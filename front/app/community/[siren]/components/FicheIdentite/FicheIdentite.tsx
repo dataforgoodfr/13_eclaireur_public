@@ -25,14 +25,15 @@ export function FicheIdentite({ community }: FicheIdentiteProps) {
 
   return (
     <FicheCard header={<FicheIndentiteEnTete />}>
-      <div className='mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
-        <section className='w-full flex flex-col gap-6'>
+      <div className="mb-10 flex flex-col-reverse md:flex-row w-full gap-6">
+        <section className="w-full md:w-1/3 flex flex-col gap-6">
           <CommunityDetails community={community} />
         </section>
-        <section className='w-full flex flex-col gap-6'>
+        <section className="w-full md:w-2/3 h-64 md:h-96 rounded-lg overflow-hidden">
           <NeighboursMap community={community} />
         </section>
       </div>
+
     </FicheCard>
   );
 }
