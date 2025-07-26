@@ -84,26 +84,23 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
     >
       <g transform={`translate(${SVG_CONFIG.margin}, ${SVG_CONFIG.margin})`}>
         {scoreValues.map((scoreValue, i) => {
-          if (scoreValue === activeScore) return null;
+          const baseX = i * (SQUARE_SIZE + GAP);
+
+          const isActive = scoreValue === activeScore;
 
           return (
             <ScoreTile
               key={scoreValue}
               score={scoreValue}
-              transform={`translate(${i * (SQUARE_SIZE + GAP)}, 0)`}
-              rectangleClassName='fill-gray-200 rounded-none rounded-br-2xl rounded-tl-2xl'
+              transform={
+                isActive
+                  ? `translate(${baseX}, 0) scale(${ACTIVE_SCORE_SCALE}) translate(${translateDueToScaleFactor}, ${translateDueToScaleFactor})`
+                  : `translate(${baseX}, 0)`
+              }
+              rectangleClassName={isActive ? 'fill-lime-400' : 'fill-gray-200'}
             />
           );
         })}
-
-        {activeScore !== null && (
-          <ScoreTile
-            score={activeScore}
-            transform={`scale(${ACTIVE_SCORE_SCALE}) translate(${(activeScoreIndex * (SQUARE_SIZE + GAP)) / ACTIVE_SCORE_SCALE + translateDueToScaleFactor
-              }, ${translateDueToScaleFactor})`}
-            rectangleClassName='fill-lime-500 rounded-none rounded-br-2xl rounded-tl-2xl'
-          />
-        )}
       </g>
 
       <g transform={`translate(${SVG_CONFIG.margin}, ${SVG_CONFIG.margin})`}>
