@@ -3,11 +3,9 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { FicheSubventions } from './FicheSubventions'
 
 const meta: Meta<typeof FicheSubventions> = {
-  title: 'Community/FicheSubventions',
+  // title: 'Community/FicheSubventions',
   component: FicheSubventions,
-  tags: ['autodocs'],
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component: 'Component displaying subventions data with tabs for different views.',

@@ -24,6 +24,7 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    layout: 'centered',
     nextjs: {
       appDirectory: true,
     },
@@ -47,7 +48,7 @@ const preview: Preview = {
   loaders: [
     mswLoader
   ],
-  tags: ['autodocs'],
+  tags: ['autodocs']
 };
 
 export default preview;

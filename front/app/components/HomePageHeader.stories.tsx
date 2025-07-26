@@ -19,7 +19,6 @@ const meta: Meta<typeof HomePageHeader> = {
             },
         },
     },
-    tags: ['autodocs'],
 };
 
 export default meta;

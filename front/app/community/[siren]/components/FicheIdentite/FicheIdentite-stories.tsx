@@ -20,11 +20,9 @@ const mockCommunity: Community = {
 };
 
 const meta: Meta<typeof FicheIdentite> = {
-  title: 'Community/FicheIdentite',
+  // title: 'Community/FicheIdentite',
   component: FicheIdentite,
-  tags: ['autodocs'],
   parameters: {
-    layout: 'centered',
   },
   args: {
     community: mockCommunity,

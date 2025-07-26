@@ -20,9 +20,8 @@ const mockCommunity: Community = {
 };
 
 const meta: Meta<typeof FicheHeader> = {
-  title: 'Community/FicheHeader',
+  // title: 'Community/FicheHeader',
   component: FicheHeader,
-  tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
   },
