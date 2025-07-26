@@ -8,27 +8,27 @@ import { FicheIdentite } from './FicheIdentite';
 const mockCommunity = {
     siren: '213105554',
     type: CommunityType.Commune,
-    nom: 'Ville de Test',
-    code_insee: '13055',
-    code_insee_departement: '13',
-    code_insee_region: '93',
+    nom: 'Toulouse',
+    code_insee: '31555',
+    code_insee_departement: '31',
+    code_insee_region: '76',
     categorie: 'Commune',
-    population: 85000,
-    superficie_ha: 24000,
-    latitude: 43.2965,
-    longitude: 5.3698,
+    population: 493465,
+    superficie_ha: 11830,
+    latitude: 43.6045,
+    longitude: 1.4442,
     mp_score: TransparencyScore.A,
     subventions_score: TransparencyScore.B,
-    siren_epci: '200054807',
+    siren_epci: '243100518',
     naf8: '84.11Z',
-    tranche_effectif: 500,
-    id_datagouv: 'test-id',
-    url_platfom: 'https://data.test-ville.fr',
+    tranche_effectif: 1000,
+    id_datagouv: 'toulouse-id',
+    url_platfom: 'https://data.toulouse.fr',
     techno_platfom: 'udata',
     effectifs_sup_50: true,
     should_publish: true,
     outre_mer: false,
-    code_postal: 13000
+    code_postal: 31000
 };
 
 const minimalCommunity = {
@@ -59,14 +59,29 @@ const minimalCommunity = {
 
 const neighboursMockData = [
     {
-        longitude: 5.4,
-        latitude: 43.3,
-        nom: 'Ville Voisine 1'
+        nom: 'Blagnac',
+        latitude: 43.6386,
+        longitude: 1.3936
     },
     {
-        longitude: 5.5,
-        latitude: 43.4,
-        nom: 'Ville Voisine 2'
+        nom: 'Balma',
+        latitude: 43.6178,
+        longitude: 1.4998
+    },
+    {
+        nom: 'Colomiers',
+        latitude: 43.6108,
+        longitude: 1.3321
+    },
+    {
+        nom: 'Ramonville-Saint-Agne',
+        latitude: 43.5411,
+        longitude: 1.4750
+    },
+    {
+        nom: 'Aucamville',
+        latitude: 43.6717,
+        longitude: 1.4331
     }
 ];
 
@@ -76,7 +91,7 @@ const meta = {
         getQueryFromPool.mockImplementation((query, params) => {
             if (params && params.length === 3) {
                 const [lat, lon, radius] = params;
-                if (lat === 43.2965 && lon === 5.3698 && radius === 10000) {
+                if (lat === 43.6045 && lon === 1.4442 && radius === 10000) {
                     return neighboursMockData;
                 }
             }
@@ -84,7 +99,6 @@ const meta = {
         });
     },
     parameters: {
-        layout: 'centered',
         react: {
             rsc: true,
         },
@@ -95,7 +109,7 @@ const meta = {
                     const lat = url.searchParams.get('lat');
                     const lon = url.searchParams.get('lon');
 
-                    if (lat === '43.2965' && lon === '5.3698') {
+                    if (lat === '43.6045' && lon === '1.4442') {
                         return HttpResponse.json(neighboursMockData);
                     }
                     return HttpResponse.json([]);
@@ -122,6 +136,15 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         community: mockCommunity,
+    },
+};
+
+export const NonSoumisAObligation: Story = {
+    args: {
+        community: {
+            ...mockCommunity,
+            should_publish: false,
+        },
     },
 };
 
