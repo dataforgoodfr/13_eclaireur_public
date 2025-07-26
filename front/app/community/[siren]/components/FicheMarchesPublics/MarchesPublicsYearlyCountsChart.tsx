@@ -1,8 +1,8 @@
 'use client';
 
-import Loading from '@/components/ui/Loading';
-import { useMarchesPublicsYearlyCounts } from '@/utils/hooks/useMarchesPublicsYearlyCounts';
-import { formatCompact } from '@/utils/utils';
+import Loading from '#components/ui/Loading';
+import { useMarchesPublicsYearlyCounts } from '#utils/hooks/useMarchesPublicsYearlyCounts';
+import { formatCompact } from '#utils/utils';
 import {
   Bar,
   LabelList,

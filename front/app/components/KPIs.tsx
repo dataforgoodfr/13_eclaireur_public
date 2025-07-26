@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
 
-import { fetchKPIs } from '@/utils/fetchers/kpis/fetchKPIs';
-import { cn, formatCompactPrice, formatNumberInteger } from '@/utils/utils';
+import { fetchKPIs } from '#utils/fetchers/kpis/fetchKPIs';
+import { cn, formatCompactPrice, formatNumberInteger } from '#utils/utils';
 
 const KPIS_YEAR = 2023;
 

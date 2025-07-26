@@ -1,6 +1,6 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 
-import { cn } from '@/utils/utils';
+import { cn } from '#utils/utils';
 
 type ErrorFetchingProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 

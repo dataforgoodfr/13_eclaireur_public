@@ -7,9 +7,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { formatAmount, formatCompact, formatFirstLetterToUppercase } from '@/utils/utils';
+} from '#components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#components/ui/tooltip';
+import { formatAmount, formatCompact, formatFirstLetterToUppercase } from '#utils/utils';
 
 import PercentageBarCell from './PercentageBarCell';
 

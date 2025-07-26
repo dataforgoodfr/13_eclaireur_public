@@ -5,8 +5,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { buttonVariants } from '@/components/ui/button';
+} from '#components/ui/accordion';
+import { buttonVariants } from '#components/ui/button';
 import { ChevronRight } from 'lucide-react';
 
 export default function InterpellateFAQ() {

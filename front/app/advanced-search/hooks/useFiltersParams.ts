@@ -2,10 +2,10 @@ import { useCallback } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Community } from '@/app/models/community';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { CommunityType } from '@/utils/types';
-import { parseNumber } from '@/utils/utils';
+import { Community } from '#app/models/community';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { CommunityType } from '#utils/types';
+import { parseNumber } from '#utils/utils';
 
 import { DEFAULT_PAGE } from './usePaginationParams';
 

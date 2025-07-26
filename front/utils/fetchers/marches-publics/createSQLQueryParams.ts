@@ -1,4 +1,4 @@
-import { MarchePublic } from '@/app/models/marchePublic';
+import { MarchePublic } from '#app/models/marchePublic';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';

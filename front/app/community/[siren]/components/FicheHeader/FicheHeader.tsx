@@ -1,7 +1,7 @@
 'use client';
 
-import { Community } from '@/app/models/community';
-import CopyUrlButton from '@/components/utils/CopyUrlButton';
+import { Community } from '#app/models/community';
+import CopyUrlButton from '#components/utils/CopyUrlButton';
 
 import GoBack from '../GoBack';
 import { FicheComparisonInput } from './FicheComparisonInput';

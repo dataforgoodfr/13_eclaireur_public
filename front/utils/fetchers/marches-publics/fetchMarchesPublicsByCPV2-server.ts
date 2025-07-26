@@ -1,5 +1,5 @@
-import { MarchePublicSector } from '@/app/models/marchePublic';
-import { getQueryFromPool } from '@/utils/db';
+import { MarchePublicSector } from '#app/models/marchePublic';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 import { Pagination } from '../types';

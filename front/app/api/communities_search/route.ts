@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getQueryFromPool } from '@/utils/db';
-import { createSQLQueryParams } from '@/utils/fetchers/communities/fetchCommunitiesBySearch-server';
+import { getQueryFromPool } from '#utils/db';
+import { createSQLQueryParams } from '#utils/fetchers/communities/fetchCommunitiesBySearch-server';
 
 async function getDataFromPool(query: string, page: number) {
   const params = createSQLQueryParams(query, page);

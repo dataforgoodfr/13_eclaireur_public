@@ -1,13 +1,13 @@
 import Link from 'next/link';
 
-import BadgeCommunity from '@/components/Communities/BadgeCommunity';
-import BudgetGlobal from '@/components/Communities/BudgetGlobal';
-import MiniFicheCommunity from '@/components/Communities/MiniFicheCommunity';
-import RankingCommunity from '@/components/Communities/RankingCommunity';
-import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
-import Stepper from '@/components/Interpellate/Stepper';
-import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import BadgeCommunity from '#components/Communities/BadgeCommunity';
+import BudgetGlobal from '#components/Communities/BudgetGlobal';
+import MiniFicheCommunity from '#components/Communities/MiniFicheCommunity';
+import RankingCommunity from '#components/Communities/RankingCommunity';
+import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
+import Stepper from '#components/Interpellate/Stepper';
+import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { MoveRight } from 'lucide-react';
 
 export default async function InterpellateStep1({

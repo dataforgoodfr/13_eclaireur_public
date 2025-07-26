@@ -1,5 +1,5 @@
-import { AdvancedSearchOrder } from '@/app/advanced-search/hooks/useOrderParams';
-import { AdvancedSearchCommunity } from '@/app/models/community';
+import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchCommunity } from '#app/models/community';
 
 import { Pagination } from '../types';
 import { CommunitiesAdvancedSearchFilters } from './fetchCommunitiesAdvancedSearch-server';

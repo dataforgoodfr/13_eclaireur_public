@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getQueryFromPool } from '@/utils/db';
-import { createSQLQueryParams } from '@/utils/fetchers/communities/fetchCommunitiesByRadius-server';
+import { getQueryFromPool } from '#utils/db';
+import { createSQLQueryParams } from '#utils/fetchers/communities/fetchCommunitiesByRadius-server';
 
 async function getDataFromPool(latitude: number, longitude: number, radius: number) {
   const params = createSQLQueryParams(latitude, longitude, radius);

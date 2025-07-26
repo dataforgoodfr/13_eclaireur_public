@@ -1,5 +1,5 @@
-import db from '@/utils/db';
-import { nodeStreamToStream } from '@/utils/nodeStreamToStream';
+import db from '#utils/db';
+import { nodeStreamToStream } from '#utils/nodeStreamToStream';
 import { to } from 'pg-copy-streams';
 import { as } from 'pg-promise';
 

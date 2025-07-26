@@ -1,8 +1,8 @@
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { fetchCommunityAccounts } from '@/utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
-import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
-import { fetchContacts } from '@/utils/fetchers/contacts/fetchContacts-server';
+import { fetchCommunityAccounts } from '#utils/fetchers/communities-accounts/fetchCommunityAccounts-server';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
+import { fetchContacts } from '#utils/fetchers/contacts/fetchContacts-server';
 
 type CommunityLocalisationCardProps = {
   communitySiren: string;

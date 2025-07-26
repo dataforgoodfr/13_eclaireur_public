@@ -2,8 +2,8 @@
 
 import { type ChangeEvent, useState } from 'react';
 
-import type { Community } from '@/app/models/community';
-import { debounce } from '@/utils/utils';
+import { Community } from '#app/models/community';
+import { debounce } from '#utils/utils';
 import { Search } from 'lucide-react';
 
 import { Input } from '../ui/input';
