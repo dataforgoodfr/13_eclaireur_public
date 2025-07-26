@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+import pandera.polars as pa
 import polars as pl
 from tqdm import tqdm
 
@@ -57,9 +58,13 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
         }
         loader = BaseLoader.loader_factory(raw_filename, **opts)
         df_lazy = loader.load_lazy()
-        validation_df = Ofgl2024RecordDataframe.validate(df_lazy)
-        val_path = raw_filename.parent / "validation.parquet"
-        validation_df.sink_parquet(val_path, lazy=True)
+        try:
+            Ofgl2024RecordDataframe.validate(df_lazy, lazy=True)
+        except pa.errors.SchemaErrors as e:
+            val_path = raw_filename.parent / "validation.parquet"
+            LOGGER.error(f"OFGL data validation failed, saving errors to {val_path}")
+            e.failure_cases.lazy().sink_parquet(val_path)
+            return None
         df_lazy = (
             df_lazy.rename({k: v for k, v in READ_COLUMNS.items() if v}, strict=False)
             .pipe(normalize_column_names_pl)
@@ -78,11 +83,12 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
         if insee_col and insee_col in df_lazy.columns:
             df_lazy = df_lazy.with_columns(pl.col(insee_col).alias("code_insee"))
 
-        return (
+        df_lazy = (
             df_lazy.sort("exercice", descending=True)
             .unique(subset=["siren"], keep="first")
             .pipe(normalize_identifiant_pl, id_col="siren", format=IdentifierFormat.SIREN)
         )
+        return df_lazy
 
 
 class OfglWorkflow(IWorkflow):
