@@ -15,12 +15,7 @@ const config: StorybookConfig = {
   ],
   "framework": {
     "name": "@storybook/nextjs",
-    "options": {
-      "builder": {
-        "name": "@storybook/builder-vite",
-        "options": {}
-      }
-    }
+    "options": {}
   },
   features: {
     experimentalRSC: true,
