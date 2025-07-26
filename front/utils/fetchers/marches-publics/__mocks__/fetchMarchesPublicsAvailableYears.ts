@@ -1,10 +1,4 @@
-// utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears.ts
+import { fn } from '@storybook/test';
 
-export async function fetchMarchesPublicsAvailableYears(): Promise<number[]> {
-    console.log('🎯 Mock fetchMarchesPublicsAvailableYears called');
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Return a mock array of available years
-    return [2021, 2022, 2023];
-}
+export * from '../fetchMarchesPublicsAvailableYears';
+export const fetchMarchesPublicsAvailableYears = fn().mockName('fetchMarchesPublicsAvailableYears');

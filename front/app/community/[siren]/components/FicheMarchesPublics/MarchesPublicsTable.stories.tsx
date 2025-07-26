@@ -9,9 +9,8 @@ function MarchesPublicsTableWithPagination(props: any) {
 }
 
 const meta: Meta<typeof MarchesPublicsTableWithPagination> = {
-  title: 'Community/FicheMarchesPublics/MarchesPublicsTable',
+  // title: 'Community/FicheMarchesPublics/MarchesPublicsTable',
   component: MarchesPublicsTableWithPagination,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
