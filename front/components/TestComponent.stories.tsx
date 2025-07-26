@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import TestComponent from './TestComponent';
 
 const meta: Meta<typeof TestComponent> = {
-  title: 'Test/TestComponent',
+  title: 'Test/MSWComponent',
   component: TestComponent,
   parameters: {
     msw: {
