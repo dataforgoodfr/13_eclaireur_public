@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -9,6 +10,9 @@ export default {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				kanit: ['var(--font-kanit)'],
+			},
 			backgroundImage: {
 				'homepage-header': 'url("/transparency.png")',
 			},
@@ -124,5 +128,5 @@ export default {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [animate],
 } satisfies Config;
