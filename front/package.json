@@ -112,15 +112,15 @@
   },
   "imports": {
     "#utils/db": {
-      "storybook": "./utils/db.mock.ts",
+      "storybook": "./utils/__mocks__/db.ts",
       "default": "./utils/db.ts"
     },
     "#utils/fetchers/marches-publics/fetchMarchesPublics-server": {
-      "storybook": "./utils/fetchers/marches-publics/fetchMarchesPublics-server.mock.ts",
+      "storybook": "./utils/fetchers/marches-publics/__mocks__/fetchMarchesPublics-server.ts",
       "default": "./utils/fetchers/marches-publics/fetchMarchesPublics-server.ts"
     },
     "#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears": {
-      "storybook": "./utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock.ts",
+      "storybook": "./utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears.ts",
       "default": "./utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.ts"
     },
     "#*": [

@@ -1,9 +1,8 @@
 
-import { getQueryFromPool } from '#utils/db.mock';
-import { mockFetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server.mock';
-import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.mock';
+import { getQueryFromPool } from '#utils/__mocks__/db';
+import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/__mocks__/fetchMarchesPublics-server';
+import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Suspense } from 'react';
 import { FicheMarchesPublics } from './FicheMarchesPublics';
 
 const mockData = [
@@ -57,14 +56,12 @@ const mockData = [
 const meta = {
   component: FicheMarchesPublics,
   parameters: {
-    // layout: 'centered',
     react: {
       rsc: true,
-      // suspense: true
     }
   },
   async beforeEach() {
-    mockFetchMarchesPublics.mockResolvedValue(mockData);
+    fetchMarchesPublics.mockResolvedValue(mockData);
     fetchMarchesPublicsAvailableYears.mockResolvedValue([
       2021, 2022, 2024,
     ]);
@@ -74,17 +71,17 @@ const meta = {
       { year: 2025 },
     ]);
   },
-  decorators: [
-    (Story) => {
-      return (
-        <div style={{ width: '800px' }}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Story />
-          </Suspense>
-        </div>
-      );
-    }
-  ]
+  // decorators: [
+  //   (Story) => {
+  //     return (
+  //       <div style={{ width: '800px' }}>
+  //         <Suspense fallback={<div>Loading...</div>}>
+  //           <Story />
+  //         </Suspense>
+  //       </div>
+  //     );
+  //   }
+  // ]
 } satisfies Meta<typeof FicheMarchesPublics>;
 
 export default meta;
@@ -95,14 +92,6 @@ export const Default: Story = {
   args: {
     siren: '213105554',
   },
-  // parameters: {
-  //   nextjs: {
-  //     appDirectory: true,
-  //     // navigation: {
-  //     //   segments: [['community', '213105554']],
-  //     // }
-  //   },
-  // },
 };
 
 export const NoData: Story = {
@@ -119,7 +108,7 @@ export const NoData: Story = {
   },
   decorators: [
     (Story) => {
-      mockFetchMarchesPublics.mockResolvedValue([]);
+      fetchMarchesPublics.mockResolvedValue([]);
       fetchMarchesPublicsAvailableYears.mockResolvedValue([]);
       getQueryFromPool.mockResolvedValue([]);
 
