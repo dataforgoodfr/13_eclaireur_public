@@ -1,34 +1,17 @@
 import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '#components/TransparencyScore/constants';
-import { Badge } from '#components/ui/badge';
-import { Trophy } from 'lucide-react';
+import type { TransparencyScore } from '#components/TransparencyScore/constants';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
-import TooltipScore from './TooltipScore';
+
+
+import { FicheCard } from '../FicheCard';
 
 const mainTitle = 'Score de transparence agrégé';
 
 function trendToText(trend: number, margin = 0.01) {
-  if (trend <= margin && trend >= -margin) return '= Transparence inchangée';
-
-  if (trend < margin) return 'Transparence en baisse';
-
-  return 'Transparence en hausse';
-}
-
-type TrendBadgeProps = {
-  value: number;
-  /**
-   * Margin to determine trend text
-   */
-  margin?: number;
-};
-
-function TrendBadge({ value, margin }: TrendBadgeProps) {
-  return (
-    <Badge variant='outline' className='rounded-2xl p-2'>
-      {trendToText(value, margin)}
-    </Badge>
-  );
+  if (trend <= margin && trend >= -margin) return { text: '= Transparence inchangée', icon: null };
+  if (trend < margin) return { text: 'Transparence en baisse', icon: <TrendingDown className="h-4 w-4" /> };
+  return { text: 'Transparence en hausse', icon: <TrendingUp className="h-4 w-4" /> };
 }
 
 type TransparencyScoreProps = {
@@ -36,20 +19,30 @@ type TransparencyScoreProps = {
   trend: number;
 };
 
+const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
+  const { text: trendText, icon: TrendIcon } = trendToText(trend);
+  const trendColor = trendText === 'Transparence en hausse' ? 'bg-lime-200' : trendText === 'Transparence en baisse' ? 'bg-red-200' : 'bg-gray-200';
+
+  return (
+    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center'>
+      <div className="flex items-center gap-2">
+        <h2 className='text-3xl md:text-4xl font-extrabold text-primary'>
+          {mainTitle}
+        </h2>
+      </div>
+      <span className={`text-xs sm:text-sm px-3 py-1 mt-2 sm:mt-0 rounded-full text-primary font-bold flex items-center gap-1 ${trendColor}`}>
+        {TrendIcon && TrendIcon} {trendText}
+      </span>
+    </div>
+  );
+};
+
 export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
   return (
-    <div className='mx-auto flex max-w-screen-md flex-col items-center justify-between'>
-      <div className='flex items-center gap-4 text-xl font-bold'>
-        <Trophy />
-        <p>{mainTitle}</p>
-        <TooltipScore />
+    <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
+      <div className='mt-6'>
+        <TransparencyScoreBar score={score} />
       </div>
-      <div className='mt-6 flex flex-col justify-between md:flex-row'>
-        <div className='flex flex-col items-center gap-y-2'>
-          <TransparencyScoreBar score={score} />
-          <TrendBadge value={trend} />
-        </div>
-      </div>
-    </div>
+    </FicheCard>
   );
 }
