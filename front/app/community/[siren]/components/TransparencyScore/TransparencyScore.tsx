@@ -1,8 +1,7 @@
 import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
 import type { TransparencyScore } from '#components/TransparencyScore/constants';
+import { SCORE_DESCRIPTION, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
 import { TrendingDown, TrendingUp } from 'lucide-react';
-
-
 
 import { FicheCard } from '../FicheCard';
 
@@ -39,10 +38,34 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
 
 export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
   return (
-    <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
-      <div className='mt-6'>
-        <TransparencyScoreBar score={score} />
-      </div>
-    </FicheCard>
+    <div className='hidden md:flex '>
+      <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
+        <div className='mb-10 flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
+          <section className='w-full flex flex-col gap-6'>
+            <TransparencyScoreBar score={score} />
+          </section>
+          <section className='w-full flex flex-col gap-6'>
+            <TransparenceScoreDescription title={`Score ${score} - ${SCORE_TO_ADJECTIF[score]}`} description={SCORE_DESCRIPTION[score]} />
+          </section>
+        </div>
+      </FicheCard>
+    </div>
   );
 }
+
+interface TransparenceScoreDescriptionProps {
+  title: string;
+  description: string;
+}
+
+function TransparenceScoreDescription({ title, description }: TransparenceScoreDescriptionProps) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="text-2xl md:text-3xl font-bold text-primary">{title}</h3>
+      <p className="text-lg text-gray-600">
+        {description}
+      </p>
+    </div>
+  );
+}
+

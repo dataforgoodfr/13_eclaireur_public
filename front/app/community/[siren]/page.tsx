@@ -13,8 +13,8 @@ import { FicheSubventions } from './components/FicheSubventions/FicheSubventions
 import { FicheIdentiteSkeleton } from './components/Skeletons/FicheIdentiteSkeleton';
 import { FicheMarchesPublicsSkeleton } from './components/Skeletons/FicheMarchesPublicsSkeleton';
 import { FicheSubventionsSkeleton } from './components/Skeletons/FicheSubventionsSkeleton';
+import { TransparencySkeleton } from './components/Skeletons/TransparencySkeleton';
 import { TransparencyScoreWithTrend } from './components/TransparencyScore/TransparencyScore';
-'./components/TransparencyScore/TransparencyScore';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
 
@@ -56,7 +56,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         <Suspense fallback={<FicheIdentiteSkeleton />}>
           <FicheIdentite community={community} />
         </Suspense>
-        <Suspense fallback={<FicheIdentiteSkeleton />}>
+        <Suspense fallback={<TransparencySkeleton />}>
           <TransparencyScoreWithTrend score={score} trend={trend} />
         </Suspense>
         <Suspense fallback={<FicheMarchesPublicsSkeleton />}>
