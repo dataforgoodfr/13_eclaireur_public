@@ -2,11 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { FicheIdentiteSkeleton } from './FicheIdentiteSkeleton';
 
 const meta: Meta<typeof FicheIdentiteSkeleton> = {
-  title: 'Community/Skeletons/FicheIdentiteSkeleton',
+  // title: 'Community/Skeletons/FicheIdentiteSkeleton',
   component: FicheIdentiteSkeleton,
-  tags: ['autodocs'],
   parameters: {
-    layout: 'centered',
   },
 };
 

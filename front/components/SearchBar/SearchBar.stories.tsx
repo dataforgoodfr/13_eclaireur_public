@@ -7,9 +7,7 @@ const meta: Meta<typeof SearchBar> = {
   title: 'Components/SearchBar',
   component: SearchBar,
   parameters: {
-    layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     onSelect: { action: 'selected' },
   },

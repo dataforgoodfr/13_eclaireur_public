@@ -5,9 +5,7 @@ const meta: Meta<typeof Button> = {
     title: 'UI/Button',
     component: Button,
     parameters: {
-        layout: 'centered',
     },
-    tags: ['autodocs'],
     argTypes: {
         variant: {
             control: { type: 'select' },

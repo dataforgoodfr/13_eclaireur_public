@@ -12,7 +12,6 @@ const meta: Meta<typeof MarchesPublicsTableWithPagination> = {
   // title: 'Community/FicheMarchesPublics/MarchesPublicsTable',
   component: MarchesPublicsTableWithPagination,
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component: 'Table component displaying public markets data with pagination support.',
