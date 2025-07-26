@@ -1,16 +1,23 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader } from '#components/ui/card';
 
 type FicheCardProps = PropsWithChildren<{
+  title?: ReactNode;
   subtitle?: string;
+  header?: ReactNode;
 }>;
 
-export function FicheCard({ subtitle, children }: FicheCardProps) {
+export function FicheCard({ title, subtitle, header, children }: FicheCardProps) {
   return (
-    <Card>
+    <Card className='border border-black'>
       <CardHeader>
-        <CardDescription>{subtitle}</CardDescription>
+        {header || (
+          <>
+            {title}
+            {subtitle && <CardDescription>{subtitle}</CardDescription>}
+          </>
+        )}
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
