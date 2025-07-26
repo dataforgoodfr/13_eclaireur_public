@@ -1,0 +1,52 @@
+on:
+    pull_request_target:
+      types: [opened, closed, synchronize, reopened]
+      branches: [ main ]
+      paths:
+      - 'front/**'
+
+jobs: 
+    deploy:
+        name: Deploy/redeploy review app
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
+            contents: read
+        steps:
+          - uses: actions/checkout@v4
+            if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' }}
+          - name: Checkout repository
+            uses: actions/checkout@v4
+            with:
+              repository: ${{ github.event.pull_request.head.repo.full_name }}
+              ref: ${{ github.event.pull_request.head.ref }}
+              token: ${{ secrets.GITHUB_TOKEN }}
+              fetch-depth: 0
+    
+          - name: Create review app
+            uses: CleverCloud/clever-cloud-review-app@v2.0.0
+            env:
+                CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+                CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+                ORGA_ID: ${{ secrets.ORGA_ID }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
+                GH_CC_CACHE_DEPENDENCIES: ${{secrets.CC_CACHE_DEPENDENCIES}}
+                GH_CC_CGI_IMPLEMENTATION: ${{secrets.CC_CGI_IMPLEMENTATION}}
+                GH_CC_NODE_DEV_DEPENDENCIES: ${{secrets.CC_NODE_DEV_DEPENDENCIES}}
+                GH_CC_WEBROOT: ${{secrets.CC_WEBROOT}}
+                GH_HOST: ${{secrets.HOST}}
+                GH_NODE_ENV : ${{secrets.NODE_ENV}}
+                GH_PORT: ${{secrets.PORT}}
+                GH_NEXT_PUBLIC_BASE_URL: https://${{ github.event.pull_request.base.repo.name }}-PR-${{ github.event.number }}.cleverapps.io
+                GH_POSTGRESQL_ADDON_HOST: ${{secrets.POSTGRESQL_ADDON_HOST}}
+                GH_POSTGRESQL_ADDON_DB:  ${{secrets.POSTGRESQL_ADDON_DB}}
+                GH_POSTGRESQL_ADDON_USER:  ${{secrets.POSTGRESQL_ADDON_USER}}
+                GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
+                GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
+                GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
+
+            with:
+                type: node
+                set-env: true

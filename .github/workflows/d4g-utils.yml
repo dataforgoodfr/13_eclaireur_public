@@ -1,0 +1,68 @@
+name: Copy File to Organization Repos
+
+on:
+  push:
+    paths:
+      - 'd4g-utils/**' # Trigger the workflow only when changes are made in the d4g-utils directory
+    branches:
+      - main
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout template repo
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "tech@dataforgood.fr"
+          git config --global user.name "D4G Tech"
+
+      - name: Get organization repositories
+        id: org_repos
+        run: |
+          ORG_NAME="dataforgoodfr"
+          TEMPLATE_REPO="$ORG_NAME/python_template"
+          TOKEN=$1
+
+          # Fetch repositories from the organization
+          repos=`gh repo list $ORG_NAME --limit 500 | awk ' {print $1}'`
+          
+          echo "::set-output name=repos::$repos"
+        env:
+          GH_TOKEN: ${{ secrets.D4GTECH_TOKEN }}
+
+      - name: Copy files to organization repos
+        run: |
+          echo "Searching for repositories generated from template: $template_repo"
+          for repo in ${{ steps.org_repos.outputs.repos }}; do
+            repo_info=`gh api repos/$repo`
+            echo "$repo_info" | jq -r ".template_repository.full_name" | grep "$template_repo" 2>&1 > /dev/null
+            if [ "$?" -eq "0" ]
+            then
+              echo "repo_using_template: $repo"
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ secrets.D4GTECH_TOKEN }}
+  
+            
+      #     for repo in ${{ steps.org_repos.outputs.repos }}; do
+      #       # Clone the repository
+      #       git clone "https://github.com/$repo" target_repo
+      
+      #       # Copy all files from d4g-utils to target repository d4g-utlis
+      #       rsync -av --exclude='.git' d4g-utils/ target_repo/d4g-utils
+      
+      #       # Commit and push changes
+      #       cd target_repo
+      #       git add .
+      #       git commit -m "Copy files from d4g-utils directory"
+      #       git push origin main
+      
+      #       cd ..
+      #     done

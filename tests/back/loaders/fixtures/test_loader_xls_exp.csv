@@ -1,0 +1,100 @@
+CODE,FR
+03000000-1,"Produits agricoles, de l'élevage, de la pêche, de la sylviculture et produits connexes"
+03100000-2,Produits agricoles et produits de l'horticulture
+03110000-5,"Produits agricoles, produits de la culture maraîchère et de l'horticulture commerciale"
+03111000-2,Graines
+03111100-3,Graines de soja
+03111200-4,Graines d'arachide
+03111300-5,Graines de tournesol
+03111400-6,Graines de coton
+03111500-7,Graines de sésame
+03111600-8,Graines de moutarde
+03111700-9,Graines de légumes
+03111800-0,Graines de fruits
+03111900-1,Graines de fleurs
+03112000-9,Tabacs non fabriqués
+03113000-6,Plantes utilisées pour la fabrication du sucre
+03113100-7,Betteraves sucrières
+03113200-8,Canne à sucre
+03114000-3,Paille et plantes fourragères
+03114100-4,Paille
+03114200-5,Plantes fourragères
+03115000-0,Matières premières végétales
+03115100-1,Matières premières végétales destinées à l'industrie textile
+03115110-4,Coton
+03115120-7,Jute
+03115130-0,Lin
+03116000-7,"Caoutchouc naturel, latex naturel et produits connexes"
+03116100-8,Caoutchouc naturel
+03116200-9,Latex naturel
+03116300-0,Produits en latex
+03117000-4,Plantes à usage spécifique
+03117100-5,"Plantes utilisées en parfumerie ou en pharmacie, ou plantes à usage insecticide ou à usage similaire"
+03117110-8,Plantes utilisées en parfumerie
+03117120-1,Plantes utilisées en pharmacie
+03117130-4,Plantes à usage insecticide
+03117140-7,Plantes à usage fongicide ou à usage similaire
+03117200-6,Graines de plantes à usage spécifique
+03120000-8,Produits horticoles et produits de pépinières
+03121000-5,Produits horticoles
+03121100-6,"Plantes vivantes, bulbes, racines, boutures et greffons"
+03121200-7,Fleurs coupées
+03121210-0,Compositions florales
+03130000-1,Plantes pour boissons et épices
+03131000-8,Plantes pour boissons
+03131100-9,Grains de café
+03131200-0,Théiers
+03131300-1,Maté
+03131400-2,Fèves de cacao
+03132000-5,Épices brutes
+03140000-4,Produits animaux et produits connexes
+03141000-1,Sperme de taureau
+03142000-8,Produits de l'élevage
+03142100-9,Miel naturel
+03142200-0,Escargots
+03142300-1,Produits alimentaires d'origine animale
+03142400-2,Cires
+03142500-3,Œufs
+03143000-5,Produits de la polyculture
+03144000-2,Fournitures pour l'agriculture
+03200000-3,"Céréales, pommes de terre, légumes, fruits et noix"
+03210000-6,Céréales et pommes de terre
+03211000-3,Céréales
+03211100-4,Blé
+03211110-7,Blé dur
+03211120-0,Blé tendre
+03211200-5,Maïs
+03211300-6,Riz
+03211400-7,Orge
+03211500-8,Seigle
+03211600-9,Avoine
+03211700-0,Malt
+03211900-2,Produits à graines
+03212000-0,Pommes de terre et légumes secs
+03212100-1,Pommes de terre
+03212200-2,Légumes secs à cosse et à gousse
+03212210-5,Légumes secs à cosse
+03212211-2,Lentilles
+03212212-9,Pois chiches
+03212213-6,Pois secs
+03212220-8,Légumes à gousse
+03220000-9,"Légumes, fruits et noix"
+03221000-6,Légumes
+03221100-7,Légumes-racines et légumes-tubercules
+03221110-0,Légumes-racines
+03221111-7,Betteraves
+03221112-4,Carottes
+03221113-1,Oignons
+03221114-8,Navets
+03221120-3,Légumes-tubercules
+03221200-8,Légumes-fruits
+03221210-1,Haricots
+03221211-8,Fèves
+03221212-5,Haricots verts
+03221213-2,Haricots d'Espagne
+03221220-4,Pois
+03221221-1,Petits pois
+03221222-8,Mange-tout
+03221230-7,Poivrons
+03221240-0,Tomates
+03221250-3,Courgettes

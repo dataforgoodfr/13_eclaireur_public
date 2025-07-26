@@ -1,0 +1,34 @@
+name: test-run
+
+on:
+  pull_request:
+  push:
+    branches: 
+      - main
+    paths-ignore:
+      - "data-analyst/**"
+      - "front/**"
+      - "node_modules/**"
+      - "yarn.lock"
+      - ".gitignore"
+      - ".github/workflows/review.yml"
+
+jobs:
+  test-run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install poetry
+      run: pipx install poetry
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install
+    - name: Run tests
+      run: poetry run tox -vv
+    - name: Docker compose (start postgres)
+      run: docker compose -f docker-compose.yaml up -d
+    - name: Run pipeline
+      run: poetry run python back/main.py -f back/config-test.yaml

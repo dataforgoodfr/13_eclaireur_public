@@ -1,0 +1,10 @@
+services:
+  eclaireur-public-psql:
+    image: postgres:15
+    restart: always
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=eclaireur_public
+      - POSTGRES_DB=eclaireur_public

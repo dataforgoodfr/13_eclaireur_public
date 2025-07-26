@@ -1,0 +1,138 @@
+workflow:
+  save_to_db: False
+  replace_tables: False
+
+ofgl:
+  data_folder: back/data/ofgl
+  urls_csv: back/scripts/datasets/ofgl_urls.csv
+  combined_filename: back/data/ofgl/ofgl.parquet
+
+communities:
+  data_folder: back/data/communities
+  combined_filename: back/data/communities/communities.parquet
+  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  odf_url: file:back/scripts/datasets/odf.csv
+
+  geolocator:
+    data_folder: back/data/communities/geolocator
+
+  geo_metrics_dataset_id: "6745d9ae4524d845d2138193"
+
+
+datagouv_search:
+  data_folder: back/data/datagouv_search
+  combined_filename: back/data/datagouv_search/datagouv_datasets.parquet
+  title_filter:
+    - conventions de subvention
+    - subv.*asso
+    - subvention.*association
+    - subventions du conseil régional
+    - interventions de la région des pays de la Loire
+    - scdl - subventions
+  description_filter:
+    - conventions de subvention
+    - subvention.*association
+    - subv.*asso
+
+cpv_labels:
+  combined_filename:  back/data/cpv_labels/cpv_labels.parquet
+  url: ./back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
+
+communities_contacts:
+  data_folder: back/data/communities_contacts
+  combined_filename: back/data/communities_contacts/communities_contacts.parquet
+  url: null
+
+search:
+  subventions:
+    schema:
+      url: "https://schema.data.gouv.fr/schemas/scdl/subventions/2.1.0/schema.json"
+    single_urls_file: back/data/datasets/subventions/inputs/single_urls.csv
+    schema_dict_file: back/data/datasets/subventions/inputs/dataset_dict.csv
+
+marches_publics:
+  schema: "https://schema.data.gouv.fr/schemas/139bercy/format-commande-publique/1.5.0/marches.json"
+  data_folder: back/data/marches_publics
+  combined_filename: back/data/marches_publics/marches_publics.parquet
+  test_urls: null
+
+datagouv_catalog:
+  data_folder: back/data/datagouv_catalog
+  combined_filename: back/data/datagouv_catalog/catalog.parquet
+  catalog_url: null
+
+datafile_loader:
+  data_folder: 'back/data/datasets/%(topic)s'
+  combined_filename: 'back/data/datasets/%(topic)s.parquet'
+  file_info_columns:
+    - "siren"
+    - "organization"
+    - "title"
+    - "created_at"
+    - "url"
+    - "nom"
+    - "type"
+    - "source"
+
+file_age_to_check:
+  files:
+    odf_data: back/data/communities/processed_data/odf_data.csv
+    ofgl_data: back/data/communities/processed_data/ofgl_data.csv
+  age: 365
+
+elected_officials:
+  data_folder: back/data/elected_officials
+  combined_filename: back/data/elected_officials/elected_officials.parquet
+
+sirene:
+  data_folder: back/data/sirene
+  combined_filename:  back/data/sirene/sirene.parquet
+  url: https://object.files.data.gouv.fr/data-pipeline-open/siren/stock/StockUniteLegale_utf8.parquet
+  xls_urls_naf:
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n1.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n2.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n3.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n4.xls"
+    - "https://www.insee.fr/fr/statistiques/fichier/2120875/naf2008_liste_n5.xls"
+  xls_urls_cat_ju: https://www.insee.fr/fr/statistiques/fichier/2028129/cj_septembre_2022.xls
+  
+datagouv_api:
+  organization_folder: back/data/datagouv_api/organizations
+
+declarations_interet:
+  data_folder: back/data/declarations_interet
+  combined_filename: back/data/declarations_interet/elected_officials.parquet
+  url: https://www.data.gouv.fr/fr/datasets/r/247995fb-3b98-48fd-95a4-2607c8a1de74
+
+financial_accounts:
+  data_folder: back/data/financial_accounts
+  files_csv: back/scripts/datasets/communities_financial_accounts.csv
+  columns_mapping: back/scripts/datasets/normalization_financial_account_columns.csv
+  combined_filename: back/data/financial_accounts/financial_accounts.parquet
+
+outputs_csv:
+  path: 'back/data/datasets/%(topic)s/outputs'
+
+warehouse:
+  data_folder: back/data/warehouse
+
+logging:
+  version: 1
+  formatters:
+    simple:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: simple
+      stream: ext://sys.stdout
+    file:
+      class: logging.FileHandler
+      level: DEBUG
+      formatter: simple
+      filename: back/data/logs/log.txt
+  loggers:
+    back:
+      level: INFO
+      handlers: [console, file]

@@ -1,0 +1,28 @@
+name: "[BACK] Run main.py script"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 0,3"
+
+jobs:
+  run-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Don't run the cron job on forks:
+    if: ${{ github.repository == 'dataforgoodfr/13_eclaireur_public' || github.event_name != 'schedule' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'poetry'
+  
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run main script
+        run: |
+          poetry run python back/main.py
