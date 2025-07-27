@@ -85,7 +85,7 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
   },
 ];
 const BandeauBeta = () => (
-  <div className='fixed top-16 z-0 w-full bg-card-secondary-foreground-1 py-1 pl-1 text-center text-sm'>
+  <div className='fixed z-0 w-full py-1 pl-1 text-sm text-center top-16 bg-card-secondary-foreground-1'>
     <Wrench className='inline scale-x-[-1]' size='16' />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
     fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
@@ -95,10 +95,10 @@ export default function Navbar() {
   const isBeta = true
   return (
     <>
-      <div className='flex h-16 items-center justify-between px-6 lg:px-8'>
+      <div className='fixed z-50 flex items-center justify-between w-full h-16 px-6 py-1 pl-1 bg-white shadow-md lg:px-8'>
         {/* Logo */}
         <Link href='/' className='flex items-center space-x-2'>
-          <div className='flex h-14 w-36 items-center justify-center'>
+          <div className='flex items-center justify-center h-14 w-36'>
             <Image
               src='/eclaireur/logo-navmenu.png'
               priority
@@ -131,7 +131,7 @@ export default function Navbar() {
           <SearchCommunity />
           <Button
             size='sm'
-            className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
+            className='hidden rounded-none rounded-tl-lg rounded-br-lg bg-primary hover:bg-primary/90 md:inline'
           >
             <Link
               href='/interpeller'

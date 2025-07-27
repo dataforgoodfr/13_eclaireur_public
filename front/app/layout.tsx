@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang='fr'>
       <body
-        className={`${kanit.variable}  flex h-screen flex-col antialiased`}
+        className={`${kanit.variable} flex h-screen flex-col antialiased`}
       >
         <Providers>
           <Navbar />
