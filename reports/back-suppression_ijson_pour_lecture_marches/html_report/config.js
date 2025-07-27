@@ -1,0 +1,972 @@
+report({
+  "testSuite": "BackstopJS",
+  "tests": [
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_0_phone.png",
+        "label": "Components/SearchBar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--default",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_1_tablet.png",
+        "label": "Components/SearchBar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--default",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_2_desktop.png",
+        "label": "Components/SearchBar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--default",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Default_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_0_phone.png",
+        "label": "Components/SearchBar With Container",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--with-container",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_1_tablet.png",
+        "label": "Components/SearchBar With Container",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--with-container",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_2_desktop.png",
+        "label": "Components/SearchBar With Container",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--with-container",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_With_Container_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_0_phone.png",
+        "label": "Components/SearchBar Full Width",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--full-width",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_1_tablet.png",
+        "label": "Components/SearchBar Full Width",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--full-width",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_2_desktop.png",
+        "label": "Components/SearchBar Full Width",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--full-width",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_SearchBar_Full_Width_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_0_phone.png",
+        "label": "UI/Button Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--default",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--default",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--default",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Default_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_0_phone.png",
+        "label": "UI/Button Secondary",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--secondary",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Secondary",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--secondary",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Secondary",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--secondary",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Secondary_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_0_phone.png",
+        "label": "UI/Button Destructive",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--destructive",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Destructive",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--destructive",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Destructive",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--destructive",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Destructive_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_0_phone.png",
+        "label": "UI/Button Outline",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--outline",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Outline",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--outline",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Outline",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--outline",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Outline_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_0_phone.png",
+        "label": "UI/Button Ghost",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--ghost",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Ghost",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--ghost",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Ghost",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--ghost",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Ghost_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_0_phone.png",
+        "label": "UI/Button Link",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--link",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Link",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--link",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Link",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--link",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Link_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_0_phone.png",
+        "label": "UI/Button Small",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--small",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Small",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--small",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Small",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--small",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Small_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_0_phone.png",
+        "label": "UI/Button Large",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--large",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Large",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--large",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Large",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--large",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Large_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_0_phone.png",
+        "label": "UI/Button Icon",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--icon",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Icon",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--icon",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Icon",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--icon",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Icon_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_0_phone.png",
+        "label": "UI/Button Disabled",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--disabled",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_1_tablet.png",
+        "label": "UI/Button Disabled",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--disabled",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_2_desktop.png",
+        "label": "UI/Button Disabled",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--disabled",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_UI_Button_Disabled_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_0_phone.png",
+        "label": "Pages/HomePageHeader Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--default",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_1_tablet.png",
+        "label": "Pages/HomePageHeader Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--default",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_2_desktop.png",
+        "label": "Pages/HomePageHeader Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--default",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_Default_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_0_phone.png",
+        "label": "Pages/HomePageHeader With Custom Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--with-custom-background",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_1_tablet.png",
+        "label": "Pages/HomePageHeader With Custom Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--with-custom-background",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_2_desktop.png",
+        "label": "Pages/HomePageHeader With Custom Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--with-custom-background",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Pages_HomePageHeader_With_Custom_Background_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_0_phone.png",
+        "label": "Components/Navbar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--default",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_1_tablet.png",
+        "label": "Components/Navbar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--default",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_2_desktop.png",
+        "label": "Components/Navbar Default",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--default",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Default_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_0_phone.png",
+        "label": "Components/Navbar With Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-background",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_1_tablet.png",
+        "label": "Components/Navbar With Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-background",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_2_desktop.png",
+        "label": "Components/Navbar With Background",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-background",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Background_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_0_phone.png",
+        "label": "Components/Navbar Mobile",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_1_tablet.png",
+        "label": "Components/Navbar Mobile",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_2_desktop.png",
+        "label": "Components/Navbar Mobile",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_0_phone.png",
+        "label": "Components/Navbar With Beta Banner",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-beta-banner",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_1_tablet.png",
+        "label": "Components/Navbar With Beta Banner",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-beta-banner",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_2_desktop.png",
+        "label": "Components/Navbar With Beta Banner",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-beta-banner",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "engineErrorMsg": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#storybook-root') to be visible\n    3 × locator resolved to hidden <div id=\"storybook-root\"></div>\n    61 × locator resolved to hidden <div id=\"storybook-root\">…</div>\n",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_With_Beta_Banner_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_0_phone.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_0_phone.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_0_phone.png",
+        "label": "Components/Navbar Mobile Menu Open",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile-menu-open",
+        "expect": 0,
+        "viewportLabel": "phone",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_0_phone.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_1_tablet.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_1_tablet.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_1_tablet.png",
+        "label": "Components/Navbar Mobile Menu Open",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile-menu-open",
+        "expect": 0,
+        "viewportLabel": "tablet",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_1_tablet.png"
+      },
+      "status": "fail"
+    },
+    {
+      "pair": {
+        "reference": "../bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_2_desktop.png",
+        "test": "../bitmaps_test/20250727-171738/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_2_desktop.png",
+        "selector": "#storybook-root",
+        "fileName": "eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_2_desktop.png",
+        "label": "Components/Navbar Mobile Menu Open",
+        "requireSameDimensions": true,
+        "misMatchThreshold": 0.1,
+        "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile-menu-open",
+        "expect": 0,
+        "viewportLabel": "desktop",
+        "error": "Reference file not found /home/runner/work/13_eclaireur_public/13_eclaireur_public/front/backstop_data/bitmaps_reference/eclaireur_public_visual_tests_Components_Navbar_Mobile_Menu_Open_0_storybook-root_2_desktop.png"
+      },
+      "status": "fail"
+    }
+  ],
+  "id": "eclaireur_public_visual_tests"
+});
