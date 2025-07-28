@@ -3,8 +3,8 @@
 import type { Column } from "@tanstack/react-table";
 import {
   ChevronDown,
-  ChevronsUpDown,
   ChevronUp,
+  ChevronsUpDown,
   EyeOff,
   X,
 } from "lucide-react";
@@ -78,7 +78,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 onClick={() => column.clearSorting()}
               >
                 <X />
-                Reset
+                Réinitialiser
               </DropdownMenuItem>
             )}
           </>
@@ -89,8 +89,8 @@ export function DataTableColumnHeader<TData, TValue>({
             checked={!column.getIsVisible()}
             onClick={() => column.toggleVisibility(false)}
           >
-            <EyeOff />
-            Hide
+            <EyeOff className="mr-2 h-4 w-4" />
+            Cacher
           </DropdownMenuCheckboxItem>
         )}
       </DropdownMenuContent>

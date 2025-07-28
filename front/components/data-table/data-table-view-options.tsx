@@ -1,8 +1,5 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
-import { Check, ChevronsUpDown, Settings2 } from "lucide-react";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,6 +15,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/utils/utils";
+import type { Table } from "@tanstack/react-table";
+import { Check, ChevronsUpDown, Settings2 } from "lucide-react";
+import * as React from "react";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -45,18 +45,18 @@ export function DataTableViewOptions<TData>({
           role="combobox"
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="ml-auto hidden h-8 lg:flex min-w-40"
         >
           <Settings2 />
-          View
+          Affichage
           <ChevronsUpDown className="ml-auto opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-44 p-0">
         <Command>
-          <CommandInput placeholder="Search columns..." />
+          <CommandInput placeholder="Rechercher les colonnes..." />
           <CommandList>
-            <CommandEmpty>No columns found.</CommandEmpty>
+            <CommandEmpty>Aucune colonne trouvée.</CommandEmpty>
             <CommandGroup>
               {columns.map((column) => (
                 <CommandItem

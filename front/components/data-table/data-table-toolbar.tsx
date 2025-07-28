@@ -25,7 +25,13 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const columns = React.useMemo(
-    () => table.getAllColumns().filter((column) => column.getCanFilter()),
+    () => table.getAllColumns()
+      .filter((column) => column.getCanFilter())
+      .sort((a, b) => {
+        const labelA = a.columnDef.meta?.label ?? a.id;
+        const labelB = b.columnDef.meta?.label ?? b.id;
+        return labelA.localeCompare(labelB, 'fr', { sensitivity: 'base' });
+      }),
     [table],
   );
 
@@ -56,7 +62,7 @@ export function DataTableToolbar<TData>({
             onClick={onReset}
           >
             <X />
-            Reset
+            Réinitialiser
           </Button>
         )}
       </div>

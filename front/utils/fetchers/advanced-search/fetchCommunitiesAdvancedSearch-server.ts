@@ -102,6 +102,7 @@ export function createSQLQueryParams(
     'population': 'c.population',
     'mp_score': 'b.mp_score',
     'subventions_score': 'b.subventions_score',
+    'subventions_budget': 'c.population', // Fallback to population since subventions_budget is NULL
     'annee': 'b.annee'
   };
   

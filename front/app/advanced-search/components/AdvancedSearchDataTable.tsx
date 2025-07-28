@@ -174,8 +174,9 @@ export function AdvancedSearchDataTable({ communities, pageCount }: AdvancedSear
     },
     getRowId: (row) => `${row.siren}-${row.type}`,
     manualPagination: true,
-    manualSorting: true,
+    manualSorting: false,
     manualFiltering: true,
+    enableSorting: true,
   });
 
   return (
