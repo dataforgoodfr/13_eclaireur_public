@@ -23,10 +23,13 @@
       "@/*": ["./*"],
       "@/components/*": ["components/*"],
       "@/public/*": ["public/*"],
-      "@/lib/*": ["lib/*"]
+      "@/lib/*": ["lib/*"],
+      "#*": ["./*"],
+      "#components/*": ["components/*"],
+      "#public/*": ["public/*"],
+      "#lib/*": ["lib/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "scripts/**/*", "**/scripts/**/*"]
 }
-

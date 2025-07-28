@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install": "next build",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -85,6 +86,7 @@
     "@types/react-dom": "^19",
     "@vitest/ui": "^3.2.4",
     "backstopjs": "^6.3.25",
+    "cookie-signature-edge": "^1.0.7",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "eslint-plugin-storybook": "^9.0.18",
