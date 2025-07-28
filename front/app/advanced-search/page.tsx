@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import Loading from '@/components/ui/Loading';
+import Loading from '#components/ui/Loading';
 
 import CommunitiesTableWithLoader from './components/CommunitiesTableWithLoader';
 import DownloadingButton from './components/DownloadingButton';

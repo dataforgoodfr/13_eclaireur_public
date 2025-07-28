@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { downloadSubventionsByNafCSV } from '@/utils/fetchers/subventions/download/downloadSubventionsByNaf';
+import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { downloadSubventionsByNafCSV } from '#utils/fetchers/subventions/download/downloadSubventionsByNaf';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';

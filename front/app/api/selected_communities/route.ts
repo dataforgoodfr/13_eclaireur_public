@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 
-import { getQueryFromPool } from '@/utils/db';
+import { getQueryFromPool } from '#utils/db';
 import {
   CommunitiesOptions,
   createSQLQueryParams,
-} from '@/utils/fetchers/communities/createSQLQueryParams';
-import { Pagination } from '@/utils/fetchers/types';
-import { CommunityType } from '@/utils/types';
+} from '#utils/fetchers/communities/createSQLQueryParams';
+import { Pagination } from '#utils/fetchers/types';
+import { CommunityType } from '#utils/types';
 
 function mapCommunityType(type: string | null) {
   if (type === null) return null;
@@ -51,9 +51,9 @@ export async function GET(request: Request) {
     const pagination =
       page !== undefined && limit !== undefined
         ? {
-            limit,
-            page,
-          }
+          limit,
+          page,
+        }
         : undefined;
     const data = await getDataFromPool({ filters: { type, siren }, limit }, pagination);
 

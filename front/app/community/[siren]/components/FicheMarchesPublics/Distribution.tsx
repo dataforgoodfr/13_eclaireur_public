@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { downloadMarchesPublicsByCPV2CSV } from '@/utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
+import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';

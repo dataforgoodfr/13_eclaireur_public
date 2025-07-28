@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server';
 
-import { InterpellateFormSchema } from '@/components/Interpellate/types';
+import { InterpellateFormSchema } from '#components/Interpellate/types';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 

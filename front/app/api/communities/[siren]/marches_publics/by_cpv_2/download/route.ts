@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { getCopyStream } from '@/app/api/csv-stream/utils';
-import { createSQLQueryParams } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsByCPV2-server';
-import { parseNumber } from '@/utils/utils';
+import { getCopyStream } from '#app/api/csv-stream/utils';
+import { createSQLQueryParams } from '#utils/fetchers/marches-publics/fetchMarchesPublicsByCPV2-server';
+import { parseNumber } from '#utils/utils';
 
 const DEFAULT_FILE_NAME = 'marches_publics_by_cpv_2.csv';
 const MAX_NUMBER_ROWS = 1_000_000;

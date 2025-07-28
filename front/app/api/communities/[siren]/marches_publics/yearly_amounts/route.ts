@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fetchMarchesPublicsYearlyAmounts } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsYearlyAmounts-server';
+import { fetchMarchesPublicsYearlyAmounts } from '#utils/fetchers/marches-publics/fetchMarchesPublicsYearlyAmounts-server';
 
 export async function GET(_: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {

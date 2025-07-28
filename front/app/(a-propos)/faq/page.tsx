@@ -6,7 +6,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from '#components/ui/accordion';
 
 export const metadata: Metadata = {
   title: 'FAQ - les réponses à toutes vos question',

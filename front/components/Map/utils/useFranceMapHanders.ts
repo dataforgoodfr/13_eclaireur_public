@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre';
 
-import type { Community } from '@/app/models/community';
+import type { Community } from '#app/models/community';
 
 import type { AdminType, HoverInfo } from '../types';
 import getCommunityDataFromFeature from './getCommunityDataFromFeature';
