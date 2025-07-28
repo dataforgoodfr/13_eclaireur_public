@@ -4,6 +4,7 @@ export enum TransparencyScore {
   C = 'C',
   D = 'D',
   E = 'E',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export const SCORE_TO_ADJECTIF = {
@@ -12,6 +13,7 @@ export const SCORE_TO_ADJECTIF = {
   [TransparencyScore.C]: 'Moyen',
   [TransparencyScore.D]: 'Insuffisant',
   [TransparencyScore.E]: 'Opaque',
+  [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 
 export const SCORE_DESCRIPTION = {
