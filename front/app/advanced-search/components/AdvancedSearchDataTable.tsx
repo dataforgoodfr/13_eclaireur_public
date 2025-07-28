@@ -8,13 +8,15 @@ import Link from 'next/link';
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useDataTable } from '@/hooks/use-data-table';
 import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
 import { CommunityType } from '@/utils/types';
+
+import { CustomDataTableToolbar } from './CustomDataTableToolbar';
+import { useTableContext } from './TableContext';
 
 type AdvancedSearchDataTableProps = {
   communities: AdvancedSearchCommunity[];
@@ -23,6 +25,8 @@ type AdvancedSearchDataTableProps = {
 };
 
 export function AdvancedSearchDataTable({ communities, pageCount, isLoading = false }: AdvancedSearchDataTableProps) {
+  const { setTable } = useTableContext();
+  
   const columns = React.useMemo<ColumnDef<AdvancedSearchCommunity>[]>(
     () => [
       {
@@ -215,10 +219,16 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
     enableSorting: true,
   });
 
+  // Mettre à jour le contexte avec la table
+  React.useEffect(() => {
+    setTable(table);
+    return () => setTable(null);
+  }, [table, setTable]);
+
   return (
     <div className="w-full space-y-2.5">
       <DataTable table={table}>
-        <DataTableToolbar table={table} />
+        <CustomDataTableToolbar table={table} />
       </DataTable>
     </div>
   );
