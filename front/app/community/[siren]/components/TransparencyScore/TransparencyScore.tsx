@@ -45,7 +45,7 @@ export function TransparencyScoreWithTrend({ score, trend }: TransparencyScorePr
             <TransparencyScoreBar score={score} />
           </section>
           <section className='w-full md:w-1/2 flex flex-col gap-6'>
-            <TransparenceScoreDescription title={`Score ${score} - ${SCORE_TO_ADJECTIF[score]}`} description={SCORE_DESCRIPTION[score]} />
+            <TransparenceScoreDescription title={`Score ${score} - ${SCORE_TO_ADJECTIF[score]}`} description={SCORE_DESCRIPTION[score] || 'Aucune donnée disponible'} />
           </section>
         </div>
       </FicheCard>

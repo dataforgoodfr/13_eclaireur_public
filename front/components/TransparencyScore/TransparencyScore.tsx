@@ -1,7 +1,6 @@
 import { SVGProps } from 'react';
 
 import {
-  SCORE_NON_DISPONIBLE,
   SCORE_TO_ADJECTIF,
   TransparencyScore,
 } from '#components/TransparencyScore/constants';
@@ -13,7 +12,7 @@ const CORNER_RADIUS = 12;
 const ACTIVE_SCORE_SCALE = 1.2;
 const GAP = 10;
 
-const scoreValues = Object.values(TransparencyScore);
+const scoreValues = Object.values(TransparencyScore).filter(score => score !== TransparencyScore.UNKNOWN);
 
 const SVG_CONFIG = {
   viewBoxWidth: scoreValues.length * (SQUARE_SIZE + GAP),
@@ -71,9 +70,6 @@ type TransparencyScoreBarProps = {
 };
 
 export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBarProps) {
-  const activeScoreIndex =
-    activeScore === null ? 2 : scoreValues.findIndex((s) => s === activeScore);
-
   const translateDueToScaleFactor = -5;
 
   return (
@@ -105,12 +101,15 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
 
       <g transform={`translate(${SVG_CONFIG.margin}, ${SVG_CONFIG.margin})`}>
         <text
-          x={activeScoreIndex * (SQUARE_SIZE + GAP) + SQUARE_SIZE / 2}
+          x={SVG_CONFIG.viewBoxWidth / 2}
           y={SQUARE_SIZE + 25}
           textAnchor='middle'
           className='font-bold fill-blue-900 text-lg'
         >
-          {activeScore !== null ? SCORE_TO_ADJECTIF[activeScore] : SCORE_NON_DISPONIBLE}
+          {activeScore === TransparencyScore.UNKNOWN || activeScore === null 
+            ? 'Non communiqué' 
+            : SCORE_TO_ADJECTIF[activeScore]
+          }
         </text>
       </g>
     </svg>
