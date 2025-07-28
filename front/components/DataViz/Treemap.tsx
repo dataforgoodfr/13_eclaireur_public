@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
+import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
 
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';

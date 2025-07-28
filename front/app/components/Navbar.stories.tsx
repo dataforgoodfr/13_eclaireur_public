@@ -19,7 +19,6 @@ const meta: Meta<typeof Navbar> = {
             },
         },
     },
-    tags: ['autodocs'],
 };
 
 export default meta;

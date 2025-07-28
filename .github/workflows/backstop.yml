@@ -70,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd front
-          yarn install --frozen-lockfile
+          yarn install
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -211,7 +211,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd front
-          yarn install --frozen-lockfile
+          yarn install
 
       - name: Approve BackstopJS references
         run: |

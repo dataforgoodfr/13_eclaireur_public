@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '#components/ui/card';
 
 type FicheCardProps = PropsWithChildren<{
   subtitle?: string;

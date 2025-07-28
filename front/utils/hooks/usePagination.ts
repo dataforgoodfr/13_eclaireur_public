@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { PaginationProps } from '@/components/Pagination';
+import { PaginationProps } from '#components/Pagination';
 
 const DEFAULT_PAGE = 1;
 

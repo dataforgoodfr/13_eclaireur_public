@@ -7,7 +7,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuTrigger
-} from '@/components/ui/navigation-menu';
+} from '#components/ui/navigation-menu';
 
 const ListItem = React.forwardRef<React.ComponentRef<'a'>, React.ComponentPropsWithoutRef<'a'>>(
   ({ className, title, children, ...props }, ref) => {

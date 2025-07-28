@@ -1,5 +1,5 @@
-import { Community } from '@/app/models/community';
-import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
+import { Community } from '#app/models/community';
+import { formatNumberInteger, stringifyCommunityType } from '#utils/utils';
 import { CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
 
 const collectivitesLabel = 'Collectivités';

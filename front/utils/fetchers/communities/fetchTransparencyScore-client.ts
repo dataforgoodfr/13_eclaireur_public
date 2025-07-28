@@ -1,4 +1,4 @@
-import { Bareme } from '@/app/models/bareme';
+import { Bareme } from '#app/models/bareme';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 function getAPIRoute(siren: string) {

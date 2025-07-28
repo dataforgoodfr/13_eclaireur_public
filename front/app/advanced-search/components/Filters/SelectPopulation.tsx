@@ -1,4 +1,4 @@
-import { formatNumber } from '@/utils/utils';
+import { formatNumber } from '#utils/utils';
 
 import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Selector } from './Selector';

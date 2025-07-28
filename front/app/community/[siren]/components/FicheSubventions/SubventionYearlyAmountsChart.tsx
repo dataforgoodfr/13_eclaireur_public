@@ -1,8 +1,8 @@
 'use client';
 
-import Loading from '@/components/ui/Loading';
-import { useSubventionYearlyAmounts } from '@/utils/hooks/useSubventionYearlyAmounts';
-import { formatCompact } from '@/utils/utils';
+import Loading from '#components/ui/Loading';
+import { useSubventionYearlyAmounts } from '#utils/hooks/useSubventionYearlyAmounts';
+import { formatCompact } from '#utils/utils';
 import {
   Bar,
   LabelList,

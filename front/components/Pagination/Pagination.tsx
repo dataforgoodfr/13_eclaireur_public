@@ -6,7 +6,7 @@ import {
   PaginationPrevious,
   PaginationItem as ShacCNPaginationItem,
   Pagination as ShadCNPagination,
-} from '@/components/ui/pagination';
+} from '#components/ui/pagination';
 
 const FIRST_PAGE = 1;
 const MAX_PAGE_COUNT_ON_SIDES = 1;

@@ -1,4 +1,4 @@
-import { Subvention } from '@/app/models/subvention';
+import { Subvention } from '#app/models/subvention';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';

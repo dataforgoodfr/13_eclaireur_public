@@ -1,4 +1,4 @@
-import { CommunityType } from '@/utils/types';
+import { CommunityType } from '#utils/types';
 
 import {
   Select,

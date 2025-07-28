@@ -1,4 +1,4 @@
-import type { Community } from '@/app/models/community';
+import type { Community } from '#app/models/community';
 
 import { MapPointFeatureCollection } from '../types';
 

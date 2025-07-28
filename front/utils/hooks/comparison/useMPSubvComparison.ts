@@ -1,5 +1,5 @@
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { fetchMPSubvComparison } from '@/utils/fetchers/communities/fetchMPSubvComparison-client';
+import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
+import { fetchMPSubvComparison } from '#utils/fetchers/communities/fetchMPSubvComparison-client';
 import { useQuery } from '@tanstack/react-query';
 
 export function useMPSubvComparison(siren: string, year: number, comparisonType: ComparisonType) {
