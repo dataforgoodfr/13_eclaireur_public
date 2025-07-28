@@ -2,6 +2,7 @@ import { AdvancedSearchCommunity } from '@/app/models/community';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { Table } from '@tanstack/react-table';
 import { useState } from 'react';
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
 import { TableProvider } from './TableContext';
@@ -71,7 +72,7 @@ const meta: Meta<typeof AdvancedSearchDataTable> = {
   },
   decorators: [
     (Story) => {
-      const [table, setTable] = useState(null);
+      const [table, setTable] = useState<Table<AdvancedSearchCommunity> | null>(null);
       return (
         <TableProvider table={table} setTable={setTable}>
           <Story />
@@ -122,8 +123,8 @@ export const WithFilters: Story = {
     pageCount: 13,
     isLoading: false,
   },
-  render: (args) => {
-    const [table, setTable] = useState(null);
+  render: function WithFiltersStory(args) {
+    const [table, setTable] = useState<Table<AdvancedSearchCommunity> | null>(null);
     return (
       <TableProvider table={table} setTable={setTable}>
         <div className="space-y-4">

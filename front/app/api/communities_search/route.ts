@@ -18,9 +18,9 @@ const searchParamsCache = createSearchParamsCache({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const params = searchParamsCache.parse(searchParams);
+    const params = searchParamsCache.parse(searchParams as unknown as Record<string, string | string[] | undefined>);
 
-    const data = await getDataFromPool(params.query, params.page ?? undefined);
+    const data = await getDataFromPool(params.query, params.page ?? 1);
 
     return NextResponse.json(data);
   } catch (error) {

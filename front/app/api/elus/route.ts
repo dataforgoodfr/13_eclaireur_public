@@ -29,7 +29,7 @@ const searchParamsCache = createSearchParamsCache({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const params = searchParamsCache.parse(searchParams);
+    const params = searchParamsCache.parse(searchParams as unknown as Record<string, string | string[] | undefined>);
 
     if (params.limit !== null && isLimitValid(params.limit)) {
       return NextResponse.json({ error: 'Limit must be between 1 and 5000' }, { status: 400 });

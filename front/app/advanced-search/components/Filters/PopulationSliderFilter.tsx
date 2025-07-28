@@ -50,11 +50,6 @@ export function PopulationSliderFilter() {
     setFilter('population', closest.toString());
   }
 
-  function handlePresetClick(value: number) {
-    setFilter('population', value.toString());
-    setOpen(false);
-  }
-
   function handleClear() {
     setFilter('population', null);
   }

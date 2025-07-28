@@ -22,7 +22,7 @@ export function SelectSubventionsScore() {
 
   const fallbackOptions = Object.values(TransparencyScore);
   const options = filterOptions?.subventionsScores.length 
-    ? filterOptions.subventionsScores 
+    ? filterOptions.subventionsScores as TransparencyScore[]
     : fallbackOptions;
 
   return (

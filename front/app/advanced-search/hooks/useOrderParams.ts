@@ -1,6 +1,6 @@
 'use client';
 
-import { useQueryStates, parseAsString, parseAsStringEnum } from 'nuqs';
+import { parseAsStringEnum, useQueryStates } from 'nuqs';
 
 import { Order } from '#utils/fetchers/types';
 

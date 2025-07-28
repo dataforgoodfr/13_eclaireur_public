@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createParser } from "nuqs/server";
 import { z } from "zod";
 

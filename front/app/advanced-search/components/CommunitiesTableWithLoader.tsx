@@ -5,9 +5,9 @@ import { parseAsInteger, useQueryState } from 'nuqs';
 import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 
 import { getSortingStateParser } from '#utils/parsers';
+import type { AdvancedSearchCommunity } from '@/app/models/community';
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
-import { NoResults } from './NoResults';
 
 export default function CommunitiesTableWithLoader() {
   const { filters } = useFiltersParams();
@@ -25,7 +25,7 @@ export default function CommunitiesTableWithLoader() {
   const columnIds = new Set(['nom', 'type', 'population', 'subventions_budget', 'mp_score', 'subventions_score']);
   const [sorting] = useQueryState(
     'sort',
-    getSortingStateParser(columnIds).withDefault([{ id: 'nom', desc: false }])
+    getSortingStateParser<AdvancedSearchCommunity>(columnIds).withDefault([{ id: 'nom', desc: false }])
   );
 
   // Convert to API format
@@ -46,6 +46,4 @@ export default function CommunitiesTableWithLoader() {
   const pageCount = data.length > 0 ? Math.ceil(data[0].total_row_count / pagination.limit) : 0;
   return <AdvancedSearchDataTable communities={data} pageCount={pageCount} isLoading={false} />;
 
-  // Fallback - should not happen with skeleton loading above
-  return <NoResults />;
 }

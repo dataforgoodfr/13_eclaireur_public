@@ -99,7 +99,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           if (isLoading) {
             return <Skeleton className="h-4 w-full" />;
           }
-          const type = row.getValue('type') as string;
+          const type = row.getValue('type') as CommunityType;
           return (
             <div className="text-right">
               {stringifyCommunityType(type)}
@@ -246,9 +246,6 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
       },
     },
     getRowId: (row) => `${row.siren}-${row.type}`,
-    manualPagination: true,
-    manualSorting: false,
-    manualFiltering: true,
     enableSorting: true,
     enableRowSelection: true,
   });

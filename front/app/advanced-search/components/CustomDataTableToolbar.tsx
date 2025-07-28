@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/utils";
 
 import { SelectionStatus } from "./SelectionStatus";
+import type { AdvancedSearchCommunity } from '@/app/models/community';
 
 interface CustomDataTableToolbarProps<TData> extends React.ComponentProps<"div"> {
   table: Table<TData>;
@@ -68,7 +69,7 @@ export function CustomDataTableToolbar<TData>({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <SelectionStatus table={table} />
+        <SelectionStatus table={table as unknown as Table<AdvancedSearchCommunity>} />
         {children}
         {/* ViewOptions intentionally removed - it's now in the top filters area */}
       </div>

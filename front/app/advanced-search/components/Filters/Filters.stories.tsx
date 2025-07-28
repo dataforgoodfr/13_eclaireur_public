@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Filters } from './Filters';
 import { SelectCommunityType } from './SelectCommunityType';
 import { PopulationSliderFilter } from './PopulationSliderFilter';
@@ -28,7 +28,7 @@ const FilterResultDisplay = ({ filterType }: { filterType: 'all' | 'type' | 'pop
       case 'type':
         return filters.type ? stringifyCommunityType(filters.type) : 'Aucune sélection';
       case 'population':
-        return filters.population ? `< ${formatNumberInteger(parseInt(filters.population))} habitants` : 'Aucune sélection';
+        return filters.population ? `< ${formatNumberInteger(filters.population)} habitants` : 'Aucune sélection';
       case 'mp_score':
         return filters.mp_score ? `Score: ${filters.mp_score}` : 'Aucune sélection';
       case 'subventions_score':
@@ -36,7 +36,7 @@ const FilterResultDisplay = ({ filterType }: { filterType: 'all' | 'type' | 'pop
       case 'all':
         const selections = [];
         if (filters.type) selections.push(`Type: ${stringifyCommunityType(filters.type)}`);
-        if (filters.population) selections.push(`Population: < ${formatNumberInteger(parseInt(filters.population))}`);
+        if (filters.population) selections.push(`Population: < ${formatNumberInteger(filters.population)}`);
         if (filters.mp_score) selections.push(`Marchés Publics: ${filters.mp_score}`);
         if (filters.subventions_score) selections.push(`Subventions: ${filters.subventions_score}`);
         return selections.length > 0 ? selections.join(' | ') : 'Aucune sélection';

@@ -5,10 +5,7 @@ import { DataTable } from '#utils/fetchers/constants';
 import { CommunityType } from '#utils/types';
 
 const COMMUNITIES = DataTable.Communities;
-const COMMUNITIES_ACCOUNT = DataTable.CommunitiesAccount;
 const BAREME = DataTable.Bareme;
-
-const LAST_YEAR = new Date().getFullYear() - 2;
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -55,7 +52,7 @@ async function fetchFilterOptions(filters: FilterParams) {
   `;
   values.push(2024);
 
-  let whereConditions = [];
+  const whereConditions = [];
 
   if (type) {
     whereConditions.push(`c.type = $${values.length + 1}`);

@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check": "yarn lint && yarn typecheck",
     "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
