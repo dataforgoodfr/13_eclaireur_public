@@ -35,7 +35,6 @@ jobs:
                 GH_CC_CACHE_DEPENDENCIES: ${{secrets.CC_CACHE_DEPENDENCIES}}
                 GH_CC_CGI_IMPLEMENTATION: ${{secrets.CC_CGI_IMPLEMENTATION}}
                 GH_CC_NODE_DEV_DEPENDENCIES: ${{secrets.CC_NODE_DEV_DEPENDENCIES}}
-                GH_CC_CUSTOM_BUILD_TOOL: "yarn install && yarn build"
                 GH_CC_WEBROOT: ${{secrets.CC_WEBROOT}}
                 GH_HOST: ${{secrets.HOST}}
                 GH_NODE_ENV : ${{secrets.NODE_ENV}}
