@@ -2,7 +2,6 @@
 
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { getSortingStateParser } from '#lib/parsers';
-import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 
 import { useFiltersParams } from '../hooks/useFiltersParams';
@@ -34,26 +33,17 @@ export default function CommunitiesTableWithLoader() {
     direction: (sorting[0]?.desc ? 'DESC' : 'ASC') as 'ASC' | 'DESC'
   };
 
-  const { data } = useAdvancedSearch(filters, pagination, order);
+  const { data, isLoading } = useAdvancedSearch(filters, pagination, order);
 
-  if (!data) {
-    return (
-      <div className="w-full space-y-2.5">
-        <DataTableSkeleton 
-          columnCount={6}
-          rowCount={perPage}
-          filterCount={0}
-          withViewOptions={true}
-          withPagination={true}
-        />
-      </div>
-    );
+  // Pendant le chargement, afficher le tableau avec skeletons
+  if (isLoading || !data) {
+    const pageCount = 0;
+    return <AdvancedSearchDataTable communities={[]} pageCount={pageCount} isLoading={true} />;
   }
 
-  if (data) {
-    const pageCount = data.length > 0 ? Math.ceil(data[0].total_row_count / pagination.limit) : 0;
-    return <AdvancedSearchDataTable communities={data} pageCount={pageCount} />;
-  }
+  // Afficher les données réelles
+  const pageCount = data.length > 0 ? Math.ceil(data[0].total_row_count / pagination.limit) : 0;
+  return <AdvancedSearchDataTable communities={data} pageCount={pageCount} isLoading={false} />;
 
   // Fallback - should not happen with skeleton loading above
   return <NoResults />;
