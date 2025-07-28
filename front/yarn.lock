@@ -4803,6 +4803,11 @@ convert-source-map@^2.0.0:
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
 
+cookie-signature-edge@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/cookie-signature-edge/-/cookie-signature-edge-1.0.7.tgz#a374559bee958d7b61b8c8e2046b634d4885767d"
+  integrity sha512-Dns00nsYQsBAeSgshGVjb/RiyMqdIjTxpVbyGIUHvmGyMACLbEfIzgty1P5YuOm62tS2iXdFsQVl8b/KUj7/eA==
+
 cookie-signature@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/cookie-signature/-/cookie-signature-1.0.6.tgz#e303a882b342cc3ee8ca513a79999734dab3ae2c"
