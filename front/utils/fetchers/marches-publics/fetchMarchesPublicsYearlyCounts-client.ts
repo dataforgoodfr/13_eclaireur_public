@@ -1,4 +1,5 @@
 import { YearlyCount } from '#app/models/graphs';
+import { getBaseUrl } from '#utils/baseUrl';
 
 function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/marches_publics/yearly_counts`;
@@ -10,7 +11,9 @@ function getAPIRoute(communitySiren: string) {
 export async function fetchMarchesPublicsYearlyCounts(
   communitySiren: string,
 ): Promise<YearlyCount[]> {
-  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
+  const baseUrl = getBaseUrl();
+  const url = new URL(getAPIRoute(communitySiren), baseUrl);
+  console.log('[fetchMarchesPublicsYearlyCounts] Making request to:', url.toString());
 
   const res = await fetch(url.toString(), { method: 'GET' });
 

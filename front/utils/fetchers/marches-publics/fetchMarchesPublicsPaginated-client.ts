@@ -1,4 +1,5 @@
 import { MarchePublic, PaginatedMarchePublic } from '#app/models/marchePublic';
+import { getBaseUrl } from '#utils/baseUrl';
 
 import { Pagination } from '../types';
 
@@ -18,7 +19,7 @@ export async function fetchMarchesPublicsPaginated(
   pagination: Pagination,
   by = DEFAULT_BY,
 ): Promise<PaginatedMarchePublic[]> {
-  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
+  const url = new URL(getAPIRoute(communitySiren), getBaseUrl());
 
   if (year !== null) url.searchParams.append('year', year.toString());
 

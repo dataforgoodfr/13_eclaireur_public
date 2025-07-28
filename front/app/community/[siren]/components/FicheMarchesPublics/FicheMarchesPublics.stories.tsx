@@ -84,18 +84,54 @@ const meta = {
     },
     msw: {
       handlers: [
-        http.get('/api/communities/:siren/marches_publics/yearly_counts', ({ params }) => {
+        http.get('/api/communities/:siren/marches_publics/yearly_counts', ({ params, request }) => {
           const { siren } = params;
+          console.log('[MSW] Intercepted yearly_counts request for siren:', siren, 'URL:', request.url);
           if (siren === '213105554') {
+            console.log('[MSW] Returning yearly counts data:', yearlyCountsData);
             return HttpResponse.json(yearlyCountsData);
           }
+          console.log('[MSW] Returning empty yearly counts data');
           return HttpResponse.json([]);
         }),
-        http.get('/api/communities/:siren/marches_publics/yearly_amounts', ({ params }) => {
+        http.get('/api/communities/:siren/marches_publics/yearly_amounts', ({ params, request }) => {
           const { siren } = params;
+          console.log('[MSW] Intercepted yearly_amounts request for siren:', siren, 'URL:', request.url);
           if (siren === '213105554') {
+            console.log('[MSW] Returning yearly amounts data:', yearlyAmountsData);
             return HttpResponse.json(yearlyAmountsData);
           }
+          console.log('[MSW] Returning empty yearly amounts data');
+          return HttpResponse.json([]);
+        }),
+        http.get('/api/communities/:siren/marches_publics/by_cpv_2', ({ params, request }) => {
+          const { siren } = params;
+          console.log('[MSW] Intercepted by_cpv_2 request for siren:', siren, 'URL:', request.url);
+          if (siren === '213105554') {
+            const data = [
+              {
+                cpv_2: '45',
+                cpv_2_label: 'Travaux de construction',
+                total_amount: 1500000,
+                count: 1
+              },
+              {
+                cpv_2: '30',
+                cpv_2_label: 'Machines de bureau et de calcul',
+                total_amount: 50000,
+                count: 1
+              },
+              {
+                cpv_2: '90',
+                cpv_2_label: 'Services d\'assainissement, d\'enlèvement des déchets, de désinfection et de dératisation',
+                total_amount: 25000,
+                count: 1
+              }
+            ];
+            console.log('[MSW] Returning by_cpv_2 data:', data);
+            return HttpResponse.json(data);
+          }
+          console.log('[MSW] Returning empty by_cpv_2 data');
           return HttpResponse.json([]);
         }),
       ],

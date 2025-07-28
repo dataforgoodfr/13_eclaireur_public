@@ -1,4 +1,5 @@
 import { downloadURL } from '#utils/downloader/downloadURL';
+import { getBaseUrl } from '#utils/baseUrl';
 
 import { Pagination } from '../../types';
 
@@ -11,7 +12,7 @@ export function createMarchesPublicsByCPV2DownloadingURL(
   year: number | null,
   pagination?: Pagination,
 ): URL {
-  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
+  const url = new URL(getAPIRoute(communitySiren), getBaseUrl());
 
   if (year !== null) url.searchParams.append('year', year.toString());
 
