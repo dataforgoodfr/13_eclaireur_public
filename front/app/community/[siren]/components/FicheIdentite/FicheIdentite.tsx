@@ -1,5 +1,5 @@
-import { Community } from '@/app/models/community';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import { Community } from '#app/models/community';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 
 import { CommunityDetails } from '../CommunityDetails';
 import { FicheCard } from '../FicheCard';

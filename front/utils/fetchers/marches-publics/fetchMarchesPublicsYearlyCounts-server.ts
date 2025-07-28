@@ -1,5 +1,5 @@
-import { YearlyCount } from '@/app/models/graphs';
-import { getQueryFromPool } from '@/utils/db';
+import { YearlyCount } from '#app/models/graphs';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 

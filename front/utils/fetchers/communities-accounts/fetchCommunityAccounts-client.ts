@@ -1,4 +1,4 @@
-import { CommunityAccount } from '@/app/models/communityAccount';
+import { CommunityAccount } from '#app/models/communityAccount';
 
 import { Pagination } from '../types';
 import { CommunitiesAccountsOptions } from './createSQLQueryParams';

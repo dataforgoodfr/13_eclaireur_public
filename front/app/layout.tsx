@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
 
-import Footer from '@/app/components/Footer';
-import Navbar from '@/app/components/Navbar';
-import { Toaster } from '@/components/ui/toaster';
+import Footer from '#app/components/Footer';
+import Navbar from '#app/components/Navbar';
+import { Toaster } from '#components/ui/toaster';
 
 import Providers from './Providers';
 import './globals.css';
@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang='fr'>
       <body
-        className={`${kanit.variable}  flex h-screen flex-col antialiased`}
+        className={`${kanit.variable} flex h-screen flex-col antialiased`}
       >
         <Providers>
           <Navbar />

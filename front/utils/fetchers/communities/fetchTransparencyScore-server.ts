@@ -1,5 +1,5 @@
-import { Bareme } from '@/app/models/bareme';
-import { getQueryFromPool } from '@/utils/db';
+import { Bareme } from '#app/models/bareme';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 

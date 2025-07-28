@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { MarchePublic } from '@/app/models/marchePublic';
-import { fetchMarchesPublicsPaginated } from '@/utils/fetchers/marches-publics/fetchMarchesPublicsPaginated-server';
-import { parseNumber } from '@/utils/utils';
+import { MarchePublic } from '#app/models/marchePublic';
+import { fetchMarchesPublicsPaginated } from '#utils/fetchers/marches-publics/fetchMarchesPublicsPaginated-server';
+import { parseNumber } from '#utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;

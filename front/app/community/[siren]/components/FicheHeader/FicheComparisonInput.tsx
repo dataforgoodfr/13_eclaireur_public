@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 
-import { Community } from '@/app/models/community';
-import SearchBar from '@/components/SearchBar/SearchBar';
+import { Community } from '#app/models/community';
+import SearchBar from '#components/SearchBar/SearchBar';
 
 type FicheComparisonInput = { community: Community };
 

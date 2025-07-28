@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getQueryFromPool } from '@/utils/db';
+import { getQueryFromPool } from '#utils/db';
 
 export async function GET(request: NextRequest) {
   try {

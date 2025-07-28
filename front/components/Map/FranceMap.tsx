@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Map, {
   type MapRef,
   NavigationControl,
@@ -10,10 +9,10 @@ import Map, {
   type ViewState,
 } from 'react-map-gl/maplibre';
 
-import type { Community } from '@/app/models/community';
-import { useCommunes } from '@/utils/hooks/map/useCommunes';
-import { useDepartements } from '@/utils/hooks/map/useDepartements';
-import { useRegions } from '@/utils/hooks/map/useRegions';
+import type { Community } from '#app/models/community';
+import { useCommunes } from '#utils/hooks/map/useCommunes';
+import { useDepartements } from '#utils/hooks/map/useDepartements';
+import { useRegions } from '#utils/hooks/map/useRegions';
 import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -23,9 +22,7 @@ import DotsLayer from './DotsLayer';
 import ChoroplethLegend from './Legend';
 import MapTooltip from './MapTooltip';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
-import type { TerritoryData } from './types';
-import type { ChoroplethDataSource } from './types';
-import type { HoverInfo } from './types';
+import type { ChoroplethDataSource, HoverInfo, TerritoryData } from './types';
 import { createMapPointFeatures } from './utils/createMapPointFeatures';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';

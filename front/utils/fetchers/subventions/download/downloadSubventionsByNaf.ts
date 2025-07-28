@@ -1,4 +1,4 @@
-import { downloadURL } from '@/utils/downloader/downloadURL';
+import { downloadURL } from '#utils/downloader/downloadURL';
 
 import { Pagination } from '../../types';
 

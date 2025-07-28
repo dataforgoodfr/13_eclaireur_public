@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from '#components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#components/ui/tooltip';
+import { useToast } from '#hooks/use-toast';
 import { ClipboardCopy } from 'lucide-react';
 
 const DEFAULT_LABEL = 'Partager';

@@ -2,7 +2,7 @@
 
 import { PropsWithChildren, createContext, useContext, useState } from 'react';
 
-import { CommunityContact } from '@/app/models/communityContact';
+import { CommunityContact } from '#app/models/communityContact';
 
 type SelectedContactsContextProps = {
   selectedContacts: CommunityContact[];

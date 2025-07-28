@@ -1,28 +1,44 @@
 import type { StorybookConfig } from '@storybook/nextjs';
 
 const config: StorybookConfig = {
-    stories: [
-        '../components/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-        '../app/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-    ],
-    addons: [
-        '@storybook/addon-essentials',
-        '@storybook/addon-interactions',
-        '@storybook/addon-links',
-    ],
-    framework: {
-        name: '@storybook/nextjs',
-        options: {},
-    },
-    typescript: {
-        check: false,
-        reactDocgen: 'react-docgen-typescript',
-        reactDocgenTypescriptOptions: {
-            shouldExtractLiteralValuesFromEnum: true,
-            propFilter: (prop) => (prop.parent ? !/node_modules/.test(prop.parent.fileName) : true),
-        },
-    },
-    staticDirs: ['../public'],
-};
+  "stories": [
+    "../stories/**/*.mdx",
+    "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    '../components/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    '../app/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+  ],
+  "addons": [
+    "@storybook/addon-essentials",
+    "@storybook/addon-onboarding",
+    "@chromatic-com/storybook",
+    "@storybook/experimental-addon-test"
+  ],
+  "framework": {
+    "name": "@storybook/nextjs",
+    "options": {}
+  },
+  features: {
+    experimentalRSC: true,
+  },
+  "staticDirs": [
+    "../public"
+  ],
+  webpackFinal: async (config) => {
+    if (config.resolve) {
+      // Add fallbacks for Node.js modules
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        'pg-native': false,
+        'dns': false,
+        'net': false,
+        'tls': false,
+        'fs': false,
+        'path': false,
+        'crypto': false,
+      };
+    }
 
+    return config;
+  },
+};
 export default config;

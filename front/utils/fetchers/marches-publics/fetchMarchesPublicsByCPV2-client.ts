@@ -1,4 +1,4 @@
-import { MarchePublicSector } from '@/app/models/marchePublic';
+import { MarchePublicSector } from '#app/models/marchePublic';
 
 import { Pagination } from '../types';
 

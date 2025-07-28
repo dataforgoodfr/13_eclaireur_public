@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 
-import { DataTable } from '@/utils/fetchers/constants';
+import { DataTable } from '#utils/fetchers/constants';
 
 import { getCopyStream } from './utils';
 

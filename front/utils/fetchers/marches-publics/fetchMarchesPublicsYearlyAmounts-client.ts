@@ -1,4 +1,4 @@
-import { YearlyAmount } from '@/app/models/graphs';
+import { YearlyAmount } from '#app/models/graphs';
 
 function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/marches_publics/yearly_amounts`;

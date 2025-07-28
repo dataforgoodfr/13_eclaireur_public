@@ -1,6 +1,6 @@
-import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { Badge } from '@/components/ui/badge';
+import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { Badge } from '#components/ui/badge';
 import { Trophy } from 'lucide-react';
 
 import TooltipScore from './TooltipScore';

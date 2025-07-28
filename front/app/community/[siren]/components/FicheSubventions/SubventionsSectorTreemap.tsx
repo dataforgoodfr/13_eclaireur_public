@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import Loading from '@/components/ui/Loading';
-import { useSubventionsByNaf } from '@/utils/hooks/useSubventionsByNaf';
+import Loading from '#components/ui/Loading';
+import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';

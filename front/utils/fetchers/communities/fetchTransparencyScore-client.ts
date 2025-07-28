@@ -1,4 +1,4 @@
-import { Bareme } from '@/app/models/bareme';
+import { Bareme } from '#app/models/bareme';
 
 function getAPIRoute(siren: string) {
   return `/api/communities/${siren}/transparency-score`;

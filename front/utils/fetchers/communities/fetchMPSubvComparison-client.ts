@@ -1,5 +1,5 @@
-import { ComparisonType } from '@/app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { MPSubvComparison } from '@/app/models/comparison';
+import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
+import { MPSubvComparison } from '#app/models/comparison';
 
 function getAPIRoute(siren: string) {
   return `/api/communities/${siren}/mp-subv-comparison`;

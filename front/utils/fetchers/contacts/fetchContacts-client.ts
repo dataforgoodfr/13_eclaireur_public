@@ -1,4 +1,4 @@
-import { CommunityContact } from '@/app/models/communityContact';
+import { CommunityContact } from '#app/models/communityContact';
 
 import { Pagination } from '../types';
 import { ContactsOptions } from './createSQLQueryParams';

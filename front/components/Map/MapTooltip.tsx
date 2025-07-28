@@ -1,4 +1,4 @@
-import type { Community } from '@/app/models/community';
+import type { Community } from '#app/models/community';
 
 import type { HoverInfo } from './types';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
