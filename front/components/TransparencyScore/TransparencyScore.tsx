@@ -1,7 +1,6 @@
 import { SVGProps } from 'react';
 
 import {
-  SCORE_NON_DISPONIBLE,
   SCORE_TO_ADJECTIF,
   TransparencyScore,
 } from '#components/TransparencyScore/constants';

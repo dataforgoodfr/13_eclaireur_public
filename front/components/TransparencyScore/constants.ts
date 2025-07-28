@@ -22,6 +22,7 @@ export const SCORE_DESCRIPTION = {
   [TransparencyScore.C]: 'La structure a une transparence moyenne et expose certaines de ses données.',
   [TransparencyScore.D]: 'La structure manque de transparence et expose peu de ses données.',
   [TransparencyScore.E]: 'La structure est opaque et ne rend pas ses données publiques.',
+  [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 
 

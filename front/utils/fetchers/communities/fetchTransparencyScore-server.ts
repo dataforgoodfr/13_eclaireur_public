@@ -36,12 +36,29 @@ export function calculateAggregatedScore(
   if (!subventionsScore) return mpScore;
   if (!mpScore) return subventionsScore;
 
-  const scoreValues = { A: 1, B: 2, C: 3, D: 4, E: 5 };
-  const valueToScore = { 1: TransparencyScore.A, 2: TransparencyScore.B, 3: TransparencyScore.C, 4: TransparencyScore.D, 5: TransparencyScore.E };
+  // If either score is UNKNOWN, return UNKNOWN
+  if (subventionsScore === TransparencyScore.UNKNOWN || mpScore === TransparencyScore.UNKNOWN) {
+    return TransparencyScore.UNKNOWN;
+  }
+
+  const scoreValues: Record<Exclude<TransparencyScore, TransparencyScore.UNKNOWN>, number> = { 
+    [TransparencyScore.A]: 1, 
+    [TransparencyScore.B]: 2, 
+    [TransparencyScore.C]: 3, 
+    [TransparencyScore.D]: 4, 
+    [TransparencyScore.E]: 5 
+  };
+  const valueToScore: Record<number, Exclude<TransparencyScore, TransparencyScore.UNKNOWN>> = { 
+    1: TransparencyScore.A, 
+    2: TransparencyScore.B, 
+    3: TransparencyScore.C, 
+    4: TransparencyScore.D, 
+    5: TransparencyScore.E 
+  };
   
   const avgValue = Math.round((scoreValues[subventionsScore] + scoreValues[mpScore]) / 2);
   
-  return valueToScore[avgValue as keyof typeof valueToScore];
+  return valueToScore[avgValue];
 }
 
 /**
