@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
@@ -35,7 +36,12 @@ async function getCommunity(siren: string) {
     throw new Error(`Community doesnt exist with siren ${siren}`);
   }
 
-  return communitiesResults[0];
+  const { aggregatedScore } = await fetchMostRecentTransparencyScore(siren);
+
+  return {
+    ...communitiesResults[0],
+    transparencyScore: aggregatedScore,
+  };
 }
 
 export default async function CommunityPage({ params }: CommunityPageProps) {
@@ -45,8 +51,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
   // TODO - get and add the last update date
   // const lastUpdateText = `Derniere mise a jour`;
-  // TODO - retrieve scores
-  const score = TransparencyScore.B;
+  const score = community.transparencyScore || TransparencyScore.UNKNOWN;
   const trend = 1;
 
   return (

@@ -41,6 +41,12 @@ export const ScoreE: Story = {
   },
 };
 
+export const ScoreUnknown: Story = {
+  args: {
+    score: TransparencyScore.UNKNOWN,
+  },
+};
+
 export const NoScore: Story = {
   args: {
     score: null,
