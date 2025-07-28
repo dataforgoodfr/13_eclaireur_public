@@ -20,9 +20,9 @@ export function SelectSubventionsScore() {
     setFilter('subventions_score', value);
   }
 
-  const fallbackOptions = Object.values(TransparencyScore);
+  const fallbackOptions = Object.values(TransparencyScore).sort();
   const options = filterOptions?.subventionsScores.length 
-    ? filterOptions.subventionsScores as TransparencyScore[]
+    ? (filterOptions.subventionsScores as TransparencyScore[]).sort()
     : fallbackOptions;
 
   return (

@@ -1,5 +1,5 @@
 import { CommunityType } from '#utils/types';
-import { stringifyCommunityType } from '#utils/utils';
+import { stringifyCommunityType, getSortedCommunityTypes } from '#utils/utils';
 
 import { useFilterOptions } from '../../hooks/useFilterOptions';
 import { useFiltersParams } from '../../hooks/useFiltersParams';
@@ -20,8 +20,8 @@ export function SelectCommunityType() {
   });
 
   const options = filterOptions?.types.length 
-    ? filterOptions.types 
-    : fallbackOptions;
+    ? getSortedCommunityTypes(filterOptions.types)
+    : getSortedCommunityTypes(fallbackOptions);
 
   function handleChange(value: string | null) {
     setFilter('type', value);

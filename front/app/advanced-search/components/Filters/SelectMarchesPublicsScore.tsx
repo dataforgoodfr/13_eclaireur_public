@@ -20,9 +20,9 @@ export function SelectMarchesPublicsScore() {
     setFilter('mp_score', value);
   }
 
-  const fallbackOptions = Object.values(TransparencyScore);
+  const fallbackOptions = Object.values(TransparencyScore).sort();
   const options = filterOptions?.mpScores.length 
-    ? filterOptions.mpScores as TransparencyScore[]
+    ? (filterOptions.mpScores as TransparencyScore[]).sort()
     : fallbackOptions;
 
   return (
