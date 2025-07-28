@@ -2,7 +2,12 @@ import { AdvancedSearchCommunity } from '@/app/models/community';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
+import { TableProvider } from './TableContext';
+import { Filters } from './Filters/Filters';
+import { ViewOptionsButton } from './ViewOptionsButton';
+import DownloadingButton from './DownloadingButton';
 
 // Mock data for communities
 const mockCommunitiesData: AdvancedSearchCommunity[] = [
@@ -59,11 +64,21 @@ const mockCommunitiesData: AdvancedSearchCommunity[] = [
 ];
 
 const meta: Meta<typeof AdvancedSearchDataTable> = {
-  title: 'Advanced Search/AdvancedSearchDataTable',
+  title: 'Advanced Search/DataTable',
   component: AdvancedSearchDataTable,
   parameters: {
     layout: 'padded',
   },
+  decorators: [
+    (Story) => {
+      const [table, setTable] = useState(null);
+      return (
+        <TableProvider table={table} setTable={setTable}>
+          <Story />
+        </TableProvider>
+      );
+    },
+  ],
   args: {
     communities: mockCommunitiesData,
     pageCount: 13,
@@ -100,3 +115,29 @@ export const SinglePage: Story = {
     isLoading: false,
   },
 };
+
+export const WithFilters: Story = {
+  args: {
+    communities: mockCommunitiesData,
+    pageCount: 13,
+    isLoading: false,
+  },
+  render: (args) => {
+    const [table, setTable] = useState(null);
+    return (
+      <TableProvider table={table} setTable={setTable}>
+        <div className="space-y-4">
+          <div className="flex items-end justify-between">
+            <Filters />
+            <div className="flex items-end gap-2">
+              <ViewOptionsButton table={table} />
+              <DownloadingButton />
+            </div>
+          </div>
+          <AdvancedSearchDataTable {...args} />
+        </div>
+      </TableProvider>
+    );
+  },
+};
+
