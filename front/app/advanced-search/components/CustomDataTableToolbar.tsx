@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/utils";
 
+import { SelectionStatus } from "./SelectionStatus";
+
 interface CustomDataTableToolbarProps<TData> extends React.ComponentProps<"div"> {
   table: Table<TData>;
 }
@@ -66,6 +68,7 @@ export function CustomDataTableToolbar<TData>({
         )}
       </div>
       <div className="flex items-center gap-2">
+        <SelectionStatus table={table} />
         {children}
         {/* ViewOptions intentionally removed - it's now in the top filters area */}
       </div>

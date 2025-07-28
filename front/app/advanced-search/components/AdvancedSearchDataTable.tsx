@@ -1,19 +1,19 @@
 'use client';
 
-import * as React from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Building2, Users, Euro, Award } from 'lucide-react';
+import { Award, Building2, Euro, Users } from 'lucide-react';
 import Link from 'next/link';
+import * as React from 'react';
 
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDataTable } from '@/hooks/use-data-table';
-import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
 import { CommunityType } from '@/utils/types';
+import { formatCompact, stringifyCommunityType } from '@/utils/utils';
 
 import { CustomDataTableToolbar } from './CustomDataTableToolbar';
 import { useTableContext } from './TableContext';
@@ -25,10 +25,36 @@ type AdvancedSearchDataTableProps = {
 };
 
 export function AdvancedSearchDataTable({ communities, pageCount, isLoading = false }: AdvancedSearchDataTableProps) {
-  const { setTable } = useTableContext();
-  
+  const tableContext = useTableContext();
+  const { setTable } = tableContext || {};
+
   const columns = React.useMemo<ColumnDef<AdvancedSearchCommunity>[]>(
     () => [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Sélectionner tout"
+            className="translate-y-[2px]"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Sélectionner la ligne"
+            className="translate-y-[2px]"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40, // Réduire la largeur de la colonne
+      },
       {
         id: 'nom',
         accessorKey: 'nom',
@@ -41,11 +67,18 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           }
           const community = row.original;
           return (
-            <Link 
+            <Link
               href={`/community/${community.siren}`}
               className="font-medium hover:underline"
             >
-              {community.nom}
+              {community.nom.toLowerCase().replace(/\b\w/g, (l, index, str) => {
+                const word = str.slice(index).split(/\s/)[0];
+                const lowerCaseWords = ['de', 'du', 'des', 'le', 'la', 'les', 'et', 'en', 'au', 'aux'];
+                if (index > 0 && lowerCaseWords.includes(word.toLowerCase())) {
+                  return l.toLowerCase();
+                }
+                return l.toUpperCase();
+              })}
             </Link>
           );
         },
@@ -105,7 +138,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         id: 'subventions_budget',
         accessorKey: 'subventions_budget',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Budget subventions (€)" />
+          <DataTableColumnHeader column={column} title="Budget Subventions (€)" />
         ),
         cell: ({ row }) => {
           if (isLoading) {
@@ -120,7 +153,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           );
         },
         meta: {
-          label: 'Budget subventions',
+          label: 'Budget Subventions',
           icon: Euro,
         },
         enableSorting: true,
@@ -137,7 +170,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           }
           const score = row.getValue('mp_score') as string | null;
           if (!score) return <div className="text-right text-muted-foreground">-</div>;
-          
+
           return (
             <div className="text-right">
               <Badge variant="outline" className="font-medium">
@@ -148,7 +181,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           );
         },
         meta: {
-          label: 'Score MP',
+          label: 'Score Marchés Publics',
           icon: Award,
         },
         enableSorting: true,
@@ -165,7 +198,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           }
           const score = row.getValue('subventions_score') as string | null;
           if (!score) return <div className="text-right text-muted-foreground">-</div>;
-          
+
           return (
             <div className="text-right">
               <Badge variant="outline" className="font-medium">
@@ -182,7 +215,7 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         enableSorting: true,
       },
     ],
-    []
+    [isLoading]
   );
 
   // Créer des données factices pour le skeleton pendant le chargement
@@ -217,13 +250,18 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
     manualSorting: false,
     manualFiltering: true,
     enableSorting: true,
+    enableRowSelection: true,
   });
 
   // Mettre à jour le contexte avec la table
   React.useEffect(() => {
-    setTable(table);
-    return () => setTable(null);
+    if (setTable) {
+      setTable(table);
+      return () => setTable(null);
+    }
   }, [table, setTable]);
+
+
 
   return (
     <div className="w-full space-y-2.5">

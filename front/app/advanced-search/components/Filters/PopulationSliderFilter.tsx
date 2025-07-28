@@ -12,7 +12,7 @@ import {
 } from '#components/ui/popover';
 import { Separator } from '#components/ui/separator';
 import { Slider } from '#components/ui/slider';
-import { formatNumber } from '#utils/utils';
+import { formatNumberInteger } from '#utils/utils';
 
 import { useFilterOptions } from '../../hooks/useFilterOptions';
 import { useFiltersParams } from '../../hooks/useFiltersParams';
@@ -37,7 +37,7 @@ export function PopulationSliderFilter() {
     ? filterOptions.populations
     : fallbackOptions;
 
-  const currentValue = population ? parseInt(population) : null;
+  const currentValue = population ?? null;
   const maxValue = Math.max(...options);
   const minValue = Math.min(...options);
 
@@ -65,7 +65,7 @@ export function PopulationSliderFilter() {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="border-dashed w-[180px] justify-start">
-            {currentValue ? (
+            {currentValue !== null ? (
               <div
                 role="button"
                 aria-label="Clear population filter"
@@ -82,9 +82,9 @@ export function PopulationSliderFilter() {
               <PlusCircle className="h-3 w-3 mr-2" />
             )}
             <span className="truncate">
-              {currentValue ? formatNumber(currentValue) : 'Choisissez un nombre'}
+              {currentValue !== null ? formatNumberInteger(currentValue) : 'Choisissez un nombre'}
             </span>
-            {currentValue && (
+            {currentValue !== null && (
               <>
                 <Separator
                   orientation="vertical"
@@ -111,10 +111,42 @@ export function PopulationSliderFilter() {
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>{formatNumber(minValue)}</span>
-                  <span>{formatNumber(maxValue)}</span>
+                  <span>{formatNumberInteger(minValue)}</span>
+                  <span>{formatNumberInteger(maxValue)}</span>
                 </div>
               </div>
+
+              {/* Preset buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {options.slice(0, 6).map((option) => (
+                  <Button
+                    key={option}
+                    variant={currentValue === option ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePresetClick(option)}
+                    className="text-xs h-8"
+                  >
+                    {formatNumberInteger(option)}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Large numbers */}
+              {options.length > 6 && (
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {options.slice(6).map((option) => (
+                    <Button
+                      key={option}
+                      variant={currentValue === option ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePresetClick(option)}
+                      className="text-xs h-8"
+                    >
+                      {formatNumberInteger(option)}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Separator />
