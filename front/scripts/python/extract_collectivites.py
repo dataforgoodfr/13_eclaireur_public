@@ -5,7 +5,7 @@
 #   "python-dotenv",
 #   "pandas",
 # ]
-
+# ///
 import duckdb
 import os
 from dotenv import load_dotenv
