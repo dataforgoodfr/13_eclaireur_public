@@ -2,6 +2,13 @@
 
 import {
   type ColumnFiltersState,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
+  type TableOptions,
+  type TableState,
+  type Updater,
+  type VisibilityState,
   getCoreRowModel,
   getFacetedMinMaxValues,
   getFacetedRowModel,
@@ -9,28 +16,21 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type PaginationState,
-  type RowSelectionState,
-  type SortingState,
-  type TableOptions,
-  type TableState,
-  type Updater,
   useReactTable,
-  type VisibilityState,
 } from "@tanstack/react-table";
 import {
   type Parser,
+  type UseQueryStateOptions,
   parseAsArrayOf,
   parseAsInteger,
   parseAsString,
-  type UseQueryStateOptions,
   useQueryState,
   useQueryStates,
 } from "nuqs";
 import * as React from "react";
 
+import { getSortingStateParser } from "#utils/parsers";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
-import { getSortingStateParser } from "#lib/parsers";
 import type { ExtendedColumnSort } from "@/types/data-table";
 
 const PAGE_KEY = "page";
@@ -42,15 +42,15 @@ const THROTTLE_MS = 50;
 
 interface UseDataTableProps<TData>
   extends Omit<
-      TableOptions<TData>,
-      | "state"
-      | "pageCount"
-      | "getCoreRowModel"
-      | "manualFiltering"
-      | "manualPagination"
-      | "manualSorting"
-    >,
-    Required<Pick<TableOptions<TData>, "pageCount">> {
+    TableOptions<TData>,
+    | "state"
+    | "pageCount"
+    | "getCoreRowModel"
+    | "manualFiltering"
+    | "manualPagination"
+    | "manualSorting"
+  >,
+  Required<Pick<TableOptions<TData>, "pageCount">> {
   initialState?: Omit<Partial<TableState>, "sorting"> & {
     sorting?: ExtendedColumnSort<TData>[];
   };

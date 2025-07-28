@@ -1,32 +1,33 @@
 'use client';
 
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { getSortingStateParser } from '#lib/parsers';
+
 import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 
+import { getSortingStateParser } from '#utils/parsers';
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
 import { NoResults } from './NoResults';
 
 export default function CommunitiesTableWithLoader() {
   const { filters } = useFiltersParams();
-  
+
   // Get pagination from DataTable URL params
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10));
-  
+
   const pagination = {
     page,
     limit: perPage
   };
-  
+
   // Get sorting from DataTable URL params
   const columnIds = new Set(['nom', 'type', 'population', 'subventions_budget', 'mp_score', 'subventions_score']);
   const [sorting] = useQueryState(
     'sort',
     getSortingStateParser(columnIds).withDefault([{ id: 'nom', desc: false }])
   );
-  
+
   // Convert to API format
   const order = {
     by: (sorting[0]?.id || 'nom') as 'nom' | 'type' | 'population' | 'subventions_budget' | 'mp_score' | 'subventions_score',
