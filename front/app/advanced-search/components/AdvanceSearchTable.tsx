@@ -26,7 +26,7 @@ type AdvancedSearchTableProps = {
 export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
   const { pagination, setPage } = usePaginationParams();
   const { order, setOrder } = useOrderParams();
-
+  console.log("ok")
   function handleHeadClick(orderBy: AdvancedSearchOrder['by']) {
     setOrder({
       by: orderBy,

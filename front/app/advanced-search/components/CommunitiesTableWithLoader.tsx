@@ -6,7 +6,7 @@ import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { useOrderParams } from '../hooks/useOrderParams';
 import { usePaginationParams } from '../hooks/usePaginationParams';
-import { AdvancedSearchTable } from './AdvanceSearchTable';
+import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
 import { NoResults } from './NoResults';
 
 export default function CommunitiesTableWithLoader() {
@@ -19,7 +19,8 @@ export default function CommunitiesTableWithLoader() {
   if (!data) return <Loading />;
 
   if (data && data.length > 0) {
-    return <AdvancedSearchTable communities={data} />;
+    const pageCount = Math.ceil(data[0].total_row_count / pagination.limit);
+    return <AdvancedSearchDataTable communities={data} pageCount={pageCount} />;
   }
 
   return <NoResults />;
