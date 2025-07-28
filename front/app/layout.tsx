@@ -69,7 +69,7 @@ export default function RootLayout({
       >
         <Providers>
           <Navbar />
-          <div className='relative flex-grow pt-[100px]'>{children}</div>
+          <div className='relative flex-grow pt-16'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />
