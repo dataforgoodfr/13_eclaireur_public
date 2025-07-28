@@ -1,4 +1,4 @@
-report({
+{
   "testSuite": "BackstopJS",
   "tests": [
     {
@@ -3210,4 +3210,4 @@ report({
     }
   ],
   "id": "eclaireur_public_visual_tests"
-});
+}
