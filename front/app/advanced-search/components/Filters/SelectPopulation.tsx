@@ -18,8 +18,8 @@ export function SelectPopulation() {
     subventions_score,
   });
 
-  const options = filterOptions?.populations.length 
-    ? filterOptions.populations 
+  const options = filterOptions?.populations.length
+    ? filterOptions.populations
     : fallbackOptions;
 
   function handleChange(value: number | null) {

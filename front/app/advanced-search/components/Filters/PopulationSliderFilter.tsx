@@ -115,38 +115,6 @@ export function PopulationSliderFilter() {
                   <span>{formatNumberInteger(maxValue)}</span>
                 </div>
               </div>
-
-              {/* Preset buttons */}
-              <div className="grid grid-cols-3 gap-2">
-                {options.slice(0, 6).map((option) => (
-                  <Button
-                    key={option}
-                    variant={currentValue === option ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePresetClick(option)}
-                    className="text-xs h-8"
-                  >
-                    {formatNumberInteger(option)}
-                  </Button>
-                ))}
-              </div>
-
-              {/* Large numbers */}
-              {options.length > 6 && (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {options.slice(6).map((option) => (
-                    <Button
-                      key={option}
-                      variant={currentValue === option ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePresetClick(option)}
-                      className="text-xs h-8"
-                    >
-                      {formatNumberInteger(option)}
-                    </Button>
-                  ))}
-                </div>
-              )}
             </div>
 
             <Separator />
