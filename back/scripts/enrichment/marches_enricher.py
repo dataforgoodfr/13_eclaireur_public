@@ -81,7 +81,7 @@ class MarchesPublicsEnricher(BaseEnricher):
     def assoc_with_sirene(marches: pl.DataFrame, sirene: pl.DataFrame) -> pl.DataFrame:
         marches = (
             marches.with_columns(
-                pl.col("titulaire_id").str.slice(0, 9).alias("titulaire_id_siren"),
+                pl.col("titulaire_id").cast(pl.Utf8).str.slice(0, 9).alias("titulaire_id_siren"),
             )
             .join(
                 sirene.select("siren", "raison_sociale"),
