@@ -1,6 +1,7 @@
 'use client';
 
-import { useQueryStates, parseAsInteger } from 'nuqs';
+import { parseAsInteger, useQueryStates } from 'nuqs';
+
 
 import { Pagination } from '#utils/fetchers/types';
 

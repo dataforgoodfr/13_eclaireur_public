@@ -2,6 +2,7 @@
 
 import { parseAsStringEnum, useQueryStates } from 'nuqs';
 
+
 import { Order } from '#utils/fetchers/types';
 
 export type AdvancedSearchOrder = Order<

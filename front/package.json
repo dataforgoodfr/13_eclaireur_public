@@ -14,14 +14,13 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
-    "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
+    "storybook": "NEXT_PUBLIC_API_URL=http://localhost:6006 storybook dev -p 6006",
+    "storybook:build": "NEXT_PUBLIC_API_URL=http://localhost:6006 storybook build",
     "backstop:test": "tsx scripts/visual-regression.ts test",
     "backstop:reference": "tsx scripts/visual-regression.ts reference",
     "backstop:approve": "backstop approve --config=backstop.json",
     "backstop:report": "backstop openReport --config=backstop.json",
-    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.config.js",
-    "build-storybook": "storybook build"
+    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",

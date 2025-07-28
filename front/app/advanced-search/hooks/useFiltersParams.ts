@@ -1,4 +1,5 @@
-import { useQueryStates, parseAsString, parseAsInteger } from 'nuqs';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+
 
 import { Community } from '#app/models/community';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
