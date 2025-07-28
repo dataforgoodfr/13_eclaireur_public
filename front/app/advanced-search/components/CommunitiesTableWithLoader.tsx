@@ -1,11 +1,9 @@
 'use client';
 
-import { parseAsInteger, useQueryState } from 'nuqs';
-
 import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
-
 import { getSortingStateParser } from '#utils/parsers';
 import type { AdvancedSearchCommunity } from '@/app/models/community';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import { useFiltersParams } from '../hooks/useFiltersParams';
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
 

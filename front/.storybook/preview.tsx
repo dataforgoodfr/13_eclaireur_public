@@ -2,7 +2,6 @@ import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Preview } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initialize, mswLoader } from 'msw-storybook-addon';
-import { NuqsAdapter } from 'nuqs/adapters/react';
 import '../app/globals.css';
 
 // Initialize MSW
@@ -41,9 +40,7 @@ const preview: Preview = {
     (Story) => {
       return (
         <QueryClientProvider client={queryClient} >
-          <NuqsAdapter>
-            <Story />
-          </NuqsAdapter>
+          <Story />
         </QueryClientProvider>
       );
     },

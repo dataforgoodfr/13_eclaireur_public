@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import MarchesPublicsTable from './MarchesPublicsTable';
 
 // Helper component to provide pagination props
-function MarchesPublicsTableWithPagination(props: { siren: string; year: number | 'All' }) {
+function MarchesPublicsTableWithPagination(props: any) {
   const paginationProps = usePagination();
   return <MarchesPublicsTable {...props} paginationProps={paginationProps} />;
 }
