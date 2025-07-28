@@ -147,8 +147,8 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           const budget = row.getValue('subventions_budget') as number;
           return (
             <div className="flex items-center justify-end gap-1">
-              <Euro className="h-3 w-3 text-muted-foreground" />
               <span className="font-medium">{formatCompact(budget)}</span>
+              <Euro className="h-3 w-3 text-muted-foreground" />
             </div>
           );
         },
