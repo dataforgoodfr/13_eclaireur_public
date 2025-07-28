@@ -55,6 +55,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         catalog = pd.read_parquet(DataGouvCatalog.get_output_path(main_config)).pipe(
             lambda df: df[df["dataset_id"] == DATASET_ID]
         )
+
         if catalog.empty:
             raise ValueError("No resources found for dataset_id: {}".format(DATASET_ID))
 
@@ -93,8 +94,6 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
     def _read_parse_final(self, raw_filename: Path) -> pd.DataFrame | None:
         interim_fn = raw_filename.parent / "interim.json"
-        if not interim_fn.exists():
-            return None
         out = pd.read_json(interim_fn).rename(columns=COLUMNS_RENAMER)
         object_columns = out.select_dtypes(include=["object"]).columns
         corrected = {c: out[c].astype("string").where(out[c].notnull()) for c in object_columns}
@@ -107,9 +106,6 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         so that pandas can read it properly.
         """
         interim_fn = raw_filename.parent / "interim.json"
-        if interim_fn.exists():
-            return
-
         with open(raw_filename, "rb") as raw:
             array_location = self.check_json_structure(raw_filename) + ".item"
 
