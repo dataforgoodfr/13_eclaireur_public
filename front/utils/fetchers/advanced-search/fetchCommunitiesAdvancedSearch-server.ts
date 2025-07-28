@@ -23,7 +23,7 @@ export async function fetchCommunitiesAdvancedSearch(
 }
 
 const COMMUNITIES = DataTable.Communities;
-const COMMUNITIES_ACCOUNT = DataTable.CommunitiesAccount;
+const BAREME = DataTable.Bareme;
 
 const SELECTORS = [
   'siren',
@@ -38,8 +38,6 @@ export type CommunitiesAdvancedSearchFilters = Partial<
   Pick<Community, 'type' | 'population' | 'mp_score' | 'subventions_score'>
 >;
 
-// TODO - Which year should we take to get the budget
-const LAST_YEAR = new Date().getFullYear() - 2;
 
 /**
  * Create the sql query for the advanced search
@@ -54,49 +52,62 @@ export function createSQLQueryParams(
   const { by, direction } = order;
   const values: (CommunityType | number | string | undefined)[] = [];
 
-  const selectorsStringified = stringifySelectors(SELECTORS, 'community');
+  const baseSelectors = SELECTORS.filter(s => s !== 'mp_score' && s !== 'subventions_score');
+  const selectorsStringified = stringifySelectors(baseSelectors, 'c');
+  
+  // Use the most recent year available in the bareme table (2024)
+  const recentYear = 2024;
+  
   let query = `
-    WITH mergeWithAccount AS (
-      SELECT ${selectorsStringified}, 
-        account.annee AS annee, 
-        account.subventions AS subventions_budget
-      FROM ${COMMUNITIES} community
-      INNER JOIN ${COMMUNITIES_ACCOUNT} account ON community.siren = account.siren
-    )
-    SELECT ${stringifySelectors(SELECTORS)},
-      annee, 
-      subventions_budget, 
+    SELECT ${selectorsStringified},
+      b.mp_score,
+      b.subventions_score,
+      b.annee, 
+      NULL as subventions_budget,
       count(*) OVER()::real AS total_row_count
-    FROM mergeWithAccount
+    FROM ${COMMUNITIES} c
+    LEFT JOIN ${BAREME} b ON c.siren = b.siren AND b.annee = $${values.length + 1}
+    WHERE c.nom IS NOT NULL
     `;
+  
+  values.push(recentYear);
 
-  let whereConditions = [];
+  let additionalConditions = [];
 
   if (type) {
-    whereConditions.push(`type = $${values.length + 1}`);
+    additionalConditions.push(`c.type = $${values.length + 1}`);
     values.push(type);
   }
   if (population) {
-    whereConditions.push(`population <= $${values.length + 1}`);
+    additionalConditions.push(`c.population <= $${values.length + 1}`);
     values.push(population);
   }
   if (mp_score) {
-    whereConditions.push(`mp_score = $${values.length + 1}`);
+    additionalConditions.push(`b.mp_score = $${values.length + 1}`);
     values.push(mp_score);
   }
   if (subventions_score) {
-    whereConditions.push(`subventions_score = $${values.length + 1}`);
+    additionalConditions.push(`b.subventions_score = $${values.length + 1}`);
     values.push(subventions_score);
   }
 
-  whereConditions.push(`annee = $${values.length + 1}`);
-  values.push(LAST_YEAR);
-
-  if (whereConditions.length > 0) {
-    query += ` WHERE ${whereConditions.join(' AND ')}`;
+  if (additionalConditions.length > 0) {
+    query += ` AND ${additionalConditions.join(' AND ')}`;
   }
 
-  query += ` ORDER BY ${by} ${direction}`;
+  // Map order by fields to correct aliases
+  const orderByMapping: Record<string, string> = {
+    'nom': 'c.nom',
+    'type': 'c.type', 
+    'population': 'c.population',
+    'mp_score': 'b.mp_score',
+    'subventions_score': 'b.subventions_score',
+    'subventions_budget': 'c.population', // Fallback to population since subventions_budget is NULL
+    'annee': 'b.annee'
+  };
+  
+  const orderByField = orderByMapping[by] || `c.${by}`;
+  query += ` ORDER BY ${orderByField} ${direction}`;
 
   query += ` LIMIT $${values.length + 1} OFFSET ($${values.length + 2} - 1) * $${values.length + 1}`;
   values.push(...[limit, page]);

@@ -1,20 +1,17 @@
-import type { Metadata } from 'next';
-import { Kanit } from 'next/font/google';
-
 import Footer from '#app/components/Footer';
 import Navbar from '#app/components/Navbar';
 import { Toaster } from '#components/ui/toaster';
-
-import Providers from './Providers';
+import { Metadata } from 'next';
+import { Kanit } from 'next/font/google';
 import './globals.css';
+import Providers from './Providers';
 
 const kanit = Kanit({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-geist-sans',
-  display: 'swap', // Optional: improves performance by loading
+  variable: '--font-kanit',
+  display: 'swap',
   subsets: ['latin'],
 });
-
 
 const baseURL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -63,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='fr'>
+    <html lang="fr">
       <body
         className={`${kanit.variable} flex h-screen flex-col antialiased`}
       >
