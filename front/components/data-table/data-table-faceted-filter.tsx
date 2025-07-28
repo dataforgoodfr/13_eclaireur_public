@@ -21,8 +21,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/utils/utils";
 import type { Option } from "@/types/data-table";
+import { cn } from "@/utils/utils";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
@@ -63,7 +63,7 @@ export function DataTableFacetedFilter<TData, TValue>({
         setOpen(false);
       }
     },
-    [column, multiple, columnFilterValue],
+    [column, multiple, selectedValues],
   );
 
   const onReset = React.useCallback(
