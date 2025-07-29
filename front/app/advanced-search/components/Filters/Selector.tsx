@@ -58,10 +58,10 @@ export function Selector<Option extends string | number | null>({
   const getOptionLabel = getOptionLabelProp ?? getOptionLabelDefault;
 
   return (
-    <div className='flex flex-col'>
-      <Label className='pl-3 pb-1'>{label}</Label>
+    <div className='flex-col'>
+      <Label>{label}</Label>
       <Select value={value?.toString() ?? undefined} onValueChange={handleValueChange}>
-        <SelectTrigger className='h-8 text-xs w-[180px]'>
+        <SelectTrigger className='w-[180px]'>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

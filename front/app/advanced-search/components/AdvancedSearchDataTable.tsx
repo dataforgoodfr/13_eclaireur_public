@@ -28,19 +28,6 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
   const tableContext = useTableContext();
   const { setTable } = tableContext || {};
 
-  // Détection mobile
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640); // Breakpoint sm de Tailwind
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const columns = React.useMemo<ColumnDef<AdvancedSearchCommunity>[]>(
     () => [
       {
@@ -101,7 +88,6 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         },
         enableSorting: true,
         enableHiding: false,
-        size: 200,
       },
       {
         id: 'type',
@@ -124,7 +110,6 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           label: 'Type',
         },
         enableSorting: true,
-        size: 100,
       },
       {
         id: 'population',
@@ -148,16 +133,12 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           icon: Users,
         },
         enableSorting: true,
-        size: 100,
       },
       {
         id: 'subventions_budget',
         accessorKey: 'subventions_budget',
         header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title={isMobile ? "Budget" : "Budget Subventions (€)"}
-          />
+          <DataTableColumnHeader column={column} title="Budget Subventions (€)" />
         ),
         cell: ({ row }) => {
           if (isLoading) {
@@ -176,16 +157,12 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           icon: Euro,
         },
         enableSorting: true,
-        size: 150,
       },
       {
         id: 'mp_score',
         accessorKey: 'mp_score',
         header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title={isMobile ? "Marchés Publics" : "Score Marchés Publics"}
-          />
+          <DataTableColumnHeader column={column} title="Score Marchés Publics" />
         ),
         cell: ({ row }) => {
           if (isLoading) {
@@ -208,16 +185,12 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           icon: Award,
         },
         enableSorting: true,
-        size: 120,
       },
       {
         id: 'subventions_score',
         accessorKey: 'subventions_score',
         header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title={isMobile ? "Subv." : "Score Subventions"}
-          />
+          <DataTableColumnHeader column={column} title="Score Subventions" />
         ),
         cell: ({ row }) => {
           if (isLoading) {
@@ -240,10 +213,9 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
           icon: Award,
         },
         enableSorting: true,
-        size: 120,
       },
     ],
-    [isLoading, isMobile]
+    [isLoading]
   );
 
   // Créer des données factices pour le skeleton pendant le chargement

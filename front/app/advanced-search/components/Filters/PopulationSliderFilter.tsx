@@ -56,7 +56,7 @@ export function PopulationSliderFilter() {
 
   return (
     <div className='flex flex-col'>
-      <Label className='pl-3 pb-1'>Population inférieur à</Label>
+      <Label className='mb-2'>Population inférieur à</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="border-dashed w-[180px] justify-start">

@@ -1,6 +1,5 @@
 'use client';
 
-import { Download } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '#components/ui/button';
@@ -16,10 +15,7 @@ export default function DownloadingButton() {
 
   return (
     <Link href={downloadingURL} download={true} target='_blank'>
-      <Button variant='secondary' className="gap-1">
-        <Download className="h-4 w-4" />
-        Télécharger
-      </Button>
+      <Button variant='secondary'>Télécharger</Button>
     </Link>
   );
 }
