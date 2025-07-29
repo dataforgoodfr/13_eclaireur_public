@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Download } from 'lucide-react';
 
 import { Button } from '#components/ui/button';
 import { createAdvancedSearchDownloadingURL } from '#utils/fetchers/advanced-search/download/downloadAdvancedSearch-client';
@@ -15,7 +16,10 @@ export default function DownloadingButton() {
 
   return (
     <Link href={downloadingURL} download={true} target='_blank'>
-      <Button variant='secondary'>Télécharger</Button>
+      <Button variant='secondary' className="gap-1">
+        <Download className="h-4 w-4" />
+        Télécharger
+      </Button>
     </Link>
   );
 }
