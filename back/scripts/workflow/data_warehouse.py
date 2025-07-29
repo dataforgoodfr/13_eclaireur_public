@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 from sqlalchemy import text
 
@@ -19,7 +20,7 @@ class DataWarehouseWorkflow:
         self._config = config
         self.warehouse_folder = Path(self._config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
-
+        self.chunksize = 10000
         self.send_to_db = {
             "collectivites": CommunitiesEnricher.get_output_path(config),
             "marches_publics": MarchesPublicsEnricher.get_output_path(config),
@@ -50,7 +51,7 @@ class DataWarehouseWorkflow:
         # or keep the same schema.
         if_table_exists = "replace" if self._config["workflow"]["replace_tables"] else "append"
 
-        with connector.engine.connect() as conn:
+        with connector.engine.begin() as conn:
             for table_name, filename in self.send_to_db.items():
                 df = pl.read_parquet(filename)
 
@@ -62,4 +63,6 @@ class DataWarehouseWorkflow:
                     if table_exists:
                         conn.execute(text(f"TRUNCATE {table_name}"))
 
-                df.write_database(table_name, conn, if_table_exists=if_table_exists)
+                    df.to_pandas().to_sql(
+                        table_name, conn, if_exists=if_table_exists, chunksize=self.chunksize
+                    )
