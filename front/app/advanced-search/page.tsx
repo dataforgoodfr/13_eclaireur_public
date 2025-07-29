@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className='global-margin my-20 flex flex-col gap-x-10 gap-y-5'>
+    <div className='container mx-auto max-w-[1200px] my-20 flex flex-col gap-x-10 gap-y-5 px-4 md:px-6'>
       <GoBackHome />
       <h1 className='text-2xl font-bold'>Recherche Avancée</h1>
       <Suspense fallback={<Loading />}>
