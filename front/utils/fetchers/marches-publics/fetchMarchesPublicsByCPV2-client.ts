@@ -1,4 +1,5 @@
 import { MarchePublicSector } from '#app/models/marchePublic';
+import { getBaseUrl } from '#utils/baseUrl';
 
 import { Pagination } from '../types';
 
@@ -17,7 +18,9 @@ export async function fetchMarchesPublicsByCPV2(
   pagination: Pagination,
   maxAmount: number | null,
 ): Promise<MarchePublicSector[]> {
-  const url = new URL(getAPIRoute(communitySiren), window.location.origin);
+  const baseUrl = getBaseUrl();
+  const url = new URL(getAPIRoute(communitySiren), baseUrl);
+  console.log('[fetchMarchesPublicsByCPV2] Making request to:', url.toString());
 
   if (year !== null) url.searchParams.append('year', year.toString());
   if (maxAmount !== null) url.searchParams.append('maxAmount', maxAmount.toString());
