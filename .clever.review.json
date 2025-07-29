@@ -1,0 +1,11 @@
+{
+  "scaling": {
+    "type": "web",
+    "min_instances": 1,
+    "max_instances": 3,
+    "sizes": ["S", "M"]
+  },
+  "deployment": {
+    "strategy": "auto"
+  }
+}
