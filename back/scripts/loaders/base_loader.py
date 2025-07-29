@@ -68,7 +68,6 @@ class BaseLoader:
         self.kwargs = kwargs
 
     def load(self, force: bool = True):
-        # FIXME: force == True for retro-compatilibity reasons
         if not self.file_url:
             raise RuntimeError("Empty file URL provided")
 
