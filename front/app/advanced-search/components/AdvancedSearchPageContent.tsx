@@ -16,11 +16,13 @@ export default function AdvancedSearchPageContent() {
 
   return (
     <TableProvider table={table} setTable={setTable}>
-      <div className='flex items-end justify-between'>
-        <Filters />
-        <div className='flex items-end gap-2'>
-          <ViewOptionsButton table={table} />
-          <DownloadingButton />
+      <div className='relative w-full overflow-auto'>
+        <div className='flex items-end justify-between w-max min-w-full'>
+          <Filters />
+          <div className='flex items-end gap-2'>
+            <ViewOptionsButton table={table} />
+            <DownloadingButton />
+          </div>
         </div>
       </div>
       <CommunitiesTableWithLoader />
