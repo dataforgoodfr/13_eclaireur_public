@@ -163,7 +163,8 @@ class DatasetAggregator(BaseDataset):
             try:
                 urllib.request.urlretrieve(file_metadata.url, output_filename)
                 LOGGER.info(f"Downloaded file {file_metadata.url}")
-                return True
+                return self._reprocess_files(file_metadata)
+                
             except HTTPError as error:
                 LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
                 msg = f"HTTP error {error.code}"
@@ -177,18 +178,59 @@ class DatasetAggregator(BaseDataset):
 
     def _refresh_file(self, file_metadata: PandasRow) -> bool:
         """
-        compare hash (currently sha1) provided with local one.
+        compare hash (currently sha1) provided with the computed local one.
+        return True if redownload is needed
+
+        Return:
+        - False if checksums are the same
+        - True when local checksum is different from remote one
+        - True when no checksums are provide, in this case, local file is renamed 'old.suffix', then downloaded and finally compared
         """
         output_filename = self._dataset_filename(file_metadata, "raw")
         provider_checksum = (
             file_metadata.checksum_value if hasattr(file_metadata, "checksum_value") else False
         )
+        if provider_checksum is False and output_filename.exists():
+            old_name = output_filename.parent / f"old{output_filename.suffix}"
+            output_filename.rename(old_name)
+
         if output_filename.exists() and provider_checksum:
             with open(output_filename, "rb") as f:
                 local_checksum = _sha1(f)
                 return provider_checksum != local_checksum
+
         return True
 
+    
+    def _reprocess_files(self, file_metadata: PandasRow) -> bool:
+        """
+        check if as old copy and a fresh downloaded files are differents
+        return True if reprocess is needed
+        
+        Return:
+        - True if two files are differents, or if old copy does not exists
+        - False if the two files are the sames
+        """
+        new_filename = self._dataset_filename(file_metadata, "raw")
+        old_filename = new_filename.parent / f"old{new_filename.suffix}"
+
+        if not old_filename.exists():
+            return True
+        
+        new_checksum = ""
+        old_checksum = ""
+
+        with open(new_filename, "rb") as f:
+            new_checksum = _sha1(f)
+
+        with open(old_filename, "rb") as f:
+            old_checksum = _sha1(f)
+
+        old_filename.unlink()  # remove the old file
+        
+        return old_checksum != new_checksum
+
+    
     def _dataset_filename(self, file_metadata: PandasRow, step: str) -> Path:
         """
         Expected path for a given file depending on the step (raw or norm).
@@ -249,8 +291,8 @@ class DatasetAggregator(BaseDataset):
                 how="left",
                 on="url_hash",
             )
-            .pipe(lambda df: df[df["exists"].isnull()])
-            .drop(columns="exists")
+            .pipe(lambda df: df[df["local_hash"] == df["checksum_value"]])
+            .drop(columns=["exists", "local_hash"])
             .itertuples()
         )
 
