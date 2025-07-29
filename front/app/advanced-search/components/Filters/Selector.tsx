@@ -59,7 +59,7 @@ export function Selector<Option extends string | number | null>({
 
   return (
     <div className='flex flex-col'>
-      <Label className='mb-2'>{label}</Label>
+      <Label className='pl-3 pb-1'>{label}</Label>
       <Select value={value?.toString() ?? undefined} onValueChange={handleValueChange}>
         <SelectTrigger className='h-8 text-xs w-[180px]'>
           <SelectValue placeholder={placeholder} />
