@@ -46,6 +46,10 @@ jobs:
                 GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
                 GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
                 GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
+                # Optimisations pour éviter SIGKILL sur machine XS avec Yarn
+                GH_CC_NODE_BUILD_TOOL: "yarn"
+                GH_NODE_OPTIONS: "--max-old-space-size=1024"
+                GH_CC_PRE_BUILD_HOOK: "yarn cache clean"
 
             with:
                 type: node
