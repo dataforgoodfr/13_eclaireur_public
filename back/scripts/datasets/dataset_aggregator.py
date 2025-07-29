@@ -127,7 +127,7 @@ class DatasetAggregator(BaseDataset):
         Return True if at least one file was updated to force concatenation
         """
         need_rebuild_output = False
-        for file_infos in tqdm(list(self.files_in_scope.itertuples())):
+        for file_infos in tqdm(self._remaining_to_normalize()):
             if file_infos.url is None or pd.isna(file_infos.url):
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
@@ -164,7 +164,7 @@ class DatasetAggregator(BaseDataset):
                 urllib.request.urlretrieve(file_metadata.url, output_filename)
                 LOGGER.info(f"Downloaded file {file_metadata.url}")
                 return self._reprocess_files(file_metadata)
-                
+
             except HTTPError as error:
                 LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
                 msg = f"HTTP error {error.code}"
@@ -201,12 +201,11 @@ class DatasetAggregator(BaseDataset):
 
         return True
 
-    
     def _reprocess_files(self, file_metadata: PandasRow) -> bool:
         """
         check if as old copy and a fresh downloaded files are differents
         return True if reprocess is needed
-        
+
         Return:
         - True if two files are differents, or if old copy does not exists
         - False if the two files are the sames
@@ -216,7 +215,7 @@ class DatasetAggregator(BaseDataset):
 
         if not old_filename.exists():
             return True
-        
+
         new_checksum = ""
         old_checksum = ""
 
@@ -227,10 +226,9 @@ class DatasetAggregator(BaseDataset):
             old_checksum = _sha1(f)
 
         old_filename.unlink()  # remove the old file
-        
+
         return old_checksum != new_checksum
 
-    
     def _dataset_filename(self, file_metadata: PandasRow, step: str) -> Path:
         """
         Expected path for a given file depending on the step (raw or norm).
@@ -277,21 +275,24 @@ class DatasetAggregator(BaseDataset):
         Select among the input files the ones for which we do not have yet the normalized file.
         """
         current = pd.DataFrame(
-            {
-                [
-                    (str(x.parent.name), _file_sha1(x), 1)
-                    for x in self.data_folder.glob("*/raw.*")
-                ],
-                ["url_hash", "local_hash", "exists"],
-            },
+            [
+                {"url_hash": str(x.parent.name), "local_hash": _file_sha1(x), "exists": 1}
+                for x in self.data_folder.glob("*/raw.*")
+            ],
         ).assign(url_hash=lambda df: df["url_hash"].astype(str).where(df["url_hash"].notnull()))
+
         return list(
             self.files_in_scope.merge(
                 current,
                 how="left",
                 on="url_hash",
             )
-            .pipe(lambda df: df[df["local_hash"] == df["checksum_value"]])
+            .pipe(
+                lambda df: (
+                    df.assign(checksum_value=None) if "checksum_value" not in df else df
+                )
+            )
+            .pipe(lambda df: df[df["local_hash"] != df["checksum_value"]])
             .drop(columns=["exists", "local_hash"])
             .itertuples()
         )
