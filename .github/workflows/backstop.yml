@@ -412,9 +412,7 @@ jobs:
   # Job 7: Déploiement GitHub Pages (peut s'exécuter en parallèle)
   deploy-pages:
     needs: visual-regression
-    if: |
-      always() && 
-      needs.visual-regression.outputs.has-diffs == 'true'
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       contents: write
