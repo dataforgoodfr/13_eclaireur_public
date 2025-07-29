@@ -62,9 +62,10 @@ class DataWarehouseWorkflow:
 
                     if table_exists:
                         conn.execute(text(f"TRUNCATE {table_name}"))
-                        add_missing_columns_to_sql_table(conn, table_name, df)
+                        self.add_missing_columns_to_sql_table(conn, table_name, df)
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
 
+    @staticmethod
     def add_missing_columns_to_sql_table(conn, table_name: str, df: pl.DataFrame):
         """Ajoute les colonnes manquantes dans la table SQL à partir du DataFrame Polars."""
 
@@ -77,7 +78,7 @@ class DataWarehouseWorkflow:
         ).fetchall()
         existing_cols = {col[0] for col in columns_sql}
 
-        missing_cols = set(schema.keys()) - existing_cols
+        missing_cols = schema.keys() - existing_cols
         if not missing_cols:
             return
 
@@ -93,9 +94,12 @@ class DataWarehouseWorkflow:
             pl.Datetime: "TIMESTAMP",
         }
 
-        for col in missing_cols:
-            pl_type = schema[col]
-            sql_type = type_mapping.get(pl_type, "TEXT")
-            sql = text(f'ALTER TABLE "{table_name}" ADD COLUMN "{col}" {sql_type};')
-            conn.execute(sql)
+        if missing_cols:
+            add_columns = []
+            for col in missing_cols:
+                pl_type = schema[col]
+                sql_type = type_mapping.get(pl_type, "TEXT")
+                add_columns.append(f'ADD COLUMN "{col}" {sql_type}')
+            alter_query = f'ALTER TABLE "{table_name}" {", ".join(add_columns)};'
+            conn.execute(text(alter_query))
             conn.commit()
