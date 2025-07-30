@@ -13,10 +13,18 @@ export default {
 				'kanit-bold': ['Kanit', 'sans-serif'],
 			},
 			fontSize: {
-				'h1': ['44px', {
-					lineHeight: '56px',
-					fontWeight: '700',
-				}],
+				// 'h1': ['44px', {
+				// 	lineHeight: '56px',
+				// 	fontWeight: '700',
+				// }],
+				// 'h2': ['40px', {
+				// 	lineHeight: '44px',
+				// 	fontWeight: '700',
+				// }],
+				// 'h3': ['32px', {
+				// 	lineHeight: '36px',
+				// 	fontWeight: '700',
+				// }],
 			},
 			backgroundImage: {
 				// 'homepage-header': 'url("/transparency.png")',
@@ -71,7 +79,7 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))',
 				},
 				background: '#fff', // Blanc
-				foreground: '#000',
+				foreground: '#303F8D', // Primary color as default text color
 				// Brand/Chart colors for data viz, etc
 				brand: {
 					1: '#FAF79E', // Brand 01
