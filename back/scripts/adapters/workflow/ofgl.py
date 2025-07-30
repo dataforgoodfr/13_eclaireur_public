@@ -51,13 +51,7 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
         """
         Reads and parses a raw OFGL data file, applying the specific OFGL normalization logic.
         """
-        opts = {
-            # "with_column_names": list(READ_COLUMNS.keys()),
-            "schema_overrides": COM_CSV_DTYPES,
-            "separator": ";",
-        }
-        loader = BaseLoader.loader_factory(raw_filename, **opts)
-        df_lazy = loader.load_lazy()
+        df_lazy = pl.scan_csv(raw_filename, separator=";", schema_overrides=COM_CSV_DTYPES)
         try:
             Ofgl2024RecordDataframe.validate(df_lazy, lazy=True)
         except pa.errors.SchemaErrors as e:
