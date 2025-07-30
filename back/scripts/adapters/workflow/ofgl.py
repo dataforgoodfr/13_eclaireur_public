@@ -53,12 +53,13 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
         """
         df_lazy = pl.scan_csv(raw_filename, separator=";", schema_overrides=COM_CSV_DTYPES)
         try:
-            Ofgl2024RecordDataframe.validate(df_lazy, lazy=True)
+            # Trigger validation on a separate frame to catch errors without
+            # altering the main lazy frame.
+            validated_df = Ofgl2024RecordDataframe.validate(df_lazy.collect(), lazy=True)
         except pa.errors.SchemaErrors as e:
             val_path = raw_filename.parent / "validation.parquet"
             LOGGER.error(f"OFGL data validation failed, saving errors to {val_path}")
             e.failure_cases.lazy().sink_parquet(val_path)
-            return None
         df_lazy = (
             df_lazy.rename({k: v for k, v in READ_COLUMNS.items() if v}, strict=False)
             .pipe(normalize_column_names_pl)
@@ -72,9 +73,9 @@ class OfglFileParser(IFileParser[pl.LazyFrame]):
             )
         )
 
-        insee_col_key = file_metadata.extra_data.get("code")
-        insee_col = INSEE_COL_MAPPING.get(insee_col_key)
-        if insee_col and insee_col in df_lazy.columns:
+        insee_col_key = file_metadata.extra_data.get("code", "")
+        insee_col = INSEE_COL_MAPPING.get(str(insee_col_key))
+        if insee_col and insee_col in df_lazy.collect_schema().names():
             df_lazy = df_lazy.with_columns(pl.col(insee_col).alias("code_insee"))
 
         df_lazy = (
