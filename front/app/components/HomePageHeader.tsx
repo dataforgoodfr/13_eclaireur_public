@@ -12,17 +12,23 @@ export default function HomePageHeader() {
   }
 
   return (
-    <div className='h-[600px] bg-homepage-header bg-cover bg-center object-cover'>
-      <div className='global-margin flex h-full items-center justify-center drop-shadow-[0px_0px_20px_rgba(0,0,0,0.4)]'>
-        <div className='flex h-72 w-4/5 flex-col items-center justify-center rounded-2xl bg-card-secondary-foreground-1'>
-          <h1 className='my-4 text-7xl font-bold text-white'>ÉCLAIREUR PUBLIC</h1>
-          <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
-            La plateforme citoyenne pour rendre transparentes et accessibles les dépenses publiques
-            des collectivités locales.
+    <div className='h-[460px] bg-none object-cover relative'>
+      <img src="/eclaireur/eyes_right.png" alt="Yeux" className='absolute hidden md:block h-8' style={{ left: '15%', top: '40%' }} />
+      <img src="/eclaireur/eyes_left.png" alt="Yeux" className='absolute hidden md:block h-8' style={{ right: '15%', top: '20%' }} />
+      <img src="/eclaireur/eyes_left.png" alt="Yeux" className='absolute hidden md:block h-6' style={{ right: '10%', top: '80%' }} />
+      <div className='global-margin flex h-full items-center justify-center'>
+        <div className='flex w-520 flex-col items-center justify-center'>
+          <img src="/eclaireur/mascotte_search.png" alt="Logo" className='w-120 mt-10' />
+          <div className='flex flex-col items-center justify-center m-4'>
+            <h1 className='text-h1 font-kanit-bold text-primary text-center'>Votre collectivité est-elle</h1>
+            <h1 className='text-h1 font-kanit-bold text-primary bg-gradient-fade text-center'>transparente ?</h1>
+          </div>
+          <h2 className='mb-6 w-3/4 text-center text-xl font-semibold text-primary'>
+          Accédez aux données de dépenses publiques de votre commune, département ou région.
           </h2>
-          <div className='mx-auto flex w-4/5 min-w-[400] justify-center'>
+          <div className='mx-auto flex w-full min-w-[400] justify-center'>
             <SearchBar
-              className="relative hidden w-64 md:block md:w-96 lg:w-[32rem]"
+              className="relative w-full md:w-96 lg:w-[32rem]"
               onSelect={({ siren }) => navigateToCommunityPage(siren)}
             />
           </div>

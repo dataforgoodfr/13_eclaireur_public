@@ -9,8 +9,18 @@ export default {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				'kanit-bold': ['Kanit', 'sans-serif'],
+			},
+			fontSize: {
+				'h1': ['44px', {
+					lineHeight: '56px',
+					fontWeight: '700',
+				}],
+			},
 			backgroundImage: {
-				'homepage-header': 'url("/transparency.png")',
+				// 'homepage-header': 'url("/transparency.png")',
+				'gradient-fade': 'linear-gradient(to right, transparent 0%, #FAF79E 10%, #FAF79E 90%, transparent 100%)',
 			},
 			colors: {
 				// Semantic colors
@@ -18,7 +28,7 @@ export default {
 					DEFAULT: '#303F8D', // Bleu
 					light: '#CAD2FC', // Bleu clair
 					foreground: '#FFFFFF',
-					50: '#f1f5fd',
+					50: '#f1f5fd',		
 					100: '#e0e9f9',
 					200: '#c9d9f4',
 					300: '#a3c1ed',
