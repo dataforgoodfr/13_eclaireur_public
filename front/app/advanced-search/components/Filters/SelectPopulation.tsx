@@ -33,7 +33,7 @@ export function SelectPopulation() {
 
   return (
     <Selector
-      label='Population inférieur à'
+      label='Population inférieure à'
       placeholder='Choisissez un nombre'
       options={options}
       value={population ?? null}
