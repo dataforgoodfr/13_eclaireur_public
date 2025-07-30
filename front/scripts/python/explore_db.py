@@ -6,20 +6,21 @@
 #   "pandas",
 # ]
 # ///
-import duckdb
 import os
+
+import duckdb
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement
-load_dotenv('.env.local')
+load_dotenv(".env.local")
 
 # Configuration de la connexion PostgreSQL
 pg_config = {
-    'host': os.getenv('POSTGRESQL_ADDON_HOST'),
-    'port': os.getenv('POSTGRESQL_ADDON_PORT', '5432'),
-    'user': os.getenv('POSTGRESQL_ADDON_USER'),
-    'password': os.getenv('POSTGRESQL_ADDON_PASSWORD'),
-    'database': os.getenv('POSTGRESQL_ADDON_DB')
+    "host": os.getenv("POSTGRESQL_ADDON_HOST"),
+    "port": os.getenv("POSTGRESQL_ADDON_PORT", "5432"),
+    "user": os.getenv("POSTGRESQL_ADDON_USER"),
+    "password": os.getenv("POSTGRESQL_ADDON_PASSWORD"),
+    "database": os.getenv("POSTGRESQL_ADDON_DB"),
 }
 
 # Créer une connexion DuckDB
@@ -56,12 +57,12 @@ print("\n=== EXPLORATION DES DONNÉES ===\n")
 for schema, table in tables:
     print(f"\nTable: {schema}.{table}")
     print("-" * 50)
-    
+
     try:
         # Compter les lignes
         count = conn.execute(f"SELECT COUNT(*) FROM pg.{schema}.{table}").fetchone()[0]
         print(f"Nombre de lignes: {count}")
-        
+
         # Lister les colonnes
         columns = conn.execute(f"""
             SELECT column_name, data_type 
@@ -69,17 +70,17 @@ for schema, table in tables:
             WHERE table_schema = '{schema}' AND table_name = '{table}'
             ORDER BY ordinal_position
         """).fetchall()
-        
+
         print("\nColonnes:")
         for col_name, col_type in columns:
             print(f"  - {col_name}: {col_type}")
-        
+
         # Afficher un échantillon de données si la table n'est pas vide
         if count > 0:
             print(f"\nÉchantillon (5 premières lignes):")
             sample = conn.execute(f"SELECT * FROM pg.{schema}.{table} LIMIT 5").fetchdf()
             print(sample.to_string())
-            
+
     except Exception as e:
         print(f"Erreur lors de l'exploration de la table: {e}")
 
