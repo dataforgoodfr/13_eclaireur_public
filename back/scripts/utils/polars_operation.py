@@ -16,7 +16,9 @@ def normalize_column_names_pl(frame: pl.LazyFrame) -> pl.LazyFrame:
         name = re.sub("_?@value$", "", name)
         return name.strip()
 
-    return frame.rename({col: _normalize_col_name(col) for col in frame.columns})
+    return frame.rename(
+        {col: _normalize_col_name(col) for col in frame.collect_schema().names()}
+    )
 
 
 def normalize_identifiant_pl(
