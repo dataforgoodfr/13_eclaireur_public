@@ -132,7 +132,24 @@ class OfglWorkflow(IWorkflow):
             if norm_path.exists():
                 continue
 
-            raw_path = self.downloader.download(file_meta)
+            raw_path = None
+            if file_meta.url.startswith("file:"):
+                # It's a local file, extract the path
+                local_path_str = file_meta.url[len("file:") :]
+                raw_path = Path(local_path_str)
+                if not raw_path.exists():
+                    LOGGER.warning(f"Local file not found: {raw_path}")
+                    raw_path = None
+            elif file_meta.url.startswith("http://") or file_meta.url.startswith("https://"):
+                # It's a remote file, download it
+                raw_path = self.downloader.download(file_meta)
+            else:
+                # Assume it's a local path without a scheme
+                raw_path = Path(file_meta.url)
+                if not raw_path.exists():
+                    LOGGER.warning(f"Local file not found: {raw_path}")
+                    raw_path = None
+
             if not raw_path:
                 continue
 
