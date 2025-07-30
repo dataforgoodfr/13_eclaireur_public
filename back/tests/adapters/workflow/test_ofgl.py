@@ -50,6 +50,31 @@ def file_metadata() -> FileMetadata:
 
 
 @pytest.fixture
+def local_file_metadata(tmp_path: Path) -> FileMetadata:
+    """Fixture for sample file metadata pointing to a local file."""
+    local_file = tmp_path / "local_test_file.csv"
+    pd.DataFrame(
+        {
+            "Exercice": [2023],
+            "Outre-mer": ["non"],
+            "Catégorie": ["COMMUNE"],
+            "Population totale": [1000],
+            "Code Insee Collectivité": ["01001"],
+            "Code Siren Collectivité": ["210100100"],
+            "Code Insee 2024 Département": ["01"],
+            "Code Insee 2024 Région": ["84"],
+        }
+    ).to_csv(local_file, sep=";", index=False)
+    url = f"file:{str(local_file)}"
+    return FileMetadata(
+        url=url,
+        url_hash=_sha256(url) or "",
+        format="csv",
+        extra_data={"code": "COM"},
+    )
+
+
+@pytest.fixture
 def mock_data_source(file_metadata: FileMetadata) -> MagicMock:
     mock = MagicMock(spec=IDataSource)
     mock.get_files.return_value = [file_metadata]
@@ -205,6 +230,37 @@ class TestOfglWorkflow:
         # Then: The workflow skips execution
         mock_data_source.get_files.assert_not_called()
         assert "OFGL dataset already exists" in caplog.text
+
+    def test_run_with_local_file(
+        self,
+        local_file_metadata: FileMetadata,
+        mock_downloader: MagicMock,
+        mock_parser: MagicMock,
+        tmp_path: Path,
+    ):
+        # Given: A workflow with a data source pointing to a local file
+        mock_data_source = MagicMock(spec=IDataSource)
+        mock_data_source.get_files.return_value = [local_file_metadata]
+        output_path = tmp_path / "ofgl_combined.parquet"
+        data_folder = tmp_path / "data"
+        workflow = OfglWorkflow(
+            data_source=mock_data_source,
+            downloader=mock_downloader,
+            parser=mock_parser,
+            output_path=output_path,
+            data_folder=data_folder,
+        )
+
+        # When: The run method is called
+        workflow.run()
+
+        # Then: The downloader is not called, but the parser is, and the workflow succeeds
+        mock_data_source.get_files.assert_called_once()
+        mock_downloader.download.assert_not_called()
+        mock_parser.parse.assert_called_once_with(
+            local_file_metadata, Path(local_file_metadata.url[len("file:") :])
+        )
+        assert output_path.exists()
 
     def test_concatenate_files(self, tmp_path: Path):
         # Given: Multiple normalized parquet files
