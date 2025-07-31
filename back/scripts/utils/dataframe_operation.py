@@ -291,14 +291,16 @@ def merge_cols_into_one(
         target_col = origin_cols[0]
     internal_target_col = f"internal_{target_col}"
 
-    df[internal_target_col] = None
-    for c in origin_cols:
-        if c in df.columns:
+    df[internal_target_col] = [None] * len(df)
+    for col in origin_cols:
+        if col in df.columns:
             df[internal_target_col] = df[internal_target_col].combine(
-                df[c], lambda a, b: b if a is None else a
+                df[col], lambda v1, v2: v2 if v1 is None or v1 != np.nan else v1
             )
 
+            
+
     if astype is not None:
-        df[internal_target_col] = df[internal_target_col].astype(astype)
+        df[internal_target_col] = df[internal_target_col].astype(astype, errors='ignore')
 
     return df.assign(**{target_col: df[internal_target_col]}).drop(internal_target_col, axis=1)

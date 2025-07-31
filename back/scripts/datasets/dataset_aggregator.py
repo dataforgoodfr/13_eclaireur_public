@@ -307,7 +307,7 @@ class DatasetAggregator(BaseDataset):
             # on met les sommes de contrôle répartis sur plusieurs attributs sur le premier ("checksum_value") pour nous faciliter la vie après
             .pipe(
                 merge_cols_into_one,
-                ["checksum_value", "analysis:checksum", "extra_analysis:checksum"],
+                ["checksum_value", "analysis:checksum", "extras_analysis:checksum"],
             )
             # on met les dates de dernières modifications répartis sur plusieurs attributs sur un nouveau ("last-modified") pour nous faciliter la vie après
             .pipe(
@@ -327,7 +327,7 @@ class DatasetAggregator(BaseDataset):
             )
             # on calcule la nécessité de traiter le fichier.
             .assign(need_normalize=lambda s: normalize_all or s["need_download"])
-            .drop(columns=["local_mtime", "local_hash", "last-modified"])
+            .drop(columns=["local_mtime", "local_hash", "last-modified"], errors='ignore')
         )
 
         total_files = file_to_process.shape[0]
