@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -12,19 +13,7 @@ export default {
 			fontFamily: {
 				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
-			fontSize: {
-				// 'h1': ['44px', {
-				// 	lineHeight: '56px',
-				// 	fontWeight: '700',
-				// }],
-				// 'h2': ['40px', {
-				// 	lineHeight: '44px',
-				// 	fontWeight: '700',
-				// }],
-				// 'h3': ['32px', {
-				// 	lineHeight: '36px',
-				// 	fontWeight: '700',
-				// }],
+
 			},
 			backgroundImage: {
 				// 'homepage-header': 'url("/transparency.png")',
@@ -142,5 +131,5 @@ export default {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [animate],
 } satisfies Config;

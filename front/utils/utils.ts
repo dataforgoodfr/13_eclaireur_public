@@ -132,6 +132,14 @@ export function stringifyCommunityType(type: CommunityType): string {
   throw new Error(`Type ${type} not supported`);
 }
 
+export function getSortedCommunityTypes(types: CommunityType[]): CommunityType[] {
+  return types.sort((a, b) => {
+    const labelA = stringifyCommunityType(a);
+    const labelB = stringifyCommunityType(b);
+    return labelA.localeCompare(labelB, 'fr');
+  });
+}
+
 export function parseDirection(value: string | null): Direction | undefined {
   if (value === null) return undefined;
   if (value === 'ASC') return 'ASC';
