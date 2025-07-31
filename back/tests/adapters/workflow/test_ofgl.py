@@ -4,10 +4,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
-import pandera.polars as pa
 import polars as pl
 import pytest
-import responses
 
 from back.scripts.adapters.workflow.ofgl import (
     OfglFileParser,
@@ -15,11 +13,9 @@ from back.scripts.adapters.workflow.ofgl import (
     OfglWorkflowFactory,
 )
 from back.scripts.datasets.entities import FileMetadata
-from back.scripts.entities.ofgl import Ofgl2024RecordDataframe
 from back.scripts.interfaces.data_source import IDataSource
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
-from back.scripts.utils.config import get_project_base_path
 
 # Configure logging for tests
 logging.basicConfig(level=logging.DEBUG)
