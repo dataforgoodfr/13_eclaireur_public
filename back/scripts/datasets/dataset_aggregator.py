@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders import BaseLoader
+from back.scripts.utils.dataframe_operation import merge_cols_into_one
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.typing import PandasRow
 
@@ -137,7 +138,9 @@ class DatasetAggregator(BaseDataset):
         For each one, download if remote is different (sha1 checks) then process normalization if new/updated
         Return True if at least one file was updated to force concatenation
         """
-        need_rebuild_output = False
+
+        # force to process the complete pipeline if the result not exists.
+        need_rebuild_output = not self.output_filename.exists()
         for file_infos in tqdm(self._remaining_to_normalize()):
             if not file_infos.need_download and not file_infos.need_normalize:
                 LOGGER.debug(
@@ -166,8 +169,6 @@ class DatasetAggregator(BaseDataset):
         Download a specific file if different.
         Normalize it if needed (non existant normalized file, or updated source)
         """
-        if True:
-            return
         if file_metadata.need_download:
             self._download_file(file_metadata)
         if file_metadata.need_normalize:
@@ -178,6 +179,7 @@ class DatasetAggregator(BaseDataset):
         Save locally the output of the URL.
         """
         output_filename = self._dataset_filename(file_metadata, "raw")
+        output_filename.parent.mkdir(exist_ok=True, parents=True)
         try:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
             LOGGER.info(f"Downloaded file {file_metadata.url}")
@@ -236,8 +238,33 @@ class DatasetAggregator(BaseDataset):
         Select among the input files the ones for which we do not have yet the normalized file.
         """
 
-        # Cas simple, on télécharge tout, on ajoute les deux attributs qui servent à la suite des opérations, valorisés à True.
-        if self.main_config["workflow"]["download_all"]:
+        LOGGER.info(f"[{self.get_config_key()}] _remaining_to_normalize !!")
+
+        def print_df(df: pd.DataFrame):
+            cols_to_query = [
+                "base_url",
+                "url_hash",
+                "checksum_value",
+                "extras_analysis:checksum",
+                "need_download",
+                "need_normalize",
+                "extras_analysis:last-modified-at",
+                "modified",
+                "last-modified",
+                "internal_last_modified",
+            ]
+            existing_cols = []
+            for ctq in cols_to_query:
+                if ctq in df:
+                    existing_cols.append(ctq)
+            print(df[existing_cols])
+            return df
+
+        download_all = self.main_config["workflow"]["download_all"]
+        normalize_all = self.main_config["workflow"]["normalize_all"]
+
+        # Cas simple, on télécharge tout, on ajoute les deux attributs (valorisés à True) qui servent à la suite des opérations, et on s'en va.
+        if download_all:
             LOGGER.debug(
                 f"[{self.get_config_key()}] force download turn on: {self.files_in_scope.shape[0]} files planned to download"
             )
@@ -245,24 +272,20 @@ class DatasetAggregator(BaseDataset):
                 self.files_in_scope.assign(need_download=True, need_normalize=True).itertuples()
             )
 
-        # Cas compliqué :
-        # 0) on cherche les fichiers raw.* existants, on récupère le url_hash, on calcule la somme de contrôle (sha1), et on récupère la date de dernière modification.
-        existing_raw_files = [
-            {
-                "url_hash": str(x.parent.name),
-                "local_hash": _file_sha1(x),
-                "local_mtime": _file_mtime(x),
-            }
-            for x in self.data_folder.glob("*/raw.*")
-        ]
+        # Etat de la situation, liste des fichiers sources avec leur date respective et leur somme de contrôle.
+        current = pd.DataFrame(
+            [
+                {
+                    "url_hash": str(x.parent.name),
+                    "local_hash": _file_sha1(x),
+                    "local_mtime": _file_mtime(x),
+                }
+                for x in self.data_folder.glob("*/raw.*")
+            ],
+            columns=["url_hash", "local_hash", "local_mtime"],
+        )
 
-        # 1) on instancie un DF avec l'étape 0.
-        if len(existing_raw_files) == 0:
-            current = pd.DataFrame(columns=["url_hash", "local_hash", "local_mtime"])
-        else:
-            current = pd.DataFrame(existing_raw_files)
-
-        # 2) on associe à chaque fichier à DL, le fichier local si il existe.
+        # On associe à chaque fichier à DL au fichier local si il existe.
         file_to_process = (
             self.files_in_scope.merge(
                 current,
@@ -280,28 +303,32 @@ class DatasetAggregator(BaseDataset):
                 .astype(str)
                 .where(df["local_hash"].notnull()),
             )
-        )
-
-        # 3) on cherche si on a une somme de contrôle dans le catalog, on le compare avec le local, on flag les sommes de contrôles différentes
-        for cs in ["checksum_value", "analysis:checksum", "extra_analysis:checksum"]:
-            if cs in file_to_process:
-                file_to_process.loc[
-                    (file_to_process["local_hash"] != file_to_process[cs])
-                    & (not file_to_process["need_download"]),
-                    ["need_download"],
-                ] = True
-
-        if "last_update" in file_to_process:
-            file_to_process = file_to_process.assign(
-                need_download=lambda s: s["last_update"] != s["local_mtime"]
-                or s["need_download"]
+            .pipe(print_df)
+            # on met les sommes de contrôle répartis sur plusieurs attributs sur le premier ("checksum_value") pour nous faciliter la vie après
+            .pipe(
+                merge_cols_into_one,
+                ["checksum_value", "analysis:checksum", "extra_analysis:checksum"],
             )
-
-        # 4) on force la normalisation des fichiers à télécharger, on supprime les attributs de travail.
-        file_to_process = file_to_process.assign(
-            need_normalize=lambda s: self.main_config["workflow"]["normalize_all"]
-            or s["need_download"]
-        ).drop(columns=["local_mtime", "local_hash"])
+            # on met les dates de dernières modifications répartis sur plusieurs attributs sur un nouveau ("last-modified") pour nous faciliter la vie après
+            .pipe(
+                merge_cols_into_one,
+                ["modified", "extras_analysis:last-modified-at"],
+                target_col="last-modified",
+                astype="datetime64[ns]",
+            )
+            .pipe(print_df)
+            # on calcule la nécessité de télécharger le fichier
+            .assign(
+                need_download=lambda s: s["local_hash"] != s["checksum_value"]
+                if "checksum_value" in s
+                else s["last_update"] > s["local_mtime"]
+                if "last_update" in s
+                else True
+            )
+            # on calcule la nécessité de traiter le fichier.
+            .assign(need_normalize=lambda s: normalize_all or s["need_download"])
+            .drop(columns=["local_mtime", "local_hash", "last-modified"])
+        )
 
         total_files = file_to_process.shape[0]
         download_planned = file_to_process[file_to_process["need_download"]].shape[0]
