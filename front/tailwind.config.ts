@@ -10,7 +10,7 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				'kanit-bold': ['Kanit', 'sans-serif'],
+				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			fontSize: {
 				// 'h1': ['44px', {

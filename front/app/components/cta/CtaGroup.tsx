@@ -31,8 +31,8 @@ export default function CtaGroup() {
   ];
 
   return (
-    <div className='mx-auto my-20 flex max-w-screen-lg justify-center px-4'>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+    <div className='global-margin my-20 flex w-full justify-center'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 w-full'>
       {CtaInfo.map((item) => (
         <CtaCard
           key={item.title}

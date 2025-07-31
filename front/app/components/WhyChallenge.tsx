@@ -5,15 +5,13 @@ import { ArrowRight } from 'lucide-react';
 
 export default async function WhyChallenge() {
   return (
-    <main
-      className="w-full"
-    >
-      <article className='global-margin py-20 px-4'>
+    <main className="w-full global-margin">
+      <article className='py-20'>
         <div className='flex flex-col gap-10 border border-primary-light rounded-xl p-6'>
-          <div className='flex flex-row gap-10 bg-muted-border rounded-xl p-6 justify-between'>
-            <div className='flex flex-col gap-10'>
-              <h2 className='mb-5 text-h2 '>Pourquoi interpeller mes élus ?</h2>
-              <div className='grid gap-4 md:grid-cols-2'>
+          <div className='flex flex-col md:flex-row gap-10 bg-muted-border rounded-xl p-6'>
+            <div className='flex flex-col gap-10 md:w-2/3'>
+              <h2 className='mb-5 text-h2'>Pourquoi interpeller mes élus ?</h2>
+              <div className='grid gap-4'>
                 <div>
                   <div className='grid gap-4'>
                     <p className='text-lg'>
@@ -36,11 +34,11 @@ export default async function WhyChallenge() {
                 </div>
               </div>
             </div>
-            <div className="w-40 aspect-[1/1] flex items-center justify-center">
+            <div className="md:w-1/3 flex items-center justify-center">
               <img
                 src="/eclaireur/mascotte_call.png"
                 alt="Why challenge"
-                className="w-full h-full object-contain"
+                className="w-full max-w-40 aspect-[1/1] object-contain"
               />
             </div>
           </div>

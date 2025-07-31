@@ -10,9 +10,10 @@ import './globals.css';
 
 const kanit = Kanit({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-geist-sans',
+  variable: '--font-kanit',
   display: 'swap', // Optional: improves performance by loading
   subsets: ['latin'],
+  fallback: ['system-ui', 'sans-serif'], // Add fallback fonts
 });
 
 
@@ -55,6 +56,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  other: {
+    'google-fonts': 'https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;500;600;700;800;900&display=swap',
+  },
 };
 
 export default function RootLayout({
@@ -65,7 +69,7 @@ export default function RootLayout({
   return (
     <html lang='fr'>
       <body
-        className={`${kanit.variable} flex h-screen flex-col antialiased`}
+        className={`${kanit.variable} flex h-screen flex-col antialiased font-sans`}
       >
         <Providers>
           <Navbar />

@@ -83,7 +83,7 @@
 
 /* All titles */
 h1 {
-  font-family: 'Kanit', sans-serif;
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   font-size: 44px;
   line-height: 56px;
   font-weight: 700;
@@ -91,7 +91,7 @@ h1 {
 }
 
 h2 {
-  font-family: 'Kanit', sans-serif;
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   font-size: 40px;
   line-height: 44px;
   font-weight: 700;
@@ -99,9 +99,17 @@ h2 {
 }
 
 h3 {
-  font-family: 'Kanit', sans-serif;
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   font-size: 32px;
   line-height: 36px;
+  font-weight: 700;
+  color: #303F8D;
+}
+
+h4 {
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 24px;
+  line-height: 28px;
   font-weight: 700;
   color: #303F8D;
 }
