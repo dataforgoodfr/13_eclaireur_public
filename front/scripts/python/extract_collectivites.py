@@ -6,21 +6,22 @@
 #   "pandas",
 # ]
 # ///
-import duckdb
 import os
-from dotenv import load_dotenv
+
+import duckdb
 import pandas as pd
+from dotenv import load_dotenv
 
 # Charger les variables d'environnement
-load_dotenv('.env.local')
+load_dotenv(".env.local")
 
 # Configuration de la connexion PostgreSQL
 pg_config = {
-    'host': os.getenv('POSTGRESQL_ADDON_HOST'),
-    'port': os.getenv('POSTGRESQL_ADDON_PORT', '5432'),
-    'user': os.getenv('POSTGRESQL_ADDON_USER'),
-    'password': os.getenv('POSTGRESQL_ADDON_PASSWORD'),
-    'database': os.getenv('POSTGRESQL_ADDON_DB')
+    "host": os.getenv("POSTGRESQL_ADDON_HOST"),
+    "port": os.getenv("POSTGRESQL_ADDON_PORT", "5432"),
+    "user": os.getenv("POSTGRESQL_ADDON_USER"),
+    "password": os.getenv("POSTGRESQL_ADDON_PASSWORD"),
+    "database": os.getenv("POSTGRESQL_ADDON_DB"),
 }
 
 # Créer une connexion DuckDB
@@ -56,11 +57,11 @@ df = conn.execute(query).fetchdf()
 print("=== RÉSUMÉ DES DONNÉES ===")
 print(f"Nombre total de collectivités: {len(df)}")
 print(f"\nRépartition par type:")
-print(df['type'].value_counts())
+print(df["type"].value_counts())
 print(f"\nRépartition des scores subventions:")
-print(df['score_sub'].value_counts())
+print(df["score_sub"].value_counts())
 print(f"\nRépartition des scores marchés publics:")
-print(df['score_marches_pub'].value_counts())
+print(df["score_marches_pub"].value_counts())
 
 # Afficher les 20 premières collectivités
 print("\n=== 20 PLUS GRANDES COLLECTIVITÉS ===")

@@ -6,21 +6,22 @@
 #   "pandas",
 # ]
 # ///
-import duckdb
 import os
-from dotenv import load_dotenv
+
+import duckdb
 import pandas as pd
+from dotenv import load_dotenv
 
 # Charger les variables d'environnement
-load_dotenv('.env.local')
+load_dotenv(".env.local")
 
 # Configuration de la connexion PostgreSQL
 pg_config = {
-    'host': os.getenv('POSTGRESQL_ADDON_HOST'),
-    'port': os.getenv('POSTGRESQL_ADDON_PORT', '5432'),
-    'user': os.getenv('POSTGRESQL_ADDON_USER'),
-    'password': os.getenv('POSTGRESQL_ADDON_PASSWORD'),
-    'database': os.getenv('POSTGRESQL_ADDON_DB')
+    "host": os.getenv("POSTGRESQL_ADDON_HOST"),
+    "port": os.getenv("POSTGRESQL_ADDON_PORT", "5432"),
+    "user": os.getenv("POSTGRESQL_ADDON_USER"),
+    "password": os.getenv("POSTGRESQL_ADDON_PASSWORD"),
+    "database": os.getenv("POSTGRESQL_ADDON_DB"),
 }
 
 # Créer une connexion DuckDB
@@ -84,39 +85,51 @@ df_recent = conn.execute(query_recent).fetchdf()
 # Afficher les statistiques
 print("=== RÉSUMÉ DES DONNÉES (SCORES LES PLUS RÉCENTS) ===")
 print(f"Nombre total de collectivités: {len(df_recent)}")
-print(f"\nNombre de collectivités avec au moins un score: {len(df_recent[df_recent['score_sub'].notna() | df_recent['score_marches_pub'].notna()])}")
+print(
+    f"\nNombre de collectivités avec au moins un score: {len(df_recent[df_recent['score_sub'].notna() | df_recent['score_marches_pub'].notna()])}"
+)
 
 print(f"\nRépartition par type:")
-print(df_recent['type'].value_counts())
+print(df_recent["type"].value_counts())
 
 print(f"\nRépartition des scores subventions:")
-print(df_recent['score_sub'].value_counts().sort_index())
+print(df_recent["score_sub"].value_counts().sort_index())
 
 print(f"\nRépartition des scores marchés publics:")
-print(df_recent['score_marches_pub'].value_counts().sort_index())
+print(df_recent["score_marches_pub"].value_counts().sort_index())
 
 # Afficher les 30 premières collectivités avec scores
 print("\n=== 30 PLUS GRANDES COLLECTIVITÉS AVEC LEURS SCORES ===")
-df_with_scores = df_recent[df_recent['score_sub'].notna() | df_recent['score_marches_pub'].notna()]
+df_with_scores = df_recent[
+    df_recent["score_sub"].notna() | df_recent["score_marches_pub"].notna()
+]
 print(df_with_scores.head(30).to_string(index=False))
 
 # Sauvegarder dans un fichier CSV
 output_file = "collectivites_avec_scores.csv"
-df_recent.to_csv(output_file, index=False, encoding='utf-8')
+df_recent.to_csv(output_file, index=False, encoding="utf-8")
 print(f"\n✓ Données exportées dans {output_file}")
 
 # Statistiques par type de collectivité
 print("\n=== MOYENNES DES SCORES PAR TYPE ===")
-for type_col in df_recent['type'].unique():
+for type_col in df_recent["type"].unique():
     if type_col:
-        df_type = df_recent[df_recent['type'] == type_col]
-        df_type_scores = df_type[df_type['score_sub'].notna() | df_type['score_marches_pub'].notna()]
+        df_type = df_recent[df_recent["type"] == type_col]
+        df_type_scores = df_type[
+            df_type["score_sub"].notna() | df_type["score_marches_pub"].notna()
+        ]
         if len(df_type_scores) > 0:
             print(f"\n{type_col}:")
             print(f"  - Nombre total: {len(df_type)}")
-            print(f"  - Avec scores: {len(df_type_scores)} ({len(df_type_scores)/len(df_type)*100:.1f}%)")
-            print(f"  - Répartition scores subventions: {df_type_scores['score_sub'].value_counts().sort_index().to_dict()}")
-            print(f"  - Répartition scores marchés publics: {df_type_scores['score_marches_pub'].value_counts().sort_index().to_dict()}")
+            print(
+                f"  - Avec scores: {len(df_type_scores)} ({len(df_type_scores) / len(df_type) * 100:.1f}%)"
+            )
+            print(
+                f"  - Répartition scores subventions: {df_type_scores['score_sub'].value_counts().sort_index().to_dict()}"
+            )
+            print(
+                f"  - Répartition scores marchés publics: {df_type_scores['score_marches_pub'].value_counts().sort_index().to_dict()}"
+            )
 
 # Fermer la connexion
 conn.close()
