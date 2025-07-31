@@ -52,7 +52,7 @@ class WorkflowManager:
         return [
             CPVLabelsWorkflow,
             SireneWorkflow,
-            FinancialAccounts,
+            FinancialAccounts.from_config,
             ElectedOfficialsWorkflow.from_config,
             DeclaInteretWorkflow,
             OfglWorkflowFactory.from_config,

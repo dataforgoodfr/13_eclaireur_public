@@ -312,7 +312,7 @@ class DatasetAggregator(BaseDataset):
             # on met les dates de dernières modifications répartis sur plusieurs attributs sur un nouveau ("last-modified") pour nous faciliter la vie après
             .pipe(
                 merge_cols_into_one,
-                ["modified", "extras_analysis:last-modified-at"],
+                ["last_update", "modified", "extras_analysis:last-modified-at"],
                 target_col="last-modified",
                 astype="datetime64[ns]",
             )
@@ -333,7 +333,7 @@ class DatasetAggregator(BaseDataset):
         total_files = file_to_process.shape[0]
         download_planned = file_to_process[file_to_process["need_download"]].shape[0]
         normalization_planned = file_to_process[file_to_process["need_normalize"]].shape[0]
-        LOGGER.debug(
+        LOGGER.info(
             f"[{self.get_config_key()}] (pool size : {total_files}) {download_planned} files planned to download / {normalization_planned} files planned to normalization"
         )
 
