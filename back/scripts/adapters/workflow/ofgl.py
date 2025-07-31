@@ -13,7 +13,6 @@ from back.scripts.interfaces.data_source import IDataSource
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
 from back.scripts.interfaces.workflow import IWorkflow, IWorkflowFactory
-from back.scripts.loaders import BaseLoader
 from back.scripts.utils.config import get_project_base_path
 from back.scripts.utils.dataframe_operation import IdentifierFormat
 from back.scripts.utils.polars_operation import (
