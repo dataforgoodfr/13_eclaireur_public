@@ -238,8 +238,6 @@ class DatasetAggregator(BaseDataset):
         Select among the input files the ones for which we do not have yet the normalized file.
         """
 
-        LOGGER.info(f"[{self.get_config_key()}] _remaining_to_normalize !!")
-
         def print_df(df: pd.DataFrame):
             cols_to_query = [
                 "base_url",
@@ -257,6 +255,7 @@ class DatasetAggregator(BaseDataset):
             for ctq in cols_to_query:
                 if ctq in df:
                     existing_cols.append(ctq)
+
             print(df[existing_cols])
             return df
 
