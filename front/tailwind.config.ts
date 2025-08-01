@@ -11,10 +11,13 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				kanit: ['var(--font-kanit)'],
+				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+			},
+
 			},
 			backgroundImage: {
-				'homepage-header': 'url("/transparency.png")',
+				// 'homepage-header': 'url("/transparency.png")',
+				'gradient-fade': 'linear-gradient(to right, transparent 0%, #FAF79E 10%, #FAF79E 90%, transparent 100%)',
 			},
 			colors: {
 				// Semantic colors
@@ -22,7 +25,7 @@ export default {
 					DEFAULT: '#303F8D', // Bleu
 					light: '#CAD2FC', // Bleu clair
 					foreground: '#FFFFFF',
-					50: '#f1f5fd',
+					50: '#f1f5fd',		
 					100: '#e0e9f9',
 					200: '#c9d9f4',
 					300: '#a3c1ed',
@@ -65,7 +68,7 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))',
 				},
 				background: '#fff', // Blanc
-				foreground: '#000',
+				foreground: '#303F8D', // Primary color as default text color
 				// Brand/Chart colors for data viz, etc
 				brand: {
 					1: '#FAF79E', // Brand 01
