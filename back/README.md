@@ -62,13 +62,18 @@ L'intégralité du contenu du dossier `./back/` concerne la partie backend du pr
 Le pipeline a pour but de :
 
 - Collecter, nettoyer, uniformiser et enrichir des jeux de données publics, notamment sur les **subventions territoriales**.
-- Rendre ces données exploitables via une **interface web** destinée aux citoyens, journalistes, chercheurs ou associations.
+- Rendre ces données exploitables via une **interface web** destinée aux citoyens, journalistes, chercheurs ou associations et les marchés publics.
 
 ---
 
 ##  Architecture Générale
 
-Le pipeline de traitement des données s’articule en **trois grandes étapes**, allant de la récupération brute des données jusqu’à leur standardisation finale dans un format exploitable.
+Le pipeline de traitement des données s’articule en **trois étapes**, allant de la récupération brute des données jusqu’à leur standardisation finale dans un format exploitable: 
+
+1. **Constitution des bases principales**
+2. **Enrichissements via des plateformes OpenData**
+3. **Structuration finale et validation**
+
 
 
 🔗 **Schéma complet du pipeline** (POC Anticor) :  
@@ -76,49 +81,51 @@ Le pipeline de traitement des données s’articule en **trois grandes étapes**
 
 ---
 
-##  Étapes du Pipeline
+## Sources de données utilisées
 
-### 1. **Collecte des données (communities)**
+Les données sont agrégées à partir de sources publiques, fiables et actualisées, notamment :
 
-Cette première étape vise à agréger un maximum de données publiques issues de différentes sources administratives.
+| Source            | Description                                                                 | Exemple d’usage                        |
+|------------------|------------------------------------------------------------------------------|----------------------------------------|
+| **INSEE (Sirene)**        | Données légales sur les entreprises, structures publiques et collectivités (codes SIREN/SIRET, formes juridiques, NAF, etc.) | Identification et typage des entités   |
+| **ODF (Observatoire des Finances)** | Données financières consolidées des collectivités locales         | Budgets, typologies budgétaires         |
+| **DataGouv API**         | Métacatalogue et ressources ouvertes, sans hébergement direct        | Recherche de fichiers Opendata annexes |
+| **Data INSEE (Codes géographiques)** | Codes géographiques, démographie, codes région/département      | Appariement géographique                |
 
-**Sources principales :**
-
-- **OFGL** (Observatoire des finances et de la gestion publique locales)  
-  → Données financières (budgets, dépenses) des communes, intercommunalités, départements, régions.
-
-- **ODF** (Open Data France)  
-  → Données mises en ligne par les collectivités locales via leurs portails Open Data.
-
-- **INSEE** (base SIRENE)  
-  → Informations légales et statistiques sur les entités publiques (SIRET/SIREN).
-
-- **GeoLocator**  
-  → Ajout des coordonnées géographiques (latitude/longitude) des entités (communes, départements, EPCI…).
+> **Note** : Bien que `data.gouv.fr` soit la plateforme de centralisation, les données y sont généralement référencées mais pas hébergées. Les appels se font donc majoritairement directement auprès de l’INSEE ou des sources finales (OFGL, DGFIP, etc.).
 
 ---
 
-### 2. **Fusion et enrichissement des données**
+## Traitements appliqués
 
-Cette étape vise à nettoyer, croiser et enrichir les jeux de données collectés précédemment.
+Le pipeline `communities` applique les étapes suivantes :
 
-**Sources additionnelles :**
+1. **Chargement des données INSEE (Sirene)**
+   - Données SIREN/SIRET + formes juridiques + NAF
+   - Normalisation des entités juridiques
+   - Nettoyage des doublons
 
-- **data.gouv.fr**  
-  → Recherche automatisée de fichiers liés aux subventions et marchés publics.
+2. **Récupération des données ODF**
+   - Données financières locales, typologie des collectivités
+   - Mappage avec les identifiants INSEE/SIREN
+   - Calcul de métriques de référence : population, dépenses, etc.
 
-- **Single URLs**  
-  → Données collectées à l’unité, hors plateformes centralisées (liens directs identifiés manuellement).
+3. **Enrichissement via DataGouv API**
+   - Appel de l’API pour extraire des ressources annexes (métriques, subventions, etc.)
+   - Appariement via des correspondances (code commune, code postal, etc.)
+
+4. **Fusion, consolidation et création du fichier `communities.parquet`**
+   - Regroupement des données par SIREN
+   - Ajout des métadonnées utiles (catégorie, statut, région, EPCI, etc.)
+   - Validation finale de structure
 
 ---
 
-### 3. **Normalisation des données communities**
+##  Spécificités techniques et bonnes pratiques
 
-Cette étape repose notamment sur des **classes comme `TopicAggregator`**, qui permettent de :
-
-- Gérer la **variabilité structurelle** des jeux de données publics (colonnes incohérentes, types flous, formats locaux, etc.).
-- Appliquer une **structure normalisée** conforme à une méthodologie d’analyse.
-- Préparer les données pour **l’agrégation, la comparaison et la visualisation** dans l’interface web.
+- Le pipeline repose sur une architecture modulaire orchestrée par un gestionnaire de workflows (`workflow_manager.py`)
+- Tous les fichiers sources sont convertis au format **Parquet** pour une meilleure performance en lecture/écriture.
+- La logique de fusion des sources repose principalement sur les **codes SIREN/SIRET** et les **codes géographiques INSEE**.
 
 ---
 
