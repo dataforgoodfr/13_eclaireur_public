@@ -23,11 +23,9 @@ jobs:
               ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
               fetch-depth: 0
-          # Copier la config clever spécifique review app
-          - name: Use clever.json for review app
-            run: cp .clever.review.json .clever.json
+    
           - name: Create review app
-            uses: CleverCloud/clever-cloud-review-app@v2.0.0
+            uses: CleverCloud/clever-cloud-review-app@v2.0.2
             env:
                 CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
                 CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
@@ -48,11 +46,13 @@ jobs:
                 GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
                 GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
                 GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
-                # Optimisations pour éviter SIGKILL sur machine XS avec Yarn
-                GH_CC_NODE_BUILD_TOOL: "yarn"
-                GH_NODE_OPTIONS: "--max-old-space-size=1024"
-                GH_CC_PRE_BUILD_HOOK: "yarn cache clean"
+                # # Optimisations pour éviter SIGKILL sur machine XS avec Yarn
+                # GH_CC_NODE_BUILD_TOOL: "yarn"
+                # GH_NODE_OPTIONS: "--max-old-space-size=1024"
+                # GH_CC_PRE_BUILD_HOOK: "yarn cache clean"
 
             with:
                 type: node
                 set-env: true
+                flavor: XS
+                build-flavor: S
