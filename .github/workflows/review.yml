@@ -23,9 +23,7 @@ jobs:
               ref: ${{ github.event.pull_request.head.ref }}
               token: ${{ secrets.GITHUB_TOKEN }}
               fetch-depth: 0
-          # Copier la config clever spécifique review app
-          - name: Use clever.json for review app
-            run: cp .clever.review.json .clever.json
+    
           - name: Create review app
             uses: CleverCloud/clever-cloud-review-app@v2.0.0
             env:
@@ -56,3 +54,5 @@ jobs:
             with:
                 type: node
                 set-env: true
+                flavor: XS
+                build-flavor: S
