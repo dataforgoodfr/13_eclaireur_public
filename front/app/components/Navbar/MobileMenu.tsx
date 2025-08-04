@@ -13,7 +13,8 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { Menu } from 'lucide-react';
 
-import SearchCommunity from '@/components/SearchBar/SearchCommunity';
+import SearchBar from '@/components/SearchBar/SearchBar';
+import { useRouter } from 'next/navigation';
 import { AccordionMenu } from './AccordionMenu';
 
 type MenuProps = { title: string; href: string; description: string };
@@ -25,13 +26,19 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: MobileMenuProps) {
-
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleMenuClick = () => {
         setIsOpen(false);
     };
 
+    function navigateToCommunityPage({ siren }: { siren: string }) {
+        if (siren) {
+            router.push(`/community/${siren}`);
+            setIsOpen(false); // Close menu after search selection
+        }
+    }
 
     return (
         <div className='md:hidden'>
@@ -48,17 +55,8 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
                     align='end'
                     side='bottom'
                 >
-                    {/* Search Bar */}
-                    <SearchCommunity className='relative mb-6' />
-
-                    {/* <div className='relative mb-6'>
-                        <Input
-                            type='search'
-                            placeholder='Rechercher...'
-                            className='h-12 w-full rounded-none rounded-br-xl rounded-tl-xl border border-primary/20 pl-4 pr-10 text-primary focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
-                        />
-                        <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/60' />
-                    </div> */}
+                    {/* Search Bar with onSelect handler that closes menu */}
+                    <SearchBar className='relative mb-6' onSelect={navigateToCommunityPage} />
 
                     {/* Interpeller Button */}
                     <div className='mb-6'>
