@@ -109,26 +109,28 @@ export default function Navbar() {
               height={100}
             />
           </div>
-          {/* Mobile Logo - Part 1 (icon) */}
-          <div className='flex md:hidden items-center justify-center h-10'>
+          {/* Mobile Logo - Part 1 (icon) - 30x35 */}
+          <div className='flex md:hidden items-center justify-center'>
             <Image
               src='/eclaireur/logo-navmenu-mobile-1.png'
               priority
               alt='Éclaireur Public Icon'
-              width={40}
-              height={40}
+              width={30}
+              height={35}
+              className='w-[30px] h-[35px]'
             />
           </div>
         </Link>
 
-        {/* Mobile Logo - Part 2 (text) - Centered on mobile */}
-        <div className='absolute left-1/2 transform -translate-x-1/2 md:hidden'>
+        {/* Mobile Logo - Part 2 (text) - Centered on mobile with h-18 (72px) */}
+        <div className='absolute left-1/2 transform -translate-x-1/2 md:hidden h-[18px]'>
           <Image
             src='/eclaireur/logo-navmenu-mobile-2.png'
             priority
             alt='Éclaireur Public'
             width={150}
-            height={30}
+            height={18}
+            className='h-[18px] w-auto'
           />
         </div>
 
