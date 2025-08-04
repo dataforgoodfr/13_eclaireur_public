@@ -1,11 +1,11 @@
-import Image, { StaticImageData } from 'next/image';
-
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface CtaCardProps {
   title: string;
   caption: string;
-  image: StaticImageData;
+  picto: string;
   buttonText: string;
   href: string;
   colorClassName?: string;
@@ -14,27 +14,25 @@ interface CtaCardProps {
 export default function CtaCard({
   title,
   caption,
-  image,
+  picto,
   buttonText,
   href,
   colorClassName,
 }: CtaCardProps) {
   return (
-    <div
-      className={`box-border flex h-full w-full flex-col items-center gap-3 rounded-lg p-4 shadow-md ${colorClassName}`}
+    <Link
+      href={href}
+      className={`box-border justify-between flex h-full w-full flex-col gap-4 rounded-br-xl rounded-tl-xl p-4 shadow-md ${colorClassName} hover:translate-y-[-10px] transition-all duration-300`}
     >
-      <h3 className='text-3xl font-bold'>{title}</h3>
-      <p>{caption}</p>
-      <div className='relative aspect-square w-full'>
-        <Image className='rounded-sm' fill={true} src={image} alt='Card illustration image' />
+      <div className='flex flex-col'>
+        <Image src={picto} alt={title} className='w-6 pb-2' width={36} height={36} />
+        <h3 className='text-h3'>{title}</h3>
+        <p>{caption}</p>
       </div>
-      <a
-        href={href}
-        className='group mb-4 mt-8 flex w-full justify-center space-x-4 rounded-sm bg-neutral-600 p-2 text-white hover:bg-neutral-700'
-      >
-        <span>{buttonText}</span>
+      <div className='flex justify-between'>
+        <span className='font-bold'>{buttonText}</span>
         <ArrowRight className='transition-transform duration-300 group-hover:translate-x-1' />
-      </a>
-    </div>
+      </div>
+    </Link>
   );
 }
