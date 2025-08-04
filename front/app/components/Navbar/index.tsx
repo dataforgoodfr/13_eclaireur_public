@@ -97,18 +97,40 @@ export default function Navbar() {
     <>
       {isBeta && <BandeauBeta />}
       <div className='fixed z-50 flex items-center justify-between w-full h-16 px-6 py-1 pl-1 bg-white shadow-md lg:px-8 top-0'>
-        {/* Logo */}
+        {/* Logo - Different for desktop and mobile */}
         <Link href='/' className='flex items-center space-x-2'>
-          <div className='flex items-center justify-center h-14 w-36'>
+          {/* Desktop Logo */}
+          <div className='hidden md:flex items-center justify-center h-14 w-36'>
             <Image
-              src='/eclaireur/logo-navmenu.png'
+              src='/eclaireur/logo-navmenu-desktop.png'
               priority
               alt='Éclaireur Public Logo'
               width={340}
               height={100}
             />
           </div>
+          {/* Mobile Logo - Part 1 (icon) */}
+          <div className='flex md:hidden items-center justify-center h-10'>
+            <Image
+              src='/eclaireur/logo-navmenu-mobile-1.png'
+              priority
+              alt='Éclaireur Public Icon'
+              width={40}
+              height={40}
+            />
+          </div>
         </Link>
+
+        {/* Mobile Logo - Part 2 (text) - Centered on mobile */}
+        <div className='absolute left-1/2 transform -translate-x-1/2 md:hidden'>
+          <Image
+            src='/eclaireur/logo-navmenu-mobile-2.png'
+            priority
+            alt='Éclaireur Public'
+            width={150}
+            height={30}
+          />
+        </div>
 
         {/* Desktop Navigation */}
         <NavigationMenu className='hidden md:flex'>
