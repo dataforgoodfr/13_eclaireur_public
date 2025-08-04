@@ -31,5 +31,12 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "scripts/**/*", "**/scripts/**/*"]
+  "exclude": [
+    "node_modules",
+    "scripts/**/*",
+    "**/scripts/**/*",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/__mocks__/**/*"
+  ]
 }
