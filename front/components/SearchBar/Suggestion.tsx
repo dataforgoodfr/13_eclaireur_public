@@ -8,9 +8,9 @@ export default function Suggestion({ nom, code_postal, type }: CommunitySuggesti
   return (
     <div>
       <>
-        {nom} {code_postal && <> – {code_postal}</>}{' '}
-        {departementNombre && <> – {departementNombre}</>}
-        <> – {communityTypeText}</>
+        {nom} {code_postal && <> - {code_postal}</>}{' '}
+        {departementNombre && <> - {departementNombre}</>}
+        <> - {communityTypeText}</>
       </>
     </div>
   );
