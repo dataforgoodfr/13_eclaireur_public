@@ -78,7 +78,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd front
-          yarn install --frozen-lockfile --network-concurrency 1
+          yarn install --ignore-scripts --frozen-lockfile
 
   # Job 3: Build Storybook (en parallèle avec l'installation si cache hit)
   build-storybook:
@@ -393,7 +393,7 @@ jobs:
         if: steps.node-modules-cache-approve.outputs.cache-hit != 'true'
         run: |
           cd front
-          yarn install --frozen-lockfile
+          yarn install --ignore-scripts --frozen-lockfile
 
       - name: Approve BackstopJS references
         run: |
@@ -412,9 +412,7 @@ jobs:
   # Job 7: Déploiement GitHub Pages (peut s'exécuter en parallèle)
   deploy-pages:
     needs: visual-regression
-    if: |
-      always() && 
-      needs.visual-regression.outputs.has-diffs == 'true'
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       contents: write

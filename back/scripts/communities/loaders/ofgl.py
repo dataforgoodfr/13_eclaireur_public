@@ -20,6 +20,8 @@ COM_CSV_DTYPES = {
     "Code Insee Collectivité": str,
     "Code Insee 2023 Département": str,
     "Code Insee 2023 Région": str,
+    "Code Insee 2024 Région": str,
+    "Code Insee 2024 Département": str,
 }
 READ_COLUMNS = {
     "Exercice": None,
