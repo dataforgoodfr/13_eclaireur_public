@@ -40,8 +40,8 @@ export default function SearchBar({
         <div className="flex items-center">
           <Input
             type='search'
-            placeholder='Rechercher...'
-            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            placeholder='Code postal, commune, département, région'
+            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
             onChange={handleInputChange}
             onFocus={handleOnFocus}
             onBlur={(e) => {
