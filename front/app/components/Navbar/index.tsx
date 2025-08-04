@@ -116,11 +116,12 @@ export default function Navbar() {
             <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
             <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
             <NavigationMenuItem className='hidden lg:flex'>
-              <Link href='/advanced-search' legacyBehavior passHref>
-                <NavigationMenuLink className='text-base font-medium text-primary hover:text-primary/80'>
-                  Télécharger
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink
+                href='/advanced-search'
+                className='text-base font-medium text-primary hover:text-primary/80'
+              >
+                Télécharger
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuGroup title='À propos' menus={aProposMenus} />
           </NavigationMenuList>
