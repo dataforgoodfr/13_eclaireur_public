@@ -10,12 +10,11 @@ import {
 } from '#components/ui/navigation-menu';
 
 import SearchCommunity from '@/components/SearchBar/SearchCommunity';
-
 import { Wrench } from 'lucide-react';
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
 
-const visualiserMenus: { title: string; href: string; description: string }[] = [
+const visualiserMenus = [
   {
     title: 'Cartographie',
     href: '/map',
@@ -39,7 +38,7 @@ const visualiserMenus: { title: string; href: string; description: string }[] = 
   },
 ];
 
-const comprendreMenus: { title: string; href: string; description: string }[] = [
+const comprendreMenus = [
   {
     title: 'Contexte',
     href: '/contexte',
@@ -57,7 +56,7 @@ const comprendreMenus: { title: string; href: string; description: string }[] = 
   },
 ];
 
-const aProposMenus: { title: string; href: string; description: string }[] = [
+const aProposMenus = [
   {
     title: 'Qui sommes-nous ?',
     href: '/qui-sommes-nous',
@@ -84,73 +83,102 @@ const aProposMenus: { title: string; href: string; description: string }[] = [
     description: '',
   },
 ];
+
 const BandeauBeta = () => (
-  <div className='fixed z-40 w-full py-1 pl-1 text-sm text-center top-16 bg-card-secondary-foreground-1'>
-    <Wrench className='inline scale-x-[-1]' size='16' />
+  <div className="fixed z-40 w-full py-1 pl-1 text-sm text-center top-16 bg-card-secondary-foreground-1">
+    <Wrench className="inline scale-x-[-1]" size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
     fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
   </div>
 );
+
 export default function Navbar() {
-  const isBeta = true
+  const isBeta = true;
   return (
     <>
       {isBeta && <BandeauBeta />}
-      <div className='fixed z-50 flex items-center justify-between w-full h-16 px-6 py-1 pl-1 bg-white shadow-md lg:px-8 top-0'>
-        {/* Logo */}
-        <Link href='/' className='flex items-center space-x-2'>
-          <div className='flex items-center justify-center h-14 w-36'>
+
+      <div className="fixed z-50 flex items-center justify-between w-full h-16 bg-white shadow-md top-0 px-4">
+        {/* Mobile Navbar */}
+        <div className="flex items-center justify-between w-full md:hidden">
+          {/* Left: Icon logo */}
+          <Link href="/">
             <Image
-              src='/eclaireur/logo-navmenu.png'
+              src="/eclaireur/logo-navmenu-mobile-1.png"
+              alt="Éclaireur Icon"
+              width={28}
+              height={28}
+              className="h-[28px] w-auto"
               priority
-              alt='Éclaireur Public Logo'
-              width={340}
-              height={100}
             />
-          </div>
-        </Link>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className='hidden md:flex'>
-          <NavigationMenuList>
-            <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
-            <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
-            <NavigationMenuItem className='hidden lg:flex'>
-              <NavigationMenuLink
-                href='/advanced-search'
-                className='text-base font-medium text-primary hover:text-primary/80'
-              >
-                Télécharger
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuGroup title='À propos' menus={aProposMenus} />
-          </NavigationMenuList>
-        </NavigationMenu>
+          {/* Center: Text logo */}
+          <Image
+            src="/eclaireur/logo-navmenu-mobile-2.svg"
+            alt="Éclaireur Public"
+            width={360}
+            height={36}
+            className="h-[68px] w-auto"
+            priority
+          />
 
-        {/* Search and Settings */}
-        <div className='flex items-center space-x-4'>
-          <SearchCommunity />
-          <Button
-            size='sm'
-            className='hidden rounded-none rounded-tl-lg rounded-br-lg bg-primary hover:bg-primary/90 md:inline'
-          >
-            <Link
-              href='/interpeller'
-            >
-              <Image
-                src='/eclaireur/interpeller.svg'
-                alt='Interpeller'
-                width={20}
-                height={20}
-              />
-            </Link>
-          </Button>
-          {/* Mobile Menu */}
+          {/* Right: Burger menu */}
           <MobileMenu
             visualiserMenus={visualiserMenus}
             comprendreMenus={comprendreMenus}
             aProposMenus={aProposMenus}
           />
+        </div>
+
+        {/* Desktop Navbar */}
+        <div className="hidden md:flex items-center justify-between w-full">
+          {/* Desktop Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="flex items-center justify-center h-14 w-36">
+              <Image
+                src="/eclaireur/logo-navmenu-desktop.png"
+                priority
+                alt="Éclaireur Public Logo"
+                width={340}
+                height={100}
+              />
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuGroup title="Visualiser" menus={visualiserMenus} />
+              <NavigationMenuGroup title="Comprendre" menus={comprendreMenus} />
+              <NavigationMenuItem className="hidden lg:flex">
+                <Link href="/advanced-search" legacyBehavior passHref>
+                  <NavigationMenuLink className="text-base font-medium text-primary hover:text-primary/80">
+                    Télécharger
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuGroup title="À propos" menus={aProposMenus} />
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {/* Search + Interpeller button */}
+          <div className="flex items-center">
+            <SearchCommunity />
+            <Button
+              size="sm"
+              className="hidden rounded-none rounded-tl-lg rounded-br-lg bg-primary hover:bg-primary/90 md:inline"
+            >
+              <Link href="/interpeller">
+                <Image
+                  src="/eclaireur/interpeller.svg"
+                  alt="Interpeller"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </>
