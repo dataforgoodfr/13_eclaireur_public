@@ -6,6 +6,11 @@
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
   }
+
+  h1 { @apply text-h1 text-primary font-kanit-bold; }
+  h2 { @apply text-h2 text-primary font-kanit-bold; }
+  h3 { @apply text-h3 text-primary font-kanit-bold; }
+  h4 { @apply text-h4 text-primary font-kanit-bold; }
 }
 
 @layer base {
@@ -82,7 +87,7 @@
 }
 
 /* All titles */
-h1 {
+/* h1 {
   font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   font-size: 44px;
   line-height: 56px;
@@ -112,4 +117,6 @@ h4 {
   line-height: 28px;
   font-weight: 700;
   color: #303F8D;
-}
+} */
+
+

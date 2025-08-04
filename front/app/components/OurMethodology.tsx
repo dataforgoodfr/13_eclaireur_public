@@ -2,52 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-
 import { ArrowRight } from 'lucide-react';
+import { CRITERIA, SCORES } from '@/utils/constants';
+import Image from 'next/image';
 
-const CRITERIA = [
-  'Identifiant marché',
-  'Code CPV',
-  'Montant',
-  'Date de notification',
-  'Type de code',
-  'Lieu exécution code',
-  'Lieu d\'exécution nom',
-  'Forme de prix',
-  'Objet',
-  'Nature',
-  'Durée en mois',
-  'Procédure',
-  'Titulaire'
-]
-
-const SCORES = {
-  "A": {
-    "title": "Score A - Exemplaire",
-    "description": "Le score A reflète une exemplarité absolue, avec une publication complète des données pour les marchés de toutes tailles et une conformité totale aux 13 critères définis, garantissant une transparence optimale.",
-    "picto": "/eclaireur/mascotte_a.png"
-  },
-  "B": {
-    "title": "Score B - Satisfaisant",
-    "description": "Le score B indique une conformité satisfaisante, avec une publication des données pour les marchés de toutes tailles et une conformité aux 13 critères définis, garantissant une transparence suffisante.",
-    "picto": "/eclaireur/mascotte_b.png"
-  },
-  "C": {
-    "title": "Score C - Moyen",
-    "description": "Le score C indique une conformité moyenne, avec une publication des données pour les marchés de toutes tailles et une conformité aux 13 critères définis, garantissant une transparence suffisante.",
-    "picto": "/eclaireur/mascotte_c.png"
-  },
-  "D": {
-    "title": "Score D - Insuffisant",
-    "description": "Le score D indique une conformité insuffisante, avec une publication des données pour les marchés de toutes tailles et une conformité aux 13 critères définis, garantissant une transparence insuffisante.",
-    "picto": "/eclaireur/mascotte_d.png"
-  },
-  "E": {
-    "title": "Score E - Très insuffisant",
-    "description": "Le score E représente une transparence très insuffisante : les données publiées sont quasiment inexistantes, montrant un grave manquement aux exigences de publication et de communication.",
-    "picto": "/eclaireur/mascotte_e.png"
-  }
-}
 
 export default function OurMethodology() {
   const [selectedScore, setSelectedScore] = useState<keyof typeof SCORES>("A");
@@ -77,10 +35,12 @@ export default function OurMethodology() {
           <div className='flex md:flex-row flex-col gap-8 py-6'>
 
             <div className='md:w-1/3 flex items-center justify-center'>
-              <img
+              <Image
                 src={SCORES[selectedScore].picto}
                 alt={SCORES[selectedScore].title}
                 className="w-full max-w-48 aspect-square object-contain"
+                width={200}
+                height={200}
               />
             </div>
 
@@ -131,7 +91,7 @@ function MethodologyCard({picto, title, colorClassName, criteria}: {picto: strin
   return (
     <div className={`box-border justify-between flex h-full w-full flex-col gap-4 rounded-br-xl rounded-tl-xl p-4 ${colorClassName}`}>
       <div className='flex flex-row gap-4 items-center'>
-        <img src={picto} alt={title} className='w-8 h-8' />
+        <Image src={picto} alt={title} className='w-8 h-8' width={32} height={32} />
         <h4 className='text-h4'>{title}</h4>
       </div>
       {criteria && (

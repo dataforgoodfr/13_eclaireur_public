@@ -1,12 +1,13 @@
 import Link from 'next/link';
 
 import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 
 export default async function WhyChallenge() {
   return (
     <main className="w-full global-margin">
-      <article className='py-20'>
+      <article className='py-20 px-4'>
         <div className='flex flex-col gap-10 border border-primary-light rounded-xl p-6'>
           <div className='flex flex-col md:flex-row gap-10 bg-muted-border rounded-xl p-6'>
             <div className='flex flex-col gap-10 md:w-2/3'>
@@ -14,7 +15,7 @@ export default async function WhyChallenge() {
               <div className='grid gap-4'>
                 <div>
                   <div className='grid gap-4'>
-                    <p className='text-lg'>
+                    <p className='text-lg font-bold'>
                       Interpeller vos élu·es, c'est leur rappeler leur responsabilité démocratique et les 
                       encourager à mieux rendre compte de l'utilisation des fonds publics.
                     </p>
@@ -34,11 +35,13 @@ export default async function WhyChallenge() {
                 </div>
               </div>
             </div>
-            <div className="md:w-1/3 flex items-center justify-center">
-              <img
-                src="/eclaireur/mascotte_call.png"
+            <div className="flex items-center justify-center md:w-1/3">
+              <Image
+                src="/eclaireur/mascotte_call.svg"
                 alt="Why challenge"
-                className="w-full max-w-40 aspect-[1/1] object-contain"
+                className="w-full object-contain"
+                width={324}
+                height={277}
               />
             </div>
           </div>
