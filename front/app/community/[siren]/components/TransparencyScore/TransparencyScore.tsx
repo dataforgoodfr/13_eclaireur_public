@@ -3,6 +3,8 @@ import type { TransparencyScore } from '#components/TransparencyScore/constants'
 import { SCORE_DESCRIPTION, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 
+import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
+import React from 'react';
 import { FicheCard } from '../FicheCard';
 
 const mainTitle = 'Score de transparence agrégé';
@@ -20,7 +22,9 @@ type TransparencyScoreProps = {
 
 const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
   const { text: trendText, icon: TrendIcon } = trendToText(trend);
-  const trendColor = trendText === 'Transparence en hausse' ? 'bg-lime-200' : trendText === 'Transparence en baisse' ? 'bg-red-200' : 'bg-gray-200';
+
+  const trendColor = trendText === 'Transparence en hausse' ? 'bg-brand-2' :
+    trendText === 'Transparence en baisse' ? 'bg-red-200' : 'bg-gray-200';
 
   return (
     <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center'>
@@ -29,13 +33,14 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
           {mainTitle}
         </h2>
       </div>
-      <span className={`text-xs sm:text-sm px-3 py-1 mt-2 sm:mt-0 rounded-full text-primary font-bold flex items-center gap-1 ${trendColor}`}>
-        {TrendIcon && TrendIcon} {trendText}
-      </span>
+      <BadgeCommunity
+        text={trendText}
+        icon={TrendIcon ? (props: any) => React.cloneElement(TrendIcon, { ...props, className: "h-4 w-4" }) : undefined}
+        className={trendColor}
+      />
     </div>
   );
 };
-
 export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
   return (
     <div className=''>
