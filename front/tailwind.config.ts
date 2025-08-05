@@ -79,6 +79,7 @@ export default {
 				},
 				muted: {
 					DEFAULT: '#737373', // Gris
+					default: '#737373', // Gris
 					light: '#E2E2E2', // Gris clair
 					border: '#F6F6F6', // Gris border
 					foreground: 'hsl(var(--muted-foreground))',

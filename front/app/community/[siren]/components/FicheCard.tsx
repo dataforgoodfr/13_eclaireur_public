@@ -10,7 +10,8 @@ type FicheCardProps = PropsWithChildren<{
 
 export function FicheCard({ title, subtitle, header, children }: FicheCardProps) {
   return (
-    <Card className='border border-black'>
+    <Card className="border border-muted-DEFAULT shadow-none">
+
       <CardHeader>
         {header || (
           <>
