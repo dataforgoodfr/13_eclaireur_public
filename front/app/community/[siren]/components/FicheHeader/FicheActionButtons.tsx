@@ -8,8 +8,6 @@ import { Button } from '#components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '#components/ui/dialog';
 import { Share } from 'lucide-react';
@@ -32,7 +30,7 @@ export function FicheActionButtons({ community, className }: FicheActionButtonsP
       toast({
         description: "URL copiée dans le presse-papier",
       });
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         description: "Erreur lors de la copie de l'URL",
