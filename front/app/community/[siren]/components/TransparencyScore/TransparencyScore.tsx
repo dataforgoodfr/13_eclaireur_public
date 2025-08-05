@@ -38,7 +38,7 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
 
 export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
   return (
-    <div className='hidden md:block'>
+    <div className=''>
       <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
         <div className='mb-10 flex flex-col md:flex-row w-full gap-6'>
           <section className='w-full md:w-1/2 flex flex-col gap-6'>
