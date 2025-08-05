@@ -41,7 +41,7 @@ export default {
 					DEFAULT: '#303F8D', // Bleu
 					light: '#CAD2FC', // Bleu clair
 					foreground: '#FFFFFF',
-					50: '#f1f5fd',		
+					50: '#f1f5fd',
 					100: '#e0e9f9',
 					200: '#c9d9f4',
 					300: '#a3c1ed',
@@ -90,6 +90,13 @@ export default {
 					1: '#FAF79E', // Brand 01
 					2: '#E8F787', // Brand 02
 					3: '#D7F787', // Brand 03
+				},
+				score: {
+					A: '#79B381',
+					B: '#B2D675',
+					C: '#FF8574',
+					D: '#FFA466',
+					E: '#FFDE8B',
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
