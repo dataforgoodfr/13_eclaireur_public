@@ -1,11 +1,10 @@
 'use client';
 
 import { Community } from '#app/models/community';
-import CopyUrlButton from '#components/utils/CopyUrlButton';
+import { formatCommunityType } from '#utils/format';
 
 import GoBack from '../GoBack';
-import { FicheComparisonInput } from './FicheComparisonInput';
-import { useIsOpen } from './hooks/useIsOpen';
+import { FicheActionButtons } from './FicheActionButtons';
 
 type FicheHeaderProps = {
   community: Community;
@@ -14,26 +13,52 @@ type FicheHeaderProps = {
 const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
 
 export function FicheHeader({ community }: FicheHeaderProps) {
-  const isOpen = useIsOpen();
-  const title = `${community.nom} ${community.code_postal ? community.code_postal : ''}`;
-
-  if (!isOpen) return null;
+  const communityTitle = community.nom;
+  const communityType = formatCommunityType(community.type);
+  const location = community.code_postal ? `${community.code_postal}` : '';
 
   return (
-    <div className='fixed z-40 flex h-[140px] w-full justify-between gap-6 bg-secondary p-4 md:flex-row'>
-      <GoBack />
-      <div className='flex flex-1 justify-center'>
-        <div className='w-fit text-center'>
-          <div className='grid min-w-0 grid-cols-3 gap-2'>
-            <p className='col-span-2 text-xl font-bold'>{title}</p>
-            <div>
-              <CopyUrlButton label='Partager la fiche' />
-            </div>
+    <div
+      className='w-full p-6 lg:px-40 lg:pt-4 lg:pb-12 bg-cover bg-center bg-no-repeat relative'
+      style={{
+        backgroundImage: 'url(/collectivite-header.png)',
+      }}
+    >
+      <div className='absolute inset-0 bg-white/10'></div>
+      <div className='relative z-10 flex flex-col gap-3 lg:gap-4'>
+        {/* Top bar with GoBack and Action buttons - Mobile only */}
+        <div className='flex justify-between items-center lg:hidden'>
+          <GoBack />
+          <FicheActionButtons community={community} />
+        </div>
+
+        {/* Desktop: GoBack seul avec espacement réduit */}
+        <div className='hidden lg:block'>
+          <GoBack />
+        </div>
+
+        {/* Main content avec boutons alignés sur desktop */}
+        <div className='text-left lg:flex lg:items-start lg:justify-between'>
+          <div className='lg:flex-1'>
+            <h1 className='text-2xl lg:text-4xl font-bold text-primary mb-3 lg:mb-4'>{communityTitle}</h1>
+            <h4 className='text-xl lg:text-[28px] text-primary mb-3 lg:mb-4'>
+              <span>{communityType}</span>
+              <span className='mx-1 lg:mx-2'>•</span>
+              <span>Haute Savoie</span>
+              {location && (
+                <>
+                  <span className='mx-1 lg:mx-2'>•</span>
+                  <span>{location}</span>
+                </>
+              )}
+            </h4>
+            <p className='text-base text-primary lg:max-w-2xl'>{descriptionText}</p>
           </div>
-          <p className='mt-6'>{descriptionText}</p>
+
+          {/* Action buttons desktop - alignés avec le titre */}
+          <FicheActionButtons community={community} className="hidden lg:flex lg:self-start" />
         </div>
       </div>
-      <FicheComparisonInput community={community} />
     </div>
   );
 }
