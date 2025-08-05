@@ -43,7 +43,7 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
           text={trendText}
           icon={
             TrendIcon
-              ? (props: any) => React.cloneElement(TrendIcon, { ...props, className: 'h-4 w-4' })
+              ? (props: React.SVGProps<SVGSVGElement>) => React.cloneElement(TrendIcon, { ...props, className: 'h-4 w-4' })
               : undefined
           }
           className={trendColor}
