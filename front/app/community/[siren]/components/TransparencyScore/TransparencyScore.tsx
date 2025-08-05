@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
-import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
+import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScoreBar';
 import type { TransparencyScore } from '#components/TransparencyScore/constants';
 import { SCORE_DESCRIPTION, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
 import { TrendingDown, TrendingUp } from 'lucide-react';

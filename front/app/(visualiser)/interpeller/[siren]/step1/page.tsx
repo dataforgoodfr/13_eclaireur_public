@@ -6,7 +6,7 @@ import MiniFicheCommunity from '#components/Communities/MiniFicheCommunity';
 import RankingCommunity from '#components/Communities/RankingCommunity';
 import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
 import Stepper from '#components/Interpellate/Stepper';
-import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
+import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScoreBar.jsx';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { MoveRight } from 'lucide-react';
 
