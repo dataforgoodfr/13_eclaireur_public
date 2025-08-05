@@ -320,7 +320,7 @@ export const ResetAfterSelectionTest: Story = {
         console.log('✅ Les suggestions ont disparu après sélection');
       }
       
-    } catch (e) {
+    } catch {
       console.log('Suggestion Paris non trouvée pour le test de sélection');
     }
   },
@@ -447,7 +447,7 @@ export const DetailedResetValidation: Story = {
       await new Promise(resolve => setTimeout(resolve, 500));
       console.log('  ✅ Nouvelle recherche "Lyon" effectuée');
       
-    } catch (e) {
+    } catch {
       console.warn('  ❌ Suggestion "Paris" non trouvée pour le test');
       console.log('  ℹ️ Test de reset manuel...');
       
