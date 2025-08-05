@@ -107,7 +107,7 @@ export const InteractionTest: Story = {
       </div>
     ),
   ],
-  play: async ({ canvasElement, args }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const searchInput = canvas.getByPlaceholderText('Code postal, commune, département, région');
     
@@ -258,7 +258,7 @@ export const SelectionTest: Story = {
     try {
       const firstSuggestion = canvas.getByText('Marseille');
       await userEvent.click(firstSuggestion);
-    } catch (e) {
+    } catch {
       console.log('Suggestion not found or not clickable');
     }
   },
@@ -286,7 +286,7 @@ export const ResetAfterSelectionTest: Story = {
       </div>
     ),
   ],
-  play: async ({ canvasElement, args }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const searchInput = canvas.getByPlaceholderText('Code postal, commune, département, région');
     

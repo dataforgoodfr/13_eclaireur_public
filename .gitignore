@@ -189,3 +189,4 @@ tests-examples/
 # Container-use
 .container-use/
 
+**/screenshots/**
