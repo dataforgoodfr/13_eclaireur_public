@@ -13,7 +13,7 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
           Informations générales
         </h2>
       </div>
-      <div className="order-1 sm:order-2 mb-4 sm:mb-0">
+      <div className="order-1 sm:order-2 md:mb-4 mb-2 sm:mb-0">
         {community.should_publish ? (
           <BadgeCommunity
             text="Soumise à l’obligation Loi République Numérique"
