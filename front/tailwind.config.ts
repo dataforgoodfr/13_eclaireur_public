@@ -94,9 +94,9 @@ export default {
 				score: {
 					A: '#79B381',
 					B: '#B2D675',
-					C: '#FF8574',
+					C: '#FFDE8B',
 					D: '#FFA466',
-					E: '#FFDE8B',
+					E: '#FF8574',
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
