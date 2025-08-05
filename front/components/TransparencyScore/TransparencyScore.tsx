@@ -72,6 +72,23 @@ type TransparencyScoreBarProps = {
 export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBarProps) {
   const translateDueToScaleFactor = -5;
 
+  const getScoreColor = (score: TransparencyScore) => {
+    switch (score) {
+      case TransparencyScore.A:
+        return 'fill-score-A';
+      case TransparencyScore.B:
+        return 'fill-score-B';
+      case TransparencyScore.C:
+        return 'fill-score-C';
+      case TransparencyScore.D:
+        return 'fill-score-D';
+      case TransparencyScore.E:
+        return 'fill-score-E';
+      default:
+        return 'fill-muted-light';
+    }
+  };
+
   return (
     <svg
       width={SVG_CONFIG.viewBoxWidth + 2 * SVG_CONFIG.margin}
@@ -93,7 +110,7 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
                   ? `translate(${baseX}, 0) scale(${ACTIVE_SCORE_SCALE}) translate(${translateDueToScaleFactor}, ${translateDueToScaleFactor})`
                   : `translate(${baseX}, 0)`
               }
-              rectangleClassName={isActive ? 'fill-lime-400' : 'fill-gray-200'}
+              rectangleClassName={isActive ? getScoreColor(scoreValue) : 'fill-muted-light'}
             />
           );
         })}
@@ -106,8 +123,8 @@ export function TransparencyScoreBar({ score: activeScore }: TransparencyScoreBa
           textAnchor='middle'
           className='font-bold fill-blue-900 text-lg'
         >
-          {activeScore === TransparencyScore.UNKNOWN || activeScore === null 
-            ? 'Non communiqué' 
+          {activeScore === TransparencyScore.UNKNOWN || activeScore === null
+            ? 'Non communiqué'
             : SCORE_TO_ADJECTIF[activeScore]
           }
         </text>
