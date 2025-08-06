@@ -40,8 +40,8 @@ export function FicheHeader({ community }: FicheHeaderProps) {
         {/* Main content avec boutons alignés sur desktop */}
         <div className='text-left lg:flex lg:items-start lg:justify-between'>
           <div className='flex flex-col gap-3 lg:flex-1'>
-            <h1 className='text-h1 lg:text-h1-lg font-bold text-primary lg:mb-4'>{communityTitle}</h1>
-            <h4 className='text-h4 text-primary lg:mb-4 lg:text-[28px]'>
+            <h1 className='lg:mb-4'>{communityTitle}</h1>
+            <h4 className='lg:mb-4'>
               <span>{communityType}</span>
               {departementName && (
                 <>

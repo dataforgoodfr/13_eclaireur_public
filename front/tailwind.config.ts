@@ -15,39 +15,6 @@ export default {
 				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			fontSize: {
-				// Mobile-first responsive typography based on design specs
-				'h1': ['36px', {
-					lineHeight: '40px',
-					fontWeight: '700',
-				}],
-				'h1-lg': ['44px', {
-					lineHeight: '56px',
-					fontWeight: '700',
-				}],
-				'h2': ['32px', {
-					lineHeight: '38px',
-					fontWeight: '700',
-				}],
-				'h2-lg': ['40px', {
-					lineHeight: '44px',
-					fontWeight: '700',
-				}],
-				'h3': ['28px', {
-					lineHeight: '32px',
-					fontWeight: '700',
-				}],
-				'h3-lg': ['32px', {
-					lineHeight: '36px',
-					fontWeight: '700',
-				}],
-				'h4': ['22px', {
-					lineHeight: '28px',
-					fontWeight: '700',
-				}],
-				'h4-lg': ['24px', {
-					lineHeight: '28px',
-					fontWeight: '700',
-				}],
 				'tag': ['14px', {
 					lineHeight: 'auto',
 					fontWeight: '400',
@@ -183,7 +150,7 @@ export default {
 	},
 	plugins: [
 		animate,
-		plugin(function({ addBase }) {
+		plugin(({ addBase }) => {
 			addBase({
 				'h1': {
 					fontSize: '36px',
