@@ -180,12 +180,12 @@ export default {
 					},
 				},
 				'h4': {
-					fontSize: '22px',
-					lineHeight: '28px',
-					fontWeight: '700',
+					fontSize: '22px !important',
+					lineHeight: '28px !important',
+					fontWeight: '700 !important',
 					'@media (min-width: 1024px)': {
-						fontSize: '24px',
-						lineHeight: '28px',
+						fontSize: '24px !important',
+						lineHeight: '28px !important',
 					},
 				},
 			});

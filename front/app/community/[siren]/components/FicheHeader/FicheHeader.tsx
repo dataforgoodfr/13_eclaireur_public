@@ -25,7 +25,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
         backgroundImage: 'url(/collectivite-header.png)',
       }}
     >
-      <div className='relative z-10 flex flex-col gap-6 lg:gap-4'>
+      <div className='relative z-10 flex flex-col gap-6'>
         {/* Top bar with GoBack and Action buttons - Mobile only */}
         <div className='flex items-center justify-between lg:hidden h-12'>
           <GoBack />
@@ -39,9 +39,9 @@ export function FicheHeader({ community }: FicheHeaderProps) {
 
         {/* Main content avec boutons alignés sur desktop */}
         <div className='text-left lg:flex lg:items-start lg:justify-between'>
-          <div className='flex flex-col gap-3 lg:flex-1'>
-            <h1 className='lg:mb-4'>{communityTitle}</h1>
-            <h4 className='lg:mb-4'>
+          <div className='flex flex-col gap-4 lg:flex-1'>
+            <h1>{communityTitle}</h1>
+            <h4>
               <span>{communityType}</span>
               {departementName && (
                 <>
