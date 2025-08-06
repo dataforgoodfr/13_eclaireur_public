@@ -17,6 +17,26 @@ const queryClient = new QueryClient({
   },
 });
 
+// Custom viewports for better desktop/mobile options
+const customViewports = {
+  desktop: {
+    name: 'Desktop',
+    styles: {
+      width: '1440px',
+      height: '900px',
+    },
+    type: 'desktop',
+  },
+  laptop: {
+    name: 'Laptop',
+    styles: {
+      width: '1024px',
+      height: '768px',
+    },
+    type: 'desktop',
+  },
+};
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -30,12 +50,18 @@ const preview: Preview = {
       appDirectory: true,
     },
     viewport: {
-      options: INITIAL_VIEWPORTS,
+      viewports: {
+        ...INITIAL_VIEWPORTS,
+        ...customViewports,
+      },
     },
     react: {
       rsc: true,
       suspense: true,
     },
+  },
+  initialGlobals: {
+    viewport: { value: 'desktop' },
   },
   decorators: [
     (Story) => {

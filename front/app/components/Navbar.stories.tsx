@@ -59,10 +59,8 @@ export const Mobile: Story = {
     },
     parameters: {
         layout: 'fullscreen',
-    },
-    globals: {
         viewport: {
-            value: 'iphone5',
+            defaultViewport: 'mobile1',
         },
     },
     decorators: [
@@ -76,6 +74,34 @@ export const Mobile: Story = {
                     <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.875rem' }}>
                         On mobile, the navigation menu is collapsed into a hamburger menu, and the search bar
                         is moved to the mobile menu.
+                    </p>
+                </div>
+            </div>
+        ),
+    ],
+};
+
+export const Desktop: Story = {
+    args: {
+        isBeta: false
+    },
+    parameters: {
+        layout: 'fullscreen',
+    },
+    globals: {
+        viewport: { value: 'desktop', isRotated: false },
+    },
+    decorators: [
+        (Story) => (
+            <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+                <Story />
+                <div style={{ padding: '80px 20px 20px', maxWidth: '1400px', margin: '0 auto' }}>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+                        Desktop View
+                    </h1>
+                    <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '1rem', maxWidth: '800px' }}>
+                        On desktop, the navigation shows all menu items in the header with full search functionality.
+                        This provides optimal usability for users with larger screens and precise input devices.
                     </p>
                 </div>
             </div>
@@ -109,9 +135,7 @@ export const MobileMenuOpen: Story = {
         },
     },
     globals: {
-        viewport: {
-            value: 'iphone5',
-        },
+        viewport: { value: 'iphone5', isRotated: false },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
