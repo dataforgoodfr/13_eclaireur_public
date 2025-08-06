@@ -1,7 +1,8 @@
 import { Community } from '#app/models/community';
-import type { Meta, StoryObj } from '@storybook/react';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { CommunityType } from '#utils/types';
+import type { Meta, StoryObj } from '@storybook/react';
+import { mobileParams } from '#.storybook/utils.tsx';
 import { FicheHeader } from './FicheHeader';
 
 // Mock data for different community types
@@ -114,31 +115,6 @@ const meta: Meta<typeof FicheHeader> = {
   component: FicheHeader,
   parameters: {
     layout: 'fullscreen',
-    viewport: {
-      viewports: {
-        mobile: {
-          name: 'Mobile',
-          styles: {
-            width: '375px',
-            height: '667px',
-          },
-        },
-        tablet: {
-          name: 'Tablet',
-          styles: {
-            width: '768px',
-            height: '1024px',
-          },
-        },
-        desktop: {
-          name: 'Desktop',
-          styles: {
-            width: '1440px',
-            height: '900px',
-          },
-        },
-      },
-    },
   },
   argTypes: {
     community: {
@@ -189,22 +165,7 @@ export const Mobile: Story = {
   args: {
     community: mockCommune,
   },
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile',
-    },
-  },
-};
-
-export const Tablet: Story = {
-  args: {
-    community: mockCommune,
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: 'tablet',
-    },
-  },
+  ...mobileParams,
 };
 
 export const Desktop: Story = {
@@ -213,7 +174,18 @@ export const Desktop: Story = {
   },
   parameters: {
     viewport: {
-      defaultViewport: 'desktop',
+      defaultViewport: 'desktopLarge',
+    },
+  },
+};
+
+export const TabletPortrait: Story = {
+  args: {
+    community: mockCommune,
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: 'tabletPortrait',
     },
   },
 };

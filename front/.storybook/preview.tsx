@@ -1,9 +1,9 @@
-import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Preview } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import '../app/globals.css';
+import { customViewports } from './utils';
 
 // Initialize MSW
 initialize();
@@ -17,25 +17,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Custom viewports for better desktop/mobile options
-const customViewports = {
-  desktop: {
-    name: 'Desktop',
-    styles: {
-      width: '1440px',
-      height: '900px',
-    },
-    type: 'desktop',
-  },
-  laptop: {
-    name: 'Laptop',
-    styles: {
-      width: '1024px',
-      height: '768px',
-    },
-    type: 'desktop',
-  },
-};
+
 
 const preview: Preview = {
   parameters: {
@@ -50,9 +32,10 @@ const preview: Preview = {
       appDirectory: true,
     },
     viewport: {
+      defaultViewport: 'desktopLarge',
       viewports: {
-        ...INITIAL_VIEWPORTS,
         ...customViewports,
+        // ...MINIMAL_VIEWPORTS,
       },
     },
     react: {
@@ -60,9 +43,9 @@ const preview: Preview = {
       suspense: true,
     },
   },
-  initialGlobals: {
-    viewport: { value: 'desktop' },
-  },
+  // initialGlobals: {
+  //   viewport: { value: 'desktop' },
+  // },
   decorators: [
     (Story) => {
       return (

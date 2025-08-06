@@ -1,3 +1,4 @@
+import { mobileParams } from '#.storybook/utils.tsx';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 import Navbar from './Navbar';
@@ -53,16 +54,27 @@ export const WithBackground: Story = {
     ],
 };
 
+
+
+export const WithBetaBanner: Story = {
+    args: {
+        isBeta: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'This story shows the navbar with the beta banner enabled.',
+            },
+        },
+    },
+};
+
+
 export const Mobile: Story = {
     args: {
         isBeta: false
     },
-    parameters: {
-        layout: 'fullscreen',
-        viewport: {
-            defaultViewport: 'mobile1',
-        },
-    },
+    ...mobileParams,
     decorators: [
         (Story) => (
             <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
@@ -81,53 +93,12 @@ export const Mobile: Story = {
     ],
 };
 
-export const Desktop: Story = {
-    args: {
-        isBeta: false
-    },
-    parameters: {
-        layout: 'fullscreen',
-    },
-    globals: {
-        viewport: { value: 'desktop', isRotated: false },
-    },
-    decorators: [
-        (Story) => (
-            <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-                <Story />
-                <div style={{ padding: '80px 20px 20px', maxWidth: '1400px', margin: '0 auto' }}>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-                        Desktop View
-                    </h1>
-                    <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '1rem', maxWidth: '800px' }}>
-                        On desktop, the navigation shows all menu items in the header with full search functionality.
-                        This provides optimal usability for users with larger screens and precise input devices.
-                    </p>
-                </div>
-            </div>
-        ),
-    ],
-};
-
-export const WithBetaBanner: Story = {
-    args: {
-        isBeta: true
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'This story shows the navbar with the beta banner enabled.',
-            },
-        },
-    },
-};
-
 export const MobileMenuOpen: Story = {
     args: {
         isBeta: false
     },
     parameters: {
-        layout: 'fullscreen',
+        ...mobileParams.parameters,
         docs: {
             description: {
                 story: 'This story automatically opens the mobile navigation menu to show the expanded state with search bar, Interpeller button, and accordion menu items.',
