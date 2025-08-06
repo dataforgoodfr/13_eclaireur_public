@@ -21,7 +21,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     <div
       className='w-full p-6 lg:px-40 lg:pt-4 lg:pb-12 bg-cover bg-center bg-no-repeat relative'
       style={{
-        backgroundImage: 'url(/collectivite-header.png)',
+        backgroundImage: 'url(/collectivite-header.jpg)',
       }}
     >
       <div className='absolute inset-0 bg-white/10'></div>
