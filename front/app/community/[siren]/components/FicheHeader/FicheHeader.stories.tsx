@@ -1,18 +1,19 @@
+import { mobileParams } from '#.storybook/utils.tsx';
 import { Community } from '#app/models/community';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { CommunityType } from '#utils/types';
 import type { Meta, StoryObj } from '@storybook/react';
-import { mobileParams } from '#.storybook/utils.tsx';
 import { FicheHeader } from './FicheHeader';
 
 // Mock data for different community types
 const mockCommune: Community = {
   siren: '213105554',
   type: CommunityType.Commune,
-  nom: 'Thonon-les-Bains',
+  nom: 'Thonon les Bains',
   code_postal: 74140,
   code_insee: '74281',
   code_insee_departement: '74',
+  nom_departement: 'Haute Savoie',
   code_insee_region: '84',
   categorie: 'Commune',
   population: 35241,
@@ -35,10 +36,11 @@ const mockCommune: Community = {
 const mockDepartement: Community = {
   siren: '227400019',
   type: CommunityType.Departement,
-  nom: 'Département de la Haute-Savoie',
+  nom: 'Département de la Haute Savoie',
   code_postal: null,
   code_insee: '74',
   code_insee_departement: '74',
+  nom_departement: 'Haute Savoie',
   code_insee_region: '84',
   categorie: 'Département',
   population: 807360,
@@ -50,7 +52,7 @@ const mockDepartement: Community = {
   naf8: '84.11Z',
   tranche_effectif: 5,
   superficie_ha: 445844,
-  id_datagouv: 'haute-savoie-74',
+  id_datagouv: 'Haute Savoie-74',
   url_platfom: 'https://hautesavoie.fr',
   techno_platfom: 'Drupal',
   effectifs_sup_50: true,
@@ -65,6 +67,7 @@ const mockRegion: Community = {
   code_postal: null,
   code_insee: '84',
   code_insee_departement: '',
+  nom_departement: null,
   code_insee_region: '84',
   categorie: 'Région',
   population: 8032377,
@@ -91,6 +94,7 @@ const mockEPCI: Community = {
   code_postal: null,
   code_insee: '',
   code_insee_departement: '74',
+  nom_departement: 'Haute Savoie',
   code_insee_region: '84',
   categorie: 'EPCI',
   population: 87256,
@@ -157,6 +161,7 @@ export const CommuneSansCodePostal: Story = {
       ...mockCommune,
       code_postal: null,
       nom: 'Commune sans code postal',
+      nom_departement: 'DEPARTEMENT DU RHONE',
     },
   },
 };
@@ -186,6 +191,27 @@ export const TabletPortrait: Story = {
   parameters: {
     viewport: {
       defaultViewport: 'tabletPortrait',
+    },
+  },
+};
+
+export const DifferentDepartments: Story = {
+  args: {
+    community: {
+      ...mockCommune,
+      nom: 'Commune de Lyon',
+      nom_departement: 'DEPARTEMENT DU RHONE',
+      code_postal: 69000,
+    },
+  },
+};
+
+export const SansDepartement: Story = {
+  args: {
+    community: {
+      ...mockRegion,
+      nom: 'Région sans département',
+      nom_departement: null,
     },
   },
 };

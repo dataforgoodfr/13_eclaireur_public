@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import plugin from "tailwindcss/plugin";
 
 export default {
 	darkMode: ["class"],
@@ -14,21 +15,46 @@ export default {
 				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			fontSize: {
-				'h1': ['44px', {
+				// Mobile-first responsive typography based on design specs
+				'h1': ['36px', {
+					lineHeight: '40px',
+					fontWeight: '700',
+				}],
+				'h1-lg': ['44px', {
 					lineHeight: '56px',
 					fontWeight: '700',
 				}],
-				'h2': ['40px', {
+				'h2': ['32px', {
+					lineHeight: '38px',
+					fontWeight: '700',
+				}],
+				'h2-lg': ['40px', {
 					lineHeight: '44px',
 					fontWeight: '700',
 				}],
-				'h3': ['32px', {
+				'h3': ['28px', {
+					lineHeight: '32px',
+					fontWeight: '700',
+				}],
+				'h3-lg': ['32px', {
 					lineHeight: '36px',
 					fontWeight: '700',
 				}],
-				'h4': ['24px', {
+				'h4': ['22px', {
 					lineHeight: '28px',
 					fontWeight: '700',
+				}],
+				'h4-lg': ['24px', {
+					lineHeight: '28px',
+					fontWeight: '700',
+				}],
+				'tag': ['14px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
+				}],
+				'tag-lg': ['16px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
 				}],
 			},
 			backgroundImage: {
@@ -155,5 +181,47 @@ export default {
 			},
 		},
 	},
-	plugins: [animate],
+	plugins: [
+		animate,
+		plugin(function({ addBase }) {
+			addBase({
+				'h1': {
+					fontSize: '36px',
+					lineHeight: '40px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '44px',
+						lineHeight: '56px',
+					},
+				},
+				'h2': {
+					fontSize: '32px',
+					lineHeight: '38px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '40px',
+						lineHeight: '44px',
+					},
+				},
+				'h3': {
+					fontSize: '28px',
+					lineHeight: '32px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '32px',
+						lineHeight: '36px',
+					},
+				},
+				'h4': {
+					fontSize: '22px',
+					lineHeight: '28px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '24px',
+						lineHeight: '28px',
+					},
+				},
+			});
+		}),
+	],
 } satisfies Config;

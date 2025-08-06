@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { Community } from '#app/models/community';
 import SearchBar from '#components/SearchBar/SearchBar';
-import { Button } from '#components/ui/button';
+import { ActionButton } from '#components/ui/action-button';
 
 type FicheComparisonInput = { 
   community: Community;
@@ -54,15 +54,13 @@ export function FicheComparisonInput({ community }: FicheComparisonInput) {
           <h3 className='text-sm font-medium text-primary mb-3'>Communes similaires</h3>
           <div className='flex flex-wrap gap-2'>
             {similarCommunities.map((commune) => (
-              <Button
+              <ActionButton
                 key={commune.siren}
                 variant="outline"
-                size="sm"
-                className='bg-secondary hover:bg-secondary/80 border-secondary text-primary rounded-full'
+                text={commune.nom}
                 onClick={() => goToComparison(commune.siren)}
-              >
-                {commune.nom}
-              </Button>
+                className='bg-secondary hover:bg-secondary/80 border-secondary text-primary rounded-full'
+              />
             ))}
           </div>
         </div>
