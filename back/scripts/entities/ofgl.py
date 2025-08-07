@@ -90,5 +90,5 @@ class Ofgl2024RecordDataframe(pa.DataFrameModel):
     )
 
     class Config:
-        strict = True
+        strict = "filter"
         coerce = True
