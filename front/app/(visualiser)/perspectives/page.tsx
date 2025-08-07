@@ -32,7 +32,7 @@ export default function Page() {
       </h2>
       <p className='my-6 text-lg'>
         Pour la quatrième année consécutive, la France se classe au premier rang de l'open data en
-        Europe selon le {' '}
+        Europe selon le{' '}
         <Link
           href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf?q=sites/default/files/odm2024_full_report_0.pdf'
           className='border-b-2 border-black'
@@ -52,7 +52,7 @@ export default function Page() {
       <p className='my-6 text-lg'>
         Beaucoup de chemin a été parcouru en matière d’ouverture des données publiques. La
         déclaration des droits de l’homme et du citoyen de 1789 érigeait déjà, dans sont article 15,
-        la transparence comme un grand principe : « La société a le droit de demander compte à tout
+        la transparence comme un grand principe: « La société a le droit de demander compte à tout
         agent public de son administration ». Il a fallu attendre les lois de 1978 et 1979, à la
         naissance de la CNIL, pour que soit formalisé dans la loi l’accès des citoyens aux archives
         et documents administratifs.

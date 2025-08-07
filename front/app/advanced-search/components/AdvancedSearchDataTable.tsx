@@ -1,9 +1,8 @@
 'use client';
 
-import { type ColumnDef } from '@tanstack/react-table';
-import { Award, Building2, Euro, Users } from 'lucide-react';
-import Link from 'next/link';
 import * as React from 'react';
+
+import Link from 'next/link';
 
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { DataTable } from '@/components/data-table/data-table';
@@ -14,6 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDataTable } from '@/hooks/use-data-table';
 import { CommunityType } from '@/utils/types';
 import { formatCompact, stringifyCommunityType } from '@/utils/utils';
+import { type ColumnDef } from '@tanstack/react-table';
+import { Award, Building2, Euro, Users } from 'lucide-react';
 
 import { CustomDataTableToolbar } from './CustomDataTableToolbar';
 import { useTableContext } from './TableContext';
@@ -24,7 +25,11 @@ type AdvancedSearchDataTableProps = {
   isLoading?: boolean;
 };
 
-export function AdvancedSearchDataTable({ communities, pageCount, isLoading = false }: AdvancedSearchDataTableProps) {
+export function AdvancedSearchDataTable({
+  communities,
+  pageCount,
+  isLoading = false,
+}: AdvancedSearchDataTableProps) {
   const tableContext = useTableContext();
   const { setTable } = tableContext || {};
 
@@ -39,16 +44,16 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Sélectionner tout"
-            className="translate-y-[2px]"
+            aria-label='Sélectionner tout'
+            className='translate-y-[2px]'
           />
         ),
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Sélectionner la ligne"
-            className="translate-y-[2px]"
+            aria-label='Sélectionner la ligne'
+            className='translate-y-[2px]'
           />
         ),
         enableSorting: false,
@@ -58,22 +63,28 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
       {
         id: 'nom',
         accessorKey: 'nom',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Collectivité" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Collectivité' />,
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const community = row.original;
           return (
-            <Link
-              href={`/community/${community.siren}`}
-              className="font-medium hover:underline"
-            >
+            <Link href={`/community/${community.siren}`} className='font-medium hover:underline'>
               {community.nom.toLowerCase().replace(/\b\w/g, (l, index, str) => {
                 const word = str.slice(index).split(/\s/)[0];
-                const lowerCaseWords = ['de', 'du', 'des', 'le', 'la', 'les', 'et', 'en', 'au', 'aux'];
+                const lowerCaseWords = [
+                  'de',
+                  'du',
+                  'des',
+                  'le',
+                  'la',
+                  'les',
+                  'et',
+                  'en',
+                  'au',
+                  'aux',
+                ];
                 if (index > 0 && lowerCaseWords.includes(word.toLowerCase())) {
                   return l.toLowerCase();
                 }
@@ -92,19 +103,13 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
       {
         id: 'type',
         accessorKey: 'type',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Type" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />,
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const type = row.getValue('type') as CommunityType;
-          return (
-            <div className="text-right">
-              {stringifyCommunityType(type)}
-            </div>
-          );
+          return <div className='text-right'>{stringifyCommunityType(type)}</div>;
         },
         meta: {
           label: 'Type',
@@ -114,19 +119,13 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
       {
         id: 'population',
         accessorKey: 'population',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Population" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Population' />,
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const population = row.getValue('population') as number;
-          return (
-            <div className="text-right font-medium">
-              {formatCompact(population)}
-            </div>
-          );
+          return <div className='text-right font-medium'>{formatCompact(population)}</div>;
         },
         meta: {
           label: 'Population',
@@ -138,17 +137,17 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         id: 'subventions_budget',
         accessorKey: 'subventions_budget',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Budget Subventions (€)" />
+          <DataTableColumnHeader column={column} title='Budget Subventions (€)' />
         ),
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const budget = row.getValue('subventions_budget') as number;
           return (
-            <div className="flex items-center justify-end gap-1">
-              <span className="font-medium">{formatCompact(budget)}</span>
-              <Euro className="h-3 w-3 text-muted-foreground" />
+            <div className='flex items-center justify-end gap-1'>
+              <span className='font-medium'>{formatCompact(budget)}</span>
+              <Euro className='h-3 w-3 text-muted-foreground' />
             </div>
           );
         },
@@ -162,19 +161,19 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         id: 'mp_score',
         accessorKey: 'mp_score',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Score Marchés Publics" />
+          <DataTableColumnHeader column={column} title='Score Marchés Publics' />
         ),
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const score = row.getValue('mp_score') as string | null;
-          if (!score) return <div className="text-right text-muted-foreground">-</div>;
+          if (!score) return <div className='text-right text-muted-foreground'>-</div>;
 
           return (
-            <div className="text-right">
-              <Badge variant="outline" className="font-medium">
-                <Award className="mr-1 h-3 w-3" />
+            <div className='text-right'>
+              <Badge variant='outline' className='font-medium'>
+                <Award className='mr-1 h-3 w-3' />
                 {score}
               </Badge>
             </div>
@@ -189,20 +188,18 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
       {
         id: 'subventions_score',
         accessorKey: 'subventions_score',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Score Subventions" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Score Subventions' />,
         cell: ({ row }) => {
           if (isLoading) {
-            return <Skeleton className="h-4 w-full" />;
+            return <Skeleton className='h-4 w-full' />;
           }
           const score = row.getValue('subventions_score') as string | null;
-          if (!score) return <div className="text-right text-muted-foreground">-</div>;
+          if (!score) return <div className='text-right text-muted-foreground'>-</div>;
 
           return (
-            <div className="text-right">
-              <Badge variant="outline" className="font-medium">
-                <Award className="mr-1 h-3 w-3" />
+            <div className='text-right'>
+              <Badge variant='outline' className='font-medium'>
+                <Award className='mr-1 h-3 w-3' />
                 {score}
               </Badge>
             </div>
@@ -215,22 +212,26 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
         enableSorting: true,
       },
     ],
-    [isLoading]
+    [isLoading],
   );
 
   // Créer des données factices pour le skeleton pendant le chargement
   const skeletonData = React.useMemo(() => {
     if (!isLoading) return [];
-    return Array.from({ length: 10 }, (_, index) => ({
-      siren: `skeleton-${index}`,
-      nom: `skeleton-${index}`,
-      type: CommunityType.Commune,
-      population: 0,
-      subventions_budget: 0,
-      mp_score: null,
-      subventions_score: null,
-      total_row_count: 0,
-    } as AdvancedSearchCommunity));
+    return Array.from(
+      { length: 10 },
+      (_, index) =>
+        ({
+          siren: `skeleton-${index}`,
+          nom: `skeleton-${index}`,
+          type: CommunityType.Commune,
+          population: 0,
+          subventions_budget: 0,
+          mp_score: null,
+          subventions_score: null,
+          total_row_count: 0,
+        }) as AdvancedSearchCommunity,
+    );
   }, [isLoading]);
 
   const { table } = useDataTable({
@@ -258,10 +259,8 @@ export function AdvancedSearchDataTable({ communities, pageCount, isLoading = fa
     }
   }, [table, setTable]);
 
-
-
   return (
-    <div className="w-full space-y-2.5">
+    <div className='w-full space-y-2.5'>
       <DataTable table={table}>
         <CustomDataTableToolbar table={table} />
       </DataTable>

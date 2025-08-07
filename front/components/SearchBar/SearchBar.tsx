@@ -26,7 +26,7 @@ export default function SearchBar({
   function handleOnFocus() {
     setIsFocused(true);
   }
-  
+
   function handleOnBlur() {
     setTimeout(() => setIsFocused(false), 200);
   }
@@ -58,19 +58,16 @@ export default function SearchBar({
     }
   }, [isFocused]);
 
-  const handleInputChange = debounce(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setQuery(value);
-    },
-    400,
-  );
+  const handleInputChange = debounce((event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setQuery(value);
+  }, 400);
   const showSuggestions = query.length > 0 && isFocused;
 
   return (
     <div className={className}>
-      <div className="relative m-2" ref={searchBarRef}>
-        <div className="flex items-center">
+      <div className='relative m-2' ref={searchBarRef}>
+        <div className='flex items-center'>
           <Input
             ref={inputRef}
             type='search'

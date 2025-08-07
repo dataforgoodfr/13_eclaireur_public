@@ -79,7 +79,7 @@ export async function GET(request: Request) {
     const table = searchParams.get('table');
     const columns = searchParams.getAll('columns');
     const filters = searchParams.getAll('filters');
-    const limit = Number(searchParams.get('limit')) ?? undefined;
+    const limit = Number(searchParams.get('limit'));
 
     if (!table || !Object.values(DataTable).includes(table as DataTable)) {
       throw new Error('The table chosen does not exist - ' + table);

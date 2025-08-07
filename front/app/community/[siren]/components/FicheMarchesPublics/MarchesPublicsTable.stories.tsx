@@ -1,9 +1,12 @@
 import { usePagination } from '#utils/hooks/usePagination';
 import type { Meta, StoryObj } from '@storybook/react';
+
 import MarchesPublicsTable from './MarchesPublicsTable';
 
 // Helper component to provide pagination props
-function MarchesPublicsTableWithPagination(props: React.ComponentProps<typeof MarchesPublicsTable>) {
+function MarchesPublicsTableWithPagination(
+  props: React.ComponentProps<typeof MarchesPublicsTable>,
+) {
   const paginationProps = usePagination();
   return <MarchesPublicsTable {...props} paginationProps={paginationProps} />;
 }
@@ -43,7 +46,8 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Default state with typical public markets data. Shows multiple entries with pagination.',
+        story:
+          'Default state with typical public markets data. Shows multiple entries with pagination.',
       },
     },
   },
@@ -71,7 +75,8 @@ export const ManyMarkets: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'State with many public markets (50 items). Tests performance and pagination scenarios.',
+        story:
+          'State with many public markets (50 items). Tests performance and pagination scenarios.',
       },
     },
   },
@@ -99,7 +104,8 @@ export const FilteredByYear: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'State with data filtered by a specific year (2023). Shows only markets from that year.',
+        story:
+          'State with data filtered by a specific year (2023). Shows only markets from that year.',
       },
     },
   },

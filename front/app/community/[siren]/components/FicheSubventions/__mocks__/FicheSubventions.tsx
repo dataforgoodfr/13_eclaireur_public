@@ -1,5 +1,6 @@
 import { NoData } from '#app/community/[siren]/components/NoData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+
 import { FicheCard } from '../FicheCard';
 
 export async function FicheSubventions({ siren }: { siren: string }) {

@@ -36,8 +36,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const type = mapCommunityType(searchParams.get('type')) ?? undefined;
-    const limit = Number(searchParams.get('limit')) ?? undefined;
-    const page = Number(searchParams.get('page')) ?? undefined;
+    const limit = Number(searchParams.get('limit'));
+    const page = Number(searchParams.get('page'));
     const siren = searchParams.get('siren') ?? undefined;
 
     if (isLimitValid(limit)) {
@@ -51,9 +51,9 @@ export async function GET(request: Request) {
     const pagination =
       page !== undefined && limit !== undefined
         ? {
-          limit,
-          page,
-        }
+            limit,
+            page,
+          }
         : undefined;
     const data = await getDataFromPool({ filters: { type, siren }, limit }, pagination);
 

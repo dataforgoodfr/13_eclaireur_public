@@ -1,12 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import { useEffect } from 'react';
+
+import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Filters } from './Filters';
-import { SelectCommunityType } from './SelectCommunityType';
 import { PopulationSliderFilter } from './PopulationSliderFilter';
+import { SelectCommunityType } from './SelectCommunityType';
 import { SelectMarchesPublicsScore } from './SelectMarchesPublicsScore';
 import { SelectSubventionsScore } from './SelectSubventionsScore';
-import { useFiltersParams } from '../../hooks/useFiltersParams';
-import { stringifyCommunityType, formatNumberInteger } from '@/utils/utils';
 
 const meta: Meta = {
   title: 'Advanced Search/Filters',
@@ -20,23 +22,33 @@ export default meta;
 type Story = StoryObj;
 
 // Composant pour afficher les valeurs sélectionnées
-const FilterResultDisplay = ({ filterType }: { filterType: 'all' | 'type' | 'population' | 'mp_score' | 'subventions_score' }) => {
+const FilterResultDisplay = ({
+  filterType,
+}: {
+  filterType: 'all' | 'type' | 'population' | 'mp_score' | 'subventions_score';
+}) => {
   const { filters } = useFiltersParams();
-  
+
   const getDisplayValue = () => {
     switch (filterType) {
       case 'type':
         return filters.type ? stringifyCommunityType(filters.type) : 'Aucune sélection';
       case 'population':
-        return filters.population ? `< ${formatNumberInteger(filters.population)} habitants` : 'Aucune sélection';
+        return filters.population
+          ? `< ${formatNumberInteger(filters.population)} habitants`
+          : 'Aucune sélection';
       case 'mp_score':
         return filters.mp_score ? `Score: ${filters.mp_score}` : 'Aucune sélection';
       case 'subventions_score':
-        return filters.subventions_score ? `Score: ${filters.subventions_score}` : 'Aucune sélection';
+        return filters.subventions_score
+          ? `Score: ${filters.subventions_score}`
+          : 'Aucune sélection';
       case 'all':
+        // eslint-disable-next-line no-case-declarations
         const selections = [];
         if (filters.type) selections.push(`Type: ${stringifyCommunityType(filters.type)}`);
-        if (filters.population) selections.push(`Population: < ${formatNumberInteger(filters.population)}`);
+        if (filters.population)
+          selections.push(`Population: < ${formatNumberInteger(filters.population)}`);
         if (filters.mp_score) selections.push(`Marchés Publics: ${filters.mp_score}`);
         if (filters.subventions_score) selections.push(`Subventions: ${filters.subventions_score}`);
         return selections.length > 0 ? selections.join(' | ') : 'Aucune sélection';
@@ -46,24 +58,24 @@ const FilterResultDisplay = ({ filterType }: { filterType: 'all' | 'type' | 'pop
   };
 
   return (
-    <div className="mt-4 p-3 bg-gray-50 rounded-md border">
-      <div className="text-sm font-medium text-gray-700 mb-1">Valeur sélectionnée :</div>
-      <div className="text-sm text-gray-900 font-mono">{getDisplayValue()}</div>
+    <div className='mt-4 rounded-md border bg-gray-50 p-3'>
+      <div className='mb-1 text-sm font-medium text-gray-700'>Valeur sélectionnée :</div>
+      <div className='font-mono text-sm text-gray-900'>{getDisplayValue()}</div>
     </div>
   );
 };
 
 export const TousLesFiltres: Story = {
   render: () => (
-    <div className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Tous les Filtres</h3>
-      <div className="flex items-end gap-4">
+    <div className='p-4'>
+      <h3 className='mb-4 text-lg font-semibold'>Tous les Filtres</h3>
+      <div className='flex items-end gap-4'>
         <Filters />
       </div>
-      <div className="mt-2 text-sm text-muted-foreground">
+      <div className='mt-2 text-sm text-muted-foreground'>
         * Cliquez sur chaque filtre pour voir les options disponibles
       </div>
-      <FilterResultDisplay filterType="all" />
+      <FilterResultDisplay filterType='all' />
     </div>
   ),
 };
@@ -86,15 +98,15 @@ export const TypeDeCollectivite: Story = {
     };
 
     return (
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Filtre Type de Collectivité (Ouvert)</h3>
-        <div className="flex items-end gap-4">
+      <div className='p-4'>
+        <h3 className='mb-4 text-lg font-semibold'>Filtre Type de Collectivité (Ouvert)</h3>
+        <div className='flex items-end gap-4'>
           <AutoOpenSelect />
         </div>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className='mt-2 text-sm text-muted-foreground'>
           * Ce filtre est automatiquement ouvert pour la démonstration
         </div>
-        <FilterResultDisplay filterType="type" />
+        <FilterResultDisplay filterType='type' />
       </div>
     );
   },
@@ -106,7 +118,9 @@ export const Population: Story = {
       useEffect(() => {
         // Force open the popover after a short delay
         const timer = setTimeout(() => {
-          const trigger = document.querySelector('[role="button"]:has([data-testid*="plus"]), button:has(.lucide-plus-circle)') as HTMLElement;
+          const trigger = document.querySelector(
+            '[role="button"]:has([data-testid*="plus"]), button:has(.lucide-plus-circle)',
+          ) as HTMLElement;
           if (trigger) {
             trigger.click();
           }
@@ -118,15 +132,15 @@ export const Population: Story = {
     };
 
     return (
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Filtre Population (Ouvert)</h3>
-        <div className="flex items-end gap-4">
+      <div className='p-4'>
+        <h3 className='mb-4 text-lg font-semibold'>Filtre Population (Ouvert)</h3>
+        <div className='flex items-end gap-4'>
           <AutoOpenPopover />
         </div>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className='mt-2 text-sm text-muted-foreground'>
           * Ce filtre est automatiquement ouvert pour la démonstration
         </div>
-        <FilterResultDisplay filterType="population" />
+        <FilterResultDisplay filterType='population' />
       </div>
     );
   },
@@ -139,9 +153,10 @@ export const ScoreMarchesPublics: Story = {
         // Force open the select after a short delay
         const timer = setTimeout(() => {
           const triggers = document.querySelectorAll('[role="combobox"]');
-          const trigger = Array.from(triggers).find(el => 
-            el.textContent?.includes('Marchés') || 
-            el.closest('div')?.textContent?.includes('Marchés')
+          const trigger = Array.from(triggers).find(
+            (el) =>
+              el.textContent?.includes('Marchés') ||
+              el.closest('div')?.textContent?.includes('Marchés'),
           ) as HTMLElement;
           if (trigger) {
             trigger.click();
@@ -154,15 +169,15 @@ export const ScoreMarchesPublics: Story = {
     };
 
     return (
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Filtre Score Marchés Publics (Ouvert)</h3>
-        <div className="flex items-end gap-4">
+      <div className='p-4'>
+        <h3 className='mb-4 text-lg font-semibold'>Filtre Score Marchés Publics (Ouvert)</h3>
+        <div className='flex items-end gap-4'>
           <AutoOpenSelect />
         </div>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className='mt-2 text-sm text-muted-foreground'>
           * Ce filtre est automatiquement ouvert pour la démonstration
         </div>
-        <FilterResultDisplay filterType="mp_score" />
+        <FilterResultDisplay filterType='mp_score' />
       </div>
     );
   },
@@ -175,9 +190,10 @@ export const ScoreSubventions: Story = {
         // Force open the select after a short delay
         const timer = setTimeout(() => {
           const triggers = document.querySelectorAll('[role="combobox"]');
-          const trigger = Array.from(triggers).find(el => 
-            el.textContent?.includes('Subventions') || 
-            el.closest('div')?.textContent?.includes('Subventions')
+          const trigger = Array.from(triggers).find(
+            (el) =>
+              el.textContent?.includes('Subventions') ||
+              el.closest('div')?.textContent?.includes('Subventions'),
           ) as HTMLElement;
           if (trigger) {
             trigger.click();
@@ -190,15 +206,15 @@ export const ScoreSubventions: Story = {
     };
 
     return (
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Filtre Score Subventions (Ouvert)</h3>
-        <div className="flex items-end gap-4">
+      <div className='p-4'>
+        <h3 className='mb-4 text-lg font-semibold'>Filtre Score Subventions (Ouvert)</h3>
+        <div className='flex items-end gap-4'>
           <AutoOpenSelect />
         </div>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className='mt-2 text-sm text-muted-foreground'>
           * Ce filtre est automatiquement ouvert pour la démonstration
         </div>
-        <FilterResultDisplay filterType="subventions_score" />
+        <FilterResultDisplay filterType='subventions_score' />
       </div>
     );
   },

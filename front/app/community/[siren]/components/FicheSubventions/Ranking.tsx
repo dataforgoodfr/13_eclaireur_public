@@ -39,7 +39,7 @@ export default function Ranking({
 
   function formatSubventionObject(input: string): string[] {
     return input
-      .replace(/[\[\]]/g, '') // Supprime les crochets
+      .replace(/[[\]]/g, '') // Supprime les crochets
       .replace(/\\r\\n|\r\n|\n/g, ' ') // Retire les \n\r
       .split(/',|",/) // Split sur des virgules
       .map((item) =>

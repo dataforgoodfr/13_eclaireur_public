@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
-
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
+
 import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';

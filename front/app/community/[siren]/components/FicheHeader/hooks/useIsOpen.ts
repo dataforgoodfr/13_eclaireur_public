@@ -5,7 +5,7 @@ export function useIsOpen() {
   const [isOpen, setIsOpen] = useState(true);
 
   const controlNavbar = useCallback(() => {
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
     if (window.scrollY > lastScrollY) {
       setIsOpen(false);
     } else {
@@ -16,7 +16,7 @@ export function useIsOpen() {
   }, [lastScrollY]);
 
   useEffect(() => {
-    if (typeof window !== undefined) {
+    if (typeof window !== 'undefined') {
       window.addEventListener('scroll', controlNavbar);
 
       return () => {
