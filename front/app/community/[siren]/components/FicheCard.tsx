@@ -11,9 +11,8 @@ type FicheCardProps = PropsWithChildren<{
 
 export function FicheCard({ title, subtitle, header, children, className }: FicheCardProps) {
   return (
-    <Card className={`border border-black ${className}`}>
-      {/* <Card className='border border-black'> */}
-      <CardHeader>
+    <Card className={`border-muted-DEFAULT rounded-3xl border bg-card p-4 text-card-foreground shadow-none md:p-8 ${className}`}>
+      <CardHeader className='p-0 pb-8'>
         {header || (
           <>
             {title}
@@ -21,7 +20,7 @@ export function FicheCard({ title, subtitle, header, children, className }: Fich
           </>
         )}
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className='p-0'>{children}</CardContent>
     </Card>
   );
 }

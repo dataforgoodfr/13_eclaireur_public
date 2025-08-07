@@ -186,3 +186,7 @@ playwright-report/
 test-results/
 tests-examples/
 
+# Container-use
+.container-use/
+
+**/screenshots/**

@@ -49,7 +49,7 @@ export default function OurMethodology() {
               {/* Score selector */}
               <div className='grid grid-cols-5 items-center mt-8 mb-8 w-full border-b border-primary-light'>
                 {Object.keys(SCORES).map((score) => (
-                  <div className='col-span-1 justify-self-center w-full'>
+                  <div key={score} className='col-span-1 justify-self-center w-full'>
                     <button
                       key={score}
                       onClick={() => setSelectedScore(score as keyof typeof SCORES)}
