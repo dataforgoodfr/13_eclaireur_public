@@ -20,11 +20,11 @@ function trendToText(trend: number, margin = 0.01) {
 type TransparencyScoreProps = {
   score: TransparencyScore;
   trend: number;
+  className?: string;
 };
 
 const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
   const { text: trendText, icon: TrendIcon } = trendToText(trend);
-
   const trendColor =
     trendText === 'Transparence en hausse'
       ? 'bg-brand-2'
@@ -52,10 +52,10 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
     </div>
   );
 };
-export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
+export function TransparencyScoreWithTrend({ score, trend, className }: TransparencyScoreProps) {
   return (
-    <div className=''>
-      <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
+    <div>
+      <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />} className={className}>
         <div className='flex w-full flex-col gap-6 md:flex-row'>
           {/* md:gap-16 */}
           <section className='flex w-full flex-col gap-6 md:w-1/2 items-center'>

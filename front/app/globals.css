@@ -6,7 +6,6 @@
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
   }
-
   h1, h2, h3, h4 { 
     @apply text-primary font-kanit-bold; 
   }
@@ -117,5 +116,3 @@ h4 {
   font-weight: 700;
   color: #303F8D;
 } */
-
-
