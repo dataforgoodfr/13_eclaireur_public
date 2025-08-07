@@ -14,7 +14,7 @@ export default function OurMethodology() {
   return (
     <main className='w-full'>
       <article className='global-margin px-4 pb-20'>
-        <h2 className='mb-5 text-h2'>Notre méthodologie</h2>
+        <h2 className='text-h2 mb-5'>Notre méthodologie</h2>
         <div className='grid gap-4'>
           <div>
             <div className='grid gap-4'>

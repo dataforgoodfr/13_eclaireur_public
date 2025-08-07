@@ -10,7 +10,7 @@ export default async function WhyChallenge() {
         <div className='flex flex-col gap-10 rounded-xl border border-primary-light p-6'>
           <div className='flex flex-col gap-10 rounded-xl bg-muted-border p-6 md:flex-row'>
             <div className='flex flex-col gap-10 md:w-2/3'>
-              <h2 className='mb-5 text-h2'>Pourquoi interpeller mes élus ?</h2>
+              <h2 className='text-h2 mb-5'>Pourquoi interpeller mes élus ?</h2>
               <div className='grid gap-4'>
                 <div>
                   <div className='grid gap-4'>

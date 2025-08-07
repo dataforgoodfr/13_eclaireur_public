@@ -55,11 +55,9 @@ export const WithBackground: Story = {
   ],
 };
 
-
-
 export const WithBetaBanner: Story = {
   args: {
-    isBeta: true
+    isBeta: true,
   },
   parameters: {
     docs: {
@@ -70,83 +68,69 @@ export const WithBetaBanner: Story = {
   },
 };
 
-
 export const Mobile: Story = {
   args: {
     isBeta: false,
   },
+  ...mobileParams,
+  decorators: [
+    (Story) => (
+      <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
+        <Story />
+        <div style={{ padding: '80px 20px 20px' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+            Mobile View
+          </h1>
+          <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.875rem' }}>
+            On mobile, the navigation menu is collapsed into a hamburger menu, and the search bar is
+            moved to the mobile menu.
+          </p>
+        </div>
+      </div>
+    ),
+  ],
+};
+
+export const MobileMenuOpen: Story = {
+  args: {
+    isBeta: false,
+  },
   parameters: {
-    layout: 'fullscreen',
+    ...mobileParams.parameters,
+    docs: {
+      description: {
+        story:
+          'This story automatically opens the mobile navigation menu to show the expanded state with search bar, Interpeller button, and accordion menu items.',
+      },
+    },
   },
   globals: {
-    viewport: {
-      value: 'iphone5',
-    },
-    ...mobileParams,
-    decorators: [
-      (Story) => (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
-          <Story />
-          <div style={{ padding: '80px 20px 20px' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Mobile View
-            </h1>
-            <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.875rem' }}>
-              On mobile, the navigation menu is collapsed into a hamburger menu, and the search bar
-              is moved to the mobile menu.
-            </p>
-          </div>
+    viewport: { value: 'iphone5', isRotated: false },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const menuButton = canvas.getByRole('button');
+    await userEvent.click(menuButton);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const searchInputs = canvas.getAllByPlaceholderText('Rechercher...');
+    await expect(searchInputs.length).toBeGreaterThan(1);
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
+        <Story />
+        <div style={{ padding: '80px 20px 20px' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+            Mobile Menu Open
+          </h1>
+          <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.875rem' }}>
+            This story automatically opens the mobile navigation menu to demonstrate the expanded
+            state. The menu includes a search bar, Interpeller button, and collapsible navigation
+            sections.
+          </p>
         </div>
-      ),
-    ],
-  };
-
-  export const MobileMenuOpen: Story = {
-    args: {
-      isBeta: false,
-    },
-    parameters: {
-      layout: 'fullscreen',
-      docs: {
-        description: {
-          story:
-            'This story automatically opens the mobile navigation menu to show the expanded state with search bar, Interpeller button, and accordion menu items.',
-        },
-      },
-      parameters: {
-        ...mobileParams.parameters,
-        docs: {
-          description: {
-            story: 'This story automatically opens the mobile navigation menu to show the expanded state with search bar, Interpeller button, and accordion menu items.',
-          },
-        },
-      },
-      globals: {
-        viewport: { value: 'iphone5', isRotated: false },
-      },
-      play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const menuButton = canvas.getByRole('button');
-        await userEvent.click(menuButton);
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const searchInputs = canvas.getAllByPlaceholderText('Rechercher...');
-        await expect(searchInputs.length).toBeGreaterThan(1);
-      },
-      decorators: [
-        (Story) => (
-          <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
-            <Story />
-            <div style={{ padding: '80px 20px 20px' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-                Mobile Menu Open
-              </h1>
-              <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.875rem' }}>
-                This story automatically opens the mobile navigation menu to demonstrate the expanded state.
-                The menu includes a search bar, Interpeller button, and collapsible navigation sections.
-              </p>
-            </div>
-          </div>
-        ),
-      ],
-    };
+      </div>
+    ),
+  ],
+};

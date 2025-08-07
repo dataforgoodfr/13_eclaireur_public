@@ -19,7 +19,7 @@ export default async function ProjectDescription() {
       }}
     >
       <article className='global-margin px-4 py-20'>
-        <h2 className='mb-5 text-h2'>Le projet</h2>
+        <h2 className='text-h2 mb-5'>Le projet</h2>
         <div className='grid gap-12 md:grid-cols-2'>
           <div>
             <div className='mb-3 pr-10 text-lg'>

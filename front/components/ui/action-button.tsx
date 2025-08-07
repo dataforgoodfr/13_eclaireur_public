@@ -1,6 +1,8 @@
-import { Button } from './button';
-import { cn } from '#utils/utils';
 import { ReactNode } from 'react';
+
+import { cn } from '#utils/utils';
+
+import { Button } from './button';
 
 type ActionButtonProps = {
   children?: ReactNode;
@@ -31,15 +33,14 @@ export function ActionButton({
       disabled={disabled}
       className={cn(
         // Base styling - consistent height for all buttons
-        'rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none h-12',
+        'h-12 rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none',
         // Icon-only: square button
-        isIconOnly && 'w-12 p-0 flex items-center justify-center',
+        isIconOnly && 'flex w-12 items-center justify-center p-0',
         // With text: standard horizontal padding, flex centering
-        !isIconOnly && 'px-4 flex items-center justify-center',
+        !isIconOnly && 'flex items-center justify-center px-4',
         // Variant-specific styles
-        variant === 'outline' &&
-          'bg-white border-white text-primary hover:bg-white/90',
-        className
+        variant === 'outline' && 'border-white bg-white text-primary hover:bg-white/90',
+        className,
       )}
     >
       {children ? (

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Share, Download, Plus } from 'lucide-react';
 import { ActionButton } from '#components/ui/action-button';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Download, Plus, Share } from 'lucide-react';
 
 const meta: Meta<typeof ActionButton> = {
   title: 'UI/ActionButton',
@@ -22,7 +22,7 @@ type Story = StoryObj<typeof ActionButton>;
 // Icon only - creates a square h-12 w-12 button
 export const IconOnly: Story = {
   args: {
-    icon: <Share className="h-6 w-6" />,
+    icon: <Share className='h-6 w-6' />,
     variant: 'outline',
   },
 };
@@ -38,7 +38,7 @@ export const TextOnly: Story = {
 // Icon + Text - creates a button with both
 export const IconWithText: Story = {
   args: {
-    icon: <Download className="h-4 w-4" />,
+    icon: <Download className='h-4 w-4' />,
     text: 'Télécharger',
     variant: 'default',
   },
@@ -49,10 +49,10 @@ export const CustomContent: Story = {
   args: {
     variant: 'outline',
     children: (
-      <div className="flex items-center gap-2">
-        <Plus className="h-4 w-4" />
+      <div className='flex items-center gap-2'>
+        <Plus className='h-4 w-4' />
         <span>Ajouter</span>
-        <span className="bg-primary text-white rounded px-1 text-xs">2</span>
+        <span className='rounded bg-primary px-1 text-xs text-white'>2</span>
       </div>
     ),
   },
@@ -61,23 +61,13 @@ export const CustomContent: Story = {
 // All variants together
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex gap-4 flex-wrap">
-      <ActionButton
-        icon={<Share className="h-6 w-6" />}
-        variant="outline"
-      />
-      <ActionButton
-        text="Comparer"
-        variant="default"
-      />
-      <ActionButton
-        icon={<Download className="h-4 w-4" />}
-        text="Télécharger"
-        variant="outline"
-      />
-      <ActionButton variant="default">
-        <div className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+    <div className='flex flex-wrap gap-4'>
+      <ActionButton icon={<Share className='h-6 w-6' />} variant='outline' />
+      <ActionButton text='Comparer' variant='default' />
+      <ActionButton icon={<Download className='h-4 w-4' />} text='Télécharger' variant='outline' />
+      <ActionButton variant='default'>
+        <div className='flex items-center gap-2'>
+          <Plus className='h-4 w-4' />
           <span>Custom</span>
         </div>
       </ActionButton>

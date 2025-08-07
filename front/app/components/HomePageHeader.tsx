@@ -49,8 +49,8 @@ export default function HomePageHeader() {
               height={120}
             />
             <div className='m-4 flex flex-col items-center justify-center'>
-              <h1 className='text-h1-kanit text-center text-h1'>Votre collectivité est-elle</h1>
-              <h1 className='bg-gradient-fade px-4 text-center font-kanit-bold text-h1'>
+              <h1 className='text-h1-kanit text-h1 text-center'>Votre collectivité est-elle</h1>
+              <h1 className='text-h1 bg-gradient-fade px-4 text-center font-kanit-bold'>
                 transparente ?
               </h1>
             </div>
