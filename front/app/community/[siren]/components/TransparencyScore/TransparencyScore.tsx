@@ -9,43 +9,53 @@ const mainTitle = 'Score de transparence agrégé';
 
 function trendToText(trend: number, margin = 0.01) {
   if (trend <= margin && trend >= -margin) return { text: '= Transparence inchangée', icon: null };
-  if (trend < margin) return { text: 'Transparence en baisse', icon: <TrendingDown className="h-4 w-4" /> };
-  return { text: 'Transparence en hausse', icon: <TrendingUp className="h-4 w-4" /> };
+  if (trend < margin)
+    return { text: 'Transparence en baisse', icon: <TrendingDown className='h-4 w-4' /> };
+  return { text: 'Transparence en hausse', icon: <TrendingUp className='h-4 w-4' /> };
 }
 
 type TransparencyScoreProps = {
   score: TransparencyScore;
   trend: number;
+  className?: string;
 };
 
 const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
   const { text: trendText, icon: TrendIcon } = trendToText(trend);
-  const trendColor = trendText === 'Transparence en hausse' ? 'bg-lime-200' : trendText === 'Transparence en baisse' ? 'bg-red-200' : 'bg-gray-200';
+  const trendColor =
+    trendText === 'Transparence en hausse'
+      ? 'bg-lime-200'
+      : trendText === 'Transparence en baisse'
+        ? 'bg-red-200'
+        : 'bg-gray-200';
 
   return (
-    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center'>
-      <div className="flex items-center gap-2">
-        <h2 className='text-3xl md:text-4xl font-extrabold text-primary'>
-          {mainTitle}
-        </h2>
+    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
+      <div className='flex items-center gap-2'>
+        <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>{mainTitle}</h2>
       </div>
-      <span className={`text-xs sm:text-sm px-3 py-1 mt-2 sm:mt-0 rounded-full text-primary font-bold flex items-center gap-1 ${trendColor}`}>
+      <span
+        className={`mt-2 flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-primary sm:mt-0 sm:text-sm ${trendColor}`}
+      >
         {TrendIcon && TrendIcon} {trendText}
       </span>
     </div>
   );
 };
 
-export function TransparencyScoreWithTrend({ score, trend }: TransparencyScoreProps) {
+export function TransparencyScoreWithTrend({ score, trend, className }: TransparencyScoreProps) {
   return (
-    <div className='hidden md:block'>
-      <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />}>
-        <div className='mb-10 flex flex-col md:flex-row w-full gap-6'>
-          <section className='w-full md:w-1/2 flex flex-col gap-6'>
+    <div>
+      <FicheCard header={<TransparencyScoreWithTrendHeader trend={trend} />} className={className}>
+        <div className='mb-10 flex w-full flex-col gap-6 md:flex-row'>
+          <section className='flex w-full flex-col gap-6 md:w-1/2'>
             <TransparencyScoreBar score={score} />
           </section>
-          <section className='w-full md:w-1/2 flex flex-col gap-6'>
-            <TransparenceScoreDescription title={`Score ${score} - ${SCORE_TO_ADJECTIF[score]}`} description={SCORE_DESCRIPTION[score] || 'Aucune donnée disponible'} />
+          <section className='flex w-full flex-col gap-6 md:w-1/2'>
+            <TransparenceScoreDescription
+              title={`Score ${score} - ${SCORE_TO_ADJECTIF[score]}`}
+              description={SCORE_DESCRIPTION[score] || 'Aucune donnée disponible'}
+            />
           </section>
         </div>
       </FicheCard>
@@ -60,11 +70,9 @@ interface TransparenceScoreDescriptionProps {
 
 function TransparenceScoreDescription({ title, description }: TransparenceScoreDescriptionProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-2xl md:text-3xl font-bold text-primary">{title}</h3>
-      <p className="text-lg text-gray-600">
-        {description}
-      </p>
+    <div className='flex flex-col gap-2'>
+      <h3 className='text-2xl font-bold text-primary md:text-3xl'>{title}</h3>
+      <p className='text-lg text-gray-600'>{description}</p>
     </div>
   );
 }

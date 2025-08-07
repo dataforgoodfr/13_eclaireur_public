@@ -7,10 +7,18 @@
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
   }
 
-  h1 { @apply text-h1 text-primary font-kanit-bold; }
-  h2 { @apply text-h2 text-primary font-kanit-bold; }
-  h3 { @apply text-h3 text-primary font-kanit-bold; }
-  h4 { @apply text-h4 text-primary font-kanit-bold; }
+  h1 {
+    @apply font-kanit-bold text-h1 text-primary;
+  }
+  h2 {
+    @apply font-kanit-bold text-h2 text-primary;
+  }
+  h3 {
+    @apply font-kanit-bold text-h3 text-primary;
+  }
+  h4 {
+    @apply font-kanit-bold text-h4 text-primary;
+  }
 }
 
 @layer base {
@@ -118,5 +126,3 @@ h4 {
   font-weight: 700;
   color: #303F8D;
 } */
-
-

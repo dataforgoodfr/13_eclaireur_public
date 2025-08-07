@@ -6,11 +6,13 @@ type FicheCardProps = PropsWithChildren<{
   title?: ReactNode;
   subtitle?: string;
   header?: ReactNode;
+  className?: string;
 }>;
 
-export function FicheCard({ title, subtitle, header, children }: FicheCardProps) {
+export function FicheCard({ title, subtitle, header, children, className }: FicheCardProps) {
   return (
-    <Card className='border border-black'>
+    <Card className={`border border-black ${className}`}>
+      {/* <Card className='border border-black'> */}
       <CardHeader>
         {header || (
           <>
