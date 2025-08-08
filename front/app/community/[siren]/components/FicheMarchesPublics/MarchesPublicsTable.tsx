@@ -46,7 +46,7 @@ export default function MarchesPublicsTable({
   }
 
   if (data.length === 0) {
-    return <NoData />;
+    return <NoData style={{ height: CHART_HEIGHT }} />;
   }
 
   const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
@@ -93,11 +93,11 @@ export function Table({ rows }: Table) {
         {rows.map(({ id, names, object, amount, year }) => (
           <TableRow key={id}>
             <TableCell>
-              {names.map((name) => (
+              {names.map((name) => name ? (
                 <Badge key={name} className='m-1'>
                   {name}
                 </Badge>
-              ))}
+              ) : null)}
             </TableCell>
             <TableCell>{object.toLocaleUpperCase()}</TableCell>
             <TableCell className='text-right'>{formatAmount(amount)}</TableCell>
