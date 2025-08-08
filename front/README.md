@@ -53,7 +53,7 @@ This will start Storybook on [http://localhost:6006](http://localhost:6006)
 
 #### Building Storybook
 ```bash
-yarn run build-storybook
+yarn run storybook:build
 ```
 
 #### Creating Stories
@@ -69,7 +69,7 @@ BackstopJS is configured for visual regression testing of Storybook components u
 #### Running Visual Tests
 ```bash
 # Build Storybook first
-yarn build-storybook
+yarn storybook:build
 
 # Start Storybook server
 yarn storybook
@@ -136,7 +136,7 @@ E2E tests are located in the `tests/` directory:
 - `yarn run test:ui` - Run Playwright tests with UI
 - `yarn run test:headed` - Run Playwright tests in headed mode
 - `yarn run storybook` - Start Storybook development server
-- `yarn run build-storybook` - Build Storybook for production
+- `yarn run storybook:build` - Build Storybook for production
 - `yarn run backstop:test` - Run visual regression tests
 - `yarn run backstop:approve` - Update visual regression baselines
 - `yarn run backstop:reference` - Generate initial reference images
