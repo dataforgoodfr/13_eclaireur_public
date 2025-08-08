@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      root: front
+      glob: '*.{js,ts,jsx,tsx}'
+      run: yarn lint --file {staged_files}
+      stage_fixed: true
+    typecheck:
+      root: front
+      glob: '*.{ts,tsx}'
+      run: yarn typecheck
+    format:
+      root: front
+      glob: '*.{js,ts,jsx,tsx}'
+      run: yarn format:staged --write {staged_files}
+      stage_fixed: true
