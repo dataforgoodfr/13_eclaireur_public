@@ -5,6 +5,7 @@ import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarche
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
+import Comparison from './Comparison';
 import Contracts from './Contracts';
 import Distribution from './Distribution';
 import Evolution from './Evolution';
@@ -48,9 +49,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Distribution siren={siren} availableYears={availableYears} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
-            <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-              En construction
-            </div>
+            <Comparison siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.details}>
             <Contracts siren={siren} availableYears={availableYears} />
