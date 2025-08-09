@@ -55,3 +55,24 @@ def _format_identifier(identifier: str | None, target_len: int) -> str | None:
         return identifier[:9] if target_len == 9 else identifier
 
     return None  # Invalid length, return null
+
+
+def normalize_date_pl(
+    frame: pl.LazyFrame,
+    id_col: str,
+) -> pl.LazyFrame:
+    """
+    Normalizes a date column in a Polars LazyFrame.
+    Handles year-only dates and ensures the output is in UTC.
+    """
+    if id_col not in frame.collect_schema().names():
+        return frame
+
+    return frame.with_columns(pl.col(id_col).cast(pl.Utf8).alias(id_col)).with_columns(
+        pl.when(pl.col(id_col).str.contains(r"^\d{4}$"))
+        .then(pl.col(id_col) + pl.lit("-01-01"))
+        .otherwise(pl.col(id_col))
+        .str.to_datetime(strict=False)
+        .dt.convert_time_zone("UTC")
+        .alias(id_col)
+    )
