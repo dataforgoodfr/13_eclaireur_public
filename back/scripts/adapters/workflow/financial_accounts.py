@@ -58,13 +58,75 @@ def _concatenate_normalized_files(data_folder: Path, output_path: Path) -> None:
     LOGGER.info(f"Financial Accounts dataset created at {output_path}")
 
 
+COLUMN_MAPPINGS = {
+    "regions": {
+        "exercice": "exer",
+        "region": "reg",
+        "total_produits": "tpf",
+        "total_charges": "tcf",
+        "resultat": "rec",
+        "subventions": "sub",
+        "ressources_invest": "tri",
+        "emploi_invest": "tib",
+        "ebf": "ebf",
+        "caf": "caf",
+        "population": "mpoid_bp",
+        "dette": "adb",
+    },
+    "departements": {
+        "exercice": "exer",
+        "dept": "dep",
+        "total_produits": "tpf",
+        "total_charges": "tcf",
+        "resultat": "rec",
+        "subventions": "sub",
+        "ressources_invest": "tri",
+        "emploi_invest": "tib",
+        "ebf": "ebf",
+        "caf": "caf",
+        "population": "mpoid_bp",
+        "dette": "adb",
+    },
+    "groupements_fiscalite_propre": {
+        "siren": "siren",
+        "exercice": "exer",
+        "dept": "ndept",
+        "total_produits": "pftot",
+        "total_charges": "cftot",
+        "resultat": "rtot",
+        "subventions": "suvftot",
+        "ressources_invest": "ritot",
+        "emploi_invest": "eitot",
+        "caf": "caftot",
+        "population": "mpoid",
+        "dette": "antot",
+    },
+    "communes": {
+        "exercice": "an",
+        "insee_commune": "icom",
+        "dept": "dep",
+        "region": "reg",
+        "total_produits": "prod",
+        "total_charges": "charge",
+        "resultat": "res1",
+        "subventions": "subv",
+        "ressources_invest": "recinv",
+        "emploi_invest": "depinv",
+        "ebf": "ebf",
+        "caf": "caf",
+        "population": "pop1",
+        "dette": "annu",
+    },
+}
+
+
 class FinancialAccountsFileParser(IFileParser[pl.LazyFrame]):
     """
     Parses a single raw financial accounts data file using Polars.
     """
 
-    def __init__(self, columns_mapping: dict[str, list[str | None]]):
-        self.columns_mapping = columns_mapping
+    def __init__(self):
+        self.columns_mapping = COLUMN_MAPPINGS
         self.final_schema: dict[str, Any] = {
             "siren": pl.Utf8,
             "exercice": pl.Datetime(time_unit="us", time_zone="UTC"),
@@ -86,17 +148,12 @@ class FinancialAccountsFileParser(IFileParser[pl.LazyFrame]):
 
     def _get_renaming_map(self, file_type: str) -> dict[str, str]:
         """Creates a mapping from raw column names to normalized names."""
-        if file_type not in self.columns_mapping:
+        type_mapping = self.columns_mapping.get(file_type)
+        if not type_mapping:
             return {}
 
-        raw_cols = self.columns_mapping[file_type]
-        norm_cols = self.columns_mapping["name"]
-
-        return {
-            raw_col: norm_col
-            for norm_col, raw_col in zip(norm_cols, raw_cols)
-            if raw_col is not None and norm_col is not None
-        }
+        # Invert the mapping from {norm: raw} to {raw: norm}
+        return {raw_col: norm_col for norm_col, raw_col in type_mapping.items()}
 
     def parse(self, file_metadata: FileMetadata, raw_filename: Path) -> pl.LazyFrame | None:
         """
@@ -176,17 +233,12 @@ class FinancialAccountsWorkflowFactory(IWorkflowFactory):
 
         base_path = get_project_base_path()
         files_csv_path = base_path / config["files_csv"]
-        columns_mapping_path = base_path / config["columns_mapping"]
         data_folder = base_path / config["data_folder"]
         output_path = base_path / config["combined_filename"]
 
-        columns_mapping = pl.read_csv(columns_mapping_path, separator=";").to_dict(
-            as_series=False
-        )
-
         data_source = UrlDataSource(files_csv_path)
         downloader = HttpFileDownloader(data_folder)
-        parser = FinancialAccountsFileParser(columns_mapping)
+        parser = FinancialAccountsFileParser()
 
         return FinancialAccountsWorkflow(
             data_source=data_source,
