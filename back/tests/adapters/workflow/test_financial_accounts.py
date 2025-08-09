@@ -33,105 +33,13 @@ def base_data_folder(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def columns_mapping() -> dict[str, list]:
-    """Fixture for a realistic columns mapping."""
-    return {
-        "name": [
-            "siren",
-            "exercice",
-            "insee_commune",
-            "dept",
-            "region",
-            "total_produits",
-            "total_charges",
-            "resultat",
-            "subventions",
-            "ressources_invest",
-            "emploi_invest",
-            "ebf",
-            "caf",
-            "population",
-            "dette",
-        ],
-        "regions": [
-            None,
-            "exer",
-            None,
-            None,
-            "reg",
-            "tpf",
-            "tcf",
-            "rec",
-            "sub",
-            "tri",
-            "tib",
-            "ebf",
-            "caf",
-            "mpoid_bp",
-            "adb",
-        ],
-        "departements": [
-            None,
-            "exer",
-            None,
-            "dep",
-            None,
-            "tpf",
-            "tcf",
-            "rec",
-            "sub",
-            "tri",
-            "tib",
-            "ebf",
-            "caf",
-            "mpoid_bp",
-            "adb",
-        ],
-        "groupements_fiscalite_propre": [
-            "siren",
-            "exer",
-            None,
-            "ndept",
-            None,
-            "pftot",
-            "cftot",
-            "rtot",
-            "suvftot",
-            "ritot",
-            "eitot",
-            None,
-            "caftot",
-            "mpoid",
-            "antot",
-        ],
-        "communes": [
-            None,
-            "an",
-            "icom",
-            "dep",
-            "reg",
-            "prod",
-            "charge",
-            "res1",
-            "subv",
-            "recinv",
-            "depinv",
-            "ebf",
-            "caf",
-            "pop1",
-            "annu",
-        ],
-    }
-
-
-@pytest.fixture
 def file_metadata() -> FileMetadata:
     """Fixture for sample file metadata."""
-    url = "http://example.com/testfile.csv"
+    url = "http://example.com/testfile.parquet"
     return FileMetadata(
         url=url,
         url_hash=_sha256(url) or "",
-        format="csv",
+        format="parquet",
         extra_data={"type": "communes"},
     )
 
@@ -175,11 +83,9 @@ def mock_parser() -> MagicMock:
 
 
 class TestFinancialAccountsFileParser:
-    def test_parse_success(
-        self, file_metadata: FileMetadata, columns_mapping: dict[str, list], tmp_path: Path
-    ):
+    def test_parse_success(self, file_metadata: FileMetadata, tmp_path: Path):
         # Given: A valid raw financial accounts data file
-        parser = FinancialAccountsFileParser(columns_mapping)
+        parser = FinancialAccountsFileParser()
         raw_df = pl.DataFrame(
             {
                 "siren": ["123456789"],
@@ -199,8 +105,8 @@ class TestFinancialAccountsFileParser:
                 "annu": [50],
             }
         )
-        raw_path = tmp_path / "raw.csv"
-        raw_df.write_csv(raw_path, separator=";")
+        raw_path = tmp_path / "raw.parquet"
+        raw_df.write_parquet(raw_path)
 
         # When: The parse method is called
         result_lazy_df = parser.parse(file_metadata, raw_path)
@@ -209,13 +115,11 @@ class TestFinancialAccountsFileParser:
 
         # Then: The dataframe is parsed and normalized correctly
         assert "insee_commune" in result_df.columns
-        assert result_df["insee_commune"][0] == 12345
+        assert result_df["insee_commune"][0] == "12345"
         assert "exercice" in result_df.columns
         assert "population" in result_df.columns
         assert "annee" in result_df.columns
-        assert "type" in result_df.columns
         assert result_df["annee"][0] == 2023
-        assert result_df["type"][0] == "communes"
 
 
 class TestFinancialAccountsWorkflow:
@@ -249,19 +153,14 @@ class TestFinancialAccountsWorkflow:
 
 class TestFinancialAccountsWorkflowFactory:
     @patch("back.scripts.adapters.workflow.financial_accounts.get_project_base_path")
-    def test_from_config(
-        self, mock_get_base_path, tmp_path: Path, columns_mapping: dict[str, list]
-    ):
+    def test_from_config(self, mock_get_base_path, tmp_path: Path):
         # Given: A mock configuration and project path
         mock_get_base_path.return_value = tmp_path
         files_csv_path = tmp_path / "files.csv"
         files_csv_path.touch()
-        columns_mapping_path = tmp_path / "columns_mapping.csv"
-        pl.DataFrame(columns_mapping).write_csv(columns_mapping_path, separator=";")
         config = {
             "financial_accounts": {
                 "files_csv": "files.csv",
-                "columns_mapping": str(columns_mapping_path),
                 "data_folder": "data",
                 "combined_filename": "combined.parquet",
             }
