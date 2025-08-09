@@ -174,11 +174,11 @@ class FinancialAccountsFileParser(IFileParser[pl.LazyFrame]):
         df_renamed = df_lazy.select(list(renaming_map.keys())).rename(renaming_map)
 
         # Add missing columns with null values
-        for col_name, col_type in self.final_schema.items():
-            if col_name not in df_renamed.columns:
-                df_renamed = df_renamed.with_columns(
-                    pl.lit(None, dtype=col_type).alias(col_name)
-                )
+        missing_cols = set(self.final_schema.keys()) - set(df_renamed.collect_schema().names())
+        if missing_cols:
+            df_renamed = df_renamed.with_columns(
+                *[pl.lit(None, dtype=self.final_schema[col]).alias(col) for col in missing_cols]
+            )
 
         return (
             df_renamed.with_columns(pl.col("exercice").cast(pl.Utf8))
