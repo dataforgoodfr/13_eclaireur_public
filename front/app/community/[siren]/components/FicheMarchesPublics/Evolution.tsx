@@ -72,11 +72,8 @@ export default function Evolution({ siren, transparencyIndex }: EvolutionProps) 
       {/* Chart Section */}
       <div className='bg-white rounded-lg shadow-sm p-4 md:p-6'>
         <MarchesPublicsChart
-          key={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}
           siren={siren}
           displayMode={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}
-          barColor='#E8F787'
-          borderColor='#303F8D'
         />
       </div>
     </div>

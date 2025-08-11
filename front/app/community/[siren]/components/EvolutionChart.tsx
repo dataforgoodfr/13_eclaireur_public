@@ -6,7 +6,7 @@ import { formatCompact } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Bar,
   LabelList,
@@ -62,27 +62,33 @@ export function EvolutionChart({
   const config = CHART_CONFIG[chartType];
   const isAmountsMode = displayMode === 'amounts';
 
-  if (isPending) return <ChartSkeleton />;
-  if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
+  // Memoize chart data to avoid recalculations and flashing
+  const chartData = useMemo(() => {
+    const initialList: BarChartData = [];
+    for (let i = 0; i <= 7; i++) {
+      initialList.push({
+        year: new Date(Date.now()).getFullYear() - 7 + i,
+        value: 0,
+      });
+    }
 
-  const initialList: BarChartData = [];
-  for (let i = 0; i <= 7; i++) {
-    initialList.push({
-      year: new Date(Date.now()).getFullYear() - 7 + i,
-      value: 0,
+    return initialList.map((el) => {
+      const found = data?.find((item: any) => item.year === el.year);
+      const value = isAmountsMode
+        ? found?.amount ?? el.value
+        : found?.count ?? el.value;
+      return { ...el, value };
     });
-  }
-
-  const chartData: BarChartData = initialList.map((el) => {
-    const found = data?.find((item: any) => item.year === el.year);
-    const value = isAmountsMode
-      ? found?.amount ?? el.value
-      : found?.count ?? el.value;
-    return { ...el, value };
-  });
+  }, [data, isAmountsMode]);
 
   // Check if all data is zero (no data state)
-  const hasNoData = !data || data.length === 0 || chartData.every(item => item.value === 0);
+  const hasNoData = useMemo(() => 
+    !data || data.length === 0 || chartData.every(item => item.value === 0),
+    [data, chartData]
+  );
+
+  if (isPending) return <ChartSkeleton />;
+  if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
 
   return <BarChart
     data={chartData}
