@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 
 import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
 import Comparison from './Comparison';
@@ -31,6 +32,10 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   // const marchesPublics = [];
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
   // const availableYears = [2021, 2022, 2023];
+  
+  // Fetch transparency score for Marchés Publics
+  const { bareme } = await fetchMostRecentTransparencyScore(siren);
+  const transparencyIndex = bareme?.mp_score || null;
   return (
     <FicheCard>
       <h2 className='pb-3 text-center text-2xl'>Marchés Publics</h2>
@@ -43,7 +48,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
           </TabsList>
           <TabsContent value={tabs.trends}>
-            <Evolution siren={siren} />
+            <Evolution siren={siren} transparencyIndex={transparencyIndex} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
             <Distribution siren={siren} availableYears={availableYears} />

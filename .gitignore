@@ -190,6 +190,4 @@ tests-examples/
 .container-use/
 
 **/screenshots/**
-front/NOTES_PERSO/Tabpanel-mobile-no-data.png
-front/NOTES_PERSO/Tabpanel-mobile.png
-front/NOTES_PERSO/Tabpanel.png
+front/NOTES_PERSO/**/*
