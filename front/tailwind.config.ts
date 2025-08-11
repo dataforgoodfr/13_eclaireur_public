@@ -131,6 +131,7 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
+				'tl-br': '0.5rem 0 0.5rem 0', // Custom utility for top-left and bottom-right rounding
 			},
 			keyframes: {
 				'accordion-down': {

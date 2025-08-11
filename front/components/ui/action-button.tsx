@@ -31,7 +31,7 @@ export function ActionButton({
       disabled={disabled}
       className={cn(
         // Base styling - consistent height for all buttons
-        'rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none h-12',
+        'rounded-tl-br h-12',
         // Icon-only: square button
         isIconOnly && 'w-12 p-0 flex items-center justify-center',
         // With text: standard horizontal padding, flex centering
