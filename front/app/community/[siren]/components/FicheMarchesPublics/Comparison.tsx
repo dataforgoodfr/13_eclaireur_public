@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { ChevronDown, Download } from 'lucide-react';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import MobileComparisonChartV2 from './MobileComparisonChart-v2';
 
@@ -88,7 +88,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
@@ -163,7 +163,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     value: number;
   }) => {
     const { x, y, width, value } = props;
-    
+
     // Format the value using ISO standard for French locale
     const formatDesktopValue = (value: number) => {
       if (value >= 1000000000) {
@@ -180,7 +180,7 @@ export default function Comparison({ siren }: ComparisonProps) {
         currency: 'EUR'
       }).format(value);
     };
-    
+
     return (
       <text
         x={x + width / 2}
@@ -202,69 +202,69 @@ export default function Comparison({ siren }: ComparisonProps) {
   const SkeletonLoader = () => {
     return (
       <div className="space-y-2">
-      <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
-        <div className={isMobile ? 'text-center' : ''}>
-          <div className="h-6 bg-gray-200 rounded w-72 animate-pulse"></div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-12 bg-gray-200 rounded w-32 animate-pulse"></div>
-          <div className="h-12 bg-blue-600 rounded w-12 flex items-center justify-center">
-            <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            </svg>
+        <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
+          <div className={isMobile ? 'text-center' : ''}>
+            <div className="h-6 bg-gray-200 rounded w-72 animate-pulse"></div>
           </div>
-        </div>
-      </div>
-
-      {isMobile ? (
-        <div className="bg-white rounded-lg p-4">
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="text-center">
-                  <div className="h-4 bg-gray-200 rounded w-12 mx-auto animate-pulse"></div>
-                </div>
-                <div className="space-y-1">
-                  <div className="w-full bg-gray-200 rounded-full h-6 animate-pulse"></div>
-                  <div className="w-full bg-gray-200 rounded-full h-6 animate-pulse"></div>
-                </div>
-              </div>
-            ))}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-48 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-40 animate-pulse"></div>
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="h-12 bg-gray-200 rounded w-32 animate-pulse"></div>
+            <div className="h-12 bg-blue-600 rounded w-12 flex items-center justify-center">
+              <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
             </div>
           </div>
         </div>
-      ) : (
-        <div className="bg-white rounded-lg p-6">
-          <div className="h-[450px] bg-gray-100 rounded flex items-center justify-center">
-            <div className="space-y-4 w-full max-w-md">
-              <div className="flex justify-between items-end">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="flex flex-col items-center space-y-2">
-                    <div className={`bg-gray-200 rounded animate-pulse w-12`} style={{ height: `${Math.random() * 100 + 50}px` }}></div>
-                    <div className="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+
+        {isMobile ? (
+          <div className="bg-white rounded-lg p-4">
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="text-center">
+                    <div className="h-4 bg-gray-200 rounded w-12 mx-auto animate-pulse"></div>
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-center space-x-4">
-                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-28 animate-pulse"></div>
+                  <div className="space-y-1">
+                    <div className="w-full bg-gray-200 rounded-full h-6 animate-pulse"></div>
+                    <div className="w-full bg-gray-200 rounded-full h-6 animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-48 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200 rounded w-40 animate-pulse"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="bg-white rounded-lg p-6">
+            <div className="h-[450px] bg-gray-100 rounded flex items-center justify-center">
+              <div className="space-y-4 w-full max-w-md">
+                <div className="flex justify-between items-end">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="flex flex-col items-center space-y-2">
+                      <div className={`bg-gray-200 rounded animate-pulse w-12`} style={{ height: `${Math.random() * 100 + 50}px` }}></div>
+                      <div className="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-center space-x-4">
+                  <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200 rounded w-28 animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-      <div className="bg-blue-50 border-l-4 border-gray-200 p-4 rounded">
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+        <div className="bg-blue-50 border-l-4 border-gray-200 p-4 rounded">
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+          </div>
         </div>
-      </div>
       </div>
     );
   };
@@ -287,7 +287,7 @@ export default function Comparison({ siren }: ComparisonProps) {
                   className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
                   disabled={dataLoading}
                 >
-  {selectedScope}
+                  {selectedScope}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -306,7 +306,7 @@ export default function Comparison({ siren }: ComparisonProps) {
             {downloadButton}
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
             <div className="text-center space-y-4">
@@ -344,7 +344,7 @@ export default function Comparison({ siren }: ComparisonProps) {
                   className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
                   disabled={dataLoading}
                 >
-  {selectedScope}
+                  {selectedScope}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -363,7 +363,7 @@ export default function Comparison({ siren }: ComparisonProps) {
             {downloadButton}
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
             <div className="text-center space-y-4">
@@ -441,7 +441,7 @@ export default function Comparison({ siren }: ComparisonProps) {
   // Calculate max value for proper Y-axis scaling
   const allValues = data.flatMap(d => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
-  
+
   // Add padding to max value to prevent bars from touching the top  
   const yAxisMax = Math.round(maxValue * 1.15);
 
@@ -457,7 +457,7 @@ export default function Comparison({ siren }: ComparisonProps) {
                 className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
                 disabled={dataLoading}
               >
-{selectedScope}
+                {selectedScope}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -555,7 +555,7 @@ export default function Comparison({ siren }: ComparisonProps) {
             <span className="text-sm">{data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div 
+            <div
               className="w-4 h-4 rounded"
               style={{
                 background: `repeating-linear-gradient(
