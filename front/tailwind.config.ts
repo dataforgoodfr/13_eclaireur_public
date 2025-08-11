@@ -132,6 +132,9 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
 				'tl-br': '0.5rem 0 0.5rem 0', // Custom utility for top-left and bottom-right rounding
+				'tl-br-sm': '0.25rem 0 0.25rem 0', // Small version
+				'tl-br-lg': '0.75rem 0 0.75rem 0', // Large version
+				'tl-br-xl': '1rem 0 1rem 0', // Extra large version
 			},
 			keyframes: {
 				'accordion-down': {

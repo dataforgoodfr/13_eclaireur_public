@@ -58,6 +58,42 @@ export const CustomContent: Story = {
   },
 };
 
+// Rounded utilities showcase
+export const RoundedUtilities: Story = {
+  render: () => (
+    <div className="flex gap-4 flex-wrap items-center">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Default (rounded-tl-br)</p>
+        <ActionButton text="Default" variant="default" />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Small (rounded-tl-br-sm)</p>
+        <ActionButton 
+          text="Small" 
+          variant="outline" 
+          className="rounded-tl-br-sm"
+        />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Large (rounded-tl-br-lg)</p>
+        <ActionButton 
+          text="Large" 
+          variant="default" 
+          className="rounded-tl-br-lg"
+        />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Extra Large (rounded-tl-br-xl)</p>
+        <ActionButton 
+          text="Extra Large" 
+          variant="outline" 
+          className="rounded-tl-br-xl"
+        />
+      </div>
+    </div>
+  ),
+};
+
 // All variants together
 export const AllVariants: Story = {
   render: () => (
