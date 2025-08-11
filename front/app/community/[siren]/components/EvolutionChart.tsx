@@ -1,6 +1,6 @@
 'use client';
 
-import Loading from '#components/ui/Loading';
+import ChartSkeleton from './ChartSkeleton';
 import { ActionButton } from '#components/ui/action-button';
 import { formatCompact } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
@@ -62,7 +62,7 @@ export function EvolutionChart({
   const config = CHART_CONFIG[chartType];
   const isAmountsMode = displayMode === 'amounts';
 
-  if (isPending) return <Loading style={{ height: CHART_HEIGHT }} />;
+  if (isPending) return <ChartSkeleton />;
   if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
 
   const initialList: BarChartData = [];

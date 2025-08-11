@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 
-import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
 import type { TransparencyScore } from '#components/TransparencyScore/constants';
-import { SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
 import { ActionButton } from '#components/ui/action-button';
-import { Download, FileText } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
 import { MarchesPublicsChart } from './MarchesPublicsChart';
 
@@ -29,17 +27,11 @@ export default function Evolution({ siren, transparencyIndex }: EvolutionProps) 
       {/* Header Section - Desktop */}
       <div className='hidden md:flex items-start justify-between mb-6'>
         <div className='flex-1'>
-          <div className='flex items-start justify-between mb-4'>
+          <div className='flex items-center gap-3 mb-4'>
             <h3 className='text-2xl font-medium text-primary'>
               Évolution des marchés publics au cours du temps
             </h3>
-            {transparencyIndex && (
-              <BadgeCommunity
-                text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
-                icon={FileText}
-                className='bg-brand-2 text-primary'
-              />
-            )}
+
           </div>
           <GraphSwitch
             isActive={isMarchesPublicsCountDisplayed}
@@ -68,16 +60,6 @@ export default function Evolution({ siren, transparencyIndex }: EvolutionProps) 
             variant='default'
           />
         </div>
-
-        {transparencyIndex && (
-          <div className='mb-4'>
-            <BadgeCommunity
-              text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
-              icon={FileText}
-              className='bg-brand-2 text-primary'
-            />
-          </div>
-        )}
 
         <GraphSwitch
           isActive={isMarchesPublicsCountDisplayed}
