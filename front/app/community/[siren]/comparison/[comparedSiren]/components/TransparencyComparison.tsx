@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 
-import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScore';
+import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScoreBar';
 import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
 import Loading from '#components/ui/Loading';
 import SectionSeparator from '#components/utils/SectionSeparator';
 import { useTransparencyScore } from '#utils/hooks/comparison/useTransparencyScore';
 
-import { YearOption } from '../../../types/interface';
+import type { YearOption } from '../../../types/interface';
 
 type TransparencyComparisonProperties = {
   siren1: string;

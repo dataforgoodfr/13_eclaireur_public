@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { TransparencyScore } from '#components/TransparencyScore/constants';
-import { TransparencyScoreBar } from './TransparencyScore';
+import { TransparencyScoreBar } from './TransparencyScoreBar';
 
 const meta = {
   title: 'Components/TransparencyScore',

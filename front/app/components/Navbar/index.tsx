@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { Button } from '#components/ui/button';
 import {
@@ -84,19 +87,32 @@ const aProposMenus = [
   },
 ];
 
-const BandeauBeta = () => (
-  <div className="fixed z-40 w-full py-1 pl-1 text-sm text-center top-16 bg-card-secondary-foreground-1">
+const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
+  <div className="fixed z-40 w-full py-1 pl-1 pr-8 text-sm text-center top-16 bg-card-secondary-foreground-1 relative">
     <Wrench className="inline scale-x-[-1]" size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
     fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
+    <button 
+      onClick={onClose}
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-white/20 rounded p-1"
+      aria-label="Fermer le bandeau"
+    >
+      ✕
+    </button>
   </div>
 );
 
 export default function Navbar() {
+  const [showBetaBanner, setShowBetaBanner] = useState(true);
   const isBeta = true;
+  
+  const handleCloseBetaBanner = () => {
+    setShowBetaBanner(false);
+  };
+  
   return (
     <>
-      {isBeta && <BandeauBeta />}
+      {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
 
       <div className="fixed z-50 flex items-center justify-between w-full h-16 bg-white shadow-md top-0 px-4">
         {/* Mobile Navbar */}

@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import plugin from "tailwindcss/plugin";
 
 export default {
 	darkMode: ["class"],
@@ -14,21 +15,13 @@ export default {
 				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			fontSize: {
-				'h1': ['44px', {
-					lineHeight: '56px',
-					fontWeight: '700',
+				'tag': ['14px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
 				}],
-				'h2': ['40px', {
-					lineHeight: '44px',
-					fontWeight: '700',
-				}],
-				'h3': ['32px', {
-					lineHeight: '36px',
-					fontWeight: '700',
-				}],
-				'h4': ['24px', {
-					lineHeight: '28px',
-					fontWeight: '700',
+				'tag-lg': ['16px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
 				}],
 			},
 			backgroundImage: {
@@ -41,7 +34,7 @@ export default {
 					DEFAULT: '#303F8D', // Bleu
 					light: '#CAD2FC', // Bleu clair
 					foreground: '#FFFFFF',
-					50: '#f1f5fd',		
+					50: '#f1f5fd',
 					100: '#e0e9f9',
 					200: '#c9d9f4',
 					300: '#a3c1ed',
@@ -79,6 +72,7 @@ export default {
 				},
 				muted: {
 					DEFAULT: '#737373', // Gris
+					default: '#737373', // Gris
 					light: '#E2E2E2', // Gris clair
 					border: '#F6F6F6', // Gris border
 					foreground: 'hsl(var(--muted-foreground))',
@@ -90,6 +84,13 @@ export default {
 					1: '#FAF79E', // Brand 01
 					2: '#E8F787', // Brand 02
 					3: '#D7F787', // Brand 03
+				},
+				score: {
+					A: '#79B381',
+					B: '#B2D675',
+					C: '#FFDE8B',
+					D: '#FFA466',
+					E: '#FF8574',
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
@@ -147,5 +148,47 @@ export default {
 			},
 		},
 	},
-	plugins: [animate],
+	plugins: [
+		animate,
+		plugin(({ addBase }) => {
+			addBase({
+				'h1': {
+					fontSize: '36px',
+					lineHeight: '40px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '44px',
+						lineHeight: '56px',
+					},
+				},
+				'h2': {
+					fontSize: '32px',
+					lineHeight: '38px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '40px',
+						lineHeight: '44px',
+					},
+				},
+				'h3': {
+					fontSize: '28px',
+					lineHeight: '32px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '32px',
+						lineHeight: '36px',
+					},
+				},
+				'h4': {
+					fontSize: '22px !important',
+					lineHeight: '28px !important',
+					fontWeight: '700 !important',
+					'@media (min-width: 1024px)': {
+						fontSize: '24px !important',
+						lineHeight: '28px !important',
+					},
+				},
+			});
+		}),
+	],
 } satisfies Config;

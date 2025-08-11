@@ -11,6 +11,7 @@ export type Community = {
   nom: string;
   code_insee: string;
   code_insee_departement: string;
+  nom_departement: string | null;
   code_insee_region: string;
   categorie: string;
   population: number;
