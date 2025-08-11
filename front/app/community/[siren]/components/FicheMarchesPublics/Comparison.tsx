@@ -4,9 +4,10 @@ type ComparisonProps = {
   siren: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Comparison({ siren }: ComparisonProps) {
   return (
-    <div className="flex h-[600px] w-full items-center justify-center bg-neutral-200">
+    <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
       En construction
     </div>
   );
