@@ -27,7 +27,7 @@ type EvolutionChartProps = {
   siren: string;
   displayMode: DisplayMode;
   chartType: ChartDataType;
-  data: any;
+  data: Array<{ year: number; amount?: number; count?: number }> | null | undefined;
   isPending: boolean;
   isError: boolean;
 };
@@ -73,7 +73,7 @@ export function EvolutionChart({
     }
 
     return initialList.map((el) => {
-      const found = data?.find((item: any) => item.year === el.year);
+      const found = data?.find((item) => item.year === el.year);
       const value = isAmountsMode
         ? found?.amount ?? el.value
         : found?.count ?? el.value;
@@ -92,8 +92,6 @@ export function EvolutionChart({
 
   return <BarChart
     data={chartData}
-    displayMode={displayMode}
-    chartType={chartType}
     barColor={config.barColor}
     borderColor={config.borderColor}
     hasNoData={hasNoData}
@@ -114,8 +112,6 @@ type BarChartData = {
 
 type BarChartProps = {
   data: BarChartData;
-  displayMode: DisplayMode;
-  chartType: ChartDataType;
   barColor: string;
   borderColor: string;
   hasNoData: boolean;
@@ -125,8 +121,6 @@ type BarChartProps = {
 
 function BarChart({
   data,
-  displayMode,
-  chartType,
   barColor,
   borderColor,
   hasNoData,
@@ -200,7 +194,7 @@ function BarChart({
           <ActionButton
             onClick={handleInterpellerClick}
             icon={<MessageSquare size={20} />}
-            variant='primary'
+            variant='default'
           />
 
           {/* Image no-data-bar */}
@@ -241,9 +235,6 @@ function BarChart({
             fontWeight: 600
           }}
           iconType="rect"
-          contentStyle={{
-            color: '#000000 !important'
-          }}
         />
         <Bar dataKey='value' stackId='a' fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]}>
           <LabelList position='top' formatter={formatLabel} fill='#303F8D' fontSize={18} fontWeight={700} />

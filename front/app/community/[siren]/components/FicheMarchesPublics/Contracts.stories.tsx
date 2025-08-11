@@ -203,10 +203,8 @@ const meta: Meta<typeof Contracts> = {
         http.get('/api/communities/:siren/marches_publics/paginated', ({ params, request }) => {
           const { siren } = params;
           const url = new URL(request.url);
-          const year = url.searchParams.get('year');
           const page = url.searchParams.get('page') || '1';
           const limit = url.searchParams.get('limit') || '10';
-          const by = url.searchParams.get('by') || 'montant';
           
           if (siren === '213105554') {
             const pageNum = parseInt(page as string);

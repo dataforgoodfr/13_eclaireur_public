@@ -14,6 +14,8 @@ type EvolutionProps = {
 };
 
 export default function Evolution({ siren, transparencyIndex }: EvolutionProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _unused = transparencyIndex;
   const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
 
   const handleDownloadClick = () => {
