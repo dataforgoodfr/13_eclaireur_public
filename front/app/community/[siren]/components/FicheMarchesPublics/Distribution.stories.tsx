@@ -89,8 +89,6 @@ const meta: Meta<typeof Distribution> = {
         http.get('/api/communities/:siren/marches_publics/by_cpv_2', ({ params, request }) => {
           const { siren } = params;
           const url = new URL(request.url);
-          const year = url.searchParams.get('year');
-          const page = url.searchParams.get('page') || '1';
           const limit = url.searchParams.get('limit') || '50';
 
           if (siren === '213105554') {

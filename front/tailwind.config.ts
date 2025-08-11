@@ -92,6 +92,17 @@ export default {
 					D: '#FFA466',
 					E: '#FF8574',
 				},
+				'score-transparence': {
+					1: '#E8F787',
+					2: '#FAF79E',
+					3: '#CAD2FC',
+					4: '#F4D93E',
+					5: '#EE8100',
+					mp: 'var(--brand-2)',
+					subvention: 'var(--brand-1)',
+					// jaune
+					nodata: 'var(--secondary)'
+				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
@@ -131,6 +142,10 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
+				'tl-br': '0.5rem 0 0.5rem 0', // Custom utility for top-left and bottom-right rounding
+				'tl-br-sm': '0.25rem 0 0.25rem 0', // Small version
+				'tl-br-lg': '0.75rem 0 0.75rem 0', // Large version
+				'tl-br-xl': '1rem 0 1rem 0', // Extra large version
 			},
 			keyframes: {
 				'accordion-down': {

@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-import Loading from '#components/ui/Loading';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
+import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
-import { CHART_HEIGHT } from '../constants';
 
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
@@ -40,7 +39,7 @@ export default function MarchesPublicsSectorTreemap({
   }, [year]);
 
   if (isPending || isError) {
-    return <Loading style={{ height: CHART_HEIGHT }} />;
+    return <TreemapSkeleton />;
   }
 
   if (data.length === 0) {
