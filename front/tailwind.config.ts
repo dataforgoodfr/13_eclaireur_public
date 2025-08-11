@@ -94,8 +94,8 @@ export default {
 				},
 				'score-transparence': {
 					1: '#E8F787',
-					2: '#CAD2FC',
-					3: '#FAF79E',
+					2: '#FAF79E',
+					3: '#CAD2FC',
 					4: '#F4D93E',
 					5: '#EE8100',
 					mp: 'var(--brand-2)',

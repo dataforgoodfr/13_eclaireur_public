@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-import Loading from '#components/ui/Loading';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
+import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
-import { CHART_HEIGHT } from '../constants';
 
 type SubventionsSectorTreemapProps = {
   siren: string;
@@ -36,7 +35,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
   }, [year]);
 
   if (isPending || isError) {
-    return <Loading style={{ height: CHART_HEIGHT }} />;
+    return <TreemapSkeleton />;
   }
 
   if (data.length === 0) {
