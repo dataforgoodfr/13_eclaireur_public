@@ -1,13 +1,11 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import OurMethodology from '#app/components/OurMethodology';
+import WhyChallenge from '#app/components/WhyChallenge';
 import Stepper from '#components/Interpellate/Stepper';
 import SearchBar from '#components/SearchBar/SearchBar';
-import { buttonVariants } from '#components/ui/button';
-import { ChevronRight } from 'lucide-react';
 
 export default function Page() {
   const router = useRouter();
@@ -16,50 +14,32 @@ export default function Page() {
   };
 
   return (
-    <section id='interpellation-step1-nocommunity' className='my-16'>
-      <Stepper currentStep={1} />
-      <article className='my-6 flex flex-col justify-start'>
-        <h2 className='my-6 text-center text-2xl font-bold'>Trouver une collectivité</h2>
-        <div className='mx-auto flex w-4/5 min-w-[400] justify-center'>
-          <SearchBar onSelect={({ siren }) => goToStep1(siren)} />
-        </div>
-      </article>
-      <article className='my-16'>
-        <h2 className='my-6 text-xl font-bold uppercase'>Pourquoi interpeller mes élu.e.s ?</h2>
-        <Image
-          src='https://placehold.co/200/png'
-          width={200}
-          height={200}
-          alt='*'
-          className='float-right'
-        />
-        <p className='my-6'>
-          Les collectivités sont légalement tenues de publier leurs données administratives en open
-          data selon la loi pour une République Numérique de 2016, comme décrit en détail sur notre{' '}
-          <Link href='/cadre-reglementaire' className='border-b-2 border-black'>
-            page consacrée au cadre règlementaire
-          </Link>
-          .
-        </p>
-        <p className='my-6'>Seules 10% d’entre elles respectent cette obligation.</p>
-        <p className='my-6'>
-          Interpeller vos élu·es, c’est leur rappelez leur responsabilité démocratique et les
-          encourager à mieux rendre compte de l'utilisation des fonds publics.
-        </p>
-        <p className='my-6'>
-          Une meilleure publication des données permet de suivre plus factuellement les dépenses
-          publiques, de prévenir d'éventuels abus et d'améliorer la confiance citoyenne.
-        </p>
-        <p className='my-6'>
-          Votre engagement est un levier puissant pour renforcer la transparence, prévenir la
-          corruption et faire évoluer les pratiques locales.
-        </p>
-        <p className='my-6'>
-          <Link href='/le-projet' className={buttonVariants({ variant: 'outline' })}>
-            En savoir plus <ChevronRight />
-          </Link>
-        </p>
-      </article>
-    </section>
+    <>
+      <div className='bg-muted-border pb-32'>
+        <Stepper currentStep={1} />
+      </div>
+      <section id='interpellation-step1-nocommunity' className='global-margin mb-16 mt-[-7rem]'>
+        <article className='my-6 flex flex-col justify-start bg-[url(/eclaireur/project_background.jpg)] py-6'>
+          <h2 className='my-6 text-center text-h1 font-bold'>
+            Trouver une collectivité
+            <br />
+            <div className='inline-block bg-gradient-fade px-8'>à interpeller</div>
+          </h2>
+          <p className='mx-auto my-4 px-1 text-center text-xl md:w-1/2 md:text-[1.375rem]'>
+            Accédez aux données de dépenses publique
+            <br />
+            de votre commune, département ou région.
+          </p>
+          <div className='m-4/5 mx-auto min-w-[400px] justify-center md:w-[473px]'>
+            <SearchBar className='block' onSelect={({ siren }) => goToStep1(siren)} />
+          </div>
+        </article>
+
+        <article>
+          <WhyChallenge />
+          <OurMethodology />
+        </article>
+      </section>
+    </>
   );
 }

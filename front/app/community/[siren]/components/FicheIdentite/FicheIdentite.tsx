@@ -7,7 +7,7 @@ import NeighboursMap from '../NeighboursMap/NeighboursMap';
 
 const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
   return (
-    <div className="flex flex-col items-start justify-between sm:flex-row sm:items-center">
+    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
       <div className="order-2 sm:order-1">
         <h2 className="text-3xl font-extrabold md:text-4xl text-primary">
           Informations générales
@@ -34,12 +34,17 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
   );
 };
 
-
-export function FicheIdentite({ community }: { community: Community }) {
+export function FicheIdentite({
+  community,
+  className,
+}: {
+  community: Community;
+  className?: string;
+}) {
   return (
-    <FicheCard header={<FicheIndentiteEnTete community={community} />}>
-      <div className="flex flex-col w-full gap-6 md:gap-16 md:flex-row">
-        <div className="w-full md:w-1/3 order-2 md:order-1">
+    <FicheCard header={<FicheIndentiteEnTete community={community} />} className={className}>
+      <div className='mb-10 flex w-full flex-col gap-6 md:flex-row'>
+        <div className='order-2 w-full md:order-1 md:w-1/3'>
           <CommunityDetails community={community} />
         </div>
         <div className="w-full md:w-2/3 h-64 rounded-lg md:h-auto order-1 md:order-2">
