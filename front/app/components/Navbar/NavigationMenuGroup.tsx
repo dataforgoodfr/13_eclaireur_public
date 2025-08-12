@@ -41,7 +41,7 @@ export function NavigationMenuGroup({ title, menus }: NavigationMenuGroupProps) 
         {title}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
-        <ul className='w-[500px] gap-3 p-4'>
+        <ul className='w-[450px] gap-3 p-4'>
           {menus.map((menu) => (
             <ListItem key={menu.title} title={menu.title} href={menu.href}>
               {menu.description}

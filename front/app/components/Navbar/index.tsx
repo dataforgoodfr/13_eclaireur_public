@@ -22,7 +22,7 @@ const visualiserMenus = [
   {
     title: 'Recherche avancée',
     href: '/advanced-search',
-    description: "Comment analyser et télécharger les données d'une collectivité ?",
+    description: "Comment analyser et télécharger les données d'une collectivité\u00A0?",
   },
   {
     title: 'Interpeller',
@@ -84,7 +84,7 @@ const aProposMenus = [
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
-  <div className='fixed top-16 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm'>
+  <div className='fixed top-20 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm'>
     <Wrench className='inline scale-x-[-1]' size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines fonctionnalités
     peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
@@ -110,9 +110,9 @@ export default function Navbar() {
     <>
       {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
 
-      <div className='fixed top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-4 shadow-md'>
+      <div className='fixed top-0 z-50 flex h-20 w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
         {/* Mobile Navbar */}
-        <div className='flex w-full items-center justify-between md:hidden'>
+        <div className='flex w-full items-center justify-between lg:hidden'>
           {/* Left: Icon logo */}
           <Link href='/'>
             <Image
@@ -144,23 +144,22 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navbar */}
-        <div className='hidden w-full items-center md:flex'>
+        <div className='hidden w-full items-center lg:flex'>
           {/* Desktop Logo */}
           <Link href='/'>
-            <div className='flex h-14 w-36 items-center justify-center'>
-              <Image
-                src='/eclaireur/logo-navmenu-desktop.png'
-                priority
-                alt='Éclaireur Public Logo'
-                width={340}
-                height={100}
-              />
-            </div>
+            <Image
+              src='/eclaireur/logo-navmenu-desktop.png'
+              priority
+              alt='Éclaireur Public Logo'
+              className='mb-[3px] h-[50px] w-[142px]'
+              width={500}
+              height={500}
+            />
           </Link>
 
           {/* Desktop Navigation */}
           <NavigationMenu className='absolute left-1/2 -translate-x-1/2'>
-            <NavigationMenuList className='w-[500px]'>
+            <NavigationMenuList className='w-[450px]'>
               <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
               <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
               <NavigationMenuGroup title='À propos' menus={aProposMenus} />
@@ -168,14 +167,11 @@ export default function Navbar() {
           </NavigationMenu>
 
           {/* Search + Interpeller button */}
-          <div className='absolute right-4 flex items-center'>
-            <SearchCommunity />
-            <Button
-              size='sm'
-              className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
-            >
+          <div className='absolute right-4 flex items-center space-x-2 xl:right-10 xl:space-x-6'>
+            <SearchCommunity className='w-[200px] font-bold' />
+            <Button className='hidden h-[56px] w-[56px] rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'>
               <Link href='/interpeller'>
-                <Image src='/eclaireur/interpeller.svg' alt='Interpeller' width={20} height={20} />
+                <Image src='/eclaireur/interpeller.svg' alt='Interpeller' width={40} height={40} />
               </Link>
             </Button>
           </div>
