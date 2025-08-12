@@ -7,8 +7,6 @@ import { useState } from 'react';
 import { Button } from '#components/ui/button';
 import {
   NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
 } from '#components/ui/navigation-menu';
 
@@ -88,7 +86,7 @@ const aProposMenus = [
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
-  <div className="fixed z-40 w-full py-1 pl-1 pr-8 text-sm text-center top-16 bg-card-secondary-foreground-1 relative">
+  <div className="fixed z-40 w-full py-1 pl-1 pr-8 text-sm text-center top-16 bg-card-secondary-foreground-1">
     <Wrench className="inline scale-x-[-1]" size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
     fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
@@ -148,7 +146,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navbar */}
-        <div className="hidden md:flex items-center justify-between w-full">
+        <div className="hidden md:flex items-center w-full">
           {/* Desktop Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="flex items-center justify-center h-14 w-36">
@@ -163,23 +161,16 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <NavigationMenu>
-            <NavigationMenuList>
+          <NavigationMenu className='absolute left-1/2 -translate-x-1/2'>
+            <NavigationMenuList className='w-[500px] bg-red-300 p-2'>
               <NavigationMenuGroup title="Visualiser" menus={visualiserMenus} />
               <NavigationMenuGroup title="Comprendre" menus={comprendreMenus} />
-              <NavigationMenuItem className="hidden lg:flex">
-                <Link href="/advanced-search" legacyBehavior passHref>
-                  <NavigationMenuLink className="text-base font-medium text-primary hover:text-primary/80">
-                    Télécharger
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
               <NavigationMenuGroup title="À propos" menus={aProposMenus} />
             </NavigationMenuList>
           </NavigationMenu>
 
           {/* Search + Interpeller button */}
-          <div className="flex items-center">
+          <div className="flex items-center absolute right-2">
             <SearchCommunity />
             <Button
               size="sm"
