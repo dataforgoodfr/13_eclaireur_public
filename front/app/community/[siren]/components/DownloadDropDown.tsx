@@ -1,3 +1,4 @@
+import { Button } from '#components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,19 +9,26 @@ import { ArrowDownToLine } from 'lucide-react';
 
 type DownloadDropDownProps = {
   onClickDownloadData?: () => void;
+  onClickDownloadChart?: () => void;
 };
 
-export default function DownloadDropDown({ onClickDownloadData }: DownloadDropDownProps) {
+export default function DownloadDropDown({ onClickDownloadData, onClickDownloadChart }: DownloadDropDownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <div className='rounded p-1 hover:bg-neutral-100'>
-          <ArrowDownToLine className='text-neutral-500' />
-        </div>
+      <DropdownMenuTrigger asChild>
+        <Button variant="default" size="icon" className='rounded-tl-br'>
+          <ArrowDownToLine />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={onClickDownloadData}>Télécharger les données</DropdownMenuItem>
-        <DropdownMenuItem>Télécharger le graphique</DropdownMenuItem>
+        <DropdownMenuItem onClick={onClickDownloadData}>
+          <ArrowDownToLine />
+          Télécharger les données
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onClickDownloadChart}>
+          <ArrowDownToLine />
+          Télécharger le graphique
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

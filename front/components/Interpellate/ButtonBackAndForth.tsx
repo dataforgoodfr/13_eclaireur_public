@@ -14,7 +14,8 @@ export default function ButtonBackAndForth({ linkto, direction, children }: Butt
       href={linkto}
       className={buttonVariants({
         variant: 'outline',
-        className: 'min-w-[200] bg-black text-white',
+        className:
+          'self-start rounded-none rounded-br-xl rounded-tl-xl bg-primary px-2 py-5 font-kanit-bold font-normal text-white',
       })}
     >
       {direction === 'back' ? (

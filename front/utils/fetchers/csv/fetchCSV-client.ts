@@ -2,7 +2,7 @@ import { downloadURL } from '#utils/downloader/downloadURL';
 
 import { DataTable } from '../constants';
 
-const API_ROUTE = 'api/csv-stream';
+const API_ROUTE = '/api/csv-stream';
 
 export type CSVParams<T extends Record<string, any>> = {
   table: DataTable;
@@ -34,9 +34,7 @@ function objectToURLSearchParams(obj?: Record<string, any>): URLSearchParams {
 }
 
 export function createCSVDownloadingLink<T extends Record<string, any>>(params: CSVParams<T>): URL {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
-  const url = new URL(API_ROUTE, baseURL);
+  const url = new URL(API_ROUTE, window.location.origin);
   url.search = objectToURLSearchParams(params).toString();
 
   return url;
@@ -45,7 +43,13 @@ export function createCSVDownloadingLink<T extends Record<string, any>>(params: 
 export async function fetchCSV<T extends Record<string, any>>(params: CSVParams<T>) {
   const url = createCSVDownloadingLink(params);
 
-  await fetch(url.toString());
+  const res = await fetch(url.toString(), { method: 'GET' });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch CSV');
+  }
+
+  return res;
 }
 
 export function downloadCSV<T extends Record<string, any>>(params: CSVParams<T>) {

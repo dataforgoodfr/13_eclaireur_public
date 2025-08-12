@@ -10,7 +10,7 @@ type GraphSwitchProps = {
 };
 
 function getCursorClassName(isActive: boolean) {
-  return `cursor-pointer ${isActive ? 'text-neutral-400' : 'text-neutral-800'}`;
+  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'}`;
 }
 
 export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchProps) {
@@ -22,7 +22,7 @@ export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchP
         }}
         className={getCursorClassName(isActive)}
       >
-        ({label1}
+        {label1}
       </div>
       <Switch
         checked={isActive}
@@ -36,7 +36,7 @@ export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchP
         }}
         className={getCursorClassName(!isActive)}
       >
-        {label2})
+        {label2}
       </div>
     </div>
   );

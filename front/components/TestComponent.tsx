@@ -14,8 +14,8 @@ const TestComponent: React.FC = () => {
         }
         const result = await response.json();
         setData(result.message);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'An unknown error occurred');
       } finally {
         setLoading(false);
       }

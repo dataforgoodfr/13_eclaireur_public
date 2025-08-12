@@ -18,8 +18,6 @@ async function getSubventions(siren: string) {
   return subventionsResults;
 }
 
-type FicheSubventionsProps = { siren: string };
-
 export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);

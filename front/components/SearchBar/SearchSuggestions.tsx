@@ -19,7 +19,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandEmpty>
             {isPending && <span>Chargement...</span>}
             {isError && <span>Erreur</span>}
-            {suggestions?.length === 0 && <span>Aucun resultat trouve pour '{query}'</span>}
+            {suggestions?.length === 0 && <span>Aucun resultat trouvé pour '{query}'</span>}
           </CommandEmpty>
           <CommandGroup>
             {suggestions?.map((suggestion) => (

@@ -120,7 +120,7 @@ export function formatFirstLetterToUppercase(str: string): string {
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
-  if (type === CommunityType.CA) return `Communauté d'agglomeration`;
+  if (type === CommunityType.CA) return `Communauté d'agglomération`;
   if (type === CommunityType.CC) return 'Communauté de communes';
   if (type === CommunityType.CTU) return 'Collectivité territoriale unique';
   if (type === CommunityType.Commune) return 'Commune';
@@ -130,6 +130,14 @@ export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.Region) return 'Région';
 
   throw new Error(`Type ${type} not supported`);
+}
+
+export function getSortedCommunityTypes(types: CommunityType[]): CommunityType[] {
+  return types.sort((a, b) => {
+    const labelA = stringifyCommunityType(a);
+    const labelB = stringifyCommunityType(b);
+    return labelA.localeCompare(labelB, 'fr');
+  });
 }
 
 export function parseDirection(value: string | null): Direction | undefined {

@@ -12,6 +12,11 @@ export const config = {
                 height: 667
             },
             {
+                label: "phone-large",
+                width: 393,
+                height: 852
+            },
+            {
                 label: "tablet",
                 width: 768,
                 height: 1024
@@ -20,6 +25,11 @@ export const config = {
                 label: "desktop",
                 width: 1280,
                 height: 800
+            },
+            {
+                label: "desktop-large",
+                width: 1440,
+                height: 900
             }
         ],
         scenarioDefault: {

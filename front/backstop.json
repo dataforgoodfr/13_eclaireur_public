@@ -1,9 +1,7 @@
 {
   "engine": "playwright",
   "engineOptions": {
-    "args": [
-      "--no-sandbox"
-    ]
+    "args": ["--no-sandbox"]
   },
   "asyncCaptureLimit": 5,
   "asyncCompareLimit": 50,
@@ -19,6 +17,11 @@
       "height": 667
     },
     {
+      "label": "phone-large",
+      "width": 393,
+      "height": 852
+    },
+    {
       "label": "tablet",
       "width": 768,
       "height": 1024
@@ -27,6 +30,11 @@
       "label": "desktop",
       "width": 1280,
       "height": 800
+    },
+    {
+      "label": "desktop-large",
+      "width": 1440,
+      "height": 900
     }
   ],
   "paths": {
@@ -45,11 +53,126 @@
       "hideSelectors": [],
       "removeSelectors": [],
       "readySelector": "#storybook-root",
+      "label": "Example/Button Primary",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-button--primary",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Button Secondary",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-button--secondary",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Button Large",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-button--large",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Button Small",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-button--small",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Header Logged In",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-header--logged-in",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Header Logged Out",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-header--logged-out",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Page Logged Out",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-page--logged-out",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Example/Page Logged In",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=example-page--logged-in",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Map/MapLayout Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=map-maplayout--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
       "label": "Components/SearchBar Default",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--default",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -62,9 +185,7 @@
       "readySelector": "#storybook-root",
       "label": "Components/SearchBar With Container",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--with-container",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -77,9 +198,98 @@
       "readySelector": "#storybook-root",
       "label": "Components/SearchBar Full Width",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-searchbar--full-width",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Test/MSWComponent Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=test-mswcomponent--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore Score A",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--score-a",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore Score B",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--score-b",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore Score C",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--score-c",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore Score D",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--score-d",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore Score E",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--score-e",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Components/TransparencyScore No Score",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-transparencyscore--no-score",
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -92,9 +302,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Default",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--default",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -107,9 +315,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Secondary",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--secondary",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -122,9 +328,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Destructive",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--destructive",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -137,9 +341,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Outline",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--outline",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -152,9 +354,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Ghost",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--ghost",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -167,9 +367,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Link",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--link",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -182,9 +380,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Small",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--small",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -197,9 +393,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Large",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--large",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -212,9 +406,7 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Icon",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--icon",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -227,9 +419,397 @@
       "readySelector": "#storybook-root",
       "label": "UI/Button Disabled",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=ui-button--disabled",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/DataTable Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-datatable--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/DataTable Loading",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-datatable--loading",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/DataTable Empty Results",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-datatable--empty-results",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/DataTable Single Page",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-datatable--single-page",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/DataTable With Filters",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-datatable--with-filters",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/Filters Tous Les Filtres",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-filters--tous-les-filtres",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/Filters Type De Collectivite",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-filters--type-de-collectivite",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/Filters Population",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-filters--population",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/Filters Score Marches Publics",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-filters--score-marches-publics",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "Advanced Search/Filters Score Subventions",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=advanced-search-filters--score-subventions",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheHeader Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-ficheheader--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheIdentite Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-ficheidentite--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheIdentite Non Soumis A Obligation",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-ficheidentite--non-soumis-a-obligation",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheIdentite Minimal Data",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-ficheidentite--minimal-data",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics No Data",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics--no-data",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics/MarchesPublicsTable Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics-marchespublicstable--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics/MarchesPublicsTable Single Market",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics-marchespublicstable--single-market",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics/MarchesPublicsTable Many Markets",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics-marchespublicstable--many-markets",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics/MarchesPublicsTable No Data",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics-marchespublicstable--no-data",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheMarchesPublics/MarchesPublicsTable Filtered By Year",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichemarchespublics-marchespublicstable--filtered-by-year",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions No Data",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--no-data",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions Single Subvention",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--single-subvention",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions Many Subventions",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--many-subventions",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions Error State",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--error-state",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/FicheSubventions Loading State",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-fichesubventions--loading-state",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/Skeletons/FicheIdentiteSkeleton Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-skeletons-ficheidentiteskeleton--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/Skeletons/FicheMarchesPublicsSkeleton Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-skeletons-fichemarchespublicsskeleton--default",
+      "selectors": ["#storybook-root"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "selectorExpansion": true,
+      "requireSameDimensions": true,
+      "delay": 2000,
+      "postInteractionWait": 500,
+      "hideSelectors": [],
+      "removeSelectors": [],
+      "readySelector": "#storybook-root",
+      "label": "community/[siren]/components/Skeletons/FicheSubventionsSkeleton Default",
+      "url": "http://localhost:6006/iframe.html?viewMode=story&id=community-siren-components-skeletons-fichesubventionsskeleton--default",
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -242,9 +822,7 @@
       "readySelector": "#storybook-root",
       "label": "Pages/HomePageHeader Default",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--default",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -257,9 +835,7 @@
       "readySelector": "#storybook-root",
       "label": "Pages/HomePageHeader With Custom Background",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=pages-homepageheader--with-custom-background",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -272,9 +848,7 @@
       "readySelector": "#storybook-root",
       "label": "Components/Navbar Default",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--default",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -287,9 +861,7 @@
       "readySelector": "#storybook-root",
       "label": "Components/Navbar With Background",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-background",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -302,9 +874,7 @@
       "readySelector": "#storybook-root",
       "label": "Components/Navbar Mobile",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -317,9 +887,7 @@
       "readySelector": "#storybook-root",
       "label": "Components/Navbar With Beta Banner",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--with-beta-banner",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     },
     {
@@ -332,13 +900,9 @@
       "readySelector": "#storybook-root",
       "label": "Components/Navbar Mobile Menu Open",
       "url": "http://localhost:6006/iframe.html?viewMode=story&id=components-navbar--mobile-menu-open",
-      "selectors": [
-        "#storybook-root"
-      ],
+      "selectors": ["#storybook-root"],
       "misMatchThreshold": 0.1
     }
   ],
-  "report": [
-    "browser"
-  ]
+  "report": ["browser"]
 }
