@@ -239,24 +239,26 @@ class DatasetAggregator(BaseDataset):
         """
 
         def print_df(df: pd.DataFrame):
-            cols_to_query = [
-                "base_url",
-                "url_hash",
-                "checksum_value",
-                "extras_analysis:checksum",
-                "need_download",
-                "need_normalize",
-                "extras_analysis:last-modified-at",
-                "modified",
-                "last-modified",
-                "internal_last_modified",
-            ]
-            existing_cols = []
-            for ctq in cols_to_query:
-                if ctq in df:
-                    existing_cols.append(ctq)
+            if LOGGER.isEnabledFor(logging.DEBUG):
+                cols_to_query = [
+                    "base_url",
+                    "url_hash",
+                    "checksum_value",
+                    "extras_analysis:checksum",
+                    "need_download",
+                    "need_normalize",
+                    "extras_analysis:last-modified-at",
+                    "modified",
+                    "last-modified",
+                    "internal_last_modified",
+                ]
+                existing_cols = []
+                for ctq in cols_to_query:
+                    if ctq in df:
+                        existing_cols.append(ctq)
 
-            print(df[existing_cols])
+                print(df[existing_cols])
+                
             return df
 
         download_all = self.main_config["workflow"]["download_all"]
@@ -315,7 +317,6 @@ class DatasetAggregator(BaseDataset):
                 target_col="last-modified",
                 astype="datetime64[ns]",
             )
-            .pipe(print_df)
             # on calcule la nécessité de télécharger le fichier
             .assign(
                 need_download=lambda s: s["local_hash"] != s["checksum_value"]
@@ -326,6 +327,7 @@ class DatasetAggregator(BaseDataset):
             )
             # on calcule la nécessité de traiter le fichier.
             .assign(need_normalize=lambda s: normalize_all or s["need_download"])
+            .pipe(print_df)
             .drop(columns=["local_mtime", "local_hash", "last-modified"], errors='ignore')
         )
 
