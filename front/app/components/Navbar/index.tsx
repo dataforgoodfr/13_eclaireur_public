@@ -1,17 +1,15 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
 
-import { Button } from '#components/ui/button';
-import {
-  NavigationMenu,
-  NavigationMenuList,
-} from '#components/ui/navigation-menu';
+import Image from 'next/image';
+import Link from 'next/link';
 
+import { Button } from '#components/ui/button';
+import { NavigationMenu, NavigationMenuList } from '#components/ui/navigation-menu';
 import SearchCommunity from '@/components/SearchBar/SearchCommunity';
 import { Wrench } from 'lucide-react';
+
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
 
@@ -24,7 +22,7 @@ const visualiserMenus = [
   {
     title: 'Recherche avancée',
     href: '/advanced-search',
-    description: 'Quelles sont les dépenses publiques dans ma collectivité ?',
+    description: "Comment analyser et télécharger les données d'une collectivité ?",
   },
   {
     title: 'Interpeller',
@@ -86,14 +84,14 @@ const aProposMenus = [
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
-  <div className="fixed z-40 w-full py-1 pl-1 pr-8 text-sm text-center top-16 bg-card-secondary-foreground-1">
-    <Wrench className="inline scale-x-[-1]" size={16} />
-    <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines
-    fonctionnalités peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
-    <button 
+  <div className='fixed top-16 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm'>
+    <Wrench className='inline scale-x-[-1]' size={16} />
+    <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines fonctionnalités
+    peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
+    <button
       onClick={onClose}
-      className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-white/20 rounded p-1"
-      aria-label="Fermer le bandeau"
+      className='absolute right-2 top-1/2 -translate-y-1/2 transform rounded p-1 hover:bg-white/20'
+      aria-label='Fermer le bandeau'
     >
       ✕
     </button>
@@ -103,37 +101,37 @@ const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
 export default function Navbar() {
   const [showBetaBanner, setShowBetaBanner] = useState(true);
   const isBeta = true;
-  
+
   const handleCloseBetaBanner = () => {
     setShowBetaBanner(false);
   };
-  
+
   return (
     <>
       {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
 
-      <div className="fixed z-50 flex items-center justify-between w-full h-16 bg-white shadow-md top-0 px-4">
+      <div className='fixed top-0 z-50 flex h-16 w-full items-center justify-between bg-white px-4 shadow-md'>
         {/* Mobile Navbar */}
-        <div className="flex items-center justify-between w-full md:hidden">
+        <div className='flex w-full items-center justify-between md:hidden'>
           {/* Left: Icon logo */}
-          <Link href="/">
+          <Link href='/'>
             <Image
-              src="/eclaireur/logo-navmenu-mobile-1.png"
-              alt="Éclaireur Icon"
+              src='/eclaireur/logo-navmenu-mobile-1.png'
+              alt='Éclaireur Icon'
               width={28}
               height={28}
-              className="h-[28px] w-auto"
+              className='h-[28px] w-auto'
               priority
             />
           </Link>
 
           {/* Center: Text logo */}
           <Image
-            src="/eclaireur/logo-navmenu-mobile-2.svg"
-            alt="Éclaireur Public"
+            src='/eclaireur/logo-navmenu-mobile-2.svg'
+            alt='Éclaireur Public'
             width={360}
             height={36}
-            className="h-[68px] w-auto"
+            className='h-[68px] w-auto'
             priority
           />
 
@@ -146,14 +144,14 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navbar */}
-        <div className="hidden md:flex items-center w-full">
+        <div className='hidden w-full items-center md:flex'>
           {/* Desktop Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center justify-center h-14 w-36">
+          <Link href='/'>
+            <div className='flex h-14 w-36 items-center justify-center'>
               <Image
-                src="/eclaireur/logo-navmenu-desktop.png"
+                src='/eclaireur/logo-navmenu-desktop.png'
                 priority
-                alt="Éclaireur Public Logo"
+                alt='Éclaireur Public Logo'
                 width={340}
                 height={100}
               />
@@ -162,27 +160,22 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <NavigationMenu className='absolute left-1/2 -translate-x-1/2'>
-            <NavigationMenuList className='w-[500px] bg-red-300 p-2'>
-              <NavigationMenuGroup title="Visualiser" menus={visualiserMenus} />
-              <NavigationMenuGroup title="Comprendre" menus={comprendreMenus} />
-              <NavigationMenuGroup title="À propos" menus={aProposMenus} />
+            <NavigationMenuList className='w-[500px]'>
+              <NavigationMenuGroup title='Visualiser' menus={visualiserMenus} />
+              <NavigationMenuGroup title='Comprendre' menus={comprendreMenus} />
+              <NavigationMenuGroup title='À propos' menus={aProposMenus} />
             </NavigationMenuList>
           </NavigationMenu>
 
           {/* Search + Interpeller button */}
-          <div className="flex items-center absolute right-2">
+          <div className='absolute right-4 flex items-center'>
             <SearchCommunity />
             <Button
-              size="sm"
-              className="hidden rounded-none rounded-tl-lg rounded-br-lg bg-primary hover:bg-primary/90 md:inline"
+              size='sm'
+              className='hidden rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90 md:inline'
             >
-              <Link href="/interpeller">
-                <Image
-                  src="/eclaireur/interpeller.svg"
-                  alt="Interpeller"
-                  width={20}
-                  height={20}
-                />
+              <Link href='/interpeller'>
+                <Image src='/eclaireur/interpeller.svg' alt='Interpeller' width={20} height={20} />
               </Link>
             </Button>
           </div>

@@ -84,13 +84,6 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
                     <Accordion type='single' collapsible className='w-full'>
                         <AccordionMenu title='Visualiser' menus={visualiserMenus} onMenuClick={handleMenuClick} />
                         <AccordionMenu title='Comprendre' menus={comprendreMenus} onMenuClick={handleMenuClick} />
-                        <div className='border-b border-primary/20'>
-                            <Link href='/advanced-search' onClick={handleMenuClick}>
-                                <div className='py-4 text-left text-lg font-semibold text-primary transition-colors hover:text-primary/80'>
-                                    Télécharger
-                                </div>
-                            </Link>
-                        </div>
                         <AccordionMenu title='À propos' menus={aProposMenus} last={true} onMenuClick={handleMenuClick} />
                     </Accordion>
                 </DropdownMenuContent>
