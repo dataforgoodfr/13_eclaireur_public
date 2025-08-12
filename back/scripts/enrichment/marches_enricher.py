@@ -8,6 +8,7 @@ from unidecode import unidecode
 
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
+from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import (
@@ -28,12 +29,13 @@ class MarchesPublicsEnricher(BaseEnricher):
         return [
             MarchesPublicsWorkflow.get_output_path(main_config),
             CPVLabelsWorkflow.get_output_path(main_config),
+            SireneWorkflow.get_output_path(main_config),
         ]
 
     @classmethod
     def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         # Data analysts, please add your code here!
-        marches, cpv_labels, *_ = inputs
+        marches, cpv_labels, sirene, *_ = inputs
 
         marches_pd = (
             marches.to_pandas()
@@ -72,7 +74,30 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
             .pipe(cls.drop_rows_with_null_dates_or_amounts)
+            .pipe(cls.assoc_with_sirene, sirene)
         )
+
+    @staticmethod
+    def assoc_with_sirene(marches: pl.DataFrame, sirene: pl.DataFrame) -> pl.DataFrame:
+        marches = (
+            marches.with_columns(
+                pl.col("titulaire_id")
+                .cast(pl.Utf8)
+                .str.slice(0, 9)
+                .alias("titulaire_id_siren"),
+            )
+            .join(
+                sirene.select("siren", "raison_sociale"),
+                left_on="titulaire_id_siren",
+                right_on="siren",
+                how="left",
+            )
+            .with_columns(
+                pl.col("titulaire_denomination_sociale").fill_null(pl.col("raison_sociale"))
+            )
+            .drop(["titulaire_id_siren", "raison_sociale"])
+        )
+        return marches
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
