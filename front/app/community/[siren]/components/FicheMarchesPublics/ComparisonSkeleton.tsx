@@ -20,41 +20,52 @@ type ComparisonData = {
 export function ComparisonSkeleton({ isMobile }: { isMobile: boolean }) {
   return (
     <div className="space-y-2">
-      <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
-        <div className={isMobile ? 'text-center' : ''}>
-          <Skeleton className="h-7 w-72" />
+      {/* Only show header skeleton on desktop - mobile uses TabHeader */}
+      {!isMobile && (
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-7 w-72" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-12 w-32 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none" />
+            <Button
+              disabled
+              className="h-12 w-12 bg-primary rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-12 w-32 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none" />
-          <Button
-            disabled
-            className="h-12 w-12 bg-primary rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      )}
 
       {isMobile ? (
-        <div className="bg-white rounded-lg p-4">
-          <div className="space-y-3">
+        <div className="bg-white rounded-lg overflow-hidden">
+          <div className="space-y-1 p-4 overflow-x-auto">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="text-center">
-                  <Skeleton className="h-4 w-12 mx-auto" />
+              <div key={i} className="flex items-center gap-2 py-1 min-w-0">
+                <div className="w-10 flex-shrink-0">
+                  <Skeleton className="h-4 w-8" />
                 </div>
-                <div className="space-y-1">
-                  <Skeleton className="w-full h-6" />
-                  <Skeleton className="w-full h-6" />
+                <div className="flex-1 min-w-0">
+                  <div className="h-[60px] relative">
+                    {/* Primary bar skeleton */}
+                    <div className="absolute top-2">
+                      <Skeleton className="h-6 w-32 rounded-r" />
+                      <div className="absolute right-[-50px] top-0">
+                        <Skeleton className="h-4 w-12" />
+                      </div>
+                    </div>
+                    {/* Secondary bar skeleton */}
+                    <div className="absolute top-8">
+                      <Skeleton className="h-6 w-24 rounded-r" />
+                      <div className="absolute right-[-40px] top-0">
+                        <Skeleton className="h-4 w-10" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-48" />
-                <Skeleton className="h-4 w-40" />
-              </div>
-            </div>
           </div>
         </div>
       ) : (

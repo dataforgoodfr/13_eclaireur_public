@@ -25,9 +25,9 @@ export const TabHeader = ({
       <div className={`hidden md:flex items-start justify-between mb-6 ${className}`}>
         <div className='flex-1'>
           <div className='flex items-center gap-3 mb-4'>
-            <h3 className='text-2xl font-medium text-primary'>
+            <h2 className='text-2xl font-medium text-primary'>
               {title}
-            </h3>
+            </h2>
           </div>
           {titleSwitch}
         </div>
@@ -41,9 +41,9 @@ export const TabHeader = ({
       {/* Mobile Layout */}
       <div className={`md:hidden mb-6 ${className}`}>
         <div className='flex items-start justify-between mb-4'>
-          <h3 className='text-xl font-medium text-primary leading-tight flex-1 pr-2'>
+          <h2 className='text-xl font-medium text-primary leading-tight flex-1 pr-2'>
             {title}
-          </h3>
+          </h2>
           {actions && (
             <div className='flex items-center gap-2'>
               {actions}
