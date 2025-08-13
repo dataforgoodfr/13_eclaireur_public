@@ -69,7 +69,6 @@ class ApiChecker(IFileUpdateChecker):
 
             remote_file_md = resp.json()
             if self.comparator(remote_file_md, file_metadata):
-                LOGGER.debug(f"raw path needs update : require download {raw_path}, deleting {norm_path}");
                 norm_path = file_metadata.get_norm_path()
                 raw_path.unlink(missing_ok=True)
                 norm_path.unlink(missing_ok=True)
