@@ -13,7 +13,7 @@ from back.scripts.utils.typing import PandasRow
 
 LOGGER = logging.getLogger(__name__)
 
-CHANGELOG_BASE_URL='https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/{id_jeu_de_donnees}?timezone=UTC&include_links=false&include_app_metas=false'
+CHANGELOG_BASE_URL='https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/{datasetid}?timezone=UTC&include_links=false&include_app_metas=false'
 
 class FinancialAccounts(DatasetAggregator):
     """
@@ -35,10 +35,8 @@ class FinancialAccounts(DatasetAggregator):
         self.columns = Counter()
         self.columns_mapping = pd.read_csv(main_config[self.get_config_key()]["columns_mapping"], sep=";").set_index("name")
 
-        last_updates = self.files_in_scope["id"].apply(self._retrieve_last_modification_date)
-        print(self.files_in_scope)
+        last_updates = self.files_in_scope["datasetid"].apply(self._retrieve_last_modification_date)
         self.files_in_scope = self.files_in_scope.assign(last_update=last_updates)
-        print(self.files_in_scope)
         
     def _retrieve_last_modification_date(self, datasetid: str) -> str:
         """
@@ -46,7 +44,7 @@ class FinancialAccounts(DatasetAggregator):
         """
         last_updated = datetime.now().strftime("%Y-%m-%d")
 
-        url = CHANGELOG_BASE_URL.format(id_jeu_de_donnees=datasetid)
+        url = CHANGELOG_BASE_URL.format(datasetid=datasetid)
         resp = requests.get(url)
         if resp.status_code == 200:
             resp_j = resp.json()
