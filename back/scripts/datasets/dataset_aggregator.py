@@ -258,7 +258,7 @@ class DatasetAggregator(BaseDataset):
                         existing_cols.append(ctq)
 
                 print(df[existing_cols])
-                
+
             return df
 
         download_all = self.main_config["workflow"]["download_all"]
@@ -328,7 +328,7 @@ class DatasetAggregator(BaseDataset):
             # on calcule la nécessité de traiter le fichier.
             .assign(need_normalize=lambda s: normalize_all or s["need_download"])
             .pipe(print_df)
-            .drop(columns=["local_mtime", "local_hash", "last-modified"], errors='ignore')
+            .drop(columns=["local_mtime", "local_hash", "last-modified"], errors="ignore")
         )
 
         total_files = file_to_process.shape[0]

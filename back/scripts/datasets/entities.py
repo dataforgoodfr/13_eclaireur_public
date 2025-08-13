@@ -5,9 +5,10 @@ from typing import Any
 
 @dataclass
 class FileMetadata:
-    """A generic container for file metadata, decoupled from any framework."""
+    """A generic container for file metadata, decoupled from any framework.
+    require to set self.data_folder before calling one of get_raw_path, get_norm_path, get_validation_path method
+    """
 
-    #data_folder: str
     url: str
     format: str
     url_hash: str  # used a unique identifier for the file

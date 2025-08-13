@@ -14,7 +14,7 @@ class IFileUpdateChecker(Protocol):
         every call of need_update()
         """
         ...
-    
+
     def need_update(self, file_metadata: FileMetadata) -> bool | None:
         """
         Compare metadata fields of the file specified in the metadata againts remote ones.

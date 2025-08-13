@@ -298,9 +298,7 @@ def merge_cols_into_one(
                 df[col], lambda v1, v2: v2 if v1 is None or v1 != np.nan else v1
             )
 
-            
-
     if astype is not None:
-        df[internal_target_col] = df[internal_target_col].astype(astype, errors='ignore')
+        df[internal_target_col] = df[internal_target_col].astype(astype, errors="ignore")
 
     return df.assign(**{target_col: df[internal_target_col]}).drop(internal_target_col, axis=1)

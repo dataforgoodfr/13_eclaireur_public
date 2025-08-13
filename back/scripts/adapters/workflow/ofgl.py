@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import pandera.polars as pa
 import polars as pl
-from jsonschema import validate, SchemaError, ValidationError
+from jsonschema import SchemaError, ValidationError, validate
 from tqdm import tqdm
 
 from back.scripts.adapters.data_source_checker import ApiChecker
