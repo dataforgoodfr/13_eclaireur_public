@@ -10,7 +10,8 @@ import {
 } from '#components/ui/dropdown-menu';
 import { ChevronDown, Download } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import MobileComparisonChartV1 from './MobileComparisonChart-v1';
 
 type ComparisonProps = {
   siren: string;
@@ -196,113 +197,6 @@ export default function Comparison({ siren }: ComparisonProps) {
     );
   };
 
-  // Mobile horizontal bar chart component
-  const MobileComparisonChart = () => {
-    if (!data.length) return null;
-
-    const maxValue = Math.max(
-      ...data.flatMap(d => [d.community, d.regional])
-    );
-
-    const formatMobileValue = (value: number) => {
-      if (value >= 1000000000) {
-        return `${(value / 1000000000).toFixed(0)} Md €`;
-      }
-      if (value >= 1000000) {
-        return `${(value / 1000000).toFixed(0)} M €`;
-      }
-      if (value >= 1000) {
-        return `${(value / 1000).toFixed(0)} k €`;
-      }
-      return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(value);
-    };
-
-    return (
-      <div className="bg-white rounded-lg p-4">
-        <div className="space-y-3">
-          {data.map((yearData) => (
-            <div key={yearData.year} className="space-y-2">
-              {/* Year label */}
-              <div className="text-center">
-                <span className="font-semibold text-base text-gray-900">{yearData.year}</span>
-              </div>
-              
-              {/* Community bar */}
-              <div className="space-y-1">
-                <div className="w-full bg-gray-200 rounded-full h-6 relative overflow-hidden">
-                  <div
-                    className="bg-[#303F8D] h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
-                    style={{ 
-                      width: `${(yearData.community / maxValue) * 100}%`,
-                      borderRadius: '12px',
-                      minWidth: '60px'
-                    }}
-                  >
-                    <span className="text-white text-xs font-bold">
-                      {formatMobileValue(yearData.community)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Regional bar */}
-              <div className="space-y-1">
-                <div className="w-full bg-gray-200 rounded-full h-6 relative overflow-hidden">
-                  <div
-                    className="h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
-                    style={{ 
-                      width: `${(yearData.regional / maxValue) * 100}%`,
-                      background: `repeating-linear-gradient(
-                        45deg,
-                        #303F8D,
-                        #303F8D 3px,
-                        white 3px,
-                        white 6px
-                      )`,
-                      borderRadius: '12px',
-                      minWidth: '60px'
-                    }}
-                  >
-                    <span className="text-white text-xs font-bold">
-                      {formatMobileValue(yearData.regional)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          </div>
-        
-          {/* Legend for mobile */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-[#303F8D] rounded"></div>
-              <span>{data.length > 0 ? data[0].communityLabel : "Budget de collectivité"}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-4 h-4 rounded"
-                style={{
-                  background: `repeating-linear-gradient(
-                    45deg,
-                    #303F8D,
-                    #303F8D 2px,
-                    white 2px,
-                    white 4px
-                  )`
-                }}
-              ></div>
-              <span>{data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   // Skeleton loader component
   const SkeletonLoader = () => {
@@ -593,7 +487,7 @@ export default function Comparison({ siren }: ComparisonProps) {
               </div>
             </div>
           )}
-          <MobileComparisonChart />
+          <MobileComparisonChartV1 data={data} />
         </div>
       ) : (
         <div className="bg-white rounded-lg relative">
