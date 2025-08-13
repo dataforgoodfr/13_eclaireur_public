@@ -11,7 +11,7 @@ import {
 import { ChevronDown, Download } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import MobileComparisonChartV1 from './MobileComparisonChart-v1';
+import MobileComparisonChartV2 from './MobileComparisonChart-v2';
 
 type ComparisonProps = {
   siren: string;
@@ -487,7 +487,7 @@ export default function Comparison({ siren }: ComparisonProps) {
               </div>
             </div>
           )}
-          <MobileComparisonChartV1 data={data} />
+          <MobileComparisonChartV2 data={data} />
         </div>
       ) : (
         <div className="bg-white rounded-lg relative">
