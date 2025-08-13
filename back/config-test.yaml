@@ -8,6 +8,7 @@ ofgl:
   data_folder: back/tests/data/ofgl
   urls_csv: back/tests/inputs/ofgl_urls_ci.csv
   combined_filename: back/tests/data/ofgl/ofgl.parquet
+  api_schema: back/scripts/entities/schemas/ofgl-api-schema.json
 
 communities:
   data_folder: back/tests/data/communities

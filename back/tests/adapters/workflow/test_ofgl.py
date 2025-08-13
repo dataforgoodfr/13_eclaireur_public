@@ -14,6 +14,7 @@ from back.scripts.adapters.workflow.ofgl import (
 )
 from back.scripts.datasets.entities import FileMetadata
 from back.scripts.interfaces.data_source import IDataSource
+from back.scripts.interfaces.file_checker import IFileUpdateChecker
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
 
@@ -74,6 +75,27 @@ def local_file_metadata(tmp_path: Path) -> FileMetadata:
 def mock_data_source(file_metadata: FileMetadata) -> MagicMock:
     mock = MagicMock(spec=IDataSource)
     mock.get_files.return_value = [file_metadata]
+    return mock
+
+@pytest.fixture
+def mock_checker_up_to_date() -> MagicMock:
+    mock = MagicMock(spec=IFileUpdateChecker)
+    mock.need_update.return_value = False
+    mock.need_rebuild.return_value = False
+    return mock
+
+@pytest.fixture
+def mock_checker_up_to_date_but_rebuild() -> MagicMock:
+    mock = MagicMock(spec=IFileUpdateChecker)
+    mock.need_update.return_value = False
+    mock.need_rebuild.return_value = True
+    return mock
+
+@pytest.fixture
+def mock_checker_updated() -> MagicMock:
+    mock = MagicMock(spec=IFileUpdateChecker)
+    mock.need_update.return_value = True 
+    mock.need_rebuild.return_value = True
     return mock
 
 
@@ -175,6 +197,7 @@ class TestOfglWorkflow:
     def test_run_success(
         self,
         mock_data_source: MagicMock,
+        mock_checker_updated: MagicMock,
         mock_downloader: MagicMock,
         mock_parser: MagicMock,
         tmp_path: Path,
@@ -184,6 +207,7 @@ class TestOfglWorkflow:
         data_folder = tmp_path / "data"
         workflow = OfglWorkflow(
             data_source=mock_data_source,
+            checker=mock_checker_updated,
             downloader=mock_downloader,
             parser=mock_parser,
             output_path=output_path,
@@ -197,11 +221,14 @@ class TestOfglWorkflow:
         mock_data_source.get_files.assert_called_once()
         mock_downloader.download.assert_called_once()
         mock_parser.parse.assert_called_once()
+        mock_checker_updated.need_update.assert_called()  # one per file
+        mock_checker_updated.need_rebuild.assert_called_once()  # one to build output
         assert output_path.exists()
 
     def test_run_already_exists(
         self,
         mock_data_source: MagicMock,
+        mock_checker_up_to_date: MagicMock,
         mock_downloader: MagicMock,
         mock_parser: MagicMock,
         tmp_path: Path,
@@ -213,6 +240,7 @@ class TestOfglWorkflow:
         data_folder = tmp_path / "data"
         workflow = OfglWorkflow(
             data_source=mock_data_source,
+            checker=mock_checker_up_to_date,
             downloader=mock_downloader,
             parser=mock_parser,
             output_path=output_path,
@@ -224,12 +252,15 @@ class TestOfglWorkflow:
             workflow.run()
 
         # Then: The workflow skips execution
-        mock_data_source.get_files.assert_not_called()
+        mock_data_source.get_files.assert_called_once()
+        mock_checker_up_to_date.need_update.assert_called()  # one per file
+        mock_checker_up_to_date.need_rebuild.assert_called_once()  # one to build output
         assert "OFGL dataset already exists" in caplog.text
 
     def test_run_with_local_file(
         self,
         local_file_metadata: FileMetadata,
+        mock_checker_up_to_date_but_rebuild: MagicMock,
         mock_downloader: MagicMock,
         mock_parser: MagicMock,
         tmp_path: Path,
@@ -241,6 +272,7 @@ class TestOfglWorkflow:
         data_folder = tmp_path / "data"
         workflow = OfglWorkflow(
             data_source=mock_data_source,
+            checker=mock_checker_up_to_date_but_rebuild,
             downloader=mock_downloader,
             parser=mock_parser,
             output_path=output_path,
@@ -256,6 +288,8 @@ class TestOfglWorkflow:
         mock_parser.parse.assert_called_once_with(
             local_file_metadata, Path(local_file_metadata.url[len("file:") :])
         )
+        mock_checker_up_to_date_but_rebuild.need_update.assert_called()  # one per file
+        mock_checker_up_to_date_but_rebuild.need_rebuild.assert_called_once()  # one to build output
         assert output_path.exists()
 
     def test_concatenate_files(self, tmp_path: Path):
@@ -264,6 +298,7 @@ class TestOfglWorkflow:
         output_path = tmp_path / "ofgl_combined.parquet"
         workflow = OfglWorkflow(
             MagicMock(spec=IDataSource),
+            MagicMock(spec=IFileUpdateChecker),
             MagicMock(spec=IFileDownloader),
             MagicMock(spec=IFileParser),
             output_path,
@@ -293,11 +328,15 @@ class TestOfglWorkflowFactory:
         mock_get_base_path.return_value = tmp_path
         urls_csv_path = tmp_path / "urls.csv"
         urls_csv_path.touch()
+        schema_path = tmp_path / "ofgl-api-schema.json"
+        with open(schema_path, "w") as f:
+            f.write("{}")
         config = {
             "ofgl": {
                 "urls_csv": "urls.csv",
                 "data_folder": "data",
                 "combined_filename": "combined.parquet",
+                "api_schema": "ofgl-api-schema.json",
             }
         }
 

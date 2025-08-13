@@ -8,6 +8,7 @@ ofgl:
   data_folder: back/data/ofgl
   urls_csv: back/scripts/datasets/ofgl_urls.csv
   combined_filename: back/data/ofgl/ofgl.parquet
+  api_schema: back/scripts/entities/schemas/ofgl-api-schema.json
 
 communities:
   data_folder: back/data/communities

@@ -183,16 +183,9 @@ class OfglWorkflow(IWorkflow):
 class OfglApiChecker(ApiChecker):
     """ """
 
-    def __init__(self):
+    def __init__(self, schema_path):
         super().__init__(url_pattern=CHANGELOG_BASE_URL, comparator=self._ofgl_file_comparator)
-        self.schema_path = (
-            get_project_base_path()
-            / "back"
-            / "scripts"
-            / "entities"
-            / "schemas"
-            / "ofgl-api-schema.json"
-        )
+        self.schema_path = schema_path
         with open(self.schema_path, "r") as f:
             self.schema = json.load(f)
 
@@ -232,9 +225,10 @@ class OfglWorkflowFactory(IWorkflowFactory):
         urls_csv_path = base_path / ofgl_config["urls_csv"]
         data_folder = base_path / ofgl_config["data_folder"]
         output_path = base_path / ofgl_config["combined_filename"]
+        schema_path = base_path / ofgl_config["api_schema"]
 
         data_source = UrlDataSource(urls_csv_path)
-        update_checker = OfglApiChecker()
+        update_checker = OfglApiChecker(schema_path)
         downloader = HttpFileDownloader(data_folder)
         parser = OfglFileParser()
 
