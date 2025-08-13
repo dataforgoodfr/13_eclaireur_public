@@ -42,7 +42,7 @@ export default function MobileComparisonChartV2({ data }: MobileComparisonChartP
     return (
         <>
             <div className="space-y-1">
-                {data.map((item, index) => (
+                {data.map((item) => (
                     <div key={item.year} className="flex items-center gap-2 py-1">
                         <div className="w-10 text-sm font-medium text-gray-700">{item.year}</div>
                         <div className="flex-1">

@@ -10,7 +10,7 @@ import {
 } from '#components/ui/dropdown-menu';
 import { ChevronDown, Download } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import MobileComparisonChartV2 from './MobileComparisonChart-v2';
 
 type ComparisonProps = {
@@ -57,7 +57,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     };
 
     fetchInitialData();
-  }, [siren]); // Only depend on siren for initial load
+  }, [siren, selectedScope]); // Include selectedScope dependency
 
   // Separate effect for scope changes
   const fetchComparisonData = useCallback(async (scope: string) => {

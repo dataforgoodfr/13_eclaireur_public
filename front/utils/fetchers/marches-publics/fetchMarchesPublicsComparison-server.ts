@@ -10,7 +10,7 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
   const values = [siren, siren, siren]; // We need siren multiple times
   
   // Build scope condition dynamically - handle both French and English scope names
-  let scopeCondition = '';
+  let scopeCondition: string | null = '';
   const normalizedScope = scope.toLowerCase();
   if (normalizedScope === 'régional' || normalizedScope === 'regional') {
     scopeCondition = 'code_insee_region';
