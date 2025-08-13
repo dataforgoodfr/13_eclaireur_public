@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ComparisonSkeleton } from './ComparisonSkeleton';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChartV2 from './MobileComparisonChart-v2';
+import { TabHeader } from './TabHeader';
 
 type ComparisonProps = {
   siren: string;
@@ -26,17 +27,49 @@ type ComparisonData = {
   regionalLabel: string;
 };
 
+type ScopeDropdownProps = {
+  selectedScope: string;
+  onScopeChange: (scope: string) => void;
+  disabled?: boolean;
+};
+
+const ScopeDropdown = ({ selectedScope, onScopeChange, disabled }: ScopeDropdownProps) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button
+        variant="outline"
+        className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
+        disabled={disabled}
+      >
+        {selectedScope}
+        <ChevronDown className="h-4 w-4" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent>
+      <DropdownMenuItem onClick={() => onScopeChange('Régional')}>
+        Régional
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => onScopeChange('Départemental')}>
+        Départemental
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => onScopeChange('National')}>
+        National
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
+
 
 export default function Comparison({ siren }: ComparisonProps) {
   const [data, setData] = useState<ComparisonData[]>([]);
   const [loading, setLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false); // Separate loading for data updates
-  const [selectedScope, setSelectedScope] = useState('Moyenne régionale');
-  const [displayScope, setDisplayScope] = useState('Moyenne régionale'); // For title display
+  const [selectedScope, setSelectedScope] = useState('Régional');
+  const [displayScope, setDisplayScope] = useState('Régional'); // For title display
   const [isMobile, setIsMobile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initial data fetch
+  // Initial data fetch - only on mount
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -59,7 +92,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     };
 
     fetchInitialData();
-  }, [siren, selectedScope]); // Include selectedScope dependency
+  }, [siren]); // Only depend on siren, not selectedScope
 
   // Separate effect for scope changes
   const fetchComparisonData = useCallback(async (scope: string) => {
@@ -117,14 +150,8 @@ export default function Comparison({ siren }: ComparisonProps) {
     />
   ), [handleDownload]);
 
-  // Title section that updates only when displayScope changes
-  const titleSection = useMemo(() => (
-    <div className={isMobile ? 'text-center' : ''}>
-      <h3 className="text-xl font-medium mb-2">
-        Comparaison avec la moyenne {displayScope.toLowerCase()}e
-      </h3>
-    </div>
-  ), [displayScope, isMobile]);
+  // Dynamic title that updates when displayScope changes
+  const title = `Comparaison avec la moyenne ${displayScope.toLowerCase()}`;
 
   if (loading) {
     return <ComparisonSkeleton isMobile={isMobile} />;
@@ -134,35 +161,19 @@ export default function Comparison({ siren }: ComparisonProps) {
   if (!error && data.length === 0) {
     return (
       <div className="space-y-2">
-        <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
-          {titleSection}
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
-                  disabled={dataLoading}
-                >
-                  {selectedScope}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleScopeChange('Régional')}>
-                  Régional
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleScopeChange('Départemental')}>
-                  Départemental
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleScopeChange('National')}>
-                  National
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {downloadButton}
-          </div>
-        </div>
+        <TabHeader
+          title={title}
+          actions={
+            <>
+              <ScopeDropdown
+                selectedScope={selectedScope}
+                onScopeChange={handleScopeChange}
+                disabled={dataLoading}
+              />
+              {downloadButton}
+            </>
+          }
+        />
 
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
@@ -191,35 +202,19 @@ export default function Comparison({ siren }: ComparisonProps) {
   if (error) {
     return (
       <div className="space-y-2">
-        <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
-          {titleSection}
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
-                  disabled={dataLoading}
-                >
-                  {selectedScope}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleScopeChange('Régional')}>
-                  Régional
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleScopeChange('Départemental')}>
-                  Départemental
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleScopeChange('National')}>
-                  National
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {downloadButton}
-          </div>
-        </div>
+        <TabHeader
+          title={title}
+          actions={
+            <>
+              <ScopeDropdown
+                selectedScope={selectedScope}
+                onScopeChange={handleScopeChange}
+                disabled={dataLoading}
+              />
+              {downloadButton}
+            </>
+          }
+        />
 
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
@@ -253,35 +248,19 @@ export default function Comparison({ siren }: ComparisonProps) {
 
   return (
     <div className="space-y-2">
-      <div className={`flex items-center ${isMobile ? 'flex-col gap-4' : 'justify-between'}`}>
-        {titleSection}
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="gap-2 h-12 px-4 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none bg-white border-gray-300 hover:bg-gray-50"
-                disabled={dataLoading}
-              >
-                {selectedScope}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleScopeChange('Régional')}>
-                Régional
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleScopeChange('Départemental')}>
-                Départemental
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleScopeChange('National')}>
-                National
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {downloadButton}
-        </div>
-      </div>
+      <TabHeader
+        title={title}
+        actions={
+          <>
+            <ScopeDropdown
+              selectedScope={selectedScope}
+              onScopeChange={handleScopeChange}
+              disabled={dataLoading}
+            />
+            {downloadButton}
+          </>
+        }
+      />
 
       {isMobile ? (
         <MobileComparisonChartV2 data={data} dataLoading={dataLoading} />
