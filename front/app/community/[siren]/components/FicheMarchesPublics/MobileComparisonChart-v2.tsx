@@ -12,9 +12,10 @@ type ComparisonData = {
 
 type MobileComparisonChartProps = {
     data: ComparisonData[];
+    dataLoading: boolean;
 };
 
-export default function MobileComparisonChartV2({ data }: MobileComparisonChartProps) {
+export default function MobileComparisonChartV2({ data, dataLoading }: MobileComparisonChartProps) {
     if (!data || data.length === 0) {
         return <div className="text-gray-500 text-center p-4">No data available</div>;
     }
@@ -40,7 +41,18 @@ export default function MobileComparisonChartV2({ data }: MobileComparisonChartP
     const chartMax = Math.round(maxValue * 1.1); // Add 10% padding
 
     return (
-        <>
+
+        <div className="relative">
+            {dataLoading && (
+                <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-lg">
+                    <div className="flex items-center gap-2 text-primary">
+                        <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
+                        <span>Mise à jour des données...</span>
+                    </div>
+                </div>
+            )}
+
+
             <div className="space-y-1">
                 {data.map((item) => (
                     <div key={item.year} className="flex items-center gap-2 py-1">
@@ -85,6 +97,6 @@ export default function MobileComparisonChartV2({ data }: MobileComparisonChartP
                     </pattern>
                 </defs>
             </svg>
-        </>
+        </div>
     )
 }
