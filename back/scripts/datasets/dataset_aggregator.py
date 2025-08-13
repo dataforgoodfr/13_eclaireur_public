@@ -324,8 +324,8 @@ class DatasetAggregator(BaseDataset):
             # on calcule la nécessité de télécharger le fichier
             .assign(
                 need_download=lambda s: s["local_hash"] != s["checksum_value"]
-                if "checksum_value" in s 
-                else s["last_update"] > s["local_mtime"] 
+                if "checksum_value" in s
+                else s["last_update"] > s["local_mtime"]
                 if "last_update" in s
                 else True
             )
