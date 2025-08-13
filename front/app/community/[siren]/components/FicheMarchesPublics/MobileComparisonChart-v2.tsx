@@ -12,54 +12,8 @@ const data = [
     { year: "2018", regional: 70, collective: 60 },
 ]
 
-const YAxisLeftTick = ({ y, payload: { value } }) => {
-    return (
-        <text x={0} y={y} textAnchor="start" verticalAnchor="middle" fontSize={12} fill="#374151">
-            {value}
-        </text>
-    )
-}
-
-let ctx
-const measureText = (text) => {
-    if (!ctx) {
-        ctx = document.createElement("canvas").getContext("2d")
-        ctx.font = "12px system-ui"
-    }
-    return ctx.measureText(text).width
-}
-
-const CustomLegend = () => (
-    <div className="mt-6 space-y-2">
-        <div className="flex items-center gap-2">
-            <div className="w-4 h-3 bg-blue-700"></div>
-            <span className="text-sm text-gray-700">Moyenne des budget des collectivités régionales</span>
-        </div>
-        <div className="flex items-center gap-2">
-            <div
-                className="w-4 h-3"
-                style={{
-                    background: `repeating-linear-gradient(
-            45deg,
-            #1e40af,
-            #1e40af 2px,
-            transparent 2px,
-            transparent 4px
-          )`,
-                }}
-            ></div>
-            <span className="text-sm text-gray-700">Budget de collectivité</span>
-        </div>
-    </div>
-)
 
 export default function DoubleBarChart() {
-    const maxTextWidth = data.reduce((acc, cur) => {
-        const regionalWidth = measureText(`${cur.regional}M`)
-        const collectiveWidth = measureText(`${cur.collective}M`)
-        const maxWidth = Math.max(regionalWidth, collectiveWidth)
-        return maxWidth > acc ? maxWidth : acc
-    }, 0)
 
     return (
         <>
@@ -74,22 +28,22 @@ export default function DoubleBarChart() {
                                     <YAxis hide type="category" />
 
                                     <Bar dataKey="regional" barSize={18} radius={[0, 0, 4, 0]}>
-                                        <Cell fill="#1e40af" stroke="#1e3a8a" strokeWidth={1} />
+                                        <Cell fill="#303F8D" stroke="#303F8D" strokeWidth={1} />
                                         <LabelList
                                             dataKey="regional"
                                             position="right"
                                             formatter={(value) => `${value}M`}
-                                            style={{ fontSize: "12px", fill: "#1e40af", fontWeight: "600" }}
+                                            style={{ fontSize: "12px", fill: "#303F8D", fontWeight: "600" }}
                                         />
                                     </Bar>
 
                                     <Bar dataKey="collective" barSize={18} radius={[0, 0, 4, 0]} y={22}>
-                                        <Cell fill="url(#stripes)" stroke="#1e3a8a" strokeWidth={1} />
+                                        <Cell fill="url(#stripes)" stroke="#303F8D" strokeWidth={1} />
                                         <LabelList
                                             dataKey="collective"
                                             position="right"
                                             formatter={(value) => `${value}M`}
-                                            style={{ fontSize: "12px", fill: "#1e40af", fontWeight: "600" }}
+                                            style={{ fontSize: "12px", fill: "#303F8D", fontWeight: "600" }}
                                         />
                                     </Bar>
                                 </BarChart>
@@ -102,8 +56,8 @@ export default function DoubleBarChart() {
             <svg width="0" height="0">
                 <defs>
                     <pattern id="stripes" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-                        <rect width="4" height="8" fill="#1e40af" />
-                        <rect x="4" width="4" height="8" fill="transparent" />
+                        <rect width="4" height="8" fill="#303F8D" />
+                        <rect x="4" width="4" height="8" fill="white" />
                     </pattern>
                 </defs>
             </svg>
