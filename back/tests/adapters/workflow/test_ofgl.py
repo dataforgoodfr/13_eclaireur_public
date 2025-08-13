@@ -77,12 +77,14 @@ def mock_data_source(file_metadata: FileMetadata) -> MagicMock:
     mock.get_files.return_value = [file_metadata]
     return mock
 
+
 @pytest.fixture
 def mock_checker_up_to_date() -> MagicMock:
     mock = MagicMock(spec=IFileUpdateChecker)
     mock.need_update.return_value = False
     mock.need_rebuild.return_value = False
     return mock
+
 
 @pytest.fixture
 def mock_checker_up_to_date_but_rebuild() -> MagicMock:
@@ -91,10 +93,11 @@ def mock_checker_up_to_date_but_rebuild() -> MagicMock:
     mock.need_rebuild.return_value = True
     return mock
 
+
 @pytest.fixture
 def mock_checker_updated() -> MagicMock:
     mock = MagicMock(spec=IFileUpdateChecker)
-    mock.need_update.return_value = True 
+    mock.need_update.return_value = True
     mock.need_rebuild.return_value = True
     return mock
 
