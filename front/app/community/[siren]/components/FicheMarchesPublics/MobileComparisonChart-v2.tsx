@@ -1,19 +1,43 @@
 "use client"
-import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
-const data = [
-    { year: "2025", regional: 70, collective: 60 },
-    { year: "2024", regional: 70, collective: 60 },
-    { year: "2023", regional: 70, collective: 60 },
-    { year: "2022", regional: 70, collective: 60 },
-    { year: "2021", regional: 70, collective: 60 },
-    { year: "2020", regional: 70, collective: 60 },
-    { year: "2019", regional: 70, collective: 60 },
-    { year: "2018", regional: 70, collective: 60 },
-]
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
+type ComparisonData = {
+    year: string;
+    community: number;
+    communityLabel: string;
+    regional: number;
+    regionalLabel: string;
+};
 
-export default function DoubleBarChart() {
+type MobileComparisonChartProps = {
+    data: ComparisonData[];
+};
+
+export default function MobileComparisonChartV2({ data }: MobileComparisonChartProps) {
+    if (!data || data.length === 0) {
+        return <div className="text-gray-500 text-center p-4">No data available</div>;
+    }
+    const formatValue = (value: number) => {
+        if (value >= 1000000000) {
+            return `${(value / 1000000000).toFixed(0)} Md €`;
+        }
+        if (value >= 1000000) {
+            return `${(value / 1000000).toFixed(0)} M €`;
+        }
+        if (value >= 1000) {
+            return `${(value / 1000).toFixed(0)} k €`;
+        }
+        return new Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(value);
+    };
+
+    // Calculate the maximum value across all data to normalize bar sizes
+    const allValues = data.flatMap(d => [d.regional, d.community]);
+    const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+    const chartMax = Math.round(maxValue * 1.1); // Add 10% padding
 
     return (
         <>
@@ -23,8 +47,8 @@ export default function DoubleBarChart() {
                         <div className="w-10 text-sm font-medium text-gray-700">{item.year}</div>
                         <div className="flex-1">
                             <ResponsiveContainer width="100%" height={40}>
-                                <BarChart data={[item]} layout="vertical" margin={{ left: 0, right: 60, top: 2, bottom: 2 }}>
-                                    <XAxis hide type="number" domain={[0, 80]} />
+                                <BarChart data={[item]} layout="vertical" margin={{ left: 0, right: 80, top: 2, bottom: 2 }}>
+                                    <XAxis hide type="number" domain={[0, chartMax]} />
                                     <YAxis hide type="category" />
 
                                     <Bar dataKey="regional" barSize={18} radius={[0, 0, 4, 0]}>
@@ -32,17 +56,17 @@ export default function DoubleBarChart() {
                                         <LabelList
                                             dataKey="regional"
                                             position="right"
-                                            formatter={(value) => `${value}M`}
+                                            formatter={formatValue}
                                             style={{ fontSize: "12px", fill: "#303F8D", fontWeight: "600" }}
                                         />
                                     </Bar>
 
-                                    <Bar dataKey="collective" barSize={18} radius={[0, 0, 4, 0]} y={22}>
+                                    <Bar dataKey="community" barSize={18} radius={[0, 0, 4, 0]} y={24}>
                                         <Cell fill="url(#stripes)" stroke="#303F8D" strokeWidth={1} />
                                         <LabelList
-                                            dataKey="collective"
+                                            dataKey="community"
                                             position="right"
-                                            formatter={(value) => `${value}M`}
+                                            formatter={formatValue}
                                             style={{ fontSize: "12px", fill: "#303F8D", fontWeight: "600" }}
                                         />
                                     </Bar>
@@ -61,6 +85,6 @@ export default function DoubleBarChart() {
                     </pattern>
                 </defs>
             </svg>
-
-        </>)
+        </>
+    )
 }
