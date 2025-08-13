@@ -4,18 +4,6 @@ import { Button } from '#components/ui/button';
 import { Skeleton } from '#components/ui/skeleton';
 import { Download } from 'lucide-react';
 
-type ComparisonProps = {
-  siren: string;
-};
-
-type ComparisonData = {
-  year: string;
-  community: number;
-  communityLabel: string;
-  regional: number;
-  regionalLabel: string;
-};
-
 // Skeleton component using shadcn-ui
 export function ComparisonSkeleton({ isMobile }: { isMobile: boolean }) {
   return (

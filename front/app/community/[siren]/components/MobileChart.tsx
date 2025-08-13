@@ -71,7 +71,7 @@ export default function MobileChart({
                 )}
 
                 <div className="space-y-1 p-4 overflow-x-auto">
-                    {data.map((item, index) => (
+                    {data.map((item) => (
                         <div key={item.year} className="flex items-center gap-2 py-1 min-w-0">
                             <div className="w-10 text-sm font-medium text-gray-700 flex-shrink-0">{item.year}</div>
                             <div className="flex-1 min-w-0">

@@ -92,7 +92,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     };
 
     fetchInitialData();
-  }, [siren]); // Only depend on siren, not selectedScope
+  }, [siren, selectedScope]);
 
   // Separate effect for scope changes
   const fetchComparisonData = useCallback(async (scope: string) => {
