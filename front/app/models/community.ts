@@ -1,5 +1,5 @@
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { CommunityType } from '@/utils/types';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { CommunityType } from '#utils/types';
 
 import { Paginated } from './pagination';
 
@@ -11,6 +11,7 @@ export type Community = {
   nom: string;
   code_insee: string;
   code_insee_departement: string;
+  nom_departement: string | null;
   code_insee_region: string;
   categorie: string;
   population: number;
@@ -21,6 +22,7 @@ export type Community = {
   siren_epci: string;
   naf8: string;
   tranche_effectif: number;
+  superficie_ha: number | null;
   id_datagouv: string;
   url_platfom: string;
   techno_platfom: string;

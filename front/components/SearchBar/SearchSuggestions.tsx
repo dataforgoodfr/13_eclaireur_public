@@ -1,5 +1,5 @@
-import { Community } from '@/app/models/community';
-import { useCommunitiesBySearch } from '@/utils/hooks/useCommunitiesBySearch';
+import { Community } from '#app/models/community';
+import { useCommunitiesBySearch } from '#utils/hooks/useCommunitiesBySearch';
 
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
 import Suggestion from './Suggestion';
@@ -19,7 +19,7 @@ export default function Suggestions({ query, onSelect }: SuggestionsProps) {
           <CommandEmpty>
             {isPending && <span>Chargement...</span>}
             {isError && <span>Erreur</span>}
-            {suggestions?.length === 0 && <span>Aucun resultat trouve pour '{query}'</span>}
+            {suggestions?.length === 0 && <span>Aucun resultat trouvé pour '{query}'</span>}
           </CommandEmpty>
           <CommandGroup>
             {suggestions?.map((suggestion) => (

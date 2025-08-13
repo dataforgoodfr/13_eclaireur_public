@@ -2,9 +2,9 @@
 
 import { PropsWithChildren } from 'react';
 
-import { AdvancedSearchCommunity } from '@/app/models/community';
-import { Pagination } from '@/components/Pagination';
-import { Button } from '@/components/ui/button';
+import { AdvancedSearchCommunity } from '#app/models/community';
+import { Pagination } from '#components/Pagination';
+import { Button } from '#components/ui/button';
 import {
   Table,
   TableBody,
@@ -12,8 +12,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
+} from '#components/ui/table';
+import { cn, formatCompact, stringifyCommunityType } from '#utils/utils';
 import { ArrowUpDown } from 'lucide-react';
 
 import { AdvancedSearchOrder, useOrderParams } from '../hooks/useOrderParams';
@@ -26,7 +26,7 @@ type AdvancedSearchTableProps = {
 export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
   const { pagination, setPage } = usePaginationParams();
   const { order, setOrder } = useOrderParams();
-
+  console.log("ok")
   function handleHeadClick(orderBy: AdvancedSearchOrder['by']) {
     setOrder({
       by: orderBy,

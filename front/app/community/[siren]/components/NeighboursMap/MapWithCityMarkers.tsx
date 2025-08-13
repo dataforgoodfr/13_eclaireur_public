@@ -9,7 +9,7 @@ import {
   Popup,
 } from 'react-map-gl/maplibre';
 
-import { Community } from '@/app/models/community';
+import { Community } from '#app/models/community';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import Pin from './Pin';
@@ -21,8 +21,8 @@ const initialViewState: MapPropsReactMapLibre['initialViewState'] = {
 };
 
 const style: React.CSSProperties = {
-  width: 600,
-  height: 400,
+  width: '100%',
+  height: '100%',
 };
 
 export type City = Pick<Community, 'nom'> & {

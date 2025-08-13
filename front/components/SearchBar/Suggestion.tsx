@@ -1,5 +1,5 @@
-import { Community } from '@/app/models/community';
-import { stringifyCommunityType } from '@/utils/utils';
+import { Community } from '#app/models/community';
+import { stringifyCommunityType } from '#utils/utils';
 
 type CommunitySuggestionDisplayProps = Pick<Community, 'nom' | 'code_postal' | 'type'>;
 export default function Suggestion({ nom, code_postal, type }: CommunitySuggestionDisplayProps) {
@@ -8,9 +8,9 @@ export default function Suggestion({ nom, code_postal, type }: CommunitySuggesti
   return (
     <div>
       <>
-        {nom} {code_postal && <> – {code_postal}</>}{' '}
-        {departementNombre && <> – {departementNombre}</>}
-        <> – {communityTypeText}</>
+        {nom} {code_postal && <> - {code_postal}</>}{' '}
+        {departementNombre && <> - {departementNombre}</>}
+        <> - {communityTypeText}</>
       </>
     </div>
   );

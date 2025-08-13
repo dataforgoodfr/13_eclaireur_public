@@ -4,16 +4,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '#components/ui/button';
 import { Accordion } from '@radix-ui/react-accordion';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { Menu, Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
+import SearchBar from '@/components/SearchBar/SearchBar';
+import { useRouter } from 'next/navigation';
 import { AccordionMenu } from './AccordionMenu';
 
 type MenuProps = { title: string; href: string; description: string };
@@ -25,18 +26,30 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: MobileMenuProps) {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleMenuClick = () => {
         setIsOpen(false);
     };
 
+    function navigateToCommunityPage({ siren }: { siren: string }) {
+        if (siren) {
+            router.push(`/community/${siren}`);
+            setIsOpen(false); // Close menu after search selection
+        }
+    }
+
     return (
         <div className='md:hidden'>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant='ghost' size='sm' className='rounded-full p-2'>
-                        <Menu className='h-5 w-5 text-primary hover:bg-primary/10' />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full p-2 w-10 h-10 flex items-center justify-center"
+                    >
+                        <Menu className="w-6 h-6 text-primary hover:bg-primary/10" />
                     </Button>
                 </DropdownMenuTrigger>
 
@@ -46,15 +59,8 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
                     align='end'
                     side='bottom'
                 >
-                    {/* Search Bar */}
-                    <div className='relative mb-6'>
-                        <Input
-                            type='search'
-                            placeholder='Rechercher...'
-                            className='h-12 w-full rounded-none rounded-br-xl rounded-tl-xl border border-primary/20 pl-4 pr-10 text-primary focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
-                        />
-                        <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/60' />
-                    </div>
+                    {/* Search Bar with onSelect handler that closes menu */}
+                    <SearchBar className='relative mb-6' onSelect={navigateToCommunityPage} />
 
                     {/* Interpeller Button */}
                     <div className='mb-6'>

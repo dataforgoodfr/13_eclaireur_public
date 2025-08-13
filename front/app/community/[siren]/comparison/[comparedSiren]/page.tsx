@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import Loading from '@/components/ui/Loading';
-import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+import Loading from '#components/ui/Loading';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 import { ComparisonType } from './components/ComparisonType';
 import { Header } from './components/Header';

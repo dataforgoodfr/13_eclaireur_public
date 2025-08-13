@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
 
-import { fetchKPIs } from '@/utils/fetchers/kpis/fetchKPIs';
-import { cn, formatCompactPrice, formatNumberInteger } from '@/utils/utils';
+import { fetchKPIs } from '#utils/fetchers/kpis/fetchKPIs';
+import { cn, formatCompactPrice, formatNumberInteger } from '#utils/utils';
 
 const KPIS_YEAR = 2023;
 
@@ -9,9 +9,9 @@ export default async function KPIs() {
   const kpis = await fetchKPIs(KPIS_YEAR);
 
   return (
-    <div className='grid grid-cols-1 place-content-center gap-10 pb-20 xl:grid-cols-2'>
+    <div className='flex flex-col gap-10'>
       <ChiffreCle
-        className='rotate-[3deg] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)]'
+        className=''
         value={`${kpis.publishedSubventionsPercentage} %`}
         description='des subventions en montant sont publiées.'
       />
@@ -38,9 +38,9 @@ type ChiffreCleProps = {
 
 function ChiffreCle({ value, description, className, ...restProps }: ChiffreCleProps) {
   return (
-    <div className={cn('h-48 content-center rounded border px-6', className)} {...restProps}>
-      <p className='pb-4 text-2xl font-bold'>{value}</p>
-      <p>{description}</p>
+    <div className={cn('content-center', className)} {...restProps}>
+      <h3 className='text-h3'>{value}</h3>
+      <div className='text-h4'>{description}</div>
     </div>
   );
 }

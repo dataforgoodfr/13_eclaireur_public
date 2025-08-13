@@ -2,14 +2,14 @@
 
 import { SelectCommunityType } from './SelectCommunityType';
 import { SelectMarchesPublicsScore } from './SelectMarchesPublicsScore';
-import { SelectPopulation } from './SelectPopulation';
+import { PopulationSliderFilter } from './PopulationSliderFilter';
 import { SelectSubventionsScore } from './SelectSubventionsScore';
 
 export function Filters() {
   return (
-    <div className='flex gap-4'>
+    <div className='flex items-end gap-4'>
       <SelectCommunityType />
-      <SelectPopulation />
+      <PopulationSliderFilter />
       <SelectMarchesPublicsScore />
       <SelectSubventionsScore />
     </div>

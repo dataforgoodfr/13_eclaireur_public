@@ -1,8 +1,8 @@
-import ContactList from '@/components/Contacts/ContactList';
-import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
-import Stepper from '@/components/Interpellate/Stepper';
-import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
-import { fetchContacts } from '@/utils/fetchers/contacts/fetchContacts-server';
+import ContactList from '#components/Contacts/ContactList';
+import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
+import Stepper from '#components/Interpellate/Stepper';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
+import { fetchContacts } from '#utils/fetchers/contacts/fetchContacts-server';
 
 async function getContacts(siren: string) {
   return await fetchContacts({ filters: { siren } });

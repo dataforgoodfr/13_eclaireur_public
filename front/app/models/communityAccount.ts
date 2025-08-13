@@ -1,4 +1,4 @@
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 
 export type CommunityAccount = {
   /** Primary key [char9] */

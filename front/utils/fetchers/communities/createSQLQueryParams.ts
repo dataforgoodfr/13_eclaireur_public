@@ -1,4 +1,4 @@
-import { Community } from '@/app/models/community';
+import { Community } from '#app/models/community';
 
 import { CommunityType } from '../../types';
 import { DataTable } from '../constants';
@@ -27,9 +27,11 @@ export function createSQLQueryParams(options?: CommunitiesOptions, pagination?: 
       ${selectorsStringified},
       b.subventions_score,
       b.mp_score,
+      cc.nom_dept as nom_departement,
       count(c.*) OVER() AS full_count
     FROM ${TABLE_NAME} c
     LEFT JOIN bareme b ON c.siren = b.siren AND b.annee = 2024
+    LEFT JOIN comptes_collectivites cc ON c.siren = cc.siren
    `;
 
   if (options === undefined) {

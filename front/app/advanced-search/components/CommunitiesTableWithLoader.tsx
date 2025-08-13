@@ -1,26 +1,47 @@
 'use client';
 
-import Loading from '@/components/ui/Loading';
-import { useAdvancedSearch } from '@/utils/hooks/useAdvancedSearch';
-
+import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
+import { getSortingStateParser } from '#utils/parsers';
+import type { AdvancedSearchCommunity } from '@/app/models/community';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import { useFiltersParams } from '../hooks/useFiltersParams';
-import { useOrderParams } from '../hooks/useOrderParams';
-import { usePaginationParams } from '../hooks/usePaginationParams';
-import { AdvancedSearchTable } from './AdvanceSearchTable';
-import { NoResults } from './NoResults';
+import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
 
 export default function CommunitiesTableWithLoader() {
   const { filters } = useFiltersParams();
-  const { pagination } = usePaginationParams();
-  const { order } = useOrderParams();
 
-  const { data } = useAdvancedSearch(filters, pagination, order);
+  // Get pagination from DataTable URL params
+  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10));
 
-  if (!data) return <Loading />;
+  const pagination = {
+    page,
+    limit: perPage
+  };
 
-  if (data && data.length > 0) {
-    return <AdvancedSearchTable communities={data} />;
+  // Get sorting from DataTable URL params
+  const columnIds = new Set(['nom', 'type', 'population', 'subventions_budget', 'mp_score', 'subventions_score']);
+  const [sorting] = useQueryState(
+    'sort',
+    getSortingStateParser<AdvancedSearchCommunity>(columnIds).withDefault([{ id: 'nom', desc: false }])
+  );
+
+  // Convert to API format
+  const order = {
+    by: (sorting[0]?.id || 'nom') as 'nom' | 'type' | 'population' | 'subventions_budget' | 'mp_score' | 'subventions_score',
+    direction: (sorting[0]?.desc ? 'DESC' : 'ASC') as 'ASC' | 'DESC'
+  };
+
+  const { data, isLoading } = useAdvancedSearch(filters, pagination, order);
+
+  // Pendant le chargement, afficher le tableau avec skeletons
+  if (isLoading || !data) {
+    const pageCount = 0;
+    return <AdvancedSearchDataTable communities={[]} pageCount={pageCount} isLoading={true} />;
   }
 
-  return <NoResults />;
+  // Afficher les données réelles
+  const pageCount = data.length > 0 ? Math.ceil(data[0].total_row_count / pagination.limit) : 0;
+  return <AdvancedSearchDataTable communities={data} pageCount={pageCount} isLoading={false} />;
+
 }

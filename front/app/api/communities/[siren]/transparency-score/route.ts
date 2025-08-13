@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { fetchTransparencyScore } from '@/utils/fetchers/communities/fetchTransparencyScore-server';
-import { parseNumber } from '@/utils/utils';
+import { fetchTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
+import { parseNumber } from '#utils/utils';
 
 export async function GET(request: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {

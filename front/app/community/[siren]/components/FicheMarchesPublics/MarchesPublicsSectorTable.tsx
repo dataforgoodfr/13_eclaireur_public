@@ -1,14 +1,14 @@
 'use client';
 
-import { WithPagination } from '@/components/Pagination';
-import Loading from '@/components/ui/Loading';
-import { useMarchesPublicsByCPV2 } from '@/utils/hooks/useMarchesPublicsByCPV2';
-import { usePagination } from '@/utils/hooks/usePagination';
-import { roundNumber } from '@/utils/utils';
+import { WithPagination } from '#components/Pagination';
+import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
+import { usePagination } from '#utils/hooks/usePagination';
+import { roundNumber } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
+import SectorTableSkeleton from '../Skeletons/SectorTableSkeleton';
 import { CHART_HEIGHT } from '../constants';
 
 type MarchesPublicsSectorTableProps = {
@@ -31,7 +31,11 @@ export default function MarchesPublicsSectorTable({ siren, year }: MarchesPublic
   );
 
   if (isPending || isError) {
-    return <Loading style={{ height: CHART_HEIGHT }} />;
+    return (
+      <div style={{ height: CHART_HEIGHT }}>
+        <SectorTableSkeleton rows={MAX_ROW_PER_PAGE} />
+      </div>
+    );
   }
 
   if (data.length === 0) {

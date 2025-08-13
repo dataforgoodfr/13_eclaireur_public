@@ -1,5 +1,5 @@
-import { CommunityContact } from '@/app/models/communityContact';
-import { getQueryFromPool } from '@/utils/db';
+import { CommunityContact } from '#app/models/communityContact';
+import { getQueryFromPool } from '#utils/db';
 
 import { Pagination } from '../types';
 import { ContactsOptions, createSQLQueryParams } from './createSQLQueryParams';

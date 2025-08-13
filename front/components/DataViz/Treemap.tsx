@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice, formatFirstLetterToUppercase } from '@/utils/utils';
+import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
 
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
@@ -32,11 +32,19 @@ function wrapText(text: string, maxWidth: number): string[] {
 
 function generateColorMap(names: string[]): Record<string, string> {
   const colorMap: Record<string, string> = {};
-  const total = names.length;
+  
+  // Colors from score-transparency palette (ordered from light to dark)
+  const scoreTransparencyColors = [
+    '#E8F787', // score-transparency-1 (vert clair)
+    '#FAF79E', // score-transparency-3 (jaune très clair)
+    '#CAD2FC', // score-transparency-2 (bleu clair)
+    '#F4D93E', // score-transparency-4 (jaune)
+    '#EE8100', // score-transparency-5 (orange foncé)
+  ];
 
   names.forEach((name, index) => {
-    const lightness = Math.min(Math.round((80 / total) * index), 50);
-    colorMap[name] = `hsl(0, 0%, ${lightness + 20}%)`;
+    const colorIndex = index % scoreTransparencyColors.length;
+    colorMap[name] = scoreTransparencyColors[colorIndex];
   });
 
   return colorMap;
@@ -116,12 +124,14 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <rect
         x={leaf.x0}
         y={leaf.y0}
-        rx={12}
         width={leaf.x1 - leaf.x0}
         height={leaf.y1 - leaf.y0}
         stroke='transparent'
         fill={colorMap[leaf.data.name]}
-        className='transition-all duration-500 ease-in-out'
+        className='transition-all duration-500 ease-in-out rounded-tl-br'
+        style={{
+          clipPath: 'inset(0 0 0 0 round 0.5rem 0 0.5rem 0)'
+        }}
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
         onMouseMove={(e) => handleOnMouseMove(e)}
         onMouseLeave={() => handleOnMouseLeave()}
@@ -133,7 +143,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
           y={leaf.y0 + 22}
           fontSize={16}
           fontWeight={700}
-          fill='white'
+          fill='#303F8D'
           className='pointer-events-none'
         >
           {formatCompactPrice(leaf.data.value)}
@@ -145,7 +155,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
           y={leaf.y0 + 42}
           fontSize={14}
           fontWeight={500}
-          fill='white'
+          fill='#303F8D'
           className='pointer-events-none'
         >
           {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map(

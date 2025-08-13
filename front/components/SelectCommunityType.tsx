@@ -1,4 +1,4 @@
-import { CommunityType } from '@/utils/types';
+import { CommunityType } from '#utils/types';
 
 import {
   Select,
@@ -20,11 +20,11 @@ export default function SelectCommunityType({ onChange }: SelectCommunityTypePro
   return (
     <Select onValueChange={onChange}>
       <SelectTrigger className='w-[230px]'>
-        <SelectValue placeholder='Choisi un type de collectivite' />
+        <SelectValue placeholder='Choisissez un type de collectivité' />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Type de collectivite</SelectLabel>
+          <SelectLabel>Type de collectivité</SelectLabel>
           {types.map((item) => (
             <SelectItem key={item} value={item}>
               {item}

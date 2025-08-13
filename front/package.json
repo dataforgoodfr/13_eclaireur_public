@@ -3,54 +3,62 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install": "next build",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check": "yarn lint && yarn typecheck",
     "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
-    "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
-    "backstop:test": "backstop test --config=backstop.config.js",
-    "backstop:approve": "backstop approve --config=backstop.config.js",
-    "backstop:reference": "backstop reference --config=backstop.config.js",
-    "backstop:report": "backstop openReport --config=backstop.config.js",
-    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.config.js"
+    "storybook": "NEXT_PUBLIC_API_URL=http://localhost:6006 storybook dev -p 6006",
+    "storybook:build": "NEXT_PUBLIC_API_URL=http://localhost:6006 storybook build",
+    "backstop:test": "tsx scripts/visual-regression.ts test",
+    "backstop:reference": "tsx scripts/visual-regression.ts reference",
+    "backstop:approve": "backstop approve --config=backstop.json",
+    "backstop:report": "backstop openReport --config=backstop.json",
+    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-checkbox": "^1.1.4",
-    "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-navigation-menu": "^1.2.5",
+    "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-radio-group": "^1.2.4",
-    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slider": "^1.3.5",
-    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-query": "^5.66.4",
-    "@types/pg": "^8.11.11",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "1.0.0",
+    "cmdk": "^1.1.1",
     "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
     "fs": "^0.0.1-security",
-    "lucide-react": "^0.475.0",
+    "lucide-react": "^0.528.0",
     "maplibre-gl": "^5.2.0",
     "next": "^15.2.4",
     "nodemailer": "^6.10.0",
+    "nuqs": "^2.4.3",
     "pg": "^8.13.3",
     "pg-copy-streams": "^6.0.6",
     "pg-promise": "^11.13.0",
     "playwright": "^1.54.1",
     "react": "^19.0.0",
+    "react-day-picker": "^9.8.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",
     "react-map-gl": "^8.0.1",
@@ -62,14 +70,20 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^3",
     "@eslint/eslintrc": "^3",
     "@playwright/test": "1.47.2",
-    "@storybook/addon-essentials": "^9.0.0-alpha.12",
-    "@storybook/addon-interactions": "^9.0.0-alpha.10",
-    "@storybook/addon-links": "^9.0.17",
-    "@storybook/blocks": "^9.0.0-alpha.17",
-    "@storybook/nextjs": "^9.0.17",
-    "@storybook/test": "^9.0.0-alpha.2",
+    "@storybook/addon-a11y": "8",
+    "@storybook/addon-essentials": "^8",
+    "@storybook/addon-interactions": "^8",
+    "@storybook/addon-links": "^8",
+    "@storybook/addon-onboarding": "8.6.14",
+    "@storybook/blocks": "^8",
+    "@storybook/experimental-addon-test": "^8.6.14",
+    "@storybook/experimental-nextjs-vite": "^8.6.14",
+    "@storybook/nextjs": "8",
+    "@storybook/react": "8.6.14",
+    "@storybook/test": "^8",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
     "@types/node": "^20",
@@ -78,14 +92,52 @@
     "@types/pg-copy-streams": "^1.2.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/ui": "^3.2.4",
     "backstopjs": "^6.3.25",
+    "cookie-signature-edge": "^1.0.7",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "eslint-plugin-storybook": "^9.0.18",
+    "jsdom": "^26.1.0",
+    "msw": "^2.10.4",
+    "msw-storybook-addon": "^2.0.5",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "storybook": "^9.0.17",
+    "storybook": "8",
+    "storybook-addon-module-mock": "^1.4.3",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tsx": "^4.20.3",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  },
+  "imports": {
+    "#utils/db": {
+      "storybook": "./utils/__mocks__/db.ts",
+      "default": "./utils/db.ts"
+    },
+    "#utils/fetchers/marches-publics/fetchMarchesPublics-server": {
+      "storybook": "./utils/fetchers/marches-publics/__mocks__/fetchMarchesPublics-server.ts",
+      "default": "./utils/fetchers/marches-publics/fetchMarchesPublics-server.ts"
+    },
+    "#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears": {
+      "storybook": "./utils/fetchers/marches-publics/__mocks__/fetchMarchesPublicsAvailableYears.ts",
+      "default": "./utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears.ts"
+    },
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
   }
 }
