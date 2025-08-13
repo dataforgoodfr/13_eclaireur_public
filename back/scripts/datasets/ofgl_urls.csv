@@ -1,4 +1,4 @@
-type;id;url;format;code
+type;datasetid;url;format;code
 regions;ofgl-base-regions-consolidee;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-regions-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B&select=exer%2C%20outre_mer%2C%20categ%2C%20ptot%2C%20siren%2C%20reg_code;csv;REG
 departements;ofgl-base-departements-consolidee;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-departements-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B&select=exer%2C%20outre_mer%2C%20categ%2C%20ptot%2C%20siren%2C%20reg_code%2C%20dep_code;csv;DEP
 groupements_fiscalite_propre;ofgl-base-gfp-consolidee;https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-gfp-consolidee/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B&select=exer%2C%20outre_mer%2C%20categ%2C%20ptot%2C%20siren%2C%20reg_code%2C%20dep_code;csv;MET

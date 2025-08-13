@@ -1,15 +1,21 @@
+import json
 import logging
+from datetime import date, datetime, time
 from pathlib import Path
+from typing import Any, Callable
 
 import pandera.polars as pa
 import polars as pl
+from jsonschema import validate, SchemaError, ValidationError
 from tqdm import tqdm
 
+from back.scripts.adapters.data_source_checker import ApiChecker
 from back.scripts.adapters.http_downloader import HttpFileDownloader
 from back.scripts.adapters.url_data_source import UrlDataSource
 from back.scripts.datasets.entities import FileMetadata
 from back.scripts.entities.ofgl import Ofgl2024RecordDataframe
 from back.scripts.interfaces.data_source import IDataSource
+from back.scripts.interfaces.file_checker import IFileUpdateChecker
 from back.scripts.interfaces.file_downloader import IFileDownloader
 from back.scripts.interfaces.file_parser import IFileParser
 from back.scripts.interfaces.workflow import IWorkflow, IWorkflowFactory
@@ -39,6 +45,8 @@ READ_COLUMNS = {
     "Code Insee 2024 Région": "code_insee_region",
 }
 INSEE_COL_MAPPING = {"DEP": "code_insee_dept", "REG": "code_insee_region", "COM": "code_insee"}
+
+CHANGELOG_BASE_URL = "https://data.ofgl.fr/api/records/1.0/search/?sort=date&refine.jeu_donnees={datasetid}&rows=1&dataset=historique-maj-jeux-donnees&timezone=Europe%2FBerlin&lang=fr"
 
 
 class OfglFileParser(IFileParser[pl.LazyFrame]):
@@ -97,12 +105,14 @@ class OfglWorkflow(IWorkflow):
     def __init__(
         self,
         data_source: IDataSource,
+        checker: IFileUpdateChecker,
         downloader: IFileDownloader,
         parser: IFileParser,
         output_path: Path,
         data_folder: Path,
     ):
         self.data_source = data_source
+        self.checker = checker
         self.downloader = downloader
         self.parser = parser
         self.output_path = output_path
@@ -111,23 +121,15 @@ class OfglWorkflow(IWorkflow):
     def get_output_path(self) -> Path:
         return self.output_path
 
-    def _get_norm_path(self, file_metadata: FileMetadata) -> Path:
-        """Determines the local path for the normalized parquet file."""
-        return self.data_folder / file_metadata.url_hash / "norm.parquet"
-
-    def _get_validation_path(self, file_metadata: FileMetadata) -> Path:
-        """Determines the local path for the validation parquet file."""
-        return self.data_folder / file_metadata.url_hash / "validation.parquet"
-
     def run(self) -> None:
-        if self.output_path.exists():
-            LOGGER.info(f"OFGL dataset already exists at {self.output_path}, skipping.")
-            return
-
         all_files = self.data_source.get_files()
         for file_meta in tqdm(all_files, desc="Processing OFGL files"):
-            norm_path = self._get_norm_path(file_meta)
-            val_path = self._get_validation_path(file_meta)
+            file_meta.data_folder = self.data_folder
+
+            self.checker.need_update(file_meta)
+
+            norm_path = file_meta.get_norm_path()
+            val_path = file_meta.get_validation_path()
             if norm_path.exists():
                 continue
 
@@ -158,7 +160,10 @@ class OfglWorkflow(IWorkflow):
                 # Use sink_parquet for lazy frames
                 parsed_lazy_df.sink_parquet(norm_path)
 
-        self._concatenate_files()
+        if self.checker.need_rebuild():
+            self._concatenate_files()
+        else:
+            LOGGER.info(f"OFGL dataset already exists at {self.output_path}, skipping.")
 
     def _concatenate_files(self):
         """Concatenates all normalized parquet files into a single output file."""
@@ -175,6 +180,46 @@ class OfglWorkflow(IWorkflow):
         LOGGER.info(f"OFGL dataset created at {self.output_path}")
 
 
+class OfglApiChecker(ApiChecker):
+    """ """
+
+    def __init__(self):
+        super().__init__(url_pattern=CHANGELOG_BASE_URL, comparator=self._ofgl_file_comparator)
+        self.schema_path = (
+            get_project_base_path()
+            / "back"
+            / "scripts"
+            / "entities"
+            / "schemas"
+            / "ofgl-api-schema.json"
+        )
+        with open(self.schema_path, "r") as f:
+            self.schema = json.load(f)
+
+    def _ofgl_file_comparator(self, remote: Any, local: FileMetadata):
+        """
+        return if remote is more recent than local, so update is requiered
+        """
+
+        try:
+            validate(instance=remote, schema=self.schema)
+            d = date.fromisoformat(remote["records"][0]["fields"]["date"])
+            remote_dt = datetime.combine(d, time.min)
+
+            raw_path = local.get_raw_path()
+            raw_path_stat = raw_path.stat()
+            local_dt = datetime.fromtimestamp(raw_path_stat.st_mtime)
+
+            return remote_dt > local_dt
+
+        except SchemaError as se:
+            LOGGER.error(f"Schema provide by {self.schema_path} is not valid")
+        except ValidationError as se:
+            LOGGER.error(f"API Response don't match with Schema provide by {self.schema_path}")
+
+        return None
+
+
 class OfglWorkflowFactory(IWorkflowFactory):
     """Factory to create the OfglWorkflow from configuration."""
 
@@ -189,11 +234,13 @@ class OfglWorkflowFactory(IWorkflowFactory):
         output_path = base_path / ofgl_config["combined_filename"]
 
         data_source = UrlDataSource(urls_csv_path)
+        update_checker = OfglApiChecker()
         downloader = HttpFileDownloader(data_folder)
         parser = OfglFileParser()
 
         return OfglWorkflow(
             data_source=data_source,
+            checker=update_checker,
             downloader=downloader,
             parser=parser,
             output_path=output_path,
