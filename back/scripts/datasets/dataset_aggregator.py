@@ -251,6 +251,7 @@ class DatasetAggregator(BaseDataset):
                     "modified",
                     "last-modified",
                     "internal_last_modified",
+                    "local_mtime",
                 ]
                 existing_cols = []
                 for ctq in cols_to_query:
@@ -302,7 +303,10 @@ class DatasetAggregator(BaseDataset):
                 else None,
                 local_hash=lambda df: df["local_hash"]
                 .astype(str)
-                .where(df["local_hash"].notnull()),
+                .where(df["local_hash"].notnull(), ""),
+                local_mtime=lambda df: df["local_mtime"]
+                .astype(str)
+                .where(df["local_mtime"].notnull(), pd.Timestamp(0)),
             )
             .pipe(print_df)
             # on met les sommes de contrôle répartis sur plusieurs attributs sur le premier ("checksum_value") pour nous faciliter la vie après
@@ -320,8 +324,8 @@ class DatasetAggregator(BaseDataset):
             # on calcule la nécessité de télécharger le fichier
             .assign(
                 need_download=lambda s: s["local_hash"] != s["checksum_value"]
-                if "checksum_value" in s
-                else s["last_update"] > s["local_mtime"]
+                if "checksum_value" in s 
+                else s["last_update"] > s["local_mtime"] 
                 if "last_update" in s
                 else True
             )
