@@ -65,11 +65,11 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
         <Tabs defaultValue={tabs.trends}>
-          <TabsList>
-            <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>
-            <TabsTrigger value={tabs.distribution}>Répartition</TabsTrigger>
-            <TabsTrigger value={tabs.comparison}>Comparaison</TabsTrigger>
-            <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
+          <TabsList className='h-10 sm:h-12 p-0.5 sm:p-1'>
+            <TabsTrigger value={tabs.trends} className='px-2 sm:px-3 text-xs sm:text-sm'>Évolution</TabsTrigger>
+            <TabsTrigger value={tabs.distribution} className='px-2 sm:px-3 text-xs sm:text-sm'>Répartition</TabsTrigger>
+            <TabsTrigger value={tabs.comparison} className='px-2 sm:px-3 text-xs sm:text-sm'>Comparaison</TabsTrigger>
+            <TabsTrigger value={tabs.details} className='px-2 sm:px-3 text-xs sm:text-sm'>Contrats</TabsTrigger>
           </TabsList>
           <TabsContent value={tabs.trends}>
             <Evolution siren={siren} />
