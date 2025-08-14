@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import type { TransparencyScore } from '#components/TransparencyScore/constants';
 import { ActionButton } from '#components/ui/action-button';
 import { Download } from 'lucide-react';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
@@ -11,12 +10,9 @@ import { TabHeader } from './TabHeader';
 
 type EvolutionProps = {
   siren: string;
-  transparencyIndex?: TransparencyScore | null;
 };
 
-export default function Evolution({ siren, transparencyIndex }: EvolutionProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _unused = transparencyIndex;
+export default function Evolution({ siren }: EvolutionProps) {
   const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
 
   const handleDownloadClick = () => {
