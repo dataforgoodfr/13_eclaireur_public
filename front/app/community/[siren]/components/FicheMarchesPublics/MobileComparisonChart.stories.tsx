@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import MobileComparisonChartV2 from './MobileComparisonChart-v2';
+import MobileComparisonChart from './MobileComparisonChart';
 
 const regionalComparisonData = [
   {
@@ -105,10 +105,10 @@ const departementalComparisonData = [
   },
 ];
 
-const meta: Meta<typeof MobileComparisonChartV2> = {
+const meta: Meta<typeof MobileComparisonChart> = {
   // community-siren-components-fichemarchespublics-mobilecomparisonchart-v2--regional-comparison
   title: "community/[siren]/components/FicheMarchesPublics/ComparisonMobileV2",
-  component: MobileComparisonChartV2,
+  component: MobileComparisonChart,
   parameters: {
     docs: {
       description: {
@@ -152,7 +152,7 @@ const meta: Meta<typeof MobileComparisonChartV2> = {
 
 export default meta;
 
-type Story = StoryObj<typeof MobileComparisonChartV2>;
+type Story = StoryObj<typeof MobileComparisonChart>;
 
 export const RegionalComparison: Story = {
   args: {

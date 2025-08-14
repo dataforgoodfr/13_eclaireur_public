@@ -1,14 +1,10 @@
 'use client';
 
-import ChartSkeleton from './ChartSkeleton';
-import { ActionButton } from '#components/ui/action-button';
-import { formatCompact } from '#utils/utils';
-import { MessageSquare } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { formatCompactPrice } from '#utils/utils';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Bar,
+  Cell,
   LabelList,
   Legend,
   BarChart as RechartsBarChart,
@@ -16,10 +12,12 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import ChartSkeleton from './ChartSkeleton';
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
-import { CHART_HEIGHT } from './constants';
+import { InterpellerButton } from '../../../../components/ui/interpeller-button';
 import MobileChart from './MobileChart';
+import { CHART_HEIGHT } from './constants';
 
 export type ChartDataType = 'marches-publics' | 'subventions';
 export type DisplayMode = 'amounts' | 'counts';
@@ -82,11 +80,6 @@ export function EvolutionChart({
     });
   }, [data, isAmountsMode]);
 
-  // Check if all data is zero (no data state)
-  const hasNoData = useMemo(() => 
-    !data || data.length === 0 || chartData.every(item => item.value === 0),
-    [data, chartData]
-  );
 
   if (isPending) return <ChartSkeleton />;
   if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
@@ -95,7 +88,6 @@ export function EvolutionChart({
     data={chartData}
     barColor={config.barColor}
     borderColor={config.borderColor}
-    hasNoData={hasNoData}
     siren={siren}
     legendLabel={config.legendLabels[displayMode]}
   />;
@@ -103,7 +95,7 @@ export function EvolutionChart({
 
 function formatLabel(value: number): string {
   if (value === 0) return 'Aucunes données publiées';
-  return formatCompact(value);
+  return formatCompactPrice(value);
 }
 
 type BarChartData = {
@@ -115,7 +107,6 @@ type BarChartProps = {
   data: BarChartData;
   barColor: string;
   borderColor: string;
-  hasNoData: boolean;
   siren?: string;
   legendLabel: string;
 };
@@ -124,12 +115,10 @@ function BarChart({
   data,
   barColor,
   borderColor,
-  hasNoData,
   siren,
   legendLabel
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -141,12 +130,6 @@ function BarChart({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleInterpellerClick = () => {
-    if (siren) {
-      router.push(`/interpeller/${siren}/step1`);
-    }
-  };
-
   // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
     // Transform data for MobileChart format
@@ -156,72 +139,117 @@ function BarChart({
     }));
 
     return (
-      <MobileChart 
+      <MobileChart
         data={mobileChartData}
         mode="single"
         primaryColor={barColor}
         formatValue={formatLabel}
+        legendLabel={legendLabel}
         labelColor="#303F8D"
+        siren={siren}
       />
     );
   }
 
   // Pour desktop : graphique vertical
-  // Si pas de données, afficher l'image no-data-bar avec le bouton
-  if (hasNoData && !isMobile) {
-    return (
-      <div className='flex flex-col items-center justify-center' style={{ height: CHART_HEIGHT }}>
-        <div className='relative flex flex-col items-center gap-6'>
-          {/* Bouton Interpeller au-dessus de l'image */}
-          <ActionButton
-            onClick={handleInterpellerClick}
-            icon={<MessageSquare size={20} />}
-            variant='default'
-          />
+  // Calculate the maximum value across all data to normalize bar sizes (same as mobile)
+  const allValues = data.flatMap(d => [d.value]);
+  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+  const avgValue = maxValue / 2; // Average value for "Aucune donnée"
 
-          {/* Image no-data-bar */}
-          <div className='relative'>
-            <Image
-              src='/no-data-bar.png'
-              alt='Aucunes données publiées'
-              width={150}
-              height={200}
-              priority
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Process data with same logic as mobile version
+  const chartDataForDisplay = data.map(item => {
+    // Check if primary value is 0 or missing - show average in yellow (same as mobile)
+    const isPrimaryMissing = !item.value || item.value === 0;
+    const primaryValue = isPrimaryMissing ? avgValue : item.value;
 
-  // Graphique normal avec données
+    return {
+      year: item.year,
+      value: primaryValue,
+      originalValue: item.value,
+      isPrimaryMissing
+    };
+  });
+
+
   return (
-    <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
-      <RechartsBarChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{
-          top: 30,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <XAxis dataKey='year' axisLine={true} tickLine={true} />
-        <YAxis tickFormatter={(value) => formatCompact(value)} />
-        <Legend
-          formatter={() => legendLabel}
-          wrapperStyle={{
-            color: '#000000 !important',
-            fontWeight: 600
+    <div className="relative">
+      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+        <RechartsBarChart
+          width={500}
+          height={300}
+          data={chartDataForDisplay}
+          margin={{
+            top: 30,
+            right: 30,
+            left: 20,
+            bottom: 5,
           }}
-          iconType="rect"
-        />
-        <Bar dataKey='value' stackId='a' fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]}>
-          <LabelList position='top' formatter={formatLabel} fill='#303F8D' fontSize={18} fontWeight={700} />
-        </Bar>
-      </RechartsBarChart>
-    </ResponsiveContainer>
+        >
+          <XAxis dataKey='year' axisLine={true} tickLine={true} />
+          <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
+          <Legend
+            formatter={() => <span className='text-primary'>{legendLabel}</span>}
+            wrapperStyle={{
+              color: '#000000 !important',
+              fontWeight: 600
+            }}
+            iconType="rect"
+            iconSize={24}
+          />
+          <Bar
+            dataKey='value'
+            stackId='a'
+            strokeWidth={1}
+            radius={[16, 0, 0, 0]}
+            label={(props) => {
+              const entry = chartDataForDisplay[props.index];
+              if (entry?.isPrimaryMissing && siren) {
+                return (
+                  <g>
+                    <foreignObject
+                      x={props.x + props.width / 2 - 50}
+                      y={props.y - 120}
+                      width="100"
+                      height="120"
+                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
+                    >
+                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
+                        <InterpellerButton siren={siren} />
+                        <div className="text-lg font-semibold text-primary text-center">
+                          Aucune donnée
+                        </div>
+                      </div>
+                    </foreignObject>
+                  </g>
+                );
+              }
+              return <g></g>;
+            }}
+          >
+            {chartDataForDisplay.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
+                stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
+                strokeWidth={1}
+              />
+            ))}
+            <LabelList
+              position='top'
+              formatter={(value: number) => value === avgValue ? "" : formatCompactPrice(value)}
+              fill='#303F8D'
+              // No border to text
+              strokeWidth={0}
+              fontSize="16"
+              fontWeight="600"
+              fontFamily="var(--font-kanit), system-ui, sans-serif"
+              offset={20}
+            />
+          </Bar>
+        </RechartsBarChart>
+      </ResponsiveContainer>
+
+    </div>
   );
 }

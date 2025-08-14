@@ -27,11 +27,11 @@ export async function FicheSubventions({ siren }: { siren: string }) {
       <h2 className='pb-3 text-center text-2xl'>Subventions</h2>
       {subventions.length > 0 ? (
         <Tabs defaultValue='trends'>
-          <TabsList>
-            <TabsTrigger value='trends'>Évolution</TabsTrigger>
-            <TabsTrigger value='distribution'>Répartition</TabsTrigger>
-            <TabsTrigger value='compare'>Comparaison</TabsTrigger>
-            <TabsTrigger value='details'>Classement</TabsTrigger>
+          <TabsList className='h-10 sm:h-12 p-0.5 sm:p-1'>
+            <TabsTrigger value='trends' className='px-2 sm:px-3 text-xs sm:text-sm'>Évolution</TabsTrigger>
+            <TabsTrigger value='distribution' className='px-2 sm:px-3 text-xs sm:text-sm'>Répartition</TabsTrigger>
+            <TabsTrigger value='compare' className='px-2 sm:px-3 text-xs sm:text-sm'>Comparaison</TabsTrigger>
+            <TabsTrigger value='details' className='px-2 sm:px-3 text-xs sm:text-sm'>Classement</TabsTrigger>
           </TabsList>
           <TabsContent value='trends'>
             <Evolution siren={siren} />
