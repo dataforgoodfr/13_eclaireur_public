@@ -2,11 +2,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
-import type { TransparencyScore } from '#components/TransparencyScore/constants';
-import { SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
+import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
-import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
@@ -32,6 +31,8 @@ async function getMarchesPublics(siren: string) {
   return marchesPublicsResults;
 }
 
+
+
 const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
   return (
     <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
@@ -43,7 +44,7 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
           <BadgeCommunity
             text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
-            className='bg-brand-2 text-primary'
+            className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
           />
         </div>
       )}
@@ -56,7 +57,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   // const marchesPublics = [];
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
   // const availableYears = [2021, 2022, 2023];
-  
+
   // Fetch transparency score for Marchés Publics
   const { bareme } = await fetchMostRecentTransparencyScore(siren);
   const transparencyIndex = bareme?.mp_score || null;
