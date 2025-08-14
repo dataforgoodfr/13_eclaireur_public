@@ -161,6 +161,7 @@ function BarChart({
         mode="single"
         primaryColor={barColor}
         formatValue={formatLabel}
+        legendLabel={legendLabel}
         labelColor="#303F8D"
       />
     );
