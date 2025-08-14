@@ -120,7 +120,7 @@ export default function Navbar() {
               alt='Éclaireur Icon'
               width={28}
               height={28}
-              className='h-[28px] w-auto'
+              className='mb-[9px] h-[28px] w-auto'
               priority
             />
           </Link>
@@ -131,7 +131,7 @@ export default function Navbar() {
             alt='Éclaireur Public'
             width={360}
             height={36}
-            className='h-[68px] w-auto'
+            className='mb-[6px] h-[68px] w-auto'
             priority
           />
 
