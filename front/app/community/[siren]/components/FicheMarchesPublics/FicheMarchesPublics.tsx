@@ -77,7 +77,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <Distribution siren={siren} availableYears={availableYears} />
           </TabsContent>
           <TabsContent value={tabs.comparison}>
-            <Comparison />
+            <Comparison siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.details}>
             <Contracts siren={siren} availableYears={availableYears} />
