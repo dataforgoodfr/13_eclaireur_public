@@ -12,4 +12,5 @@ export type CommunityContact = {
   /** not in the db yet */
   fonction?: string;
   photoSrc?: string;
+  isLeader?: boolean;
 };
