@@ -15,6 +15,7 @@ import {
 import ChartSkeleton from './ChartSkeleton';
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
+import { InterpellerButton } from '../../../../components/ui/interpeller-button';
 import MobileChart from './MobileChart';
 import { CHART_HEIGHT } from './constants';
 
@@ -159,73 +160,104 @@ function BarChart({
   }
 
   // Pour desktop : graphique vertical
-  // Calculate average value like mobile version (maxValue / 2)
-  const allValues = data?.flatMap(item => item.value > 0 ? [item.value] : []) || [];
+  // Calculate the maximum value across all data to normalize bar sizes (same as mobile)
+  const allValues = data.flatMap(d => [d.value]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
-  const avgValue = maxValue > 0 ? maxValue / 2 : 1000000; // Use a visible value when no data
+  const avgValue = maxValue / 2; // Average value for "Aucune donnée"
 
-  // Replace individual zero values with avgValue (like mobile does)
-  const chartDataForDisplay = data.map(item => ({
-    year: item.year,
-    value: item.value === 0 ? avgValue : item.value
-  }));
+  // Process data with same logic as mobile version
+  const chartDataForDisplay = data.map(item => {
+    // Check if primary value is 0 or missing - show average in yellow (same as mobile)
+    const isPrimaryMissing = !item.value || item.value === 0;
+    const primaryValue = isPrimaryMissing ? avgValue : item.value;
+
+    return {
+      year: item.year,
+      value: primaryValue,
+      originalValue: item.value,
+      isPrimaryMissing
+    };
+  });
+
 
   return (
-    <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
-      <RechartsBarChart
-        width={500}
-        height={300}
-        data={chartDataForDisplay}
-        margin={{
-          top: 30,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <XAxis dataKey='year' axisLine={true} tickLine={true} />
-        <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
-        <Legend
-          formatter={() => <span className='text-primary'>{legendLabel}</span>}
-          wrapperStyle={{
-            color: '#000000 !important',
-            fontWeight: 600
+    <div className="relative">
+      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+        <RechartsBarChart
+          width={500}
+          height={300}
+          data={chartDataForDisplay}
+          margin={{
+            top: 30,
+            right: 30,
+            left: 20,
+            bottom: 5,
           }}
-          iconType="rect"
-          iconSize={24}
-        />
-        <Bar
-          dataKey='value'
-          stackId='a'
-          strokeWidth={1}
-          radius={[16, 0, 0, 0]}
         >
-          {chartDataForDisplay.map((entry, index) => {
-            const originalItem = data.find(item => item.year === entry.year);
-            const isNoData = originalItem?.value === 0;
-            return (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={isNoData ? '#F4D93E' : barColor}
-                stroke={isNoData ? '#E5C72E' : borderColor}
-              />
-            );
-          })}
-          <LabelList
-            position='top'
-            formatter={(value, name, props) => {
-              if (!props?.payload?.year) return formatLabel(value);
-              const originalItem = data.find(item => item.year === props.payload.year);
-              return originalItem?.value === 0 ? 'Aucune donnée' : formatLabel(value);
+          <XAxis dataKey='year' axisLine={true} tickLine={true} />
+          <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
+          <Legend
+            formatter={() => <span className='text-primary'>{legendLabel}</span>}
+            wrapperStyle={{
+              color: '#000000 !important',
+              fontWeight: 600
             }}
-            fill='#303F8D'
-            fontSize="16"
-            fontWeight="600"
-            fontFamily="var(--font-kanit), system-ui, sans-serif"
-            offset={10}
+            iconType="rect"
+            iconSize={24}
           />
-        </Bar>
-      </RechartsBarChart>
-    </ResponsiveContainer>
+          <Bar
+            dataKey='value'
+            stackId='a'
+            strokeWidth={1}
+            radius={[16, 0, 0, 0]}
+            label={(props) => {
+              const entry = chartDataForDisplay[props.index];
+              if (entry?.isPrimaryMissing && siren) {
+                return (
+                  <g>
+                    <foreignObject
+                      x={props.x + props.width / 2 - 50}
+                      y={props.y - 120}
+                      width="100"
+                      height="120"
+                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
+                    >
+                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
+                        <InterpellerButton siren={siren} />
+                        <div className="text-lg font-semibold text-primary text-center">
+                          Aucune donnée
+                        </div>
+                      </div>
+                    </foreignObject>
+                  </g>
+                );
+              }
+              return null;
+            }}
+          >
+            {chartDataForDisplay.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
+                stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
+                strokeWidth={1}
+              />
+            ))}
+            <LabelList
+              position='top'
+              formatter={(value) => value === avgValue ? "" : formatCompactPrice(value)}
+              fill='#303F8D'
+              // No border to text
+              strokeWidth={0}
+              fontSize="16"
+              fontWeight="600"
+              fontFamily="var(--font-kanit), system-ui, sans-serif"
+              offset={20}
+            />
+          </Bar>
+        </RechartsBarChart>
+      </ResponsiveContainer>
+
+    </div>
   );
 }
