@@ -157,24 +157,11 @@ export default function Comparison({ siren }: ComparisonProps) {
     return <ComparisonSkeleton isMobile={isMobile} />;
   }
 
-  // No data state
-  if (!error && data.length === 0) {
-    return (
-      <>
-        <TabHeader
-          title={title}
-          actions={
-            <>
-              <ScopeDropdown
-                selectedScope={selectedScope}
-                onScopeChange={handleScopeChange}
-                disabled={dataLoading}
-              />
-              {downloadButton}
-            </>
-          }
-        />
-
+  // Render content based on state
+  const renderContent = () => {
+    // No data state
+    if (!error && data.length === 0) {
+      return (
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
             <div className="text-center space-y-4">
@@ -194,28 +181,12 @@ export default function Comparison({ siren }: ComparisonProps) {
             </div>
           </div>
         </div>
-      </>
-    );
-  }
+      );
+    }
 
-  // Error state
-  if (error) {
-    return (
-      <>
-        <TabHeader
-          title={title}
-          actions={
-            <>
-              <ScopeDropdown
-                selectedScope={selectedScope}
-                onScopeChange={handleScopeChange}
-                disabled={dataLoading}
-              />
-              {downloadButton}
-            </>
-          }
-        />
-
+    // Error state
+    if (error) {
+      return (
         <div className="bg-white rounded-lg" style={{ height: '450px' }}>
           <div className="h-full flex items-center justify-center p-8">
             <div className="text-center space-y-4">
@@ -242,9 +213,33 @@ export default function Comparison({ siren }: ComparisonProps) {
             </div>
           </div>
         </div>
+      );
+    }
+
+    // Success state with data
+    return (
+      <>
+        {isMobile ? (
+          <MobileComparisonChartV2 data={data} dataLoading={dataLoading} />
+        ) : (
+          <DesktopComparisonChart data={data} dataLoading={dataLoading} />
+        )}
+
+        {/* Legend */}
+        <div className="bg-white rounded-lg p-4">
+          <div className="flex flex-wrap gap-6 justify-center">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#303F8D] rounded"></div>
+              <span className="text-sm">{data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">{data.length > 0 ? data[0].communityLabel : "Budget de collectivité"}</span>
+            </div>
+          </div>
+        </div>
       </>
     );
-  }
+  };
 
   return (
     <>
@@ -261,25 +256,7 @@ export default function Comparison({ siren }: ComparisonProps) {
           </>
         }
       />
-
-      {isMobile ? (
-        <MobileComparisonChartV2 data={data} dataLoading={dataLoading} />
-      ) : (
-        <DesktopComparisonChart data={data} dataLoading={dataLoading} />
-      )}
-
-      {/* Legend */}
-      <div className="bg-white rounded-lg p-4">
-        <div className="flex flex-wrap gap-6 justify-center">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#303F8D] rounded"></div>
-            <span className="text-sm">{data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm">{data.length > 0 ? data[0].communityLabel : "Budget de collectivité"}</span>
-          </div>
-        </div>
-      </div>
+      {renderContent()}
     </>
   );
 }

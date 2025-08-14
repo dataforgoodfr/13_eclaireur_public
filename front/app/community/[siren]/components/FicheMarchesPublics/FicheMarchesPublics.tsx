@@ -72,7 +72,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
             <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
           </TabsList>
           <TabsContent value={tabs.trends}>
-            <Evolution siren={siren} transparencyIndex={transparencyIndex} />
+            <Evolution siren={siren} />
           </TabsContent>
           <TabsContent value={tabs.distribution}>
             <Distribution siren={siren} availableYears={availableYears} />
