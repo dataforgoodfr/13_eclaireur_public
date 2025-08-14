@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import polars as pl
 from inflection import underscore as to_snake_case
@@ -45,6 +46,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
             .pipe(cls.correction_types_colonnes_str, ["objet"])
+            .pipe(cls.correction_types_colonnes_float, ["dureeMois", "offresRecues"])
             .drop(columns=["modifications"])
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
@@ -501,6 +503,22 @@ class MarchesPublicsEnricher(BaseEnricher):
         marches[colonnes_a_convertir_en_str] = (
             marches[colonnes_a_convertir_en_str].astype(str).replace("nan", "")
         )
+        return marches
+
+    @staticmethod
+    def correction_types_colonnes_float(
+        marches: pd.DataFrame, colonnes_a_convertir_en_float: list | str
+    ) -> pd.DataFrame:
+        # Remplace les NC présents dans les données de type float par des données vides.
+        if False and isinstance(colonnes_a_convertir_en_float, list):
+            for _correction_types_colonnes_float in correction_types_colonnes_float:
+                marches = correction_types_colonnes_float(
+                    marches, _correction_types_colonnes_float
+                )
+        else:
+            marches[colonnes_a_convertir_en_float] = marches[
+                colonnes_a_convertir_en_float
+            ].replace("NC", np.nan)
         return marches
 
     @staticmethod
