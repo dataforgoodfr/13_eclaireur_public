@@ -8,7 +8,6 @@ import * as d3 from 'd3';
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
 import TreemapTooltip from './TreemapTooltip';
-import TreemapZoomButtons from './TreemapZoomButtons';
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -182,7 +181,6 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick} />
     </div>
   );
 }

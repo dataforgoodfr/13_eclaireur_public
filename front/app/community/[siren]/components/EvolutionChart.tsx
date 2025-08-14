@@ -19,6 +19,7 @@ import {
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
 import { CHART_HEIGHT } from './constants';
+import MobileChart from './MobileChart';
 
 export type ChartDataType = 'marches-publics' | 'subventions';
 export type DisplayMode = 'amounts' | 'counts';
@@ -146,41 +147,22 @@ function BarChart({
     }
   };
 
-  // Pour mobile : graphique horizontal
+  // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
-    // Inverser l'ordre des données pour avoir les années récentes en haut
-    const reversedData = [...data].reverse();
+    // Transform data for MobileChart format
+    const mobileChartData = data.map(item => ({
+      year: item.year,
+      primary: item.value,
+    }));
 
     return (
-      <ResponsiveContainer width='100%' height={Math.max(CHART_HEIGHT, data.length * 60)}>
-        <RechartsBarChart
-          layout="horizontal"
-          width={500}
-          height={300}
-          data={reversedData}
-          margin={{
-            top: 20,
-            right: 80,
-            left: 10,
-            bottom: 40,
-          }}
-        >
-          <XAxis type="number" tickFormatter={(value) => formatCompact(value)} />
-          <YAxis dataKey='year' type="category" axisLine={true} tickLine={true} width={50} />
-          <Legend
-            formatter={() => legendLabel}
-            wrapperStyle={{
-              color: '#000000 !important',
-              fontWeight: 600,
-              paddingTop: '10px'
-            }}
-            iconType="rect"
-          />
-          <Bar dataKey='value' fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]}>
-            <LabelList position='right' formatter={formatLabel} fill='#303F8D' fontSize={14} fontWeight={700} />
-          </Bar>
-        </RechartsBarChart>
-      </ResponsiveContainer>
+      <MobileChart 
+        data={mobileChartData}
+        mode="single"
+        primaryColor={barColor}
+        formatValue={formatLabel}
+        labelColor="#303F8D"
+      />
     );
   }
 
