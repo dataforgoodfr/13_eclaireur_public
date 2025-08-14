@@ -17,7 +17,7 @@ type MobileComparisonChartProps = {
 
 export default function MobileComparisonChartV2({ data, dataLoading }: MobileComparisonChartProps) {
     if (!data || data.length === 0) {
-        return <div className="text-gray-500 text-center p-4">Aucune donnée disponible</div>;
+        return <div className="text-muted text-center p-4">Aucune donnée disponible</div>;
     }
 
     // Transform data for MobileChart format
@@ -30,7 +30,7 @@ export default function MobileComparisonChartV2({ data, dataLoading }: MobileCom
     }));
 
     return (
-        <MobileChart 
+        <MobileChart
             data={mobileChartData}
             dataLoading={dataLoading}
             mode="dual"

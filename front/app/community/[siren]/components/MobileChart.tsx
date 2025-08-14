@@ -60,18 +60,17 @@ export default function MobileChart({
 
 
             {data.map((item) => (
-                <div key={item.year} className="flex items-center gap-2 py-1 min-w-0">
+                <div key={item.year} className="flex items-center gap-2 py-1 min-w-0" style={{ height: '60px' }}>
                     <div className="w-10 text-sm font-medium text-muted flex-shrink-0">{item.year}</div>
-                    <div className="flex-1 min-w-0">
-                        <ResponsiveContainer width="100%" height={mode === 'dual' ? 60 : 30}>
-                            <BarChart
-                                data={[item]}
-                                layout="vertical"
-                                margin={{ left: 0, right: 60, top: 2, bottom: 2 }}
-                            >
-                                <XAxis hide type="number" domain={[0, chartMax]} />
-                                <YAxis hide type="category" />
-                                {/* <Legend
+                    <ResponsiveContainer width="100%" height={50}>
+                        <BarChart
+                            data={[item]}
+                            layout="vertical"
+                            margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
+                        >
+                            <XAxis hide type="number" domain={[0, chartMax]} />
+                            <YAxis hide type="category" />
+                            {/* <Legend
                                             formatter={() => <span className='text-primary'>{legendLabel}</span>}
                                             wrapperStyle={{
                                                 color: '#000000 !important',
@@ -80,11 +79,30 @@ export default function MobileChart({
                                             iconType="rect"
                                             iconSize={24}
                                         /> */}
-                                {/* Primary bar */}
-                                <Bar dataKey="primary" barSize={40} radius={[0, 0, 4, 0]} >
-                                    <Cell fill={primaryColor} stroke="#303F8D" strokeWidth={1} />
+                            {/* Primary bar */}
+                            <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
+                                <Cell fill={primaryColor} stroke="#303F8D" strokeWidth={1} radius={[0, 0, 16, 0]} />
+                                <LabelList
+                                    dataKey="primary"
+                                    position="right"
+                                    formatter={formatValue}
+                                    style={{
+                                        fontSize: "24px",
+                                        fill: labelColor,
+                                        fontWeight: "700",
+                                        fontFamily: "var(--font-kanit)",
+                                        stroke: "none",
+                                        textShadow: "0 1px 2px rgba(0,0,0,0.1)"
+                                    }}
+                                />
+                            </Bar>
+
+                            {/* Secondary bar (only in dual mode) */}
+                            {mode === 'dual' && item.secondary !== undefined && (
+                                <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={40}>
+                                    <Cell fill={secondaryColor} stroke="#E5E7EB" strokeWidth={1} />
                                     <LabelList
-                                        dataKey="primary"
+                                        dataKey="secondary"
                                         position="right"
                                         formatter={formatValue}
                                         style={{
@@ -97,29 +115,9 @@ export default function MobileChart({
                                         }}
                                     />
                                 </Bar>
-
-                                {/* Secondary bar (only in dual mode) */}
-                                {mode === 'dual' && item.secondary !== undefined && (
-                                    <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={30}>
-                                        <Cell fill={secondaryColor} stroke="#E5E7EB" strokeWidth={1} />
-                                        <LabelList
-                                            dataKey="secondary"
-                                            position="right"
-                                            formatter={formatValue}
-                                            style={{
-                                                fontSize: "24px",
-                                                fill: labelColor,
-                                                fontWeight: "700",
-                                                fontFamily: "var(--font-kanit)",
-                                                stroke: "none",
-                                                textShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                            }}
-                                        />
-                                    </Bar>
-                                )}
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
+                            )}
+                        </BarChart>
+                    </ResponsiveContainer>
                 </div>
             ))}
 
