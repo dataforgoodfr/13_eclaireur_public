@@ -163,6 +163,7 @@ function BarChart({
         formatValue={formatLabel}
         legendLabel={legendLabel}
         labelColor="#303F8D"
+        siren={siren}
       />
     );
   }

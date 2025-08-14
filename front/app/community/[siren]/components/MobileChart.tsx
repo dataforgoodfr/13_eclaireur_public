@@ -1,5 +1,6 @@
 "use client"
 
+import { InterpellerButton } from "#components/ui/interpeller-button";
 import { formatCompactPrice } from "#utils/utils";
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
@@ -21,6 +22,7 @@ type MobileChartProps = {
     formatValue?: (value: number) => string;
     legendLabel?: string;
     labelColor?: string;
+    siren?: string; // For interpeller button
 };
 
 
@@ -32,7 +34,8 @@ export default function MobileChart({
     mode = 'single',
     formatValue = formatCompactPrice,
     legendLabel = "",
-    labelColor = '#303F8D'
+    labelColor = '#303F8D',
+    siren
 }: MobileChartProps) {
     if (!data || data.length === 0) {
         return <div className="text-gray-500 text-center p-4">Aucune donnée disponible</div>;
@@ -74,12 +77,13 @@ export default function MobileChart({
                 return (
                 <div key={item.year} className="flex items-center gap-2 py-1 min-w-0" style={{ height: '60px' }}>
                     <div className="w-10 text-sm font-medium text-muted flex-shrink-0">{item.year}</div>
-                    <ResponsiveContainer width="100%" height={50}>
-                        <BarChart
-                            data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
-                            layout="vertical"
-                            margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
-                        >
+                    <div className="flex-1 relative">
+                        <ResponsiveContainer width="100%" height={50}>
+                            <BarChart
+                                data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
+                                layout="vertical"
+                                margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
+                            >
                             <XAxis hide type="number" domain={[0, chartMax]} />
                             <YAxis hide type="category" />
                             {/* <Legend
@@ -94,19 +98,22 @@ export default function MobileChart({
                             {/* Primary bar */}
                             <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
                                 <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0]} />
-                                <LabelList
-                                    dataKey="primary"
-                                    position="right"
-                                    formatter={(value) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
-                                    style={{
-                                        fontSize: isPrimaryMissing ? "14px" : "24px",
-                                        fill: labelColor,
-                                        fontWeight: isPrimaryMissing ? "600" : "700",
-                                        fontFamily: "var(--font-kanit)",
-                                        stroke: "none",
-                                        textShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                    }}
-                                />
+                                {/* Only show label if not showing interpeller button */}
+                                {!(mode === 'single' && isPrimaryMissing && siren) && (
+                                    <LabelList
+                                        dataKey="primary"
+                                        position="right"
+                                        formatter={(value) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
+                                        style={{
+                                            fontSize: isPrimaryMissing ? "14px" : "24px",
+                                            fill: labelColor,
+                                            fontWeight: isPrimaryMissing ? "600" : "700",
+                                            fontFamily: "var(--font-kanit)",
+                                            stroke: "none",
+                                            textShadow: "0 1px 2px rgba(0,0,0,0.1)"
+                                        }}
+                                    />
+                                )}
                             </Bar>
 
                             {/* Secondary bar (only in dual mode) */}
@@ -130,6 +137,15 @@ export default function MobileChart({
                             )}
                         </BarChart>
                     </ResponsiveContainer>
+                    
+                    {/* Show interpeller button and text for missing data */}
+                    {mode === 'single' && isPrimaryMissing && siren && (
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <span className="text-sm font-semibold text-gray-700">Aucune donnée</span>
+                            <InterpellerButton siren={siren} />
+                        </div>
+                    )}
+                    </div>
                 </div>
                 );
             })}
@@ -151,6 +167,6 @@ export default function MobileChart({
                     </div>
                 </div>
             )}
-        </ >
+        </>
     );
 }
