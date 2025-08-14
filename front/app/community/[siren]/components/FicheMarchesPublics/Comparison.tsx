@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
 import DesktopComparisonChart from './DesktopComparisonChart';
-import MobileComparisonChartV2 from './MobileComparisonChart-v2';
+import MobileComparisonChart from './MobileComparisonChart';
 import { TabHeader } from './TabHeader';
 
 type ComparisonProps = {
@@ -137,17 +137,19 @@ const ErrorState = ({ error, onRetry, isRetrying }: {
 const ChartWithLegend = ({
   data,
   isMobile,
-  isLoading
+  isLoading,
+  siren
 }: {
   data: ComparisonData[];
   isMobile: boolean;
   isLoading: boolean;
+  siren: string;
 }) => (
   <>
     {isMobile ? (
-      <MobileComparisonChartV2 data={data} dataLoading={isLoading} />
+      <MobileComparisonChart data={data} dataLoading={isLoading} siren={siren} />
     ) : (
-      <DesktopComparisonChart data={data} dataLoading={isLoading} />
+      <DesktopComparisonChart data={data} dataLoading={isLoading} siren={siren} />
     )}
 
     <div className="bg-white rounded-lg p-4">
@@ -305,6 +307,7 @@ export default function Comparison({ siren }: ComparisonProps) {
           data={data}
           isMobile={isMobile}
           isLoading={isFetching}
+          siren={siren}
         />
       )}
     </>

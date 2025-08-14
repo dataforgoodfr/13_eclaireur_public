@@ -45,6 +45,7 @@ export default function MobileChart({
     );
     const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
     const chartMax = Math.round(maxValue * 1.1); // Add 10% padding
+    const avgValue = maxValue / 2; // Average value for "Aucune donnée"
 
     return (
         <>
@@ -59,12 +60,23 @@ export default function MobileChart({
             )}
 
 
-            {data.map((item) => (
+            {data.map((item) => {
+                // Check if primary value is 0 or missing - show average in yellow
+                const isPrimaryMissing = !item.primary || item.primary === 0;
+                const primaryValue = isPrimaryMissing ? avgValue : item.primary;
+                const primaryFillColor = isPrimaryMissing ? '#F4D93E' : primaryColor;
+                
+                // Check if secondary value is 0 or missing - show average in yellow
+                const isSecondaryMissing = mode === 'dual' && (!item.secondary || item.secondary === 0);
+                const secondaryValue = isSecondaryMissing ? avgValue : item.secondary;
+                const secondaryFillColor = isSecondaryMissing ? '#F4D93E' : secondaryColor;
+
+                return (
                 <div key={item.year} className="flex items-center gap-2 py-1 min-w-0" style={{ height: '60px' }}>
                     <div className="w-10 text-sm font-medium text-muted flex-shrink-0">{item.year}</div>
                     <ResponsiveContainer width="100%" height={50}>
                         <BarChart
-                            data={[item]}
+                            data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
                             layout="vertical"
                             margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
                         >
@@ -81,15 +93,15 @@ export default function MobileChart({
                                         /> */}
                             {/* Primary bar */}
                             <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
-                                <Cell fill={primaryColor} stroke="#303F8D" strokeWidth={1} radius={[0, 0, 16, 0]} />
+                                <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0]} />
                                 <LabelList
                                     dataKey="primary"
                                     position="right"
-                                    formatter={formatValue}
+                                    formatter={(value) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
                                     style={{
-                                        fontSize: "24px",
+                                        fontSize: isPrimaryMissing ? "14px" : "24px",
                                         fill: labelColor,
-                                        fontWeight: "700",
+                                        fontWeight: isPrimaryMissing ? "600" : "700",
                                         fontFamily: "var(--font-kanit)",
                                         stroke: "none",
                                         textShadow: "0 1px 2px rgba(0,0,0,0.1)"
@@ -100,15 +112,15 @@ export default function MobileChart({
                             {/* Secondary bar (only in dual mode) */}
                             {mode === 'dual' && item.secondary !== undefined && (
                                 <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={40}>
-                                    <Cell fill={secondaryColor} stroke="#E5E7EB" strokeWidth={1} />
+                                    <Cell fill={secondaryFillColor} stroke={isSecondaryMissing ? '#E5C72E' : "#E5E7EB"} strokeWidth={1} />
                                     <LabelList
                                         dataKey="secondary"
                                         position="right"
-                                        formatter={formatValue}
+                                        formatter={(value) => isSecondaryMissing ? "Aucune donnée" : formatValue(value)}
                                         style={{
-                                            fontSize: "24px",
+                                            fontSize: isSecondaryMissing ? "14px" : "24px",
                                             fill: labelColor,
-                                            fontWeight: "700",
+                                            fontWeight: isSecondaryMissing ? "600" : "700",
                                             fontFamily: "var(--font-kanit)",
                                             stroke: "none",
                                             textShadow: "0 1px 2px rgba(0,0,0,0.1)"
@@ -119,7 +131,8 @@ export default function MobileChart({
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-            ))}
+                );
+            })}
 
             {/* SVG pattern for stripes (used in dual mode) */}
             <svg width="0" height="0">
