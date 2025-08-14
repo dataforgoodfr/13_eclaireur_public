@@ -141,7 +141,7 @@ export default function MobileChart({
                     {/* Show interpeller button and text for missing data */}
                     {mode === 'single' && isPrimaryMissing && siren && (
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div className="text-sm font-semibold text-primary max-w-20">
+                            <div className="text-base font-semibold text-primary max-w-20">
                                 Aucune donnée
                             </div>
                             <InterpellerButton siren={siren} />

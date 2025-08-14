@@ -1,13 +1,10 @@
 'use client';
 
-import { ActionButton } from '#components/ui/action-button';
 import { formatCompactPrice } from '#utils/utils';
-import { MessageSquare } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Bar,
+  Cell,
   LabelList,
   Legend,
   BarChart as RechartsBarChart,
@@ -129,7 +126,6 @@ function BarChart({
   legendLabel
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -140,12 +136,6 @@ function BarChart({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  const handleInterpellerClick = () => {
-    if (siren) {
-      router.push(`/interpeller/${siren}/step1`);
-    }
-  };
 
   // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
@@ -169,40 +159,23 @@ function BarChart({
   }
 
   // Pour desktop : graphique vertical
-  // Si pas de données, afficher l'image no-data-bar avec le bouton
-  if (hasNoData && !isMobile) {
-    return (
-      <div className='flex flex-col items-center justify-center' style={{ height: CHART_HEIGHT }}>
-        <div className='relative flex flex-col items-center gap-6'>
-          {/* Bouton Interpeller au-dessus de l'image */}
-          <ActionButton
-            onClick={handleInterpellerClick}
-            icon={<MessageSquare size={20} />}
-            variant='default'
-          />
+  // Calculate average value like mobile version (maxValue / 2)
+  const allValues = data?.flatMap(item => item.value > 0 ? [item.value] : []) || [];
+  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+  const avgValue = maxValue > 0 ? maxValue / 2 : 1000000; // Use a visible value when no data
 
-          {/* Image no-data-bar */}
-          <div className='relative'>
-            <Image
-              src='/no-data-bar.png'
-              alt='Aucunes données publiées'
-              width={150}
-              height={200}
-              priority
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Replace individual zero values with avgValue (like mobile does)
+  const chartDataForDisplay = data.map(item => ({
+    year: item.year,
+    value: item.value === 0 ? avgValue : item.value
+  }));
 
-  // Graphique normal avec données
   return (
     <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
       <RechartsBarChart
         width={500}
         height={300}
-        data={data}
+        data={chartDataForDisplay}
         margin={{
           top: 30,
           right: 30,
@@ -221,13 +194,33 @@ function BarChart({
           iconType="rect"
           iconSize={24}
         />
-        <Bar dataKey='value' stackId='a' fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]}>
+        <Bar
+          dataKey='value'
+          stackId='a'
+          strokeWidth={1}
+          radius={[16, 0, 0, 0]}
+        >
+          {chartDataForDisplay.map((entry, index) => {
+            const originalItem = data.find(item => item.year === entry.year);
+            const isNoData = originalItem?.value === 0;
+            return (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={isNoData ? '#F4D93E' : barColor}
+                stroke={isNoData ? '#E5C72E' : borderColor}
+              />
+            );
+          })}
           <LabelList
             position='top'
-            formatter={formatLabel}
+            formatter={(value, name, props) => {
+              if (!props?.payload?.year) return formatLabel(value);
+              const originalItem = data.find(item => item.year === props.payload.year);
+              return originalItem?.value === 0 ? 'Aucune donnée' : formatLabel(value);
+            }}
             fill='#303F8D'
-            fontSize="24"
-            fontWeight="700"
+            fontSize="16"
+            fontWeight="600"
             fontFamily="var(--font-kanit), system-ui, sans-serif"
             offset={10}
           />
