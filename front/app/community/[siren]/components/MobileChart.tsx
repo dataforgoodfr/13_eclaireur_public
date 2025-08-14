@@ -71,8 +71,9 @@ export default function MobileChart({
                                         <YAxis hide type="category" />
 
                                         {/* Primary bar */}
-                                        <Bar dataKey="primary" barSize={24} radius={[0, 0, 4, 0]}>
-                                            <Cell fill={primaryColor} stroke="#E5E7EB" strokeWidth={1} />
+                                        <Bar dataKey="primary" barSize={40} radius={[0, 0, 4, 0]}>
+                                            {/* fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]} */}
+                                            <Cell fill={primaryColor} stroke="#303F8D" strokeWidth={1} radius={[0, 0, 16, 0]} />
                                             <LabelList
                                                 dataKey="primary"
                                                 position="right"
@@ -90,7 +91,7 @@ export default function MobileChart({
 
                                         {/* Secondary bar (only in dual mode) */}
                                         {mode === 'dual' && item.secondary !== undefined && (
-                                            <Bar dataKey="secondary" barSize={24} radius={[0, 0, 4, 0]} y={30}>
+                                            <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={30}>
                                                 <Cell fill={secondaryColor} stroke="#E5E7EB" strokeWidth={1} />
                                                 <LabelList
                                                     dataKey="secondary"
