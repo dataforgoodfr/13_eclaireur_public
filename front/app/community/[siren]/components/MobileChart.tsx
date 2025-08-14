@@ -97,13 +97,13 @@ export default function MobileChart({
                                         /> */}
                             {/* Primary bar */}
                             <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
-                                <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0]} />
+                                <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0] as unknown as number} />
                                 {/* Only show label if not showing interpeller button */}
                                 {!(mode === 'single' && isPrimaryMissing && siren) && (
                                     <LabelList
                                         dataKey="primary"
                                         position="right"
-                                        formatter={(value) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
+                                        formatter={(value: number) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
                                         style={{
                                             fontSize: isPrimaryMissing ? "14px" : "24px",
                                             fill: labelColor,
@@ -123,7 +123,7 @@ export default function MobileChart({
                                     <LabelList
                                         dataKey="secondary"
                                         position="right"
-                                        formatter={(value) => isSecondaryMissing ? "Aucune donnée" : formatValue(value)}
+                                        formatter={(value: number) => isSecondaryMissing ? "Aucune donnée" : formatValue(value)}
                                         style={{
                                             fontSize: isSecondaryMissing ? "14px" : "24px",
                                             fill: labelColor,

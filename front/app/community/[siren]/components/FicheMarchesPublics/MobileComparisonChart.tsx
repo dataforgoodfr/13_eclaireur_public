@@ -21,7 +21,7 @@ type MobileComparisonChartProps = {
 
 export default function MobileComparisonChart({ data, dataLoading, siren }: MobileComparisonChartProps) {
     const router = useRouter();
-    
+
     if (!data || data.length === 0) {
         return <div className="text-muted text-center p-4">Aucune donnée disponible</div>;
     }
@@ -46,20 +46,17 @@ export default function MobileComparisonChart({ data, dataLoading, siren }: Mobi
 
     return (
         <div className="relative">
-            {/* Interpeller button when there's no data */}
             {hasNoData && siren && (
                 <div className="absolute top-2 right-2 z-10">
                     <ActionButton
                         onClick={handleInterpellerClick}
                         icon={<MessageSquare size={16} />}
                         variant='default'
-                        size='sm'
-                    >
-                        Interpeller
-                    </ActionButton>
+                        text="Interpeller"
+                    />
                 </div>
             )}
-            
+
             <MobileChart
                 data={mobileChartData}
                 dataLoading={dataLoading}
