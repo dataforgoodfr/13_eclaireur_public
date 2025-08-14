@@ -160,7 +160,7 @@ export default function Comparison({ siren }: ComparisonProps) {
   // No data state
   if (!error && data.length === 0) {
     return (
-      <div className="space-y-2">
+      <>
         <TabHeader
           title={title}
           actions={
@@ -194,14 +194,14 @@ export default function Comparison({ siren }: ComparisonProps) {
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="space-y-2">
+      <>
         <TabHeader
           title={title}
           actions={
@@ -242,12 +242,12 @@ export default function Comparison({ siren }: ComparisonProps) {
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <>
       <TabHeader
         title={title}
         actions={
@@ -280,7 +280,6 @@ export default function Comparison({ siren }: ComparisonProps) {
           </div>
         </div>
       </div>
-
-    </div>
+    </>
   );
 }
