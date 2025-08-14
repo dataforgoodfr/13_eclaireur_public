@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
@@ -114,19 +115,16 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-wrap items-start justify-center gap-4'
-      >
-        <fieldset className='basis-1/4'>
-          <legend className='mb-4'>Vos coordonnées</legend>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-4 px-8 py-6'>
+        <fieldset className='gap-4 md:flex'>
+          <legend className='mb-4 flex-none text-3xl font-bold'>Vos coordonnées</legend>
           <FormField
             control={form.control}
             name='firstname'
             render={({ field }) => {
               return (
                 <FormItem className='mb-4'>
-                  <FormLabel>Prénom</FormLabel>
+                  <FormLabel className='text-lg font-bold'>Prénom</FormLabel>
                   <FormControl>
                     <Input
                       placeholder='Entrez votre prénom'
@@ -144,7 +142,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
             name='lastname'
             render={({ field }) => (
               <FormItem className='mb-4'>
-                <FormLabel>Nom</FormLabel>
+                <FormLabel className='text-lg font-bold'>Nom</FormLabel>
                 <FormControl>
                   <Input placeholder='Entrez votre nom' {...field} onInput={handleLastNameChange} />
                 </FormControl>
@@ -157,7 +155,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className='text-lg font-bold'>Email</FormLabel>
                 <FormControl>
                   <Input placeholder='Entrez votre adresse e-mail' {...field} />
                 </FormControl>
@@ -167,16 +165,34 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
           />
         </fieldset>
 
-        <fieldset className='basis-2/3'>
-          <legend className='mb-4'>Votre message</legend>
+        <p className='mb-4 text-3xl font-bold'>Message d'interpellation</p>
+
+        <div className='flex flex-row justify-between rounded-tl-3xl border border-secondary-dark font-bold'>
+          <div className='flex flex-col justify-center rounded-tl-3xl bg-secondary-dark px-4 py-2'>
+            <Image src='/eclaireur/error_icon.png' alt='Interpeller' width={24} height={24} />
+          </div>
+          <p className='px-8 py-4'>
+            Ce message est généré automatiquement avec les informations du destinataire choisi
+            précédemment. Le message sera envoyé en votre nom pour une interpellation citoyenne !
+          </p>
+        </div>
+
+        <fieldset className='rounded-3xl bg-muted-border px-8 py-8'>
+          <legend className='hidden'>Votre message</legend>
           <FormField
             control={form.control}
             name='emails'
             render={({ field }) => (
-              <FormItem className='mb-4'>
-                <FormLabel>À</FormLabel>
+              <FormItem className='mb-4 flex flex-row items-center gap-4'>
+                <FormLabel className='text-lg font-bold uppercase text-muted'>
+                  Destinataire
+                </FormLabel>
                 <FormControl>
-                  <Input disabled className='bg-slate-300' {...field} />
+                  <Input
+                    disabled
+                    className='!m-0 border-none bg-transparent p-0 !text-lg !text-primary !opacity-100'
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -186,10 +202,14 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
             control={form.control}
             name='object'
             render={({ field }) => (
-              <FormItem className='mb-4'>
-                <FormLabel>Objet</FormLabel>
+              <FormItem className='mb-4 flex flex-row items-center gap-4'>
+                <FormLabel className='text-lg font-bold uppercase text-muted'>Objet</FormLabel>
                 <FormControl>
-                  <Input disabled className='bg-slate-300' {...field} />
+                  <Input
+                    disabled
+                    className='!m-0 border-none bg-transparent p-0 !text-lg !text-primary !opacity-100'
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -197,40 +217,27 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
           />
 
           <div className='simulatedTextArea'>
-            <div className='mb-3 text-sm font-medium'>Votre message</div>
-            <div
-              id='simulatedTextAreaContent'
-              className='w-full cursor-not-allowed rounded-md border border-input bg-slate-300 text-base opacity-35 shadow-sm transition-colors md:text-sm'
-            >
+            <div className='hidden'>Votre message</div>
+            <div id='simulatedTextAreaContent' className='cursor-not-allowed text-lg text-primary'>
               <MessageToContacts from={fullName} to={recipientName} />
             </div>
           </div>
+        </fieldset>
 
+        <div className='my-12 flex flex-col items-end gap-4'>
           <div className='mt-4 flex items-center space-x-2'>
             <Checkbox id='terms' checked={true} />
-            <label
-              htmlFor='terms'
-              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-            >
+            <label htmlFor='terms' className='text-md text-primary'>
               Recevoir une copie du message par e-mail
             </label>
           </div>
-        </fieldset>
-
-        <div className='my-12 flex min-w-full justify-center gap-4'>
-          <ButtonBackAndForth linkto={`/interpeller/${communityParam}/step2`} direction='back'>
-            Revenir
-          </ButtonBackAndForth>
-
           <Button
+            size='lg'
             type='submit'
             disabled={isSubmitting}
-            className={buttonVariants({
-              variant: 'outline',
-              className: 'min-w-[200] bg-black text-white',
-            })}
+            className='mt-8 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90'
           >
-            Envoyer mon message <ChevronRight />
+            Envoyer le message <ChevronRight />
           </Button>
         </div>
       </form>

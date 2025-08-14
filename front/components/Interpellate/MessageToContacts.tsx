@@ -38,8 +38,10 @@ export default function MessageToContacts({
         Ces informations sont essentielles pour garantir une gestion claire et accessible des
         finances publiques. Elles permettent aux citoyen·nes de mieux comprendre les choix
         budgétaires, de renforcer la confiance dans les institutions et de s’assurer du bon usage de
-        l’argent public. Pourtant, à ce jour, ces données restent souvent incomplètes ou
-        difficilement accessibles.
+        l’argent public.
+      </p>
+      <p>
+        Pourtant, à ce jour, ces données restent souvent incomplètes ou difficilement accessibles.
       </p>
       <p>
         Je vous encourage donc à publier et mettre à jour ces données conformément aux obligations
