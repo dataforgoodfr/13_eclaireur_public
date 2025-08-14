@@ -80,11 +80,6 @@ export function EvolutionChart({
     });
   }, [data, isAmountsMode]);
 
-  // Check if all data is zero (no data state)
-  const hasNoData = useMemo(() =>
-    !data || data.length === 0 || chartData.every(item => item.value === 0),
-    [data, chartData]
-  );
 
   if (isPending) return <ChartSkeleton />;
   if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
@@ -93,7 +88,6 @@ export function EvolutionChart({
     data={chartData}
     barColor={config.barColor}
     borderColor={config.borderColor}
-    hasNoData={hasNoData}
     siren={siren}
     legendLabel={config.legendLabels[displayMode]}
   />;
@@ -113,7 +107,6 @@ type BarChartProps = {
   data: BarChartData;
   barColor: string;
   borderColor: string;
-  hasNoData: boolean;
   siren?: string;
   legendLabel: string;
 };
@@ -122,7 +115,6 @@ function BarChart({
   data,
   barColor,
   borderColor,
-  hasNoData,
   siren,
   legendLabel
 }: BarChartProps) {
@@ -232,7 +224,7 @@ function BarChart({
                   </g>
                 );
               }
-              return null;
+              return <g></g>;
             }}
           >
             {chartDataForDisplay.map((entry, index) => (
@@ -245,7 +237,7 @@ function BarChart({
             ))}
             <LabelList
               position='top'
-              formatter={(value) => value === avgValue ? "" : formatCompactPrice(value)}
+              formatter={(value: number) => value === avgValue ? "" : formatCompactPrice(value)}
               fill='#303F8D'
               // No border to text
               strokeWidth={0}
