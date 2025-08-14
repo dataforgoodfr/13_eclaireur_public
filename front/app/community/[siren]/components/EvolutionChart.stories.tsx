@@ -282,3 +282,132 @@ export const Interactive: Story = {
     },
   },
 };
+
+// Data avec plusieurs années manquantes pour tester les boutons Interpeller
+const dataWithMissingYears = [
+  { "year": 2017, "amount": 0, "count": 0 }, // Missing data
+  { "year": 2018, "amount": 1820000, "count": 182 },
+  { "year": 2019, "amount": 0, "count": 0 }, // Missing data
+  { "year": 2020, "amount": 2230000, "count": 223 },
+  { "year": 2021, "amount": 0, "count": 0 }, // Missing data
+  { "year": 2022, "amount": 1010000, "count": 101 },
+  { "year": 2023, "amount": 0, "count": 0 }, // Missing data
+  { "year": 2024, "amount": 660000, "count": 66 }
+];
+
+export const MarchesPublicsWithMissingDataAmounts: Story = {
+  args: {
+    siren: '213105554',
+    displayMode: 'amounts',
+    chartType: 'marches-publics',
+    data: dataWithMissingYears,
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Graphique des montants avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
+      },
+    },
+  },
+};
+
+export const MarchesPublicsWithMissingDataCounts: Story = {
+  args: {
+    siren: '213105554',
+    displayMode: 'counts',
+    chartType: 'marches-publics',
+    data: dataWithMissingYears,
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Graphique du nombre avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
+      },
+    },
+  },
+};
+
+export const SubventionsWithMissingDataAmounts: Story = {
+  args: {
+    siren: '213105554',
+    displayMode: 'amounts',
+    chartType: 'subventions',
+    data: dataWithMissingYears,
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Graphique des montants subventions avec années manquantes - affiche les boutons Interpeller.',
+      },
+    },
+  },
+};
+
+export const SubventionsWithMissingDataCounts: Story = {
+  args: {
+    siren: '213105554',
+    displayMode: 'counts',
+    chartType: 'subventions',
+    data: dataWithMissingYears,
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Graphique du nombre subventions avec années manquantes - affiche les boutons Interpeller.',
+      },
+    },
+  },
+};
+
+export const AllMissingData: Story = {
+  args: {
+    siren: '213105554',
+    displayMode: 'amounts',
+    chartType: 'marches-publics',
+    data: [
+      { "year": 2017, "amount": 0, "count": 0 },
+      { "year": 2018, "amount": 0, "count": 0 },
+      { "year": 2019, "amount": 0, "count": 0 },
+      { "year": 2020, "amount": 0, "count": 0 },
+      { "year": 2021, "amount": 0, "count": 0 },
+      { "year": 2022, "amount": 0, "count": 0 },
+      { "year": 2023, "amount": 0, "count": 0 },
+      { "year": 2024, "amount": 0, "count": 0 }
+    ],
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Toutes les années sans données - tous les boutons Interpeller sont affichés.',
+      },
+    },
+  },
+};
+
+export const WithoutSiren: Story = {
+  args: {
+    siren: '',
+    displayMode: 'amounts',
+    chartType: 'marches-publics',
+    data: dataWithMissingYears,
+    isPending: false,
+    isError: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Sans SIREN - les boutons Interpeller ne sont pas affichés même avec données manquantes.',
+      },
+    },
+  },
+};
