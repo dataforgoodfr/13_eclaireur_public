@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageSquare } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ActionButton } from './action-button';
 
@@ -27,7 +27,14 @@ export function InterpellerButton({
     <ActionButton
       onClick={handleClick}
       variant={variant}
-      icon={<MessageSquare className="h-5 w-5" />}
+      icon={
+        <Image
+          src="/eclaireur/interpeller.svg"
+          alt="Interpeller"
+          width={20}
+          height={20}
+        />
+      }
       text={showText ? 'Interpeller' : undefined}
       className={className}
     />
