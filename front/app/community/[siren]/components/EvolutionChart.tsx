@@ -1,12 +1,11 @@
 'use client';
 
-import ChartSkeleton from './ChartSkeleton';
 import { ActionButton } from '#components/ui/action-button';
-import { formatCompact } from '#utils/utils';
+import { formatCompactPrice } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Bar,
   LabelList,
@@ -16,10 +15,11 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import ChartSkeleton from './ChartSkeleton';
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
-import { CHART_HEIGHT } from './constants';
 import MobileChart from './MobileChart';
+import { CHART_HEIGHT } from './constants';
 
 export type ChartDataType = 'marches-publics' | 'subventions';
 export type DisplayMode = 'amounts' | 'counts';
@@ -83,7 +83,7 @@ export function EvolutionChart({
   }, [data, isAmountsMode]);
 
   // Check if all data is zero (no data state)
-  const hasNoData = useMemo(() => 
+  const hasNoData = useMemo(() =>
     !data || data.length === 0 || chartData.every(item => item.value === 0),
     [data, chartData]
   );
@@ -103,7 +103,7 @@ export function EvolutionChart({
 
 function formatLabel(value: number): string {
   if (value === 0) return 'Aucunes données publiées';
-  return formatCompact(value);
+  return formatCompactPrice(value);
 }
 
 type BarChartData = {
@@ -156,7 +156,7 @@ function BarChart({
     }));
 
     return (
-      <MobileChart 
+      <MobileChart
         data={mobileChartData}
         mode="single"
         primaryColor={barColor}
@@ -209,17 +209,26 @@ function BarChart({
         }}
       >
         <XAxis dataKey='year' axisLine={true} tickLine={true} />
-        <YAxis tickFormatter={(value) => formatCompact(value)} />
+        <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
         <Legend
-          formatter={() => legendLabel}
+          formatter={() => <span className='text-primary'>{legendLabel}</span>}
           wrapperStyle={{
             color: '#000000 !important',
             fontWeight: 600
           }}
           iconType="rect"
+          iconSize={24}
         />
         <Bar dataKey='value' stackId='a' fill={barColor} stroke={borderColor} strokeWidth={1} radius={[16, 0, 0, 0]}>
-          <LabelList position='top' formatter={formatLabel} fill='#303F8D' fontSize={18} fontWeight={700} />
+          <LabelList
+            position='top'
+            formatter={formatLabel}
+            fill='#303F8D'
+            fontSize="24"
+            fontWeight="700"
+            fontFamily="var(--font-kanit), system-ui, sans-serif"
+            offset={10}
+          />
         </Bar>
       </RechartsBarChart>
     </ResponsiveContainer>

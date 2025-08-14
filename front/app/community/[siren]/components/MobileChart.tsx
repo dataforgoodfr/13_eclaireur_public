@@ -1,5 +1,6 @@
 "use client"
 
+import { formatCompactPrice } from "#utils/utils";
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 // Common data structure for both evolution and comparison
@@ -21,21 +22,6 @@ type MobileChartProps = {
     labelColor?: string;
 };
 
-const defaultFormatValue = (value: number) => {
-    if (value >= 1000000000) {
-        return `${(value / 1000000000).toFixed(0)} Md €`;
-    }
-    if (value >= 1000000) {
-        return `${(value / 1000000).toFixed(0)} M €`;
-    }
-    if (value >= 1000) {
-        return `${(value / 1000).toFixed(0)} k €`;
-    }
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR'
-    }).format(value);
-};
 
 export default function MobileChart({
     data,
@@ -43,7 +29,7 @@ export default function MobileChart({
     primaryColor = '#303F8D',
     secondaryColor = 'url(#stripes)',
     mode = 'single',
-    formatValue = defaultFormatValue,
+    formatValue = formatCompactPrice,
     labelColor = '#303F8D'
 }: MobileChartProps) {
     if (!data || data.length === 0) {
@@ -91,10 +77,10 @@ export default function MobileChart({
                                                 dataKey="primary"
                                                 position="right"
                                                 formatter={formatValue}
-                                                style={{ 
-                                                    fontSize: "24px", 
-                                                    fill: labelColor, 
-                                                    fontWeight: "700", 
+                                                style={{
+                                                    fontSize: "24px",
+                                                    fill: labelColor,
+                                                    fontWeight: "700",
                                                     fontFamily: "var(--font-kanit)",
                                                     stroke: "none",
                                                     textShadow: "0 1px 2px rgba(0,0,0,0.1)"
@@ -110,10 +96,10 @@ export default function MobileChart({
                                                     dataKey="secondary"
                                                     position="right"
                                                     formatter={formatValue}
-                                                    style={{ 
-                                                        fontSize: "24px", 
-                                                        fill: labelColor, 
-                                                        fontWeight: "700", 
+                                                    style={{
+                                                        fontSize: "24px",
+                                                        fill: labelColor,
+                                                        fontWeight: "700",
                                                         fontFamily: "var(--font-kanit)",
                                                         stroke: "none",
                                                         textShadow: "0 1px 2px rgba(0,0,0,0.1)"

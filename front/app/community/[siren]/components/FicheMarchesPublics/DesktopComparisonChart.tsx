@@ -1,5 +1,6 @@
 'use client';
 
+import { formatCompactPrice } from '#utils/utils';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type ComparisonData = {
@@ -59,30 +60,7 @@ const StripedBar = (props: unknown) => {
   );
 };
 
-// Format value for tooltip
-const formatValue = (value: number) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(value);
-};
 
-// Format value for bar labels
-const formatDesktopValue = (value: number) => {
-  if (value >= 1000000000) {
-    return `${(value / 1000000000).toFixed(0)} Md €`;
-  }
-  if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(0)} M €`;
-  }
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(0)} k €`;
-  }
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(value);
-};
 
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: {
@@ -100,7 +78,7 @@ const CustomTooltip = ({ active, payload, label }: {
         <p className="font-semibold">{label}</p>
         {payload.map((entry, index: number) => (
           <p key={index} style={{ color: entry.color }}>
-            {entry.name}: {formatValue(entry.value)} €
+            {entry.name}: {formatCompactPrice(entry.value)} €
           </p>
         ))}
       </div>
@@ -125,12 +103,12 @@ const renderCustomBarLabel = (props: {
       y={y - 8}
       fill="#303F8D"
       textAnchor="middle"
-      fontSize="12"
+      fontSize="24"
       fontWeight="700"
       fontFamily="var(--font-kanit), system-ui, sans-serif"
-      dominantBaseline="middle"
+      offset={10}
     >
-      {formatDesktopValue(value)}
+      {formatCompactPrice(value)}
     </text>
   );
 };
@@ -149,7 +127,7 @@ export default function DesktopComparisonChart({ data, dataLoading }: DesktopCha
   // Calculate max value for proper Y-axis scaling
   const allValues = data.flatMap(d => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
-  
+
   // Add padding to max value to prevent bars from touching the top
   const yAxisMax = Math.round(maxValue * 1.15);
 
