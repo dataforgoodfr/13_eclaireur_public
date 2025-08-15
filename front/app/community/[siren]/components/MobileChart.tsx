@@ -23,6 +23,7 @@ type MobileChartProps = {
     legendLabel?: string;
     labelColor?: string;
     siren?: string; // For interpeller button
+    unitLabel?: string; // Unit label like "M€" or "k€"
 };
 
 
@@ -35,7 +36,8 @@ export default function MobileChart({
     formatValue = formatCompactPrice,
     legendLabel = "",
     labelColor = '#303F8D',
-    siren
+    siren,
+    unitLabel
 }: MobileChartProps) {
     if (!data || data.length === 0) {
         return <div className="text-gray-500 text-center p-4">Aucune donnée disponible</div>;
@@ -68,25 +70,25 @@ export default function MobileChart({
                 const isPrimaryMissing = !item.primary || item.primary === 0;
                 const primaryValue = isPrimaryMissing ? avgValue : item.primary;
                 const primaryFillColor = isPrimaryMissing ? '#F4D93E' : primaryColor;
-                
+
                 // Check if secondary value is 0 or missing - show average in yellow
                 const isSecondaryMissing = mode === 'dual' && (!item.secondary || item.secondary === 0);
                 const secondaryValue = isSecondaryMissing ? avgValue : item.secondary;
                 const secondaryFillColor = isSecondaryMissing ? '#F4D93E' : secondaryColor;
 
                 return (
-                <div key={item.year} className="flex items-center gap-2 py-1 min-w-0" style={{ height: '60px' }}>
-                    <div className="w-10 text-sm font-medium text-muted flex-shrink-0">{item.year}</div>
-                    <div className="flex-1 relative">
-                        <ResponsiveContainer width="100%" height={50}>
-                            <BarChart
-                                data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
-                                layout="vertical"
-                                margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
-                            >
-                            <XAxis hide type="number" domain={[0, chartMax]} />
-                            <YAxis hide type="category" />
-                            {/* <Legend
+                    <div key={item.year} className="flex items-center gap-2 py-1 min-w-0" style={{ height: '60px' }}>
+                        <div className="w-10 text-sm font-medium text-muted flex-shrink-0">{item.year}</div>
+                        <div className="flex-1 relative">
+                            <ResponsiveContainer width="100%" height={50}>
+                                <BarChart
+                                    data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
+                                    layout="vertical"
+                                    margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
+                                >
+                                    <XAxis hide type="number" domain={[0, chartMax]} />
+                                    <YAxis hide type="category" />
+                                    {/* <Legend
                                             formatter={() => <span className='text-primary'>{legendLabel}</span>}
                                             wrapperStyle={{
                                                 color: '#000000 !important',
@@ -95,60 +97,60 @@ export default function MobileChart({
                                             iconType="rect"
                                             iconSize={24}
                                         /> */}
-                            {/* Primary bar */}
-                            <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
-                                <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0] as unknown as number} />
-                                {/* Only show label if not showing interpeller button */}
-                                {!(mode === 'single' && isPrimaryMissing && siren) && (
-                                    <LabelList
-                                        dataKey="primary"
-                                        position="right"
-                                        formatter={(value: number) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
-                                        style={{
-                                            fontSize: isPrimaryMissing ? "14px" : "24px",
-                                            fill: labelColor,
-                                            fontWeight: isPrimaryMissing ? "600" : "700",
-                                            fontFamily: "var(--font-kanit)",
-                                            stroke: "none",
-                                            textShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                        }}
-                                    />
-                                )}
-                            </Bar>
+                                    {/* Primary bar */}
+                                    <Bar dataKey="primary" barSize={40} radius={[0, 0, 16, 0]} >
+                                        <Cell fill={primaryFillColor} stroke={isPrimaryMissing ? '#E5C72E' : "#303F8D"} strokeWidth={1} radius={[0, 0, 16, 0] as unknown as number} />
+                                        {/* Only show label if not showing interpeller button */}
+                                        {!(mode === 'single' && isPrimaryMissing && siren) && (
+                                            <LabelList
+                                                dataKey="primary"
+                                                position="right"
+                                                formatter={(value: number) => isPrimaryMissing ? "Aucune donnée" : formatValue(value)}
+                                                style={{
+                                                    fontSize: isPrimaryMissing ? "14px" : "24px",
+                                                    fill: labelColor,
+                                                    fontWeight: isPrimaryMissing ? "600" : "700",
+                                                    fontFamily: "var(--font-kanit)",
+                                                    stroke: "none",
+                                                    textShadow: "0 1px 2px rgba(0,0,0,0.1)"
+                                                }}
+                                            />
+                                        )}
+                                    </Bar>
 
-                            {/* Secondary bar (only in dual mode) */}
-                            {mode === 'dual' && item.secondary !== undefined && (
-                                <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={40}>
-                                    <Cell fill={secondaryFillColor} stroke={isSecondaryMissing ? '#E5C72E' : "#E5E7EB"} strokeWidth={1} />
-                                    <LabelList
-                                        dataKey="secondary"
-                                        position="right"
-                                        formatter={(value: number) => isSecondaryMissing ? "Aucune donnée" : formatValue(value)}
-                                        style={{
-                                            fontSize: isSecondaryMissing ? "14px" : "24px",
-                                            fill: labelColor,
-                                            fontWeight: isSecondaryMissing ? "600" : "700",
-                                            fontFamily: "var(--font-kanit)",
-                                            stroke: "none",
-                                            textShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                        }}
-                                    />
-                                </Bar>
+                                    {/* Secondary bar (only in dual mode) */}
+                                    {mode === 'dual' && item.secondary !== undefined && (
+                                        <Bar dataKey="secondary" barSize={40} radius={[0, 0, 4, 0]} y={40}>
+                                            <Cell fill={secondaryFillColor} stroke={isSecondaryMissing ? '#E5C72E' : "#E5E7EB"} strokeWidth={1} />
+                                            <LabelList
+                                                dataKey="secondary"
+                                                position="right"
+                                                formatter={(value: number) => isSecondaryMissing ? "Aucune donnée" : formatValue(value)}
+                                                style={{
+                                                    fontSize: isSecondaryMissing ? "14px" : "24px",
+                                                    fill: labelColor,
+                                                    fontWeight: isSecondaryMissing ? "600" : "700",
+                                                    fontFamily: "var(--font-kanit)",
+                                                    stroke: "none",
+                                                    textShadow: "0 1px 2px rgba(0,0,0,0.1)"
+                                                }}
+                                            />
+                                        </Bar>
+                                    )}
+                                </BarChart>
+                            </ResponsiveContainer>
+
+                            {/* Show interpeller button and text for missing data */}
+                            {mode === 'single' && isPrimaryMissing && siren && (
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                    <div className="text-base font-semibold text-primary max-w-20">
+                                        Aucune donnée
+                                    </div>
+                                    <InterpellerButton siren={siren} />
+                                </div>
                             )}
-                        </BarChart>
-                    </ResponsiveContainer>
-                    
-                    {/* Show interpeller button and text for missing data */}
-                    {mode === 'single' && isPrimaryMissing && siren && (
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div className="text-base font-semibold text-primary max-w-20">
-                                Aucune donnée
-                            </div>
-                            <InterpellerButton siren={siren} />
                         </div>
-                    )}
                     </div>
-                </div>
                 );
             })}
 
@@ -162,11 +164,18 @@ export default function MobileChart({
                 </defs>
             </svg>
             {legendLabel && (
-                <div className="flex items-center gap-2 mt-4 px-4">
-                    <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: primaryColor }} />
-                    <div className="text-sm font-medium" style={{ color: labelColor }}>
-                        {legendLabel}
+                <div className="flex flex-col items-center gap-2 mt-4 px-4">
+                    <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: primaryColor }} />
+                        <div className="text-sm font-medium" style={{ color: labelColor }}>
+                            {legendLabel}
+                        </div>
                     </div>
+                    {unitLabel && (
+                        <div className="text-xs text-primary font-medium">
+                            Montants exprimés en {unitLabel}
+                        </div>
+                    )}
                 </div>
             )}
         </>

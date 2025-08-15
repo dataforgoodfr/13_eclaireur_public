@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCompactPrice } from '#utils/utils';
+import { formatCompactPrice, formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Bar,
@@ -135,6 +135,14 @@ function BarChart({
 
   // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
+    // Determine the appropriate unit based on max value
+    const allValuesMobile = data.flatMap(d => [d.value]);
+    const maxValueMobile = allValuesMobile.length > 0 ? Math.max(...allValuesMobile) : 0;
+    const unitMobile = getMonetaryUnit(maxValueMobile);
+
+    // Format function based on the chosen unit
+    const formatValueMobile = (value: number) => formatMonetaryValue(value, unitMobile);
+
     // Transform data for MobileChart format
     const mobileChartData = data.map(item => ({
       year: item.year,
@@ -146,10 +154,11 @@ function BarChart({
         data={mobileChartData}
         mode="single"
         primaryColor={barColor}
-        formatValue={formatLabel}
+        formatValue={formatValueMobile}
         legendLabel={legendLabel}
         labelColor="#303F8D"
         siren={siren}
+        unitLabel={unitMobile}
       />
     );
   }
@@ -159,6 +168,12 @@ function BarChart({
   const allValues = data.flatMap(d => [d.value]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
   const avgValue = maxValue / 2; // Average value for "Aucune donnée"
+
+  // Determine the appropriate unit based on max value
+  const unit = getMonetaryUnit(maxValue);
+
+  // Format function based on the chosen unit
+  const formatValue = (value: number) => formatMonetaryValue(value, unit);
 
   // Process data with same logic as mobile version
   const chartDataForDisplay = data.map(item => {
@@ -190,16 +205,21 @@ function BarChart({
           }}
         >
           <XAxis dataKey='year' axisLine={true} tickLine={true} />
-          <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
+          <YAxis tickFormatter={(value) => formatValue(value)} />
           <Legend
             content={() => {
               const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-1';
               return (
-                <div className="flex items-center justify-center gap-2 mt-4">
-                  <div
-                    className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
-                  />
-                  <span className="text-primary font-semibold">{legendLabel}</span>
+                <div className="flex flex-col items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
+                    />
+                    <span className="text-primary font-semibold">{legendLabel}</span>
+                  </div>
+                  <div className="text-xs text-primary font-medium">
+                    Montants exprimés en {unit}
+                  </div>
                 </div>
               );
             }}
@@ -244,7 +264,7 @@ function BarChart({
             ))}
             <LabelList
               position='top'
-              formatter={(value: number) => value === avgValue ? "" : formatCompactPrice(value)}
+              formatter={(value: number) => value === avgValue ? "" : formatValue(value)}
               fill='#303F8D'
               // No border to text
               strokeWidth={0}

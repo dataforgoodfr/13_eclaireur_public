@@ -144,46 +144,58 @@ const ChartWithLegend = ({
   isMobile: boolean;
   isLoading: boolean;
   siren: string;
-}) => (
-  <>
-    {isMobile ? (
-      <MobileComparisonChart data={data} dataLoading={isLoading} siren={siren} />
-    ) : (
-      <DesktopComparisonChart data={data} dataLoading={isLoading} siren={siren} />
-    )}
+}) => {
+  // Determine the appropriate unit based on max value
+  const allValues = data.flatMap(d => [d.community, d.regional]);
+  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+  const unit = maxValue >= 1000000 ? 'M€' : 'k€';
 
-    <div className="bg-white rounded-lg p-4">
-      <div className="flex flex-wrap gap-6 justify-center">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-primary rounded" />
-          <span className="text-sm">
-            {data[0]?.regionalLabel || "Moyenne régionale"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <svg width="16" height="16" className="rounded">
-            <defs>
-              <pattern 
-                id="stripes-legend" 
-                patternUnits="userSpaceOnUse" 
-                width="6" 
-                height="6"
-                patternTransform="rotate(45)"
-              >
-                <rect width="2" height="6" fill="#303F8D" />
-                <rect x="2" width="4" height="6" fill="white" />
-              </pattern>
-            </defs>
-            <rect width="16" height="16" fill="url(#stripes-legend)" rx="2" className="stroke-primary" strokeWidth="1" />
-          </svg>
-          <span className="text-sm">
-            {data[0]?.communityLabel || "Budget de collectivité"}
-          </span>
+  return (
+    <>
+      {isMobile ? (
+        <MobileComparisonChart data={data} dataLoading={isLoading} siren={siren} />
+      ) : (
+        <DesktopComparisonChart data={data} dataLoading={isLoading} siren={siren} />
+      )}
+
+      <div className="bg-white rounded-lg p-4">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-wrap gap-6 justify-center">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-primary rounded" />
+              <span className="text-sm">
+                {data[0]?.regionalLabel || "Moyenne régionale"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16" className="rounded">
+                <defs>
+                  <pattern 
+                    id="stripes-legend" 
+                    patternUnits="userSpaceOnUse" 
+                    width="6" 
+                    height="6"
+                    patternTransform="rotate(45)"
+                  >
+                    <rect width="2" height="6" fill="#303F8D" />
+                    <rect x="2" width="4" height="6" fill="white" />
+                  </pattern>
+                </defs>
+                <rect width="16" height="16" fill="url(#stripes-legend)" rx="2" className="stroke-primary" strokeWidth="1" />
+              </svg>
+              <span className="text-sm">
+                {data[0]?.communityLabel || "Budget de collectivité"}
+              </span>
+            </div>
+          </div>
+          <div className="text-xs text-primary font-medium">
+            Montants exprimés en {unit}
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 // Content-only skeleton for faster TabHeader display
 const ContentSkeleton = ({ isMobile }: { isMobile: boolean }) => (

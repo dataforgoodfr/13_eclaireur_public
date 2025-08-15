@@ -1,6 +1,7 @@
 "use client"
 
 import { ActionButton } from '#components/ui/action-button';
+import { formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import MobileChart from '../MobileChart';
@@ -25,6 +26,14 @@ export default function MobileComparisonChart({ data, dataLoading, siren }: Mobi
     if (!data || data.length === 0) {
         return <div className="text-muted text-center p-4">Aucune donnée disponible</div>;
     }
+
+    // Calculate max value for proper unit determination
+    const allValues = data.flatMap(d => [d.community, d.regional]);
+    const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+    const unit = getMonetaryUnit(maxValue);
+
+    // Format function based on the chosen unit
+    const formatValue = (value: number) => formatMonetaryValue(value, unit);
 
     // Check if any data is missing
     const hasNoData = data.some(item => item.community === 0 || item.regional === 0);
@@ -63,6 +72,7 @@ export default function MobileComparisonChart({ data, dataLoading, siren }: Mobi
                 mode="dual"
                 primaryColor="#303F8D"
                 secondaryColor="url(#stripes)"
+                formatValue={formatValue}
             />
         </div>
     );

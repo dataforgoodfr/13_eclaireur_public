@@ -1,7 +1,7 @@
 'use client';
 
 import { ActionButton } from '#components/ui/action-button';
-import { formatCompactPrice } from '#utils/utils';
+import { formatCompactPrice, formatMonetaryValue, getMonetaryDivisor, getMonetaryUnit } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -163,8 +163,8 @@ const CustomTooltip = ({ active, payload, label }: {
   return null;
 };
 
-// Custom bar label renderer
-const renderCustomBarLabel = (props: {
+// Custom bar label renderer factory
+const createCustomBarLabel = (formatValue: (value: number) => string) => (props: {
   x: number;
   y: number;
   width: number;
@@ -207,7 +207,7 @@ const renderCustomBarLabel = (props: {
       fontFamily="var(--font-kanit), system-ui, sans-serif"
       offset={10}
     >
-      {formatCompactPrice(value)}
+      {formatValue(value)}
     </text>
   );
 };
@@ -228,6 +228,12 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   // Calculate max value for proper Y-axis scaling
   const allValues = data.flatMap(d => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
+
+  // Determine the appropriate unit based on max value
+  const unit = getMonetaryUnit(maxValue);
+
+  // Format function based on the chosen unit
+  const formatValue = (value: number) => formatMonetaryValue(value, unit);
 
   // Add padding to max value to prevent bars from touching the top
   const yAxisMax = Math.round(maxValue * 1.15);
@@ -254,6 +260,7 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   return (
     <div className="relative">
       {dataLoading && <LoadingOverlay />}
+
 
       {/* Interpeller button when there's no data */}
       {hasNoData && siren && (
@@ -283,16 +290,7 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
           <YAxis
             tick={{ fontSize: 12 }}
             axisLine={{ stroke: '#e5e7eb' }}
-            tickFormatter={(value) => {
-              const millions = value / 1000000;
-              const roundedToTens = Math.round(millions / 10) * 10 * 1000000;
-              return new Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'EUR',
-                notation: 'compact',
-                compactDisplay: 'short'
-              }).format(roundedToTens);
-            }}
+            tickFormatter={(value) => formatValue(value)}
             domain={[0, yAxisMax]}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -301,14 +299,14 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
             dataKey="community"
             fill="#303F8D"
             name={data.length > 0 ? data[0].communityLabel : "Budget de collectivité"}
-            label={renderCustomBarLabel}
+            label={createCustomBarLabel(formatValue)}
             shape={CommunityBar}
           />
           <Bar
             dataKey="regional"
             fill="#303F8D"
             name={data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}
-            label={renderCustomBarLabel}
+            label={createCustomBarLabel(formatValue)}
             shape={StripedBar}
           />
         </BarChart>
