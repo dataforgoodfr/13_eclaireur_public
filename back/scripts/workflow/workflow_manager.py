@@ -52,7 +52,7 @@ class WorkflowManager:
         return [
             CPVLabelsWorkflow,
             SireneWorkflow,
-            FinancialAccounts,
+            FinancialAccounts.from_config,
             ElectedOfficialsWorkflow.from_config,
             DeclaInteretWorkflow,
             OfglWorkflowFactory.from_config,
@@ -67,6 +67,10 @@ class WorkflowManager:
         self.logger.info("Workflow started.")
 
         for workflow in self.get_workflows():
+            if True:
+                workflow(deepcopy(self.config)).run()
+                continue
+
             try:
                 workflow(deepcopy(self.config)).run()
             except Exception as e:

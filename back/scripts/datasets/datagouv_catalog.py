@@ -52,6 +52,7 @@ class DataGouvCatalog(BaseDataset):
             "extras_analysis:last-modified-detection": None,
             "extras_analysis:parsing:parquet_size": None,
             "extras_check:headers:content-md5": None,
+            "analysis:checksum": None,
         }
         catalog = catalog.assign(
             **{k: v for k, v in extra_columns.items() if k not in catalog.columns}

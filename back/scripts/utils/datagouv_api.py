@@ -27,8 +27,6 @@ class DataGouvAPI:
         savedir = Path(savedir or ".")
         savedir.mkdir(exist_ok=True, parents=True)
         save_filename = savedir / f"dataset_{dataset_id}.parquet"
-        if savedir and save_filename.exists():
-            return pd.read_parquet(save_filename)
 
         url = f"https://www.data.gouv.fr/api/1/datasets/{dataset_id}/"
         datasets = []
@@ -61,6 +59,8 @@ class DataGouvAPI:
                 "resource_description",
                 "organization_id",
                 "organization",
+                "checksum_value",
+                "checksum_type",
             ],
         )
         if savedir:
@@ -134,6 +134,8 @@ class DataGouvAPI:
             "format": resource["format"],
             "created_at": resource["created_at"],
             "resource_description": resource["description"],
+            "checksum_value": resource["checksum"]["value"],
+            "checksum_type": resource["checksum"]["type"],
         }
 
     @staticmethod

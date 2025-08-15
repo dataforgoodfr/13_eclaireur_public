@@ -14,6 +14,7 @@ extras_analysis:last-modified-at
 extras_analysis:last-modified-detection
 extras_analysis:parsing:parquet_size
 extras_check:headers:content-md5
+analysis:checksum
 format
 id
 id_datagouv

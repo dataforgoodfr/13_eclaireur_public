@@ -59,6 +59,8 @@ class TopicAggregator(DatasetAggregator):
         self.extra_columns = Counter()
         self.missing_data = []
 
+        self.main_config = project_config
+
     @classmethod
     def get_config_key(cls):
         return "topic_aggregator"
