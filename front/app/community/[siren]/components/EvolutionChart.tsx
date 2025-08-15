@@ -1,25 +1,13 @@
 'use client';
 
-import { formatCompactPrice, formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
+import { formatCompactPrice } from '#utils/utils';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Bar,
-  Cell,
-  LabelList,
-  Legend,
-  BarChart as RechartsBarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis
-} from 'recharts';
+import { useChartData, type ChartDataType } from './hooks/useChartData';
 import ChartSkeleton from './ChartSkeleton';
-
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
-import { InterpellerButton } from '../../../../components/ui/interpeller-button';
 import MobileChart from './MobileChart';
+import DesktopEvolutionChart from './DesktopEvolutionChart';
 import { CHART_HEIGHT } from './constants';
-
-export type ChartDataType = 'marches-publics' | 'subventions';
 export type DisplayMode = 'amounts' | 'counts';
 
 type EvolutionChartProps = {
@@ -123,6 +111,10 @@ function BarChart({
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
+  // Use shared chart data logic
+  const chartData = useChartData({ data, chartType });
+  const { unit, formatValue, avgValue, chartDataForDisplay } = chartData;
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
@@ -135,14 +127,6 @@ function BarChart({
 
   // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
-    // Determine the appropriate unit based on max value
-    const allValuesMobile = data.flatMap(d => [d.value]);
-    const maxValueMobile = allValuesMobile.length > 0 ? Math.max(...allValuesMobile) : 0;
-    const unitMobile = getMonetaryUnit(maxValueMobile);
-
-    // Format function based on the chosen unit
-    const formatValueMobile = (value: number) => formatMonetaryValue(value, unitMobile);
-
     // Transform data for MobileChart format
     const mobileChartData = data.map(item => ({
       year: item.year,
@@ -154,129 +138,27 @@ function BarChart({
         data={mobileChartData}
         mode="single"
         primaryColor={barColor}
-        formatValue={formatValueMobile}
+        formatValue={formatValue}
         legendLabel={legendLabel}
         labelColor="#303F8D"
         siren={siren}
-        unitLabel={unitMobile}
+        unitLabel={unit}
       />
     );
   }
 
   // Pour desktop : graphique vertical
-
-  const allValues = data.flatMap(d => [d.value]);
-  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
-  const avgValue = maxValue / 2; // Average value for "Aucune donnée"
-
-  // Determine the appropriate unit based on max value
-  const unit = getMonetaryUnit(maxValue);
-
-  // Format function based on the chosen unit
-  const formatValue = (value: number) => formatMonetaryValue(value, unit);
-
-  // Process data with same logic as mobile version
-  const chartDataForDisplay = data.map(item => {
-    // Check if primary value is 0 or missing - show average in yellow (same as mobile)
-    const isPrimaryMissing = !item.value || item.value === 0;
-    const primaryValue = isPrimaryMissing ? avgValue : item.value;
-
-    return {
-      year: item.year,
-      value: primaryValue,
-      originalValue: item.value,
-      isPrimaryMissing
-    };
-  });
-
-
   return (
-    <div className="relative">
-      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
-        <RechartsBarChart
-          width={500}
-          height={300}
-          data={chartDataForDisplay}
-          margin={{
-            top: 30,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <XAxis dataKey='year' axisLine={true} tickLine={true} />
-          <YAxis tickFormatter={(value) => formatValue(value)} />
-          <Legend
-            content={() => {
-              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-1';
-              return (
-                <div className="flex flex-col items-center gap-2 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
-                    />
-                    <span className="text-primary font-semibold">{legendLabel}</span>
-                  </div>
-                  <div className="text-xs text-primary font-medium">
-                    Montants exprimés en {unit}
-                  </div>
-                </div>
-              );
-            }}
-          />
-          <Bar
-            dataKey='value'
-            stackId='a'
-            strokeWidth={1}
-            radius={[16, 0, 0, 0]}
-            label={(props) => {
-              const entry = chartDataForDisplay[props.index];
-              if (entry?.isPrimaryMissing && siren) {
-                return (
-                  <g>
-                    <foreignObject
-                      x={props.x + props.width / 2 - 50}
-                      y={props.y - 120}
-                      width="100"
-                      height="120"
-                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
-                    >
-                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
-                        <InterpellerButton siren={siren} />
-                        <div className="text-lg font-semibold text-primary text-center">
-                          Aucune donnée
-                        </div>
-                      </div>
-                    </foreignObject>
-                  </g>
-                );
-              }
-              return <g />;
-            }}
-          >
-            {chartDataForDisplay.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
-                stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
-                strokeWidth={1}
-              />
-            ))}
-            <LabelList
-              position='top'
-              formatter={(value: number) => value === avgValue ? "" : formatValue(value)}
-              fill='#303F8D'
-              // No border to text
-              strokeWidth={0}
-              fontSize="16"
-              fontWeight="600"
-              fontFamily="var(--font-kanit), system-ui, sans-serif"
-              offset={20}
-            />
-          </Bar>
-        </RechartsBarChart>
-      </ResponsiveContainer>
-
-    </div>
+    <DesktopEvolutionChart
+      data={chartDataForDisplay}
+      barColor={barColor}
+      borderColor={borderColor}
+      unit={unit}
+      formatValue={formatValue}
+      avgValue={avgValue}
+      legendLabel={legendLabel}
+      chartType={chartType}
+      siren={siren}
+    />
   );
 }
