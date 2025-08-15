@@ -155,12 +155,27 @@ const ChartWithLegend = ({
     <div className="bg-white rounded-lg p-4">
       <div className="flex flex-wrap gap-6 justify-center">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#303F8D] rounded" />
+          <div className="w-4 h-4 bg-primary rounded" />
           <span className="text-sm">
             {data[0]?.regionalLabel || "Moyenne régionale"}
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <svg width="16" height="16" className="rounded">
+            <defs>
+              <pattern 
+                id="stripes-legend" 
+                patternUnits="userSpaceOnUse" 
+                width="6" 
+                height="6"
+                patternTransform="rotate(45)"
+              >
+                <rect width="2" height="6" fill="#303F8D" />
+                <rect x="2" width="4" height="6" fill="white" />
+              </pattern>
+            </defs>
+            <rect width="16" height="16" fill="url(#stripes-legend)" rx="2" className="stroke-primary" strokeWidth="1" />
+          </svg>
           <span className="text-sm">
             {data[0]?.communityLabel || "Budget de collectivité"}
           </span>

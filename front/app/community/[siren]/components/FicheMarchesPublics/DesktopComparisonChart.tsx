@@ -30,7 +30,7 @@ const CommunityBar = (props: unknown) => {
     height: number;
     payload?: { communityMissing?: boolean };
   };
-  
+
   // Use yellow if data is missing
   const actualFill = payload?.communityMissing ? '#F4D93E' : fill;
   const strokeColor = payload?.communityMissing ? '#E5C72E' : '#303F8D';
@@ -64,11 +64,11 @@ const StripedBar = (props: unknown) => {
     height: number;
     payload?: { regionalMissing?: boolean };
   };
-  
+
   // Use yellow if data is missing
   const actualFill = payload?.regionalMissing ? '#F4D93E' : fill;
   const strokeColor = payload?.regionalMissing ? '#E5C72E' : fill;
-  
+
   const patternId = `stripes-${x}`;
   const radius = 12;
 
@@ -113,18 +113,50 @@ const CustomTooltip = ({ active, payload, label }: {
     value: number;
     name: string;
     color: string;
+    dataKey: string;
   }>;
   label?: string;
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded shadow-lg">
-        <p className="font-semibold">{label}</p>
-        {payload.map((entry, index: number) => (
-          <p key={index} style={{ color: entry.color }}>
-            {entry.name}: {formatCompactPrice(entry.value)} €
-          </p>
-        ))}
+      <div className="bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-gray-100">
+        <p className="text-sm font-semibold text-gray-600 mb-3">Année {label}</p>
+        <div className="space-y-2">
+          {payload.map((entry, index: number) => {
+            const isStriped = entry.dataKey === 'regional';
+            return (
+              <div key={index} className="flex items-center gap-3">
+                {isStriped ? (
+                  <svg width="16" height="16" className="flex-shrink-0">
+                    <defs>
+                      <pattern 
+                        id="tooltip-stripes" 
+                        patternUnits="userSpaceOnUse" 
+                        width="6" 
+                        height="6"
+                        patternTransform="rotate(45)"
+                      >
+                        <rect width="2" height="6" fill="#303F8D" />
+                        <rect x="2" width="4" height="6" fill="white" />
+                      </pattern>
+                    </defs>
+                    <rect width="16" height="16" fill="url(#tooltip-stripes)" rx="2" className="stroke-primary" strokeWidth="1" />
+                  </svg>
+                ) : (
+                  <div className="w-4 h-4 rounded bg-primary flex-shrink-0" />
+                )}
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700">
+                    {entry.name}
+                  </p>
+                  <p className="text-base font-bold text-primary">
+                    {formatCompactPrice(entry.value)}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -142,10 +174,10 @@ const renderCustomBarLabel = (props: {
   payload?: { communityMissing?: boolean; regionalMissing?: boolean };
 }) => {
   const { x, y, width, height, value, payload } = props;
-  
+
   // Check if this bar represents missing data
   const isMissing = payload?.communityMissing || payload?.regionalMissing;
-  
+
   if (isMissing) {
     // Show "Aucune donnée" centered in the bar
     return (
@@ -192,7 +224,7 @@ const LoadingOverlay = () => (
 
 export default function DesktopComparisonChart({ data, dataLoading, siren }: DesktopChartProps) {
   const router = useRouter();
-  
+
   // Calculate max value for proper Y-axis scaling
   const allValues = data.flatMap(d => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
@@ -220,9 +252,9 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   };
 
   return (
-    <div className="bg-white rounded-lg relative">
+    <div className="relative">
       {dataLoading && <LoadingOverlay />}
-      
+
       {/* Interpeller button when there's no data */}
       {hasNoData && siren && (
         <div className="absolute top-4 right-4 z-10">
@@ -235,7 +267,7 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
           </ActionButton>
         </div>
       )}
-      
+
       <ResponsiveContainer width="100%" height={550}>
         <BarChart
           data={transformedData}

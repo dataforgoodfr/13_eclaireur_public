@@ -43,7 +43,7 @@ export default function Evolution({ siren }: EvolutionProps) {
       />
 
       {/* Chart Section */}
-      <div className='bg-white rounded-lg shadow-sm p-4 md:p-6'>
+      <div className='p-4 md:p-6'>
         <MarchesPublicsChart
           siren={siren}
           displayMode={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}

@@ -90,6 +90,7 @@ export function EvolutionChart({
     borderColor={config.borderColor}
     siren={siren}
     legendLabel={config.legendLabels[displayMode]}
+    chartType={chartType}
   />;
 }
 
@@ -109,6 +110,7 @@ type BarChartProps = {
   borderColor: string;
   siren?: string;
   legendLabel: string;
+  chartType: ChartDataType;
 };
 
 function BarChart({
@@ -116,7 +118,8 @@ function BarChart({
   barColor,
   borderColor,
   siren,
-  legendLabel
+  legendLabel,
+  chartType
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -152,7 +155,7 @@ function BarChart({
   }
 
   // Pour desktop : graphique vertical
-  // Calculate the maximum value across all data to normalize bar sizes (same as mobile)
+
   const allValues = data.flatMap(d => [d.value]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
   const avgValue = maxValue / 2; // Average value for "Aucune donnée"
@@ -189,13 +192,17 @@ function BarChart({
           <XAxis dataKey='year' axisLine={true} tickLine={true} />
           <YAxis tickFormatter={(value) => formatCompactPrice(value)} />
           <Legend
-            formatter={() => <span className='text-primary'>{legendLabel}</span>}
-            wrapperStyle={{
-              color: '#000000 !important',
-              fontWeight: 600
+            content={() => {
+              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-1';
+              return (
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <div
+                    className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
+                  />
+                  <span className="text-primary font-semibold">{legendLabel}</span>
+                </div>
+              );
             }}
-            iconType="rect"
-            iconSize={24}
           />
           <Bar
             dataKey='value'
@@ -224,7 +231,7 @@ function BarChart({
                   </g>
                 );
               }
-              return <g></g>;
+              return <g />;
             }}
           >
             {chartDataForDisplay.map((entry, index) => (
