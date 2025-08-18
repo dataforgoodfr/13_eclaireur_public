@@ -1,6 +1,5 @@
 'use client';
 
-import { formatCompactPrice } from '#utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
 import ChartSkeleton from './ChartSkeleton';
@@ -82,10 +81,6 @@ export function EvolutionChart({
   />;
 }
 
-function formatLabel(value: number): string {
-  if (value === 0) return 'Aucunes données publiées';
-  return formatCompactPrice(value);
-}
 
 type BarChartData = {
   year: number;
