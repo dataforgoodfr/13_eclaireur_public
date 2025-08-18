@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Instagram, Linkedin, Facebook } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -43,24 +42,42 @@ export default function Footer() {
             <div className='flex gap-2'>
               <a
                 href='#'
-                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                className='flex h-8 w-8 items-center justify-center rounded hover:opacity-80 transition-opacity'
                 aria-label='Instagram'
               >
-                <Instagram size={16} />
+                <Image
+                  src='/logos/rs/Instagram.png'
+                  alt='Instagram'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
               </a>
               <a
                 href='#'
-                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                className='flex h-8 w-8 items-center justify-center rounded hover:opacity-80 transition-opacity'
                 aria-label='LinkedIn'
               >
-                <Linkedin size={16} />
+                <Image
+                  src='/logos/rs/Linkedin.png'
+                  alt='LinkedIn'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
               </a>
               <a
                 href='#'
-                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                className='flex h-8 w-8 items-center justify-center rounded hover:opacity-80 transition-opacity'
                 aria-label='Facebook'
               >
-                <Facebook size={16} />
+                <Image
+                  src='/logos/rs/Facebook.png'
+                  alt='Facebook'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
               </a>
             </div>
           </div>
@@ -82,7 +99,7 @@ export default function Footer() {
                 className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
               >
                 <Image
-                  src='/dataforgoodLogo.png'
+                  src='/logos/assos/Data for Good.svg'
                   alt='Data For Good'
                   width={32}
                   height={32}
@@ -104,7 +121,7 @@ export default function Footer() {
                 className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
               >
                 <Image
-                  src='/anticorLogo.png'
+                  src='/logos/assos/Anticor.svg'
                   alt='Anticor'
                   width={32}
                   height={32}
@@ -120,7 +137,7 @@ export default function Footer() {
                 className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
               >
                 <Image
-                  src='/transparencyLogo.png'
+                  src='/logos/assos/Transparency international.svg'
                   alt='Transparency International'
                   width={32}
                   height={32}
