@@ -4,38 +4,56 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 
-const SOCIAL_LINKS = [
-  { href: '#', label: 'Instagram', src: '/logos/rs/Instagram.png', alt: 'Instagram' },
-  { href: '#', label: 'LinkedIn', src: '/logos/rs/Linkedin.png', alt: 'LinkedIn' },
-  { href: '#', label: 'Facebook', src: '/logos/rs/Facebook.png', alt: 'Facebook' },
-];
+const FOOTER_DATA = {
+  social: [
+    { href: '#', label: 'Instagram', src: '/logos/rs/Instagram.png', alt: 'Instagram' },
+    { href: '#', label: 'LinkedIn', src: '/logos/rs/Linkedin.png', alt: 'LinkedIn' },
+    { href: '#', label: 'Facebook', src: '/logos/rs/Facebook.png', alt: 'Facebook' },
+  ],
+  partners: [
+    {
+      href: 'https://dataforgood.fr/',
+      imgSrc: '/logos/assos/Data for Good.svg',
+      imgAlt: 'Data For Good',
+      name: 'Data For Good',
+    },
+  ],
+  initiatives: [
+    {
+      href: 'https://www.anticor.org/',
+      imgSrc: '/logos/assos/Anticor.svg',
+      imgAlt: 'Anticor',
+      name: 'Anticor',
+    },
+    {
+      href: 'https://transparency-france.org/',
+      imgSrc: '/logos/assos/Transparency international.svg',
+      imgAlt: 'Transparency International',
+      name: 'Transparency International',
+    },
+  ],
+  navigation: [
+    {
+      title: "Comprendre",
+      links: [
+        { href: '/about', label: 'Qui sommes‑nous' },
+        { href: '/project', label: 'Le projet' },
+        { href: '/interpeller', label: 'Interpeller' },
+      ]
+    },
+    {
+      title: "Besoin d'aide",
+      links: [
+        { href: '/contact', label: 'Contact' },
+        { href: '/faq', label: 'FAQ' },
+        { href: '/cookies', label: 'Gérer mes cookies' },
+      ]
+    }
+  ]
+};
 
-const PARTNERS = [
-  {
-    href: 'https://dataforgood.fr/',
-    imgSrc: '/logos/assos/Data for Good.svg',
-    imgAlt: 'Data For Good',
-    name: 'Data For Good',
-  },
-];
-
-const INITIATIVES = [
-  {
-    href: 'https://www.anticor.org/',
-    imgSrc: '/logos/assos/Anticor.svg',
-    imgAlt: 'Anticor',
-    name: 'Anticor',
-  },
-  {
-    href: 'https://transparency-france.org/',
-    imgSrc: '/logos/assos/Transparency international.svg',
-    imgAlt: 'Transparency International',
-    name: 'Transparency International',
-  },
-];
-
-const btnBase =
-  'flex h-10 min-w-[150px] items-center gap-3 rounded-full bg-white p-4 transition-colors hover:bg-gray-200';
+const btnBase = 'flex w-fit items-center gap-4 rounded-full bg-white pl-4 pr-6 py-3 transition-colors hover:bg-gray-200 overflow-hidden';
+const linkBase = 'text-primary hover:text-primary hover:underline transition-colors text-link';
 
 const Footer: FC = () => (
   <footer
@@ -59,7 +77,7 @@ const Footer: FC = () => (
               Suivez‑nous
             </span>
             <div className="flex gap-2">
-              {SOCIAL_LINKS.map(({ href, label, src, alt }) => (
+              {FOOTER_DATA.social.map(({ href, label, src, alt }) => (
                 <a
                   key={label}
                   href={href}
@@ -83,79 +101,71 @@ const Footer: FC = () => (
         </section>
 
         <section className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
-          <div className="flex flex-col gap-8">
-            <div>
-              <h3 className="mb-4 text-lg font-semibold text-primary">
-                Un projet accompagné par
-              </h3>
-              <div className="flex flex-col gap-3">
-                {PARTNERS.map(({ href, imgSrc, imgAlt, name }) => (
-                  <a
-                    key={name}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={btnBase}
-                  >
-                    <Image src={imgSrc} alt={imgAlt} width={24} height={24} className="h-6 w-6" loading="lazy" />
-                    <span className="font-semibold text-primary">{name}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex gap-1 md:block">
+              <div className="flex flex-col gap-3 md:gap-8 flex-1">
+                <div>
+                  <h3 className="mb-2 text-tag font-semibold text-gray-500">
+                    Un projet accompagné par
+                  </h3>
+                  <div className="flex flex-col gap-3">
+                    {FOOTER_DATA.partners.map(({ href, imgSrc, imgAlt, name }) => (
+                      <a
+                        key={name}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={btnBase}
+                      >
+                        <Image src={imgSrc} alt={imgAlt} width={24} height={24} className="h-6 w-6" loading="lazy" />
+                        <span className="text-sm font-semibold text-primary whitespace-nowrap">{name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
 
-            <div>
-              <h3 className="mb-4 text-lg font-semibold text-primary">
-                À l&apos;initiative de
-              </h3>
-              <div className="flex flex-col gap-3">
-                {INITIATIVES.map(({ href, imgSrc, imgAlt, name }) => (
-                  <a
-                    key={name}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={btnBase}
-                  >
-                    <Image src={imgSrc} alt={imgAlt} width={24} height={24} className="h-6 w-6" loading="lazy" />
-                    <span className="font-semibold text-primary">{name}</span>
-                  </a>
-                ))}
+                <div>
+                  <h3 className="mb-2 text-tag font-semibold text-gray-500">
+                    À l&apos;initiative de
+                  </h3>
+                  <div className="flex flex-col gap-3">
+                    {FOOTER_DATA.initiatives.map(({ href, imgSrc, imgAlt, name }) => (
+                      <a
+                        key={name}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={btnBase}
+                      >
+                        <Image src={imgSrc} alt={imgAlt} width={24} height={24} className="h-6 w-6" loading="lazy" />
+                        <span className="text-sm font-semibold text-primary whitespace-nowrap">{name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center md:hidden mt-4">
+                <Image
+                  src="/eclaireur/Mascotte-appel.png"
+                  alt="Mascotte Éclaireur Public"
+                  width={114}
+                  height={94}
+                  className="h-[94px] w-28"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-center md:hidden">
-            <Image
-              src="/eclaireur/Mascotte-appel.png"
-              alt="Mascotte Éclaireur Public"
-              width={80}
-              height={80}
-              className="h-16 w-16"
-              loading="lazy"
-            />
-          </div>
-
-          <FooterNav
-            title="Comprendre"
-            links={[
-              { href: '/about', label: 'Qui sommes‑nous' },
-              { href: '/project', label: 'Le projet' },
-              { href: '/interpeller', label: 'Interpeller' },
-            ]}
-          />
-          <FooterNav
-            title="Besoin d&apos;aide"
-            links={[
-              { href: '/contact', label: 'Contact' },
-              { href: '/faq', label: 'FAQ' },
-              { href: '/cookies', label: 'Gérer mes cookies' },
-            ]}
-          />
+          {FOOTER_DATA.navigation.map((section) => (
+            <FooterNav key={section.title} title={section.title} links={section.links} />
+          ))}
+          
           <div className="col-span-2 md:col-span-1">
             <div className="flex flex-row md:flex-col gap-8 md:gap-0 w-full">
               <div className="flex flex-col space-y-2 flex-1">
-                <h3 className="mb-2 text-lg font-semibold text-secondary">Vous êtes un élu ?</h3>
+                <h3 className="mb-2 text-lg font-semibold text-secondary-dark">Vous êtes un élu ?</h3>
                 <a href="https://www.eclaireurpublic.fr/aide-aux-elus" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
                   Aide aux élus
                 </a>
@@ -178,11 +188,11 @@ const Footer: FC = () => (
             Copyright © 2025 • Avec engagement contre la corruption 🚀
           </p>
           <nav className="flex gap-4">
-            <Link href="/license" className="text-primary hover:text-primary hover:underline transition-colors text-link">
+            <Link href="/license" className={linkBase}>
               Licences
             </Link>
             <span className="text-muted">|</span>
-            <Link href="/legal" className="text-primary hover:text-primary hover:underline transition-colors text-link">
+            <Link href="/legal" className={linkBase}>
               Mentions légales
             </Link>
           </nav>
@@ -197,7 +207,6 @@ type FooterNavLink = {
   label: string;
   external?: boolean;
   isText?: boolean;
-  noUnderline?: boolean;
 };
 
 type FooterNavProps = {
@@ -207,18 +216,18 @@ type FooterNavProps = {
 
 const FooterNav: FC<FooterNavProps> = ({ title, links }) => (
   <div>
-    <h3 className="mb-4 text-lg font-semibold text-secondary">{title}</h3>
+    <h3 className="mb-4 text-lg font-semibold text-secondary-dark">{title}</h3>
     <ul className="space-y-2">
-      {links.map(({ href, label, external, isText, noUnderline }) => (
+      {links.map(({ href, label, external, isText }) => (
         <li key={label}>
           {isText ? (
             <span className="text-muted text-sm">{label}</span>
           ) : external ? (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary hover:underline transition-colors text-link">
+            <a href={href} target="_blank" rel="noopener noreferrer" className={linkBase}>
               {label}
             </a>
           ) : (
-            <Link href={href} className="text-primary hover:text-primary hover:underline transition-colors text-link">
+            <Link href={href} className={linkBase}>
               {label}
             </Link>
           )}
