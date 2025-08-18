@@ -1,6 +1,6 @@
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { formatAmount, formatFirstLetterToUppercase, formatPrice } from '#utils/utils';
+import { formatAmount, formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 
 import { TooltipProps } from '../../app/community/[siren]/types/interface';
 
@@ -15,7 +15,7 @@ export default function TreemapTooltip({ visible, x, y, name, value, percentage 
       }}
     >
       <div className='mb-2 flex flex-wrap items-center justify-between'>
-        <div className='mr-3'>{formatPrice(value)}</div>
+        <div className='mr-3 text-primary'>{formatCompactPrice(value)}</div>
         <div className='font-normal'>({formatAmount(percentage * 100)}%)</div>
       </div>
       <hr />
