@@ -4,27 +4,12 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className='relative w-full bg-none object-cover'>
-      {/* Decorative eyes similar to header pattern */}
-      <Image src="/eclaireur/eyes_left.svg" alt="Yeux" className='absolute hidden md:block h-8' style={{ left: '15%', top: '40%' }} width={54} height={36} />
-      <Image src="/eclaireur/eyes_right.svg" alt="Yeux" className='absolute hidden md:block h-8' style={{ right: '25%', top: '20%' }} width={60} height={40} />
-      <Image src="/eclaireur/eyes_right.svg" alt="Yeux" className='absolute hidden md:block h-6' style={{ right: '10%', top: '80%' }} width={42} height={28} />
-      
-      {/* Mascot in upper right corner */}
-      <div className='absolute top-4 right-4 z-20'>
-        <Image
-          src='/eclaireur/Mascotte-appel.png'
-          alt='Mascotte Éclaireur Public'
-          width={80}
-          height={80}
-          className='h-16 w-16 md:h-20 md:w-20'
-        />
-      </div>
-
       <div className='global-margin flex h-full items-center justify-center'>
         <div className='w-full px-4 py-8 md:px-6 lg:px-8'>
-          {/* Header section with logo and social links */}
-          <div className='mb-8 flex flex-col items-start justify-between gap-4 pr-20 md:flex-row md:items-center md:pr-24'>
-            <div className='flex flex-col items-start gap-3'>
+          {/* Desktop: Header section in one row with logo, suivez-nous, social links, and mascot */}
+          {/* Mobile: Header section stacked */}
+          <div className='mb-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between'>
+            <div className='flex flex-col items-start gap-3 md:flex-row md:items-center md:gap-8'>
               {/* Full logo */}
               <Image
                 src='/eclaireur/eclaireur-footeur.svg'
@@ -34,7 +19,7 @@ export default function Footer() {
                 className='h-16 w-auto md:h-20'
               />
               
-              {/* Social media links - positioned under the logo */}
+              {/* Social media links - positioned next to logo on desktop, under on mobile */}
               <div className='flex items-center gap-3'>
                 <span className='text-sm font-medium text-muted'>Suivez-nous</span>
                 <div className='flex gap-2'>
@@ -80,70 +65,99 @@ export default function Footer() {
                 </div>
               </div>
             </div>
+            
+            {/* Mascot - positioned on right in desktop, with partners in mobile */}
+            <div className='hidden md:block'>
+              <Image
+                src='/eclaireur/Mascotte-appel.png'
+                alt='Mascotte Éclaireur Public'
+                width={80}
+                height={80}
+                className='h-16 w-16 md:h-20 md:w-20'
+              />
+            </div>
           </div>
 
           {/* Main content grid */}
+          {/* Desktop: 4 columns, Mobile: 2 columns with partners + mascot */}
           <div className='grid grid-cols-1 gap-8 md:grid-cols-4 lg:gap-12'>
             {/* Partners section */}
             <div className='md:col-span-2'>
-              <h3 className='mb-4 text-lg font-semibold text-primary'>
-                Un projet accompagné par
-              </h3>
-              
-              <div className='mb-6 flex items-center gap-2'>
-                <a
-                  href='https://dataforgood.fr/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
-                >
-                  <Image
-                    src='/logos/assos/Data for Good.svg'
-                    alt='Data For Good'
-                    width={32}
-                    height={32}
-                    className='h-8 w-8'
-                  />
-                  <span className='font-semibold text-primary'>Data For Good</span>
-                </a>
+              <div className='flex flex-col gap-6 md:gap-8'>
+                <div>
+                  <h3 className='mb-4 text-lg font-semibold text-primary'>
+                    Un projet accompagné par
+                  </h3>
+                  
+                  <div className='mb-6 flex items-center gap-2'>
+                    <a
+                      href='https://dataforgood.fr/'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+                    >
+                      <Image
+                        src='/logos/assos/Data for Good.svg'
+                        alt='Data For Good'
+                        width={32}
+                        height={32}
+                        className='h-8 w-8'
+                      />
+                      <span className='font-semibold text-primary'>Data For Good</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className='mb-4 text-lg font-semibold text-primary'>
+                    À l&apos;initiative de
+                  </h3>
+                  
+                  <div className='flex flex-col gap-3 sm:flex-row sm:gap-4'>
+                    <a
+                      href='https://www.anticor.org/'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+                    >
+                      <Image
+                        src='/logos/assos/Anticor.svg'
+                        alt='Anticor'
+                        width={32}
+                        height={32}
+                        className='h-8 w-8'
+                      />
+                      <span className='font-semibold text-primary'>Anticor</span>
+                    </a>
+                    
+                    <a
+                      href='https://transparency-france.org/'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+                    >
+                      <Image
+                        src='/logos/assos/Transparency international.svg'
+                        alt='Transparency International'
+                        width={32}
+                        height={32}
+                        className='h-8 w-8'
+                      />
+                      <span className='font-semibold text-primary'>Transparency International</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
-              <h3 className='mb-4 text-lg font-semibold text-primary'>
-                À l&apos;initiative de
-              </h3>
-              
-              <div className='flex flex-col gap-3 sm:flex-row sm:gap-4'>
-                <a
-                  href='https://www.anticor.org/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
-                >
-                  <Image
-                    src='/logos/assos/Anticor.svg'
-                    alt='Anticor'
-                    width={32}
-                    height={32}
-                    className='h-8 w-8'
-                  />
-                  <span className='font-semibold text-primary'>Anticor</span>
-                </a>
-                
-                <a
-                  href='https://transparency-france.org/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
-                >
-                  <Image
-                    src='/logos/assos/Transparency international.svg'
-                    alt='Transparency International'
-                    width={32}
-                    height={32}
-                    className='h-8 w-8'
-                  />
-                  <span className='font-semibold text-primary'>Transparency International</span>
-                </a>
+              {/* Mobile: Mascot positioned with partners */}
+              <div className='mt-6 flex justify-center md:hidden'>
+                <Image
+                  src='/eclaireur/Mascotte-appel.png'
+                  alt='Mascotte Éclaireur Public'
+                  width={80}
+                  height={80}
+                  className='h-16 w-16'
+                />
               </div>
             </div>
 
