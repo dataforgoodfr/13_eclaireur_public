@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import { GoToPreviousPage } from '#components/utils/GoToPrevPage';
+import InterpellateFAQ from '#components/Interpellate/InterpellateFAQ';
 
 import { SelectedContactsProvider } from './Contexts/SelectedContactsContext';
 
@@ -32,6 +33,11 @@ export default function InterpellateLayout({ children }: PropsWithChildren) {
         </h1>
       </div>
       <SelectedContactsProvider>{children}</SelectedContactsProvider>
+      
+      {/* FAQ Banner pour toutes les pages d'interpellation */}
+      <div className='global-margin'>
+        <InterpellateFAQ />
+      </div>
     </main>
   );
 }
