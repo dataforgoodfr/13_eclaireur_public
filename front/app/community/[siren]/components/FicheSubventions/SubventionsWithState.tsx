@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { useSubventionsTab, TAB_VALUES } from '#hooks/useTabState';
+import { Subvention } from '#app/models/subvention';
 
 import Distribution from './Distribution';
 import Evolution from './Evolution';
@@ -9,7 +10,7 @@ import Ranking from './Ranking';
 
 interface SubventionsWithStateProps {
   siren: string;
-  subventions: any[];
+  subventions: Subvention[];
   availableYears: number[];
 }
 
