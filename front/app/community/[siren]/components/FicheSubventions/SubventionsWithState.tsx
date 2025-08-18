@@ -1,8 +1,8 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
-import { useSubventionsTab, TAB_VALUES } from '#hooks/useTabState';
 import { Subvention } from '#app/models/subvention';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+import { TAB_VALUES, useSubventionsTab } from '#hooks/useTabState';
 
 import Distribution from './Distribution';
 import Evolution from './Evolution';
@@ -33,7 +33,7 @@ export function SubventionsWithState({ siren, subventions, availableYears }: Sub
           Classement
         </TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value={TAB_VALUES.SUBVENTIONS.TRENDS}>
         <Evolution siren={siren} />
       </TabsContent>
