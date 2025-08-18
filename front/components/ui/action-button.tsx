@@ -32,8 +32,8 @@ export function ActionButton({
       className={cn(
         // Base styling - consistent height for all buttons with custom rounded corners
         'h-12 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none',
-        // Icon-only: square button
-        isIconOnly && 'w-12 p-0 flex items-center justify-center',
+        // Icon-only: 56x48 button
+        isIconOnly && 'w-14 h-12 p-0 flex items-center justify-center',
         // With text: standard horizontal padding, flex centering
         !isIconOnly && 'px-4 flex items-center justify-center',
         // Variant-specific styles

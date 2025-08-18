@@ -2,12 +2,12 @@
 
 import { formatCompactPrice } from '#utils/utils';
 import { useEffect, useMemo, useState } from 'react';
-import { useChartData, type ChartDataType } from './hooks/useChartData';
-import ChartSkeleton from './ChartSkeleton';
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
-import MobileChart from './MobileChart';
+import ChartSkeleton from './ChartSkeleton';
 import DesktopEvolutionChart from './DesktopEvolutionChart';
+import MobileChart from './MobileChart';
 import { CHART_HEIGHT } from './constants';
+import { type ChartDataType, useChartData } from './hooks/useChartData';
 export type DisplayMode = 'amounts' | 'counts';
 
 type EvolutionChartProps = {
@@ -24,7 +24,7 @@ const CHART_CONFIG = {
     barColor: '#CAD2FC', // score-transparence mp (brand-2)
     borderColor: '#303F8D',
     legendLabels: {
-      amounts: 'Montant des marchés publics publiées (€)',
+      amounts: 'Montant des marchés publics publiées',
       counts: 'Nombre de marchés publics publiées',
     },
   },
@@ -32,7 +32,7 @@ const CHART_CONFIG = {
     barColor: '#FAF79E', // score-transparence subvention (brand-1)
     borderColor: '#303F8D',
     legendLabels: {
-      amounts: 'Montant des subventions publiées (€)',
+      amounts: 'Montant des subventions publiées',
       counts: 'Nombre de subventions publiées',
     },
   },
