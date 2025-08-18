@@ -3,9 +3,15 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className='relative w-full bg-yellow-100'>
+    <footer 
+      className='relative w-full bg-cover bg-center bg-no-repeat'
+      style={{ backgroundImage: 'url(/eclaireur/project_background.jpg)' }}
+    >
+      {/* Overlay for better text readability */}
+      <div className='absolute inset-0 bg-secondary/80'></div>
+      
       {/* Mascot in upper right corner */}
-      <div className='absolute top-4 right-4 z-10'>
+      <div className='absolute top-4 right-4 z-20'>
         <Image
           src='/eclaireur/Mascotte-appel.png'
           alt='Mascotte Éclaireur Public'
@@ -15,7 +21,7 @@ export default function Footer() {
         />
       </div>
 
-      <div className='mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8'>
+      <div className='relative z-10 mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8'>
         {/* Header section with logo and social links */}
         <div className='mb-8 flex flex-col items-start justify-between gap-4 pr-20 md:flex-row md:items-center md:pr-24'>
           <div className='flex flex-col items-start gap-3'>
@@ -30,7 +36,7 @@ export default function Footer() {
             
             {/* Social media links - positioned under the logo */}
             <div className='flex items-center gap-3'>
-              <span className='text-sm font-medium text-gray-600'>Suivez-nous</span>
+              <span className='text-sm font-medium text-muted'>Suivez-nous</span>
               <div className='flex gap-2'>
                 <a
                   href='#'
@@ -80,7 +86,7 @@ export default function Footer() {
         <div className='grid grid-cols-1 gap-8 md:grid-cols-4 lg:gap-12'>
           {/* Partners section */}
           <div className='md:col-span-2'>
-            <h3 className='mb-4 text-lg font-semibold text-blue-900'>
+            <h3 className='mb-4 text-lg font-semibold text-primary'>
               Un projet accompagné par
             </h3>
             
@@ -98,11 +104,11 @@ export default function Footer() {
                   height={32}
                   className='h-8 w-8'
                 />
-                <span className='font-semibold text-blue-900'>Data For Good</span>
+                <span className='font-semibold text-primary'>Data For Good</span>
               </a>
             </div>
 
-            <h3 className='mb-4 text-lg font-semibold text-blue-900'>
+            <h3 className='mb-4 text-lg font-semibold text-primary'>
               À l&apos;initiative de
             </h3>
             
@@ -120,7 +126,7 @@ export default function Footer() {
                   height={32}
                   className='h-8 w-8'
                 />
-                <span className='font-semibold text-blue-900'>Anticor</span>
+                <span className='font-semibold text-primary'>Anticor</span>
               </a>
               
               <a
@@ -136,21 +142,21 @@ export default function Footer() {
                   height={32}
                   className='h-8 w-8'
                 />
-                <span className='font-semibold text-blue-900'>Transparency International</span>
+                <span className='font-semibold text-primary'>Transparency International</span>
               </a>
             </div>
           </div>
 
           {/* Navigation columns */}
           <div>
-            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+            <h3 className='mb-4 text-lg font-semibold text-secondary'>
               Comprendre
             </h3>
             <ul className='space-y-2'>
               <li>
                 <Link
                   href='#'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Qui sommes nous
                 </Link>
@@ -158,7 +164,7 @@ export default function Footer() {
               <li>
                 <Link
                   href='#'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Le projet
                 </Link>
@@ -166,7 +172,7 @@ export default function Footer() {
               <li>
                 <Link
                   href='#'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Interpeller
                 </Link>
@@ -175,14 +181,14 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+            <h3 className='mb-4 text-lg font-semibold text-secondary'>
               Besoin d&apos;aide
             </h3>
             <ul className='space-y-2 mb-6'>
               <li>
                 <Link
                   href='/contact'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Contact
                 </Link>
@@ -190,7 +196,7 @@ export default function Footer() {
               <li>
                 <Link
                   href='#'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   FAQ
                 </Link>
@@ -198,34 +204,34 @@ export default function Footer() {
               <li>
                 <Link
                   href='#'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Gérer mes cookies
                 </Link>
               </li>
             </ul>
 
-            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+            <h3 className='mb-4 text-lg font-semibold text-secondary'>
               Vous êtes un élu ?
             </h3>
             <ul className='space-y-2'>
               <li>
                 <a
                   href='https://www.eclaireurpublic.fr/aide-aux-elus'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Aide aux élus
                 </a>
               </li>
               <li>
-                <span className='text-gray-600 text-sm'>Bonnes pratiques</span>
+                <span className='text-muted text-sm'>Bonnes pratiques</span>
               </li>
               <li>
                 <a
                   href='https://data.gouv.fr'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Data.gouv.fr
                 </a>
@@ -235,7 +241,7 @@ export default function Footer() {
                   href='https://publieretalab.studio/fr'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-gray-600 hover:text-blue-900 hover:underline'
+                  className='text-muted hover:text-primary hover:underline'
                 >
                   Publier vos données
                 </a>
@@ -245,21 +251,21 @@ export default function Footer() {
         </div>
 
         {/* Footer bottom */}
-        <div className='mt-8 flex flex-col items-center justify-center gap-4 border-t border-gray-200 pt-6 text-sm md:flex-row md:justify-between'>
-          <p className='text-center text-gray-500 md:text-left'>
+        <div className='mt-8 flex flex-col items-center justify-center gap-4 border-t border-muted-light pt-6 text-sm md:flex-row md:justify-between'>
+          <p className='text-center text-muted md:text-left'>
             Copyright © 2025 • Avec engagement contre la corruption 🚀
           </p>
           <div className='flex gap-4'>
             <Link
               href='/license'
-              className='text-gray-500 hover:text-blue-900 hover:underline'
+              className='text-muted hover:text-primary hover:underline'
             >
               Licences
             </Link>
-            <span className='text-gray-400'>|</span>
+            <span className='text-muted'>|</span>
             <Link
               href='/legal'
-              className='text-gray-500 hover:text-blue-900 hover:underline'
+              className='text-muted hover:text-primary hover:underline'
             >
               Mentions légales
             </Link>
