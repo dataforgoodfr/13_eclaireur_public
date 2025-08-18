@@ -1,19 +1,19 @@
 'use client';
 
-import { useQueryState, parseAsString } from 'nuqs';
+import { parseAsString, useQueryState } from 'nuqs';
 
 export const TAB_VALUES = {
   MARCHES_PUBLICS: {
-    TRENDS: 'trends',
-    DISTRIBUTION: 'distribution', 
-    COMPARISON: 'comparison',
-    DETAILS: 'details',
+    TRENDS: 'tendances',
+    DISTRIBUTION: 'distribution',
+    COMPARISON: 'comparaison',
+    DETAILS: 'contrats',
   },
   SUBVENTIONS: {
-    TRENDS: 'trends',
+    TRENDS: 'tendances',
     DISTRIBUTION: 'distribution',
-    COMPARISON: 'compare', 
-    DETAILS: 'details',
+    COMPARISON: 'comparaison',
+    DETAILS: 'contrats',
   }
 } as const;
 
