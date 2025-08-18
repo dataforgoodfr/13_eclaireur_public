@@ -166,18 +166,18 @@ const Footer: FC = () => (
             <div className="flex flex-row md:flex-col gap-8 md:gap-0 w-full">
               <div className="flex flex-col space-y-2 flex-1">
                 <h3 className="mb-2 text-lg font-semibold text-secondary-dark">Vous êtes un élu ?</h3>
-                <a href="https://www.eclaireurpublic.fr/aide-aux-elus" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
+                <Link href="https://www.eclaireurpublic.fr/aide-aux-elus" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
                   Aide aux élus
-                </a>
+                </Link>
               </div>
               <div className="flex flex-col space-y-2 flex-1">
                 <span className="text-muted text-sm">Bonnes pratiques</span>
-                <a href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
+                <Link href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
                   Data.gouv.fr
-                </a>
-                <a href="https://publieretalab.studio/fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
+                </Link>
+                <Link href="https://publieretalab.studio/fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary underline transition-colors text-link">
                   Publier vos données
-                </a>
+                </Link>
               </div>
             </div>
           </div>
