@@ -1,6 +1,3 @@
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
-
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
 import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
@@ -9,17 +6,7 @@ import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publi
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
-import Comparison from './Comparison';
-import Contracts from './Contracts';
-import Distribution from './Distribution';
-import Evolution from './Evolution';
-
-const tabs = {
-  trends: 'trends',
-  distribution: 'distribution',
-  comparison: 'comparison',
-  details: 'details',
-};
+import { MarchesPublicsWithState } from './MarchesPublicsWithState';
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
@@ -30,8 +17,6 @@ async function getMarchesPublics(siren: string) {
 
   return marchesPublicsResults;
 }
-
-
 
 const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
   return (
@@ -54,9 +39,7 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  // const marchesPublics = [];
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
-  // const availableYears = [2021, 2022, 2023];
 
   // Fetch transparency score for Marchés Publics
   const { bareme } = await fetchMostRecentTransparencyScore(siren);
@@ -64,26 +47,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   return (
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
-        <Tabs defaultValue={tabs.trends}>
-          <TabsList className='h-10 sm:h-12 p-0.5 sm:p-1'>
-            <TabsTrigger value={tabs.trends} className='px-2 sm:px-3 text-xs sm:text-sm'>Évolution</TabsTrigger>
-            <TabsTrigger value={tabs.distribution} className='px-2 sm:px-3 text-xs sm:text-sm'>Répartition</TabsTrigger>
-            <TabsTrigger value={tabs.comparison} className='px-2 sm:px-3 text-xs sm:text-sm'>Comparaison</TabsTrigger>
-            <TabsTrigger value={tabs.details} className='px-2 sm:px-3 text-xs sm:text-sm'>Contrats</TabsTrigger>
-          </TabsList>
-          <TabsContent value={tabs.trends}>
-            <Evolution siren={siren} />
-          </TabsContent>
-          <TabsContent value={tabs.distribution}>
-            <Distribution siren={siren} availableYears={availableYears} />
-          </TabsContent>
-          <TabsContent value={tabs.comparison}>
-            <Comparison siren={siren} />
-          </TabsContent>
-          <TabsContent value={tabs.details}>
-            <Contracts siren={siren} availableYears={availableYears} />
-          </TabsContent>
-        </Tabs>
+        <MarchesPublicsWithState siren={siren} availableYears={availableYears} />
       ) : (
         <NoData />
       )}
