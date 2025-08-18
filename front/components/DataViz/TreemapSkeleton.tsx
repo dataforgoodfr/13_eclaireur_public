@@ -27,7 +27,20 @@ export default function TreemapSkeleton({
     return () => observer.disconnect();
   }, []);
 
-  const width = containerWidth || 1486;
+  // Always maintain consistent height to prevent layout shift
+  if (!containerWidth) {
+    return (
+      <div 
+        className="relative w-full flex items-center justify-center" 
+        ref={containerRef} 
+        style={{ height }}
+      >
+        <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  const width = containerWidth;
 
   // Generate random rectangle sizes for skeleton effect
   const rectangles = [
@@ -41,26 +54,32 @@ export default function TreemapSkeleton({
   ];
 
   return (
-    <div className="relative animate-pulse" ref={containerRef}>
-      <svg width={width} height={height}>
+    <div className="relative animate-pulse w-full" ref={containerRef}>
+      <svg width={width} height={height} aria-label="Chargement du treemap">
+        <title>Chargement du graphique treemap</title>
         {rectangles.map((rect, index) => (
-          <rect
-            key={index}
-            x={rect.x}
-            y={rect.y}
-            width={rect.width}
-            height={rect.height}
+          <path
+            key={`rect-${rect.x}-${rect.y}-${index}`}
+            d={`
+              M ${rect.x + 8} ${rect.y}
+              L ${rect.x + rect.width} ${rect.y}
+              L ${rect.x + rect.width} ${rect.y + rect.height - 8}
+              Q ${rect.x + rect.width} ${rect.y + rect.height} ${rect.x + rect.width - 8} ${rect.y + rect.height}
+              L ${rect.x} ${rect.y + rect.height}
+              L ${rect.x} ${rect.y + 8}
+              Q ${rect.x} ${rect.y} ${rect.x + 8} ${rect.y}
+              Z
+            `}
             fill="#E5E7EB"
+            stroke="#D1D5DB"
+            strokeWidth={1}
             className="animate-pulse"
-            style={{
-              clipPath: 'inset(0 0 0 0 round 0.5rem 0 0.5rem 0)'
-            }}
           />
         ))}
         {/* Skeleton text elements */}
         {rectangles.map((rect, index) => (
           rect.width > 80 && rect.height > 60 && (
-            <g key={`text-${index}`}>
+            <g key={`text-${rect.x}-${rect.y}-${index}`}>
               {/* Price skeleton */}
               <rect
                 x={rect.x + 8}
