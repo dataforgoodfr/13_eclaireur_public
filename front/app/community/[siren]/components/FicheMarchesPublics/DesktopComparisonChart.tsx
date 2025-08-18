@@ -1,7 +1,7 @@
 'use client';
 
 import { ActionButton } from '#components/ui/action-button';
-import { formatCompactPrice, formatMonetaryValue, getMonetaryDivisor, getMonetaryUnit } from '#utils/utils';
+import { formatCompactPrice, formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -164,52 +164,57 @@ const CustomTooltip = ({ active, payload, label }: {
 };
 
 // Custom bar label renderer factory
-const createCustomBarLabel = (formatValue: (value: number) => string) => (props: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  value: number;
-  index?: number;
-  payload?: { communityMissing?: boolean; regionalMissing?: boolean };
-}) => {
-  const { x, y, width, height, value, payload } = props;
+const createCustomBarLabel = (formatValue: (value: number) => string) => {
+  const CustomBarLabel = (props: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    value: number;
+    index?: number;
+    payload?: { communityMissing?: boolean; regionalMissing?: boolean };
+  }) => {
+    const { x, y, width, height, value, payload } = props;
 
-  // Check if this bar represents missing data
-  const isMissing = payload?.communityMissing || payload?.regionalMissing;
+    // Check if this bar represents missing data
+    const isMissing = payload?.communityMissing || payload?.regionalMissing;
 
-  if (isMissing) {
-    // Show "Aucune donnée" centered in the bar
+    if (isMissing) {
+      // Show "Aucune donnée" centered in the bar
+      return (
+        <text
+          x={x + width / 2}
+          y={y + height / 2}
+          fill="#303F8D"
+          textAnchor="middle"
+          fontSize="14"
+          fontWeight="600"
+          fontFamily="var(--font-kanit), system-ui, sans-serif"
+          dominantBaseline="middle"
+        >
+          Aucune donnée
+        </text>
+      );
+    }
+
     return (
       <text
         x={x + width / 2}
-        y={y + height / 2}
+        y={y - 8}
         fill="#303F8D"
         textAnchor="middle"
-        fontSize="14"
-        fontWeight="600"
+        fontSize="24"
+        fontWeight="700"
         fontFamily="var(--font-kanit), system-ui, sans-serif"
-        dominantBaseline="middle"
+        offset={10}
       >
-        Aucune donnée
+        {formatValue(value)}
       </text>
     );
-  }
+  };
 
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 8}
-      fill="#303F8D"
-      textAnchor="middle"
-      fontSize="24"
-      fontWeight="700"
-      fontFamily="var(--font-kanit), system-ui, sans-serif"
-      offset={10}
-    >
-      {formatValue(value)}
-    </text>
-  );
+  CustomBarLabel.displayName = 'CustomBarLabel';
+  return CustomBarLabel;
 };
 
 // Loading overlay component

@@ -30,7 +30,7 @@ export default function Evolution({ siren }: EvolutionProps) {
             isActive={isMarchesPublicsCountDisplayed}
             onChange={setIsMarchesPublicsCountDisplayed}
             label1='Montants annuels'
-            label2='Nombre de marchés publics'
+            label2='Nombre de contrats'
           />
         }
         actions={
