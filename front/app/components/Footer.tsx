@@ -4,10 +4,21 @@ import { Instagram, Linkedin, Facebook } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className='w-full bg-yellow-100'>
+    <footer className='relative w-full bg-yellow-100'>
+      {/* Mascot in upper right corner */}
+      <div className='absolute top-4 right-4 z-10'>
+        <Image
+          src='/eclaireur/mascotte_e.svg'
+          alt='Mascotte Éclaireur Public'
+          width={80}
+          height={80}
+          className='h-16 w-16 md:h-20 md:w-20'
+        />
+      </div>
+
       <div className='mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8'>
         {/* Header section with logo and social links */}
-        <div className='mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center'>
+        <div className='mb-8 flex flex-col items-start justify-between gap-4 pr-20 md:flex-row md:items-center md:pr-24'>
           <div className='flex items-center gap-4'>
             <Image
               src='/eclaireur/logo.svg'
