@@ -1,93 +1,250 @@
 import Image from 'next/image';
 import Link from 'next/link';
-
-const linkClassName =
-  'flex items-center justify-center rounded bg-neutral-700 p-1 text-white hover:bg-neutral-800';
+import { Instagram, Linkedin, Facebook } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <div className='w-full bg-neutral-400'>
-      <div className='mx-auto w-full max-w-screen-lg p-4 md:p-6'>
-        <div className='flex items-center justify-start space-x-3 pb-4'>
-          <div>
-            <h2 className='text-xl font-extrabold md:text-3xl'>Éclaireur Public</h2>
-            <div className='text-lg font-bold md:text-2xl'>Pour une transparence des dépenses</div>
+    <footer className='w-full bg-yellow-100'>
+      <div className='mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8'>
+        {/* Header section with logo and social links */}
+        <div className='mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center'>
+          <div className='flex items-center gap-4'>
+            <Image
+              src='/eclaireur/logo.svg'
+              alt='Éclaireur Public'
+              width={48}
+              height={48}
+              className='h-12 w-12'
+            />
+            <div>
+              <h2 className='text-2xl font-bold text-blue-900 md:text-3xl'>
+                Éclaireur Public
+              </h2>
+              <p className='text-sm text-gray-600 md:text-base'>
+                Pour une transparence des dépenses
+              </p>
+            </div>
           </div>
-        </div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10'>
-          <div className='col-span-1 grid grid-cols-2 gap-1 text-center text-sm md:text-base'>
-            <Link href={'/methodologie'} className={linkClassName}>
-              Méthodologie
-            </Link>
-            <Link href={'/advanced-search'} className={linkClassName}>
-              Télécharger les données
-            </Link>
-            <a href='/contact' className={linkClassName}>
-              Contact
-            </a>
-            <Link href={'/faq'} className={linkClassName}>
-              FAQ
-            </Link>
-          </div>
-          <div className='col-span-1'>
-            <div className='leading-7'>
-              Projet mené par
+          
+          {/* Social media links */}
+          <div className='flex items-center gap-3'>
+            <span className='text-sm font-medium text-orange-500'>Suivez-nous</span>
+            <div className='flex gap-2'>
               <a
-                href='https://dataforgood.fr/'
-                target='_blank'
-                className='relative -my-2 inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 hover:bg-neutral-300'
+                href='#'
+                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                aria-label='Instagram'
               >
-                <Image
-                  src='/dataforgoodLogo.png'
-                  alt='logo de Data For Good'
-                  className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
-                  height={16}
-                  width={16}
-                />
-                <span className='pl-5 font-semibold'>Data For Good</span>
+                <Instagram size={16} />
               </a>
-              en partenariat avec
               <a
-                href='https://www.anticor.org/'
-                target='_blank'
-                className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
+                href='#'
+                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                aria-label='LinkedIn'
               >
-                <Image
-                  src='/anticorLogo.png'
-                  alt='logo de Anticor'
-                  className='absolute top-1/2 h-4 -translate-y-1/2'
-                  height={16}
-                  width={16}
-                />
-                <span className='pl-5 font-semibold'>Anticor</span>
+                <Linkedin size={16} />
               </a>
-              et
               <a
-                href='https://transparency-france.org/'
-                target='_blank'
-                className='relative inline-flex items-baseline whitespace-nowrap rounded-md bg-neutral-400 px-1 py-0 hover:bg-neutral-300'
+                href='#'
+                className='flex h-8 w-8 items-center justify-center rounded bg-blue-900 text-white hover:bg-blue-800 transition-colors'
+                aria-label='Facebook'
               >
-                <Image
-                  src='/transparencyLogo.png'
-                  alt='logo de Transparency International'
-                  className='absolute top-1/2 h-4 w-4 -translate-y-1/2'
-                  height={16}
-                  width={16}
-                />
-                <span className='pl-5 font-semibold'>Transparency International</span>
+                <Facebook size={16} />
               </a>
             </div>
           </div>
         </div>
-        <div className='flex items-center justify-center gap-6 pt-6 text-sm text-white'>
-          <Link href={'/legal'} className='hover:text-neutral-200'>
-            Mentions légales
-          </Link>
-          <Link href={'/license'} className='hover:text-neutral-200'>
-            Licence d'utilisation
-          </Link>
+
+        {/* Main content grid */}
+        <div className='grid grid-cols-1 gap-8 md:grid-cols-4 lg:gap-12'>
+          {/* Partners section */}
+          <div className='md:col-span-2'>
+            <h3 className='mb-4 text-lg font-semibold text-gray-700'>
+              Un projet accompagné par
+            </h3>
+            
+            <div className='mb-6 flex items-center gap-2'>
+              <a
+                href='https://dataforgood.fr/'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+              >
+                <Image
+                  src='/dataforgoodLogo.png'
+                  alt='Data For Good'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
+                <span className='font-semibold text-blue-900'>Data For Good</span>
+              </a>
+            </div>
+
+            <h3 className='mb-4 text-lg font-semibold text-gray-700'>
+              À l&apos;initiative de
+            </h3>
+            
+            <div className='flex flex-col gap-3 sm:flex-row sm:gap-4'>
+              <a
+                href='https://www.anticor.org/'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+              >
+                <Image
+                  src='/anticorLogo.png'
+                  alt='Anticor'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
+                <span className='font-semibold text-blue-900'>Anticor</span>
+              </a>
+              
+              <a
+                href='https://transparency-france.org/'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 transition-colors'
+              >
+                <Image
+                  src='/transparencyLogo.png'
+                  alt='Transparency International'
+                  width={32}
+                  height={32}
+                  className='h-8 w-8'
+                />
+                <span className='font-semibold text-blue-900'>Transparency International</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Navigation columns */}
+          <div>
+            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+              Comprendre
+            </h3>
+            <ul className='space-y-2'>
+              <li>
+                <Link
+                  href='#'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Qui sommes nous
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='#'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Le projet
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='#'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Interpeller
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+              Besoin d&apos;aide
+            </h3>
+            <ul className='space-y-2 mb-6'>
+              <li>
+                <Link
+                  href='/contact'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='#'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='#'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Gérer mes cookies
+                </Link>
+              </li>
+            </ul>
+
+            <h3 className='mb-4 text-lg font-semibold text-orange-500'>
+              Vous êtes un élu ?
+            </h3>
+            <ul className='space-y-2'>
+              <li>
+                <a
+                  href='https://www.eclaireurpublic.fr/aide-aux-elus'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Aide aux élus
+                </a>
+              </li>
+              <li>
+                <span className='text-gray-600 text-sm'>Bonnes pratiques</span>
+              </li>
+              <li>
+                <a
+                  href='https://data.gouv.fr'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Data.gouv.fr
+                </a>
+              </li>
+              <li>
+                <a
+                  href='https://publieretalab.studio/fr'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-blue-900 hover:text-blue-700 hover:underline'
+                >
+                  Publier vos données
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Footer bottom */}
+        <div className='mt-8 flex flex-col items-center justify-center gap-4 border-t border-gray-200 pt-6 text-sm text-gray-600 md:flex-row md:justify-between'>
+          <p className='text-center md:text-left'>
+            Copyright © 2025 • Avec engagement contre la corruption 🚀
+          </p>
+          <div className='flex gap-4'>
+            <Link
+              href='/license'
+              className='hover:text-blue-900 hover:underline'
+            >
+              Licences
+            </Link>
+            <span className='text-gray-400'>|</span>
+            <Link
+              href='/legal'
+              className='hover:text-blue-900 hover:underline'
+            >
+              Mentions légales
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 }
