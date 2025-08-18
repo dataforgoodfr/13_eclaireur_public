@@ -28,7 +28,7 @@ type ComparisonData = {
   regionalLabel: string;
 };
 
-const SCOPES = ['Régional', 'Départemental', 'National'] as const;
+const SCOPES = ['Départemental', 'Régional', 'National'] as const;
 type Scope = typeof SCOPES[number];
 
 // Fetch function outside component to enable reusability
@@ -264,7 +264,7 @@ const ContentSkeleton = ({ isMobile }: { isMobile: boolean }) => (
 );
 
 export default function Comparison({ siren }: ComparisonProps) {
-  const [selectedScope, setSelectedScope] = useState<Scope>('Régional');
+  const [selectedScope, setSelectedScope] = useState<Scope>('Départemental');
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Single query for all data fetching with smart caching
