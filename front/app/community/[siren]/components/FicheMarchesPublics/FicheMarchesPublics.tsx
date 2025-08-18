@@ -1,5 +1,3 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
-
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
 import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
@@ -8,18 +6,7 @@ import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publi
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
-import Comparison from './Comparison';
-import Contracts from './Contracts';
-import Distribution from './Distribution';
-import Evolution from './Evolution';
 import { MarchesPublicsWithState } from './MarchesPublicsWithState';
-
-const tabs = {
-  trends: 'trends',
-  distribution: 'distribution',
-  comparison: 'comparison',
-  details: 'details',
-};
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
@@ -30,8 +17,6 @@ async function getMarchesPublics(siren: string) {
 
   return marchesPublicsResults;
 }
-
-
 
 const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
   return (
@@ -54,9 +39,7 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
 
 export async function FicheMarchesPublics({ siren }: { siren: string }) {
   const marchesPublics = await getMarchesPublics(siren);
-  // const marchesPublics = [];
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
-  // const availableYears = [2021, 2022, 2023];
 
   // Fetch transparency score for Marchés Publics
   const { bareme } = await fetchMostRecentTransparencyScore(siren);
