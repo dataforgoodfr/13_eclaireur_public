@@ -8,7 +8,7 @@ import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
 import { TabHeader } from '../TabHeader';
-import SubventionsTable from './SubventionsSectorTable';
+import SubventionsTable from './SubventionsTable';
 
 type SubventionsProps = {
   siren: string;
