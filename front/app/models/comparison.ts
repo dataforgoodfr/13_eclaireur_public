@@ -20,3 +20,11 @@ export type MarchesPublicsComparisonData = {
   regional: number;
   regionalLabel: string;
 };
+
+export type SubventionsComparisonData = {
+  year: string;
+  community: number;
+  communityLabel: string;
+  regional: number;
+  regionalLabel: string;
+};

@@ -3,9 +3,10 @@ import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
+import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
-import { NoData } from '../NoData';
+import EmptyState from '#components/EmptyState';
 import { MarchesPublicsWithState } from './MarchesPublicsWithState';
 
 async function getMarchesPublics(siren: string) {
@@ -20,7 +21,7 @@ async function getMarchesPublics(siren: string) {
 
 const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
   return (
-    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
+    <div className='flex flex-col items-center justify-between sm:flex-row sm:items-center min-h-[80px]'>
       <div className='flex items-center gap-2 order-2 sm:order-1'>
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Marchés Publics</h2>
       </div>
@@ -37,7 +38,7 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
   );
 };
 
-export async function FicheMarchesPublics({ siren }: { siren: string }) {
+export async function FicheMarchesPublics({ siren, communityType }: { siren: string; communityType: CommunityType }) {
   const marchesPublics = await getMarchesPublics(siren);
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
 
@@ -47,9 +48,15 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   return (
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
-        <MarchesPublicsWithState siren={siren} availableYears={availableYears} />
+        <MarchesPublicsWithState siren={siren} availableYears={availableYears} communityType={communityType} />
       ) : (
-        <NoData />
+        <EmptyState
+          title="Oups, il n'y a pas de données sur les marchés publics de cette collectivité !"
+          description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les marchés publics."
+          actionText="Interpeller"
+          actionHref="/interpeller"
+          siren={siren}
+        />
       )}
     </FicheCard>
   );

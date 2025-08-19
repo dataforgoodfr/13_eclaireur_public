@@ -2,6 +2,7 @@
 
 import { ActionButton } from '#components/ui/action-button';
 import { Button } from '#components/ui/button';
+import EmptyState from '#components/EmptyState';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +15,9 @@ import { getDefaultComparisonScope, Scope } from '#utils/helpers/getDefaultCompa
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
+import { TabHeader } from '../FicheMarchesPublics/TabHeader';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
-import { TabHeader } from './TabHeader';
-import EmptyState from '#components/EmptyState';
 
 type ComparisonProps = {
   siren: string;
@@ -37,7 +37,7 @@ const SCOPES = ['Départemental', 'Régional', 'National'] as const;
 // Fetch function outside component to enable reusability
 const fetchComparisonData = async (siren: string, scope: string): Promise<ComparisonData[]> => {
   const response = await fetch(
-    `/api/communities/${siren}/marches_publics/comparison?scope=${scope.toLowerCase()}`
+    `/api/communities/${siren}/subventions/comparison?scope=${scope.toLowerCase()}`
   );
 
   if (!response.ok) {
@@ -81,7 +81,7 @@ const ScopeDropdown = ({
 const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }) => (
   <EmptyState
     title={`Oups, il n'y a pas de données de comparaison pour la période ${scope.toLowerCase()}e !`}
-    description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les marchés publics."
+    description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques."
     actionText="Interpeller"
     actionHref="/interpeller"
     className="h-[450px]"
@@ -151,7 +151,7 @@ const ChartWithLegend = ({
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap gap-6 justify-center">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-primary rounded" />
+              <div className="w-4 h-4 bg-brand-2 rounded" />
               <span className="text-sm">
                 {data[0]?.regionalLabel || "Moyenne régionale"}
               </span>
@@ -166,7 +166,7 @@ const ChartWithLegend = ({
                     height="6"
                     patternTransform="rotate(45)"
                   >
-                    <rect width="2" height="6" fill="#303F8D" />
+                    <rect width="2" height="6" fill="#E8F787" />
                     <rect x="2" width="4" height="6" fill="white" />
                   </pattern>
                 </defs>
@@ -177,7 +177,7 @@ const ChartWithLegend = ({
               </span>
             </div>
           </div>
-          <div className="text-xs text-primary font-medium">
+          <div className="text-xs text-brand-2 font-medium">
             Montants exprimés en {unit}
           </div>
         </div>
@@ -266,7 +266,7 @@ export default function Comparison({ siren, communityType }: ComparisonProps) {
     refetch,
     isFetching
   } = useQuery<ComparisonData[], Error>({
-    queryKey: ['comparison', siren, selectedScope],
+    queryKey: ['subventions-comparison', siren, selectedScope],
     queryFn: () => fetchComparisonData(siren, selectedScope),
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
