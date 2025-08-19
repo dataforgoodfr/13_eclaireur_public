@@ -3,6 +3,7 @@ import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
+import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
@@ -37,7 +38,7 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
   );
 };
 
-export async function FicheMarchesPublics({ siren }: { siren: string }) {
+export async function FicheMarchesPublics({ siren, communityType }: { siren: string; communityType: CommunityType }) {
   const marchesPublics = await getMarchesPublics(siren);
   const availableYears = await fetchMarchesPublicsAvailableYears(siren)
 
@@ -47,7 +48,7 @@ export async function FicheMarchesPublics({ siren }: { siren: string }) {
   return (
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
-        <MarchesPublicsWithState siren={siren} availableYears={availableYears} />
+        <MarchesPublicsWithState siren={siren} availableYears={availableYears} communityType={communityType} />
       ) : (
         <NoData />
       )}

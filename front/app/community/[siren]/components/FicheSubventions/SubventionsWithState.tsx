@@ -4,6 +4,7 @@ import { Subvention } from '#app/models/subvention';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { TAB_VALUES, useSubventionsTab } from '#hooks/useTabState';
+import { CommunityType } from '#utils/types';
 
 import Comparison from './Comparison';
 import Distribution from './Distribution';
@@ -15,9 +16,10 @@ interface SubventionsWithStateProps {
   subventions: Subvention[];
   availableYears: number[];
   transparencyIndex?: TransparencyScore | null;
+  communityType: CommunityType;
 }
 
-export function SubventionsWithState({ siren, subventions, availableYears, transparencyIndex }: SubventionsWithStateProps) {
+export function SubventionsWithState({ siren, subventions, availableYears, transparencyIndex, communityType }: SubventionsWithStateProps) {
   const [activeTab, setActiveTab] = useSubventionsTab();
 
   return (
@@ -44,7 +46,7 @@ export function SubventionsWithState({ siren, subventions, availableYears, trans
         <Distribution siren={siren} availableYears={availableYears} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.COMPARISON}>
-        <Comparison siren={siren} />
+        <Comparison siren={siren} communityType={communityType} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.DETAILS}>
         <Ranking data={subventions} availableYears={availableYears} />

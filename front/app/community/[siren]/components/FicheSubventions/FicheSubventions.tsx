@@ -3,6 +3,7 @@ import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchSubventions } from '#utils/fetchers/subventions/fetchSubventions-server';
 import { fetchSubventionsAvailableYears } from '#utils/fetchers/subventions/fetchSubventionsAvailableYears';
+import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 
 import { FicheCard } from '../FicheCard';
@@ -38,7 +39,7 @@ const SubventionsHeader = ({ transparencyIndex }: { transparencyIndex?: Transpar
   );
 };
 
-export async function FicheSubventions({ siren }: { siren: string }) {
+export async function FicheSubventions({ siren, communityType }: { siren: string; communityType: CommunityType }) {
   const subventions = await getSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);
 
@@ -49,7 +50,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
   return (
     <FicheCard header={<SubventionsHeader transparencyIndex={transparencyIndex} />}>
       {subventions.length > 0 ? (
-        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} transparencyIndex={transparencyIndex} />
+        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} transparencyIndex={transparencyIndex} communityType={communityType} />
       ) : (
         <NoData />
       )}

@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { useMarchesPublicsTab, TAB_VALUES } from '#hooks/useTabState';
+import { CommunityType } from '#utils/types';
 
 import Comparison from './Comparison';
 import Contracts from './Contracts';
@@ -11,9 +12,10 @@ import Evolution from './Evolution';
 interface MarchesPublicsWithStateProps {
   siren: string;
   availableYears: number[];
+  communityType: CommunityType;
 }
 
-export function MarchesPublicsWithState({ siren, availableYears }: MarchesPublicsWithStateProps) {
+export function MarchesPublicsWithState({ siren, availableYears, communityType }: MarchesPublicsWithStateProps) {
   const [activeTab, setActiveTab] = useMarchesPublicsTab();
 
   return (
@@ -40,7 +42,7 @@ export function MarchesPublicsWithState({ siren, availableYears }: MarchesPublic
         <Distribution siren={siren} availableYears={availableYears} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.COMPARISON}>
-        <Comparison siren={siren} />
+        <Comparison siren={siren} communityType={communityType} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.DETAILS}>
         <Contracts siren={siren} availableYears={availableYears} />

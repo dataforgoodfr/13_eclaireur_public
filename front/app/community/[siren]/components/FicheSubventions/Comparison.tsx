@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { useMediaQuery } from '#hooks/useMediaQuery';
+import { CommunityType } from '#utils/types';
+import { getDefaultComparisonScope, Scope } from '#utils/helpers/getDefaultComparisonScope';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
@@ -18,6 +20,7 @@ import MobileComparisonChart from './MobileComparisonChart';
 
 type ComparisonProps = {
   siren: string;
+  communityType?: CommunityType;
 };
 
 type ComparisonData = {
@@ -29,7 +32,6 @@ type ComparisonData = {
 };
 
 const SCOPES = ['Départemental', 'Régional', 'National'] as const;
-type Scope = typeof SCOPES[number];
 
 // Fetch function outside component to enable reusability
 const fetchComparisonData = async (siren: string, scope: string): Promise<ComparisonData[]> => {
@@ -263,8 +265,9 @@ const ContentSkeleton = ({ isMobile }: { isMobile: boolean }) => (
   </>
 );
 
-export default function Comparison({ siren }: ComparisonProps) {
-  const [selectedScope, setSelectedScope] = useState<Scope>('Départemental');
+export default function Comparison({ siren, communityType }: ComparisonProps) {
+  const defaultScope = communityType ? getDefaultComparisonScope(communityType) : 'Départemental';
+  const [selectedScope, setSelectedScope] = useState<Scope>(defaultScope);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Single query for all data fetching with smart caching
