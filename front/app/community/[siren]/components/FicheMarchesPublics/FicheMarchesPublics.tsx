@@ -6,7 +6,7 @@ import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publi
 import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 import { FicheCard } from '../FicheCard';
-import { NoData } from '../NoData';
+import EmptyState from '#components/EmptyState';
 import { MarchesPublicsWithState } from './MarchesPublicsWithState';
 
 async function getMarchesPublics(siren: string) {
@@ -50,7 +50,13 @@ export async function FicheMarchesPublics({ siren, communityType }: { siren: str
       {marchesPublics.length > 0 ? (
         <MarchesPublicsWithState siren={siren} availableYears={availableYears} communityType={communityType} />
       ) : (
-        <NoData />
+        <EmptyState
+          title="Oups, il n'y a pas de données sur les marchés publics de cette collectivité !"
+          description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les marchés publics."
+          actionText="Interpeller"
+          actionHref="/interpeller"
+          siren={siren}
+        />
       )}
     </FicheCard>
   );

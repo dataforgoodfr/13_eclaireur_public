@@ -17,6 +17,7 @@ import { useState } from 'react';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
 import { TabHeader } from './TabHeader';
+import EmptyState from '#components/EmptyState';
 
 type ComparisonProps = {
   siren: string;
@@ -77,29 +78,15 @@ const ScopeDropdown = ({
   </DropdownMenu>
 );
 
-const EmptyState = ({ scope }: { scope: string }) => (
-  <div className="bg-white rounded-lg h-[450px] flex items-center justify-center p-8">
-    <div className="text-center space-y-4">
-      <div className="text-gray-400">
-        <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1}
-            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-      </div>
-      <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Aucune donnée disponible
-        </h3>
-        <p className="text-gray-500">
-          Aucune donnée de comparaison n'est disponible pour la période {scope.toLowerCase()}e sélectionnée.
-        </p>
-      </div>
-    </div>
-  </div>
+const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }) => (
+  <EmptyState
+    title={`Oups, il n'y a pas de données de comparaison pour la période ${scope.toLowerCase()}e !`}
+    description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les marchés publics."
+    actionText="Interpeller"
+    actionHref="/interpeller"
+    className="h-[450px]"
+    siren={siren}
+  />
 );
 
 const ErrorState = ({ error, onRetry, isRetrying }: {
@@ -331,7 +318,7 @@ export default function Comparison({ siren, communityType }: ComparisonProps) {
           isRetrying={isFetching}
         />
       ) : data.length === 0 ? (
-        <EmptyState scope={selectedScope} />
+        <ComparisonEmptyState scope={selectedScope} siren={siren} />
       ) : (
         <ChartWithLegend
           data={data}

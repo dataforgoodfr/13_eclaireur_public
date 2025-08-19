@@ -7,7 +7,7 @@ import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 
 import { FicheCard } from '../FicheCard';
-import { NoData } from '../NoData';
+import EmptyState from '#components/EmptyState';
 import { SubventionsWithState } from './SubventionsWithState';
 
 async function getSubventions(siren: string) {
@@ -52,7 +52,13 @@ export async function FicheSubventions({ siren, communityType }: { siren: string
       {subventions.length > 0 ? (
         <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} transparencyIndex={transparencyIndex} communityType={communityType} />
       ) : (
-        <NoData />
+        <EmptyState
+          title="Oups, il n'y a pas de données sur les subventions de cette collectivité !"
+          description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques."
+          actionText="Interpeller"
+          actionHref="/interpeller"
+          siren={siren}
+        />
       )}
     </FicheCard>
   );
