@@ -20,7 +20,7 @@ async function getMarchesPublics(siren: string) {
 
 const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
   return (
-    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
+    <div className='flex flex-col items-center justify-between sm:flex-row sm:items-center min-h-[80px]'>
       <div className='flex items-center gap-2 order-2 sm:order-1'>
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Marchés Publics</h2>
       </div>

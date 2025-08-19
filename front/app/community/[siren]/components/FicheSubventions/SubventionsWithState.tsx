@@ -1,9 +1,11 @@
 'use client';
 
 import { Subvention } from '#app/models/subvention';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { TAB_VALUES, useSubventionsTab } from '#hooks/useTabState';
 
+import Comparison from './Comparison';
 import Distribution from './Distribution';
 import Evolution from './Evolution';
 import Ranking from './Ranking';
@@ -12,9 +14,10 @@ interface SubventionsWithStateProps {
   siren: string;
   subventions: Subvention[];
   availableYears: number[];
+  transparencyIndex?: TransparencyScore | null;
 }
 
-export function SubventionsWithState({ siren, subventions, availableYears }: SubventionsWithStateProps) {
+export function SubventionsWithState({ siren, subventions, availableYears, transparencyIndex }: SubventionsWithStateProps) {
   const [activeTab, setActiveTab] = useSubventionsTab();
 
   return (
@@ -41,13 +44,11 @@ export function SubventionsWithState({ siren, subventions, availableYears }: Sub
         <Distribution siren={siren} availableYears={availableYears} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.COMPARISON}>
-        <div className='flex h-[600px] w-full items-center justify-center bg-neutral-200'>
-          En construction
-        </div>
+        <Comparison siren={siren} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.DETAILS}>
         <Ranking data={subventions} availableYears={availableYears} />
       </TabsContent>
-    </Tabs>
+      </Tabs>
   );
 }

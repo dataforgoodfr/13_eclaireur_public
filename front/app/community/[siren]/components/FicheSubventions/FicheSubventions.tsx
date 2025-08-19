@@ -1,5 +1,9 @@
+import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
+import { SCORE_TO_ADJECTIF, SCORE_TRANSPARENCY_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchSubventions } from '#utils/fetchers/subventions/fetchSubventions-server';
 import { fetchSubventionsAvailableYears } from '#utils/fetchers/subventions/fetchSubventionsAvailableYears';
+import { FileText } from 'lucide-react';
 
 import { FicheCard } from '../FicheCard';
 import { NoData } from '../NoData';
@@ -15,15 +19,37 @@ async function getSubventions(siren: string) {
   return subventionsResults;
 }
 
+const SubventionsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
+  return (
+    <div className='flex flex-col items-center justify-between sm:flex-row sm:items-center min-h-[80px]'>
+      <div className='flex items-center gap-2 order-2 sm:order-1'>
+        <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Subventions</h2>
+      </div>
+      {transparencyIndex && (
+        <div className="order-1 sm:order-2 md:mb-4 mb-2 sm:mb-0">
+          <BadgeCommunity
+            text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
+            icon={FileText}
+            className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export async function FicheSubventions({ siren }: { siren: string }) {
   const subventions = await getSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);
 
+  // Fetch transparency score for Subventions
+  const { bareme } = await fetchMostRecentTransparencyScore(siren);
+  const transparencyIndex = bareme?.subventions_score || null;
+
   return (
-    <FicheCard>
-      <h2 className='pb-3 text-center text-2xl'>Subventions</h2>
+    <FicheCard header={<SubventionsHeader transparencyIndex={transparencyIndex} />}>
       {subventions.length > 0 ? (
-        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} />
+        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} transparencyIndex={transparencyIndex} />
       ) : (
         <NoData />
       )}
