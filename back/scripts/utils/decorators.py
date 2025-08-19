@@ -5,6 +5,17 @@ import time
 from typing import Any, Callable
 
 
+def sizeof_fmt(num, suffix=""):
+    """
+    make memory usage human readable, argument is in Ko
+    """
+    for unit in ("Ko", "Mo", "Go", "To", "Po", "Eo", "Zo"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
+
+
 def tracker(
     _func: Callable[..., Any] | None = None,
     ulogger=None,
