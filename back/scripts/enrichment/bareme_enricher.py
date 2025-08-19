@@ -57,7 +57,7 @@ class BaremeEnricher(BaseEnricher):
         ]
 
     @classmethod
-    def _clean_and_enrich(cls, inputs: typing.List[pl.DataFrame]) -> pl.DataFrame:
+    def _clean_and_enrich(cls, inputs) -> pl.DataFrame:
         """
         Méthode principale d'enrichissement qui orchestre le calcul du barème.
 
@@ -78,9 +78,7 @@ class BaremeEnricher(BaseEnricher):
         Raises:
             ValueError: Si le nombre d'inputs n'est pas égal à 4
         """
-        # Validation des entrées - s'assurer qu'on a exactement les 4 datasets requis
-        if len(list(inputs)) != 4:
-            raise ValueError(f"Expected 4 DataFrames, got {len(list(inputs))}")
+        
 
         # Décomposition des inputs pour plus de lisibilité
         communities, subventions, financial, marches_publics = inputs
