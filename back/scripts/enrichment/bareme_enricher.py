@@ -79,8 +79,8 @@ class BaremeEnricher(BaseEnricher):
             ValueError: Si le nombre d'inputs n'est pas égal à 4
         """
         # Validation des entrées - s'assurer qu'on a exactement les 4 datasets requis
-        if len(inputs) != 4:
-            raise ValueError(f"Expected 4 DataFrames, got {len(inputs)}")
+        if len(list(inputs)) != 4:
+            raise ValueError(f"Expected 4 DataFrames, got {len(list(inputs))}")
 
         # Décomposition des inputs pour plus de lisibilité
         communities, subventions, financial, marches_publics = inputs
