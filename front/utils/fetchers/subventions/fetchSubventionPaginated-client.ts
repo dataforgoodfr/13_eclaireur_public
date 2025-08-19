@@ -1,4 +1,4 @@
-import { Subvention, PaginatedSubvention } from '#app/models/subvention';
+import { PaginatedSubvention, Subvention } from '#app/models/subvention';
 
 import { Pagination } from '../types';
 
@@ -9,7 +9,7 @@ function getAPIRoute(communitySiren: string) {
 const DEFAULT_BY: keyof Subvention = 'montant';
 
 /**
- * Fetch the top marches publics by amount with pagination
+ * Fetch the top subventions by amount with pagination
  * Default by montant
  */
 export async function fetchSubventionPaginated(

@@ -23,7 +23,7 @@ export async function FicheSubventions({ siren }: { siren: string }) {
     <FicheCard>
       <h2 className='pb-3 text-center text-2xl'>Subventions</h2>
       {subventions.length > 0 ? (
-        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} />
+        <SubventionsWithState siren={siren} availableYears={availableYears} />
       ) : (
         <NoData />
       )}

@@ -1,10 +1,10 @@
-import { Subvention, PaginatedSubvention } from '#app/models/subvention';
+import { PaginatedSubvention, Subvention } from '#app/models/subvention';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 import { Pagination } from '../types';
 
-const TABLE_NAME = DataTable.MarchesPublics;
+const TABLE_NAME = DataTable.Subventions;
 
 function createSQLQueryParams(
   siren: string,
@@ -50,7 +50,7 @@ function createSQLQueryParams(
 const DEFAULT_BY: keyof Subvention = 'montant';
 
 /**
- * Fetch the marches publics paginated (SSR) with pagination
+ * Fetch the subventions paginated (SSR) with pagination
  * Default by montant
  */
 export async function fetchSubventionPaginated(

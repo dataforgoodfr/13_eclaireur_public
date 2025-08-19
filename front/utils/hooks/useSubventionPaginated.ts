@@ -11,7 +11,7 @@ const DEFAULT_PAGINATION: Pagination = {
 
 const DEFAULT_BY: keyof Subvention = 'montant';
 
-export function useMarchesPublicsPaginated(
+export function useSubventionPaginated(
   siren: string,
   year: number | null,
   pagination = DEFAULT_PAGINATION,

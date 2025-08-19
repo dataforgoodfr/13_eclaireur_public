@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 import { ActionButton } from '#components/ui/action-button';
 import { Download } from 'lucide-react';
+
 import { GraphSwitch } from '../DataViz/GraphSwitch';
+import { TabHeader } from '../TabHeader';
 import { MarchesPublicsChart } from './MarchesPublicsChart';
-import { TabHeader } from './TabHeader';
 
 type EvolutionProps = {
   siren: string;
@@ -24,7 +25,7 @@ export default function Evolution({ siren }: EvolutionProps) {
   return (
     <div className='w-full'>
       <TabHeader
-        title="Évolution des marchés publics au cours du temps"
+        title='Évolution des marchés publics au cours du temps'
         titleSwitch={
           <GraphSwitch
             isActive={isMarchesPublicsCountDisplayed}

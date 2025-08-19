@@ -1,6 +1,5 @@
 'use client';
 
-import { Subvention } from '#app/models/subvention';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
 import { TAB_VALUES, useSubventionsTab } from '#hooks/useTabState';
 
@@ -10,26 +9,37 @@ import Ranking from './Ranking';
 
 interface SubventionsWithStateProps {
   siren: string;
-  subventions: Subvention[];
   availableYears: number[];
 }
 
-export function SubventionsWithState({ siren, subventions, availableYears }: SubventionsWithStateProps) {
+export function SubventionsWithState({ siren, availableYears }: SubventionsWithStateProps) {
   const [activeTab, setActiveTab] = useSubventionsTab();
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList className='h-10 sm:h-12 p-0.5 sm:p-1'>
-        <TabsTrigger value={TAB_VALUES.SUBVENTIONS.TRENDS} className='px-2 sm:px-3 text-xs sm:text-sm'>
+      <TabsList className='h-10 p-0.5 sm:h-12 sm:p-1'>
+        <TabsTrigger
+          value={TAB_VALUES.SUBVENTIONS.TRENDS}
+          className='px-2 text-xs sm:px-3 sm:text-sm'
+        >
           Évolution
         </TabsTrigger>
-        <TabsTrigger value={TAB_VALUES.SUBVENTIONS.DISTRIBUTION} className='px-2 sm:px-3 text-xs sm:text-sm'>
+        <TabsTrigger
+          value={TAB_VALUES.SUBVENTIONS.DISTRIBUTION}
+          className='px-2 text-xs sm:px-3 sm:text-sm'
+        >
           Répartition
         </TabsTrigger>
-        <TabsTrigger value={TAB_VALUES.SUBVENTIONS.COMPARISON} className='px-2 sm:px-3 text-xs sm:text-sm'>
+        <TabsTrigger
+          value={TAB_VALUES.SUBVENTIONS.COMPARISON}
+          className='px-2 text-xs sm:px-3 sm:text-sm'
+        >
           Comparaison
         </TabsTrigger>
-        <TabsTrigger value={TAB_VALUES.SUBVENTIONS.DETAILS} className='px-2 sm:px-3 text-xs sm:text-sm'>
+        <TabsTrigger
+          value={TAB_VALUES.SUBVENTIONS.DETAILS}
+          className='px-2 text-xs sm:px-3 sm:text-sm'
+        >
           Classement
         </TabsTrigger>
       </TabsList>
@@ -46,7 +56,7 @@ export function SubventionsWithState({ siren, subventions, availableYears }: Sub
         </div>
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.DETAILS}>
-        <Ranking data={subventions} availableYears={availableYears} />
+        <Ranking siren={siren} availableYears={availableYears} />
       </TabsContent>
     </Tabs>
   );
