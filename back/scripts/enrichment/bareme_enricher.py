@@ -89,18 +89,14 @@ class BaremeEnricher(BaseEnricher):
         bareme_communities = cls.build_bareme_table(communities)
 
         # Calcul du score basé sur la transparence des subventions
-        bareme_subvention = cls.bareme_subventions(
-            subventions, financial, bareme_communities
-        )
+        bareme_subvention = cls.bareme_subventions(subventions, financial, bareme_communities)
 
         # Calcul du score basé sur la qualité des données marchés publics
         bareme_mp = cls.bareme_marchespublics(marches_publics, communities)
 
         # Jointure finale des deux scores sur (siren, annee)
         # Left join pour conserver toutes les collectivités même sans données MP
-        bareme_final = bareme_subvention.join(
-            bareme_mp, on=["siren", "annee"], how="left"
-        )
+        bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
 
         return bareme_final
 
@@ -183,10 +179,10 @@ class BaremeEnricher(BaseEnricher):
 
         # Double jointure pour récupérer subventions déclarées ET budgétées
         bareme_join = bareme_table.join(
-            sub_agg, on=["siren", "annee"], how="left"  # Subventions déclarées
-        ).join(
-            budget, on=["siren", "annee"], how="left"
-        )  # Budget prévu
+            sub_agg,
+            on=["siren", "annee"],
+            how="left",  # Subventions déclarées
+        ).join(budget, on=["siren", "annee"], how="left")  # Budget prévu
 
         # Nettoyage : remplacement des valeurs nulles par 0
         # Important pour le calcul du taux (éviter division par null)
@@ -194,9 +190,7 @@ class BaremeEnricher(BaseEnricher):
             [
                 pl.col("total_subventions_declarees").fill_null(0.0),
                 pl.col("subventions").fill_null(0.0),
-                (pl.col("subventions")).alias(
-                    "subventions_budget"
-                ),  # Alias pour clarté
+                (pl.col("subventions")).alias("subventions_budget"),  # Alias pour clarté
             ]
         )
 
@@ -206,10 +200,7 @@ class BaremeEnricher(BaseEnricher):
             [
                 pl.when(pl.col("subventions_budget") != 0)
                 .then(
-                    (
-                        pl.col("total_subventions_declarees")
-                        / pl.col("subventions_budget")
-                    )
+                    (pl.col("total_subventions_declarees") / pl.col("subventions_budget"))
                     * 100.0  # Conversion en pourcentage
                 )
                 .otherwise(float("nan"))  # Pas de budget = pas de score calculable
@@ -355,13 +346,7 @@ class BaremeEnricher(BaseEnricher):
                 # Critère D : Au moins un marché soumis à obligation de publication
                 (pl.col("obligation_publication_bool") > 0).cast(pl.Int8).alias("D"),
                 # Critère C : Publication volontaire (marchés non obligatoires)
-                (
-                    (
-                        pl.col("nombre_de_marches")
-                        - pl.col("obligation_publication_bool")
-                    )
-                    > 0
-                )
+                ((pl.col("nombre_de_marches") - pl.col("obligation_publication_bool")) > 0)
                 .cast(pl.Int8)
                 .alias("C"),
                 # Critère B : Complétude des données essentielles
