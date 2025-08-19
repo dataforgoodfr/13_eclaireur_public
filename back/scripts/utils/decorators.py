@@ -1,5 +1,6 @@
 import functools
 import logging
+import resource
 import time
 from typing import Any, Callable
 
@@ -58,6 +59,7 @@ def tracker(
             value = func(*args, **kwargs)
             end_time = time.time()
             extra["duration_"] = round((end_time - start_time), 3)
+            extra["memory_"] = sizeof_fmt(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
             if outputs:
                 extra["return_"] = value
             _log(ulogger, level=level, msg="tracker", extra=extra)
