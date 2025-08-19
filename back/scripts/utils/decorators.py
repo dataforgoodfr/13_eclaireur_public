@@ -1,7 +1,19 @@
 import functools
 import logging
+import resource
 import time
 from typing import Any, Callable
+
+
+def sizeof_fmt(num, suffix=""):
+    """
+    make memory usage human readable, argument is in Ko
+    """
+    for unit in ("Ko", "Mo", "Go", "To", "Po", "Eo", "Zo"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
 
 
 def tracker(
@@ -58,6 +70,7 @@ def tracker(
             value = func(*args, **kwargs)
             end_time = time.time()
             extra["duration_"] = round((end_time - start_time), 3)
+            extra["memory_"] = sizeof_fmt(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
             if outputs:
                 extra["return_"] = value
             _log(ulogger, level=level, msg="tracker", extra=extra)
