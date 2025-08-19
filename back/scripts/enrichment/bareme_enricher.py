@@ -78,7 +78,6 @@ class BaremeEnricher(BaseEnricher):
         Raises:
             ValueError: Si le nombre d'inputs n'est pas égal à 4
         """
-        
 
         # Décomposition des inputs pour plus de lisibilité
         communities, subventions, financial, marches_publics = inputs
