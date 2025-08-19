@@ -19,7 +19,7 @@ interface SubventionsWithStateProps {
   communityType: CommunityType;
 }
 
-export function SubventionsWithState({ siren, subventions, availableYears, transparencyIndex, communityType }: SubventionsWithStateProps) {
+export function SubventionsWithState({ siren, subventions, availableYears, communityType }: SubventionsWithStateProps) {
   const [activeTab, setActiveTab] = useSubventionsTab();
 
   return (
@@ -51,6 +51,6 @@ export function SubventionsWithState({ siren, subventions, availableYears, trans
       <TabsContent value={TAB_VALUES.SUBVENTIONS.DETAILS}>
         <Ranking data={subventions} availableYears={availableYears} />
       </TabsContent>
-      </Tabs>
+    </Tabs>
   );
 }

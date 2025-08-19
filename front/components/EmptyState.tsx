@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
-import { FC } from 'react';
-import { Megaphone } from 'lucide-react';
-import Link from 'next/link';
 import { ActionButton } from '#components/ui/action-button';
+import { Megaphone } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC } from 'react';
 
 export interface EmptyStateProps {
   title?: string;
@@ -22,11 +22,10 @@ const EmptyState: FC<EmptyStateProps> = ({
   actionText = "Interpeller",
   actionHref = "/interpeller",
   className = "",
-  communityName,
   siren
 }) => {
   // Construire l'URL avec le siren si fourni
-  const finalHref = siren 
+  const finalHref = siren
     ? `/interpeller/${siren}/step1`
     : actionHref;
   return (
@@ -49,20 +48,20 @@ const EmptyState: FC<EmptyStateProps> = ({
       <div className="p-6 md:p-8 flex flex-col items-center">
         {/* Icône croix + mascotte */}
         <div className="relative mb-6">
-        {/* Croix en arrière-plan */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-20 h-20 md:w-24 md:h-24 opacity-20">
-            <svg 
-              viewBox="0 0 100 100" 
-              className="w-full h-full text-primary"
-              fill="currentColor"
-            >
-              <rect x="10" y="45" width="80" height="10" rx="5" />
-              <rect x="45" y="10" width="10" height="80" rx="5" />
-            </svg>
+          {/* Croix en arrière-plan */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-20 h-20 md:w-24 md:h-24 opacity-20">
+              <svg
+                viewBox="0 0 100 100"
+                className="w-full h-full text-primary"
+                fill="currentColor"
+              >
+                <rect x="10" y="45" width="80" height="10" rx="5" />
+                <rect x="45" y="10" width="10" height="80" rx="5" />
+              </svg>
+            </div>
           </div>
-        </div>
-        
+
           {/* Mascotte par-dessus */}
           <div className="relative z-10">
             <Image
