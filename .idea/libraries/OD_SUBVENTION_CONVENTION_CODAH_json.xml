@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="OD.SUBVENTION_CONVENTION_CODAH.json">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/tests/back/loaders/fixtures/OD.SUBVENTION_CONVENTION_CODAH.json.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
