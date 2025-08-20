@@ -4,14 +4,17 @@ import { useState } from 'react';
 
 import DownloadButton from '#app/community/[siren]/components/DownloadDataButton';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { Subvention } from '#app/models/subvention';
 import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
-import { TabHeader } from '../TabHeader';
-import SubventionsTable from './SubventionsTable';
+import RankingTable from './RankingTable';
 
-type SubventionsProps = {
-  siren: string;
+export default function Ranking({
+  data,
+  availableYears,
+}: {
+  data: Subvention[];
   availableYears: number[];
 };
 
@@ -27,16 +30,16 @@ export default function Ranking({ siren, availableYears }: SubventionsProps) {
 
   return (
     <>
-      <TabHeader
-        title='Classement par tailles de subventions'
-        actions={
-          <>
-            <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
-            <DownloadButton />
-          </>
-        }
-      />
-      <SubventionsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
+      <div className='flex items-center justify-between'>
+        <div className='flex items-baseline gap-2'>
+          <h3 className='py-2 text-xl'>Classement par tailles de subventions</h3>
+        </div>
+        <div className='flex items-center gap-2'>
+          <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
+          <DownloadButton />
+        </div>
+      </div>
+      <RankingTable data={data} year={selectedYear} paginationProps={paginationProps} />
     </>
   );
 }

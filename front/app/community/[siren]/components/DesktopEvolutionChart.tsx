@@ -55,7 +55,7 @@ export default function DesktopEvolutionChart({
           <YAxis tickFormatter={(value) => formatValue(value)} />
           <Legend
             content={() => {
-              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-1';
+              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
               return (
                 <div className="flex flex-col items-center gap-2 mt-4">
                   <div className="flex items-center gap-2">
