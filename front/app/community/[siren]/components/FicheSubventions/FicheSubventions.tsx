@@ -10,11 +10,11 @@ import { FicheCard } from '../FicheCard';
 import EmptyState from '#components/EmptyState';
 import { SubventionsWithState } from './SubventionsWithState';
 
-async function getSubventions(siren: string) {
+async function getFewSubventions(siren: string) {
   const subventionsResults = await fetchSubventions({
     filters: { id_attribuant: siren },
     // TODO - Remove limit when api to calculate data is done
-    limit: 100,
+    limit: 10,
   });
 
   return subventionsResults;
@@ -40,7 +40,7 @@ const SubventionsHeader = ({ transparencyIndex }: { transparencyIndex?: Transpar
 };
 
 export async function FicheSubventions({ siren, communityType }: { siren: string; communityType: CommunityType }) {
-  const subventions = await getSubventions(siren);
+  const fewSubventions = await getFewSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);
 
   // Fetch transparency score for Subventions
@@ -49,8 +49,8 @@ export async function FicheSubventions({ siren, communityType }: { siren: string
 
   return (
     <FicheCard header={<SubventionsHeader transparencyIndex={transparencyIndex} />}>
-      {subventions.length > 0 ? (
-        <SubventionsWithState siren={siren} subventions={subventions} availableYears={availableYears} transparencyIndex={transparencyIndex} communityType={communityType} />
+      {fewSubventions.length > 0 ? (
+        <SubventionsWithState siren={siren} availableYears={availableYears} transparencyIndex={transparencyIndex} communityType={communityType} />
       ) : (
         <EmptyState
           title="Oups, il n'y a pas de données sur les subventions de cette collectivité !"
