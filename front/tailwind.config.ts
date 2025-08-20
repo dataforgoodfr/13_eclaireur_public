@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import plugin from "tailwindcss/plugin";
 
 export default {
 	darkMode: ["class"],
@@ -14,21 +15,16 @@ export default {
 				'kanit-bold': ['var(--font-kanit)', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 			},
 			fontSize: {
-				'h1': ['44px', {
-					lineHeight: '56px',
-					fontWeight: '700',
+				'tag': ['14px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
 				}],
-				'h2': ['40px', {
-					lineHeight: '44px',
-					fontWeight: '700',
+				'tag-lg': ['16px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
 				}],
-				'h3': ['32px', {
-					lineHeight: '36px',
-					fontWeight: '700',
-				}],
-				'h4': ['24px', {
-					lineHeight: '28px',
-					fontWeight: '700',
+				'link': ['18px', {
+					lineHeight: 'auto',
 				}],
 			},
 			backgroundImage: {
@@ -41,7 +37,7 @@ export default {
 					DEFAULT: '#303F8D', // Bleu
 					light: '#CAD2FC', // Bleu clair
 					foreground: '#FFFFFF',
-					50: '#f1f5fd',		
+					50: '#f1f5fd',
 					100: '#e0e9f9',
 					200: '#c9d9f4',
 					300: '#a3c1ed',
@@ -79,6 +75,7 @@ export default {
 				},
 				muted: {
 					DEFAULT: '#737373', // Gris
+					default: '#737373', // Gris
 					light: '#E2E2E2', // Gris clair
 					border: '#F6F6F6', // Gris border
 					foreground: 'hsl(var(--muted-foreground))',
@@ -90,6 +87,24 @@ export default {
 					1: '#FAF79E', // Brand 01
 					2: '#E8F787', // Brand 02
 					3: '#D7F787', // Brand 03
+				},
+				score: {
+					A: '#79B381',
+					B: '#B2D675',
+					C: '#FFDE8B',
+					D: '#FFA466',
+					E: '#FF8574',
+				},
+				'score-transparence': {
+					1: '#E8F787',
+					2: '#FAF79E',
+					3: '#CAD2FC',
+					4: '#F4D93E',
+					5: '#EE8100',
+					mp: 'var(--brand-2)',
+					subvention: 'var(--brand-1)',
+					// jaune
+					nodata: 'var(--secondary)'
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
@@ -130,6 +145,10 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
+				'tl-br': '0.5rem 0 0.5rem 0', // Custom utility for top-left and bottom-right rounding
+				'tl-br-sm': '0.25rem 0 0.25rem 0', // Small version
+				'tl-br-lg': '0.75rem 0 0.75rem 0', // Large version
+				'tl-br-xl': '1rem 0 1rem 0', // Extra large version
 			},
 			keyframes: {
 				'accordion-down': {
@@ -147,5 +166,47 @@ export default {
 			},
 		},
 	},
-	plugins: [animate],
+	plugins: [
+		animate,
+		plugin(({ addBase }) => {
+			addBase({
+				'h1': {
+					fontSize: '36px',
+					lineHeight: '40px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '44px',
+						lineHeight: '56px',
+					},
+				},
+				'h2': {
+					fontSize: '32px',
+					lineHeight: '38px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '40px',
+						lineHeight: '44px',
+					},
+				},
+				'h3': {
+					fontSize: '28px',
+					lineHeight: '32px',
+					fontWeight: '700',
+					'@media (min-width: 1024px)': {
+						fontSize: '32px',
+						lineHeight: '36px',
+					},
+				},
+				'h4': {
+					fontSize: '22px !important',
+					lineHeight: '28px !important',
+					fontWeight: '700 !important',
+					'@media (min-width: 1024px)': {
+						fontSize: '24px !important',
+						lineHeight: '28px !important',
+					},
+				},
+			});
+		}),
+	],
 } satisfies Config;

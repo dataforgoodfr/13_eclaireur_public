@@ -1,3 +1,4 @@
+import { mobileParams } from '#.storybook/utils.tsx';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 import Navbar from './Navbar';
@@ -53,18 +54,27 @@ export const WithBackground: Story = {
     ],
 };
 
+
+
+export const WithBetaBanner: Story = {
+    args: {
+        isBeta: true
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'This story shows the navbar with the beta banner enabled.',
+            },
+        },
+    },
+};
+
+
 export const Mobile: Story = {
     args: {
         isBeta: false
     },
-    parameters: {
-        layout: 'fullscreen',
-    },
-    globals: {
-        viewport: {
-            value: 'iphone5',
-        },
-    },
+    ...mobileParams,
     decorators: [
         (Story) => (
             <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', width: '100%' }}>
@@ -83,25 +93,12 @@ export const Mobile: Story = {
     ],
 };
 
-export const WithBetaBanner: Story = {
-    args: {
-        isBeta: true
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'This story shows the navbar with the beta banner enabled.',
-            },
-        },
-    },
-};
-
 export const MobileMenuOpen: Story = {
     args: {
         isBeta: false
     },
     parameters: {
-        layout: 'fullscreen',
+        ...mobileParams.parameters,
         docs: {
             description: {
                 story: 'This story automatically opens the mobile navigation menu to show the expanded state with search bar, Interpeller button, and accordion menu items.',
@@ -109,9 +106,7 @@ export const MobileMenuOpen: Story = {
         },
     },
     globals: {
-        viewport: {
-            value: 'iphone5',
-        },
+        viewport: { value: 'iphone5', isRotated: false },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);

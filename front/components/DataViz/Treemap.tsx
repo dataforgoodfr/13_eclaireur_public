@@ -8,7 +8,6 @@ import * as d3 from 'd3';
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
 import TreemapTooltip from './TreemapTooltip';
-import TreemapZoomButtons from './TreemapZoomButtons';
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -32,11 +31,19 @@ function wrapText(text: string, maxWidth: number): string[] {
 
 function generateColorMap(names: string[]): Record<string, string> {
   const colorMap: Record<string, string> = {};
-  const total = names.length;
+  
+  // Colors from score-transparency palette (ordered from light to dark)
+  const scoreTransparencyColors = [
+    '#E8F787', // score-transparency-1 (vert clair)
+    '#FAF79E', // score-transparency-3 (jaune très clair)
+    '#CAD2FC', // score-transparency-2 (bleu clair)
+    '#F4D93E', // score-transparency-4 (jaune)
+    '#EE8100', // score-transparency-5 (orange foncé)
+  ];
 
   names.forEach((name, index) => {
-    const lightness = Math.min(Math.round((80 / total) * index), 50);
-    colorMap[name] = `hsl(0, 0%, ${lightness + 20}%)`;
+    const colorIndex = index % scoreTransparencyColors.length;
+    colorMap[name] = scoreTransparencyColors[colorIndex];
   });
 
   return colorMap;
@@ -113,13 +120,19 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
 
   const allShapes = root.leaves().map((leaf) => (
     <g key={leaf.data.id}>
-      <rect
-        x={leaf.x0}
-        y={leaf.y0}
-        rx={12}
-        width={leaf.x1 - leaf.x0}
-        height={leaf.y1 - leaf.y0}
-        stroke='transparent'
+      <path
+        d={`
+          M ${leaf.x0 + 8} ${leaf.y0}
+          L ${leaf.x1} ${leaf.y0}
+          L ${leaf.x1} ${leaf.y1 - 8}
+          Q ${leaf.x1} ${leaf.y1} ${leaf.x1 - 8} ${leaf.y1}
+          L ${leaf.x0} ${leaf.y1}
+          L ${leaf.x0} ${leaf.y0 + 8}
+          Q ${leaf.x0} ${leaf.y0} ${leaf.x0 + 8} ${leaf.y0}
+          Z
+        `}
+        stroke='#303F8D'
+        strokeWidth={1}
         fill={colorMap[leaf.data.name]}
         className='transition-all duration-500 ease-in-out'
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
@@ -133,7 +146,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
           y={leaf.y0 + 22}
           fontSize={16}
           fontWeight={700}
-          fill='white'
+          fill='#303F8D'
           className='pointer-events-none'
         >
           {formatCompactPrice(leaf.data.value)}
@@ -145,7 +158,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
           y={leaf.y0 + 42}
           fontSize={14}
           fontWeight={500}
-          fill='white'
+          fill='#303F8D'
           className='pointer-events-none'
         >
           {wrapText(formatFirstLetterToUppercase(leaf.data.name), leaf.x1 - leaf.x0 - 16).map(
@@ -161,7 +174,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
   ));
 
   return (
-    <div className='relative' ref={containerRef}>
+    <div className='relative' ref={containerRef} style={{ height }}>
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
       {isZoomActive && (
         <em className='ml-2'>
@@ -172,7 +185,6 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick} />
     </div>
   );
 }

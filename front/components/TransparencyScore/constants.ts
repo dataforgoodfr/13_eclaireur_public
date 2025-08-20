@@ -8,11 +8,11 @@ export enum TransparencyScore {
 }
 
 export const SCORE_TO_ADJECTIF = {
-  [TransparencyScore.A]: 'Optimal',
+  [TransparencyScore.A]: 'Exemplaire',
   [TransparencyScore.B]: 'Transparent',
   [TransparencyScore.C]: 'Moyen',
   [TransparencyScore.D]: 'Insuffisant',
-  [TransparencyScore.E]: 'Opaque',
+  [TransparencyScore.E]: 'Très insuffisant',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 
@@ -25,5 +25,13 @@ export const SCORE_DESCRIPTION = {
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 
+export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
+  [TransparencyScore.A]: 'bg-score-A',
+  [TransparencyScore.B]: 'bg-score-B',
+  [TransparencyScore.C]: 'bg-score-C',
+  [TransparencyScore.D]: 'bg-score-D',
+  [TransparencyScore.E]: 'bg-score-E',
+  [TransparencyScore.UNKNOWN]: 'bg-muted-light',
+};
 
 export const SCORE_NON_DISPONIBLE = 'Non disponible';

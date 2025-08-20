@@ -22,8 +22,11 @@ export default function HomePageHeader() {
           <div className='flex w-520 flex-col items-center justify-center'>
             <Image src="/eclaireur/mascotte_search.svg" alt="Logo" className='w-120 mt-10' width={120} height={120} />
             <div className='flex flex-col items-center justify-center m-4'>
-              <h1 className='text-h1 text-h1-kanit text-center'>Votre collectivité est-elle</h1>
-              <h1 className='text-h1 font-kanit-bold bg-gradient-fade text-center px-4'>transparente ?</h1>
+              <h1 className='text-h1 text-h1-kanit text-center'>
+                Votre collectivité est-elle
+                <br />
+                <span className='font-kanit-bold bg-gradient-fade px-4'>transparente ?</span>
+              </h1>
             </div>
             <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
             Accédez aux données de dépenses publiques de votre commune, département ou région.

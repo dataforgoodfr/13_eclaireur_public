@@ -189,3 +189,5 @@ tests-examples/
 # Container-use
 .container-use/
 
+**/screenshots/**
+front/NOTES_PERSO/**/*

@@ -12,5 +12,5 @@ export default function SearchCommunity({ className }: { className?: string }) {
         }
     }
 
-    return <SearchBar className={className} onSelect={navigateToCommunityPage} />;
+    return <SearchBar className={className} placeholder='Rechercher...' onSelect={navigateToCommunityPage} />;
 }

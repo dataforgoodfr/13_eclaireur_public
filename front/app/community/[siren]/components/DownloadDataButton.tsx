@@ -1,9 +1,18 @@
+import { ActionButton } from '#components/ui/action-button';
 import { ArrowDownToLine } from 'lucide-react';
 
-export default function DownloadDataButton() {
+type DownloadDataButtonProps = {
+  onClick?: () => void;
+  disabled?: boolean;
+};
+
+export default function DownloadDataButton({ onClick, disabled }: DownloadDataButtonProps) {
   return (
-    <button className='rounded p-1 text-neutral-500 hover:bg-neutral-100'>
-      <ArrowDownToLine />
-    </button>
+    <ActionButton 
+      icon={<ArrowDownToLine />}
+      variant="default"
+      onClick={onClick} 
+      disabled={disabled}
+    />
   );
 }

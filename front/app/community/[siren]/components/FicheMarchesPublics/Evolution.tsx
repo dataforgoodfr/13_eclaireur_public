@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 
+import { ActionButton } from '#components/ui/action-button';
+import { Download } from 'lucide-react';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
-import DownloadButton from '../FicheSubventions/DownloadButton';
-import { MarchesPublicsYearlyAmountsChart } from './MarchesPublicsYearlyAmountsChart';
-import { MarchesPublicsYearlyCountsChart } from './MarchesPublicsYearlyCountsChart';
+import { MarchesPublicsChart } from './MarchesPublicsChart';
+import { TabHeader } from './TabHeader';
 
 type EvolutionProps = {
   siren: string;
@@ -14,34 +15,40 @@ type EvolutionProps = {
 export default function Evolution({ siren }: EvolutionProps) {
   const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
 
+  const handleDownloadClick = () => {
+    // TODO: Add download functionality
+    console.log('Download clicked');
+    // Peut ouvrir un menu dropdown pour choisir entre CSV et PNG
+  };
+
   return (
-    <>
-      <div className='flex items-baseline justify-between'>
-        <div>
-          <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
-            Évolution des marchés publics au cours du temps
-          </h3>
+    <div className='w-full'>
+      <TabHeader
+        title="Évolution des marchés publics au cours du temps"
+        titleSwitch={
           <GraphSwitch
             isActive={isMarchesPublicsCountDisplayed}
             onChange={setIsMarchesPublicsCountDisplayed}
             label1='Montants annuels'
-            label2='Nombre de marchés publics'
+            label2='Nombre de contrats'
           />
-        </div>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2'>
-            <DownloadButton label='CSV' />
-            <DownloadButton label='PNG' />
-          </div>
-        </div>
+        }
+        actions={
+          <ActionButton
+            onClick={handleDownloadClick}
+            icon={<Download size={20} />}
+            variant='default'
+          />
+        }
+      />
+
+      {/* Chart Section */}
+      <div className='p-4 md:p-6'>
+        <MarchesPublicsChart
+          siren={siren}
+          displayMode={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}
+        />
       </div>
-      <div className='p-4'>
-        {isMarchesPublicsCountDisplayed ? (
-          <MarchesPublicsYearlyCountsChart siren={siren} />
-        ) : (
-          <MarchesPublicsYearlyAmountsChart siren={siren} />
-        )}
-      </div>
-    </>
+    </div>
   );
 }

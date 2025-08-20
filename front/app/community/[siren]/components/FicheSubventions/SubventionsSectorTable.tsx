@@ -1,7 +1,6 @@
 'use client';
 
 import { WithPagination } from '#components/Pagination';
-import Loading from '#components/ui/Loading';
 import { usePagination } from '#utils/hooks/usePagination';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 import { roundNumber } from '#utils/utils';
@@ -9,6 +8,7 @@ import { roundNumber } from '#utils/utils';
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
+import SectorTableSkeleton from '../Skeletons/SectorTableSkeleton';
 import { CHART_HEIGHT } from '../constants';
 
 type SubventionsSectorTableProps = {
@@ -27,7 +27,11 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
   });
 
   if (isPending || isError) {
-    return <Loading style={{ height: CHART_HEIGHT }} />;
+    return (
+      <div style={{ height: CHART_HEIGHT }}>
+        <SectorTableSkeleton rows={MAX_ROW_PER_PAGE} />
+      </div>
+    );
   }
 
   if (data.length === 0) {

@@ -1,12 +1,10 @@
-
 import React from 'react';
-
 
 import {
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuTrigger
+  NavigationMenuTrigger,
 } from '#components/ui/navigation-menu';
 
 const ListItem = React.forwardRef<React.ComponentRef<'a'>, React.ComponentPropsWithoutRef<'a'>>(
@@ -38,12 +36,12 @@ type NavigationMenuGroupProps = {
 
 export function NavigationMenuGroup({ title, menus }: NavigationMenuGroupProps) {
   return (
-    <NavigationMenuItem>
-      <NavigationMenuTrigger className='text-primary hover:text-primary/80 text-base font-medium flex items-center gap-1'>
+    <NavigationMenuItem className='w-full'>
+      <NavigationMenuTrigger className='flex w-full items-center gap-1 text-base font-medium text-primary hover:text-primary/80'>
         {title}
       </NavigationMenuTrigger>
       <NavigationMenuContent>
-        <ul className='w-[500px] gap-3 p-4'>
+        <ul className='w-[450px] gap-3 p-4'>
           {menus.map((menu) => (
             <ListItem key={menu.title} title={menu.title} href={menu.href}>
               {menu.description}
