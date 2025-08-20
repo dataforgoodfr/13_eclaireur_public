@@ -15,7 +15,7 @@ import { getDefaultComparisonScope, Scope } from '#utils/helpers/getDefaultCompa
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
-import { TabHeader } from '../FicheMarchesPublics/TabHeader';
+import { TabHeader } from '../TabHeader';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
 

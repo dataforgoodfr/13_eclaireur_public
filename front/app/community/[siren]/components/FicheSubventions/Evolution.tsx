@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { ActionButton } from '#components/ui/action-button';
 import { Download } from 'lucide-react';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
-import { TabHeader } from '../FicheMarchesPublics/TabHeader';
+import { TabHeader } from '../TabHeader';
 import { SubventionsChart } from './SubventionsChart';
 
 type EvolutionProps = {

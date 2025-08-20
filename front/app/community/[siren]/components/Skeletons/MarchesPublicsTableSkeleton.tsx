@@ -32,8 +32,7 @@ export default function MarchesPublicsTableSkeleton({ rows = 10 }: MarchesPublic
                 {Array.from({ length: Math.floor(Math.random() * 3) + 1 }).map((_, badgeIndex) => (
                   <Skeleton 
                     key={badgeIndex}
-                    className='h-6 rounded-full'
-                    style={{ width: `${Math.random() * 60 + 40}px` }}
+                    className='h-6  w-[80px] rounded-full'
                   />
                 ))}
               </div>

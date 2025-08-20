@@ -4,21 +4,18 @@ import { useState } from 'react';
 
 import DownloadButton from '#app/community/[siren]/components/DownloadDataButton';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
-import { Subvention } from '#app/models/subvention';
 import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
 import RankingTable from './RankingTable';
 
 export default function Ranking({
-  data,
+  siren,
   availableYears,
 }: {
-  data: Subvention[];
+  siren: string;
   availableYears: number[];
-};
-
-export default function Ranking({ siren, availableYears }: SubventionsProps) {
+}) {
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const paginationProps = usePagination();
@@ -39,7 +36,7 @@ export default function Ranking({ siren, availableYears }: SubventionsProps) {
           <DownloadButton />
         </div>
       </div>
-      <RankingTable data={data} year={selectedYear} paginationProps={paginationProps} />
+      <RankingTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
     </>
   );
 }

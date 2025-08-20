@@ -18,9 +18,9 @@ function createSQLQueryParams(
     SELECT 
       id_beneficiaire, 
       objet, 
-      montant, 
+      SUM(montant) AS montant, 
       annee,
-      ARRAY_AGG(nom_beneficiaire) AS beneficiaire_names,
+      ARRAY_AGG(DISTINCT nom_beneficiaire) AS beneficiaire_names,
       count(*) OVER()::integer AS total_row_count
     FROM ${TABLE_NAME}
     WHERE id_attribuant = $1`;
@@ -34,10 +34,9 @@ function createSQLQueryParams(
     GROUP BY 
       id_beneficiaire, 
       objet, 
-      montant,
       annee
     ORDER BY ${by} DESC
-    `;
+  `;
 
   const { limit, page } = pagination;
 
@@ -46,6 +45,7 @@ function createSQLQueryParams(
 
   return [query, values];
 }
+
 
 const DEFAULT_BY: keyof Subvention = 'montant';
 
