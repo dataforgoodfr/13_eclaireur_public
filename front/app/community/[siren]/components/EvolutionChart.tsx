@@ -28,7 +28,7 @@ const CHART_CONFIG = {
     },
   },
   'subventions': {
-    barColor: '#FAF79E', // score-transparence subvention (brand-1)
+    barColor: '#E8F787', // score-transparence subvention (brand-2)
     borderColor: '#303F8D',
     legendLabels: {
       amounts: 'Montant des subventions publiées',
