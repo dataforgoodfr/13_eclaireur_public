@@ -30,15 +30,17 @@ export function ActionButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        // Base styling - consistent height for all buttons
-        'rounded-tl-br h-12',
-        // Icon-only: square button
-        isIconOnly && 'w-12 p-0 flex items-center justify-center',
+        // Base styling - consistent height for all buttons with custom rounded corners
+        'h-12 rounded-tl-lg rounded-br-lg rounded-tr-none rounded-bl-none',
+        // Icon-only: 56x48 button
+        isIconOnly && 'w-14 h-12 p-0 flex items-center justify-center',
         // With text: standard horizontal padding, flex centering
         !isIconOnly && 'px-4 flex items-center justify-center',
         // Variant-specific styles
         variant === 'outline' &&
-          'bg-white border-white text-primary hover:bg-white/90',
+          'bg-white border-gray-300 text-primary hover:bg-gray-50',
+        variant === 'default' &&
+          'bg-primary hover:bg-primary/90',
         className
       )}
     >

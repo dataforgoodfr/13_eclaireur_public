@@ -23,6 +23,9 @@ export default {
 					lineHeight: 'auto',
 					fontWeight: '400',
 				}],
+				'link': ['18px', {
+					lineHeight: 'auto',
+				}],
 			},
 			backgroundImage: {
 				// 'homepage-header': 'url("/transparency.png")',

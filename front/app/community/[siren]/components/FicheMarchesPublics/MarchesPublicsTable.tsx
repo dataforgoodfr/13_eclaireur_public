@@ -1,7 +1,6 @@
 'use client';
 
 import { WithPagination } from '#components/Pagination';
-import Loading from '#components/ui/Loading';
 import { Badge } from '#components/ui/badge';
 import {
   Table as ShadCNTable,
@@ -18,6 +17,7 @@ import { formatAmount } from '#utils/utils';
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
 import { CHART_HEIGHT } from '../constants';
+import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 
 type MarchesPublicsTableProps = {
   siren: string;
@@ -42,7 +42,11 @@ export default function MarchesPublicsTable({
   );
 
   if (isPending || isError) {
-    return <Loading style={{ height: CHART_HEIGHT }} />;
+    return (
+      <div style={{ height: CHART_HEIGHT }}>
+        <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />
+      </div>
+    );
   }
 
   if (data.length === 0) {

@@ -44,7 +44,7 @@ export default async function InterpellateStep1({ params }: CommunityPageProps) 
         <article className='rounded-3xl border border-primary-light shadow'>
           <div
             id='header-article'
-            className='align-center flex flex-col gap-8 md:gap-0 justify-between rounded-t-3xl bg-[url(/eclaireur/project_background.jpg)] bg-bottom px-8 py-12 md:flex-row'
+            className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.jpg)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
           >
             <CommunityBasics community={community} />
             <ButtonBackAndForth linkto={`/interpeller/${siren}/step2`} direction='forth'>
@@ -64,14 +64,6 @@ export default async function InterpellateStep1({ params }: CommunityPageProps) 
             />
           </Suspense>
         </article>
-        {/* <div className='my-12 flex justify-center gap-4'>
-          <ButtonBackAndForth linkto='/interpeller' direction='back'>
-            Revenir
-          </ButtonBackAndForth>
-          <ButtonBackAndForth linkto={`/interpeller/${siren}/step2`} direction='forth'>
-            Continuer
-          </ButtonBackAndForth>
-        </div> */}
       </section>
     </>
   );

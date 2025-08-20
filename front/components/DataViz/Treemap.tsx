@@ -8,7 +8,6 @@ import * as d3 from 'd3';
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 import { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
 import TreemapTooltip from './TreemapTooltip';
-import TreemapZoomButtons from './TreemapZoomButtons';
 
 function wrapText(text: string, maxWidth: number): string[] {
   const words = text.split(' ');
@@ -121,17 +120,21 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
 
   const allShapes = root.leaves().map((leaf) => (
     <g key={leaf.data.id}>
-      <rect
-        x={leaf.x0}
-        y={leaf.y0}
-        width={leaf.x1 - leaf.x0}
-        height={leaf.y1 - leaf.y0}
-        stroke='transparent'
+      <path
+        d={`
+          M ${leaf.x0 + 8} ${leaf.y0}
+          L ${leaf.x1} ${leaf.y0}
+          L ${leaf.x1} ${leaf.y1 - 8}
+          Q ${leaf.x1} ${leaf.y1} ${leaf.x1 - 8} ${leaf.y1}
+          L ${leaf.x0} ${leaf.y1}
+          L ${leaf.x0} ${leaf.y0 + 8}
+          Q ${leaf.x0} ${leaf.y0} ${leaf.x0 + 8} ${leaf.y0}
+          Z
+        `}
+        stroke='#303F8D'
+        strokeWidth={1}
         fill={colorMap[leaf.data.name]}
-        className='transition-all duration-500 ease-in-out rounded-tl-br'
-        style={{
-          clipPath: 'inset(0 0 0 0 round 0.5rem 0 0.5rem 0)'
-        }}
+        className='transition-all duration-500 ease-in-out'
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
         onMouseMove={(e) => handleOnMouseMove(e)}
         onMouseLeave={() => handleOnMouseLeave()}
@@ -171,7 +174,7 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
   ));
 
   return (
-    <div className='relative' ref={containerRef}>
+    <div className='relative' ref={containerRef} style={{ height }}>
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
       {isZoomActive && (
         <em className='ml-2'>
@@ -182,7 +185,6 @@ export default function Treemap({ data, isZoomActive, handleClick }: TreemapProp
       <svg width={width} height={height}>
         {allShapes}
       </svg>
-      <TreemapZoomButtons isZoomActive={isZoomActive} handleClick={handleClick} />
     </div>
   );
 }

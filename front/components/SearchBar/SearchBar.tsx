@@ -11,11 +11,13 @@ import Suggestions from './SearchSuggestions';
 
 type SearchBarProps = {
   className?: string;
+  placeholder?: string;
   onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function SearchBar({
   className = 'relative hidden md:block',
+  placeholder= 'Code postal, commune, département, région',
   onSelect,
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
@@ -74,8 +76,8 @@ export default function SearchBar({
           <Input
             ref={inputRef}
             type='search'
-            placeholder='Code postal, commune, département, région'
-            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            placeholder={placeholder}
+            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0 h-14'
             onChange={handleInputChange}
             onFocus={handleOnFocus}
             onBlur={(e) => {
