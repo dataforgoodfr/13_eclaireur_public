@@ -28,6 +28,7 @@ from back.scripts.utils.dataframe_operation import (
     sort_by_format_priorities,
 )
 from back.scripts.utils.datagouv_api import select_implemented_formats
+from back.scripts.utils.workflow_operation import prepare_workflow
 
 
 class WorkflowManager:
@@ -68,7 +69,9 @@ class WorkflowManager:
 
         for workflow in self.get_workflows():
             try:
-                workflow(deepcopy(self.config)).run()
+                wf = workflow(deepcopy(self.config))
+                prepare_workflow(wf, self.config)
+                wf.run()
             except Exception as e:
                 self.logger.error(
                     f"An error occurred while running the workflow {workflow.__name__}: {e}"
