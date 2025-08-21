@@ -15,11 +15,12 @@ import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPagina
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
+import EmptyState from '#components/EmptyState';
 import { Skeleton } from '#components/ui/skeleton';
 import { Skeleton } from '#components/ui/skeleton';
 import { YearOption } from '../../types/interface';
-import { NoData } from '../NoData';
 import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
+import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 
 type MarchesPublicsTableProps = {
@@ -76,7 +77,14 @@ export default function MarchesPublicsTable({
     }
 
     if (!data || data.length === 0) {
-      return <NoData />;
+      return (
+        <EmptyState
+          title="Aucune donnée de marchés publics disponible"
+          description="Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+          siren={siren}
+          className="h-[450px] w-full"
+        />
+      );
     }
 
     const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
@@ -101,7 +109,7 @@ export default function MarchesPublicsTable({
 
 return (
   <WithPagination
-    className="min-h-[300px]" // hauteur minimum responsive
+    className="min-h-[300px] w-full" // hauteur minimum responsive et pleine largeur
     totalPage={totalPage}
     urlParam="page_mp"
     mode="url"
@@ -127,14 +135,14 @@ export function Table({ rows }: Table) {
   return (
     <>
       {/* Desktop Table */}
-      <div className="hidden md:block">
+      <div className="hidden md:block w-full">
         <ShadCNTable>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-[300px]'>Titulaire</TableHead>
-              <TableHead className=''>Objet</TableHead>
-              <TableHead className='w-[140px] text-right'>Montant (€)</TableHead>
-              <TableHead className='w-[140px] text-right'>Année</TableHead>
+              <TableHead className='w-[25%]'>Titulaire</TableHead>
+              <TableHead className='w-[45%]'>Objet</TableHead>
+              <TableHead className='w-[15%] text-right'>Montant (€)</TableHead>
+              <TableHead className='w-[15%] text-right'>Année</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
