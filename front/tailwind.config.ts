@@ -26,7 +26,6 @@ export default {
 				'tag-mobile': ['14px', {
 					lineHeight: 'auto',
 					fontWeight: '400',
-					color: '#737373', // muted color
 				}],
 				'link': ['18px', {
 					lineHeight: 'auto',
