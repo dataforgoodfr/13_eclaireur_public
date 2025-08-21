@@ -4,14 +4,12 @@ import {
   PaginationContent,
   PaginationItem as ShacCNPaginationItem,
   Pagination as ShadCNPagination
+  Pagination as ShadCNPagination
 } from '#components/ui/pagination';
 import { cn } from '#utils/utils';
 import { cn } from '#utils/utils';
 
 const FIRST_PAGE = 1;
-const MAX_PAGE_COUNT_ON_SIDES = 1;
-const MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE = 1;
-const STEP_SIZE = 5;
 
 export type PaginationProps = {
   totalPage: number;
@@ -37,15 +35,6 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
       onPageChange(activePage + 1);
     }
 
-    function handleStepBackward() {
-      const newPage = Math.max(FIRST_PAGE, activePage - STEP_SIZE);
-      onPageChange(newPage);
-    }
-
-    function handleStepForward() {
-      const newPage = Math.min(totalPage, activePage + STEP_SIZE);
-      onPageChange(newPage);
-    }
 
     // Calculate visible pages based on maxVisiblePages parameter (including arrows)
     const showLeftArrow = activePage > FIRST_PAGE;
@@ -64,7 +53,7 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
       // Center the active page in the available space
       const half = Math.floor(availableSpaceForPages / 2);
       let start = Math.max(FIRST_PAGE, activePage - half);
-      let end = Math.min(totalPage, start + availableSpaceForPages - 1);
+      const end = Math.min(totalPage, start + availableSpaceForPages - 1);
 
       // Adjust start if we're near the end
       if (end - start + 1 < availableSpaceForPages) {

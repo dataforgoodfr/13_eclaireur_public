@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pagination } from "@/components/Pagination/Pagination";
 import { cn } from "@/utils/utils";
 
 interface DataTablePaginationProps<TData> extends React.ComponentProps<"div"> {
