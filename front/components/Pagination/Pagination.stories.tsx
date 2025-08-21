@@ -215,35 +215,30 @@ export const SlidingNumbers: Story = {
 
         <div className="mt-6 flex flex-wrap gap-2 justify-center">
           <button
-            <button
             onClick={() => setCurrentPage(1)}
             className="px-3 py-1 bg-gray-100 rounded text-sm"
           >
             Aller à 1
           </button>
           <button
-            <button
             onClick={() => setCurrentPage(5)}
             className="px-3 py-1 bg-gray-100 rounded text-sm"
           >
             Aller à 5
           </button>
           <button
-            <button
             onClick={() => setCurrentPage(10)}
             className="px-3 py-1 bg-gray-100 rounded text-sm"
           >
             Aller à 10
           </button>
           <button
-            <button
             onClick={() => setCurrentPage(15)}
             className="px-3 py-1 bg-gray-100 rounded text-sm"
           >
             Aller à 15
           </button>
           <button
-            <button
             onClick={() => setCurrentPage(20)}
             className="px-3 py-1 bg-gray-100 rounded text-sm"
           >
@@ -277,7 +272,6 @@ export const EdgeCases: Story = {
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-4">Test des cas limites</h3>
           <select
-            <select
             value={scenario}
             onChange={(e) => setScenario(Number(e.target.value))}
             className="p-2 border rounded-md mb-4"
@@ -294,8 +288,6 @@ export const EdgeCases: Story = {
         </div>
 
         <PaginationWithState
-
-          <PaginationWithState
           totalPage={currentScenario.totalPage}
           activePage={currentScenario.activePage}
           maxVisiblePages={currentScenario.maxVisiblePages}

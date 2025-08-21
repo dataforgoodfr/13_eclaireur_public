@@ -12,15 +12,12 @@ import {
 } from '#components/ui/table';
 import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
-import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
 import EmptyState from '#components/EmptyState';
 import { Skeleton } from '#components/ui/skeleton';
-import { Skeleton } from '#components/ui/skeleton';
 import { YearOption } from '../../types/interface';
 import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
-import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 
 type MarchesPublicsTableProps = {
@@ -94,29 +91,20 @@ export default function MarchesPublicsTable({
       amount: montant,
       year: annee_notification,
     }));
-    const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
-      id,
-      names: titulaire_names,
-      object: objet,
-      amount: montant,
-      year: annee_notification,
-    }));
 
     return <Table rows={rows} />;
   };
-  return <Table rows={rows} />;
-};
 
-return (
-  <WithPagination
-    className="min-h-[300px] w-full" // hauteur minimum responsive et pleine largeur
-    totalPage={totalPage}
-    urlParam="page_mp"
-    mode="url"
-  >
-    {renderContent()}
-  </WithPagination>
-);
+  return (
+    <WithPagination
+      className="min-h-[300px] w-full" // hauteur minimum responsive et pleine largeur
+      totalPage={totalPage}
+      urlParam="page_mp"
+      mode="url"
+    >
+      {renderContent()}
+    </WithPagination>
+  );
 }
 
 type Row = {
