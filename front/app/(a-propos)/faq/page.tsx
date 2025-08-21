@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className='mx-auto mt-2 w-full max-w-screen-lg p-6 md:mt-20'>
+    <div className='mx-auto mb-20 mt-2 w-full max-w-screen-lg p-6 md:mt-20'>
       <div className='mb-4 flex items-center justify-between md:mb-12'>
         <div className='space-y-4'>
           <h1 className='text-3xl font-bold'>Foire Aux Questions - FAQ</h1>

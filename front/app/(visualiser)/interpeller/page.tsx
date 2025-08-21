@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
+import FrequentlyAskQuestion from '#app/components/FrequentlyAskQuestion';
 import OurMethodology from '#app/components/OurMethodology';
 import WhyChallenge from '#app/components/WhyChallenge';
 import Stepper from '#components/Interpellate/Stepper';
@@ -20,7 +21,7 @@ export default function Page() {
       </div>
       <section id='interpellation-step1-nocommunity' className='global-margin mb-16 mt-[-7rem]'>
         <article className='my-6 flex flex-col justify-start bg-[url(/eclaireur/project_background.jpg)] py-6'>
-          <h2 className='my-6 text-center text-h1 font-bold'>
+          <h2 className='text-h1 my-6 text-center font-bold'>
             Trouver une collectivité
             <br />
             <div className='inline-block bg-gradient-fade px-8'>à interpeller</div>
@@ -38,6 +39,7 @@ export default function Page() {
         <article>
           <WhyChallenge />
           <OurMethodology />
+          <FrequentlyAskQuestion />
         </article>
       </section>
     </>
