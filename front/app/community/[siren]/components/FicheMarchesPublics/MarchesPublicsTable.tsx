@@ -11,14 +11,15 @@ import {
   TableRow,
 } from '#components/ui/table';
 import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
+import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
+import { Skeleton } from '#components/ui/skeleton';
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
-import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
-import { Skeleton } from '#components/ui/skeleton';
+import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 
 type MarchesPublicsTableProps = {
   siren: string;
@@ -34,8 +35,6 @@ export default function MarchesPublicsTable({
   siren,
   year,
 }: MarchesPublicsTableProps) {
-  const itemsPerPage = getItemsPerPage();
-
   // First get initial pagination state
   const { currentPage } = usePaginationState('page_mp', 1);
 
@@ -44,7 +43,7 @@ export default function MarchesPublicsTable({
     year === 'All' ? null : year,
     {
       page: currentPage,
-      limit: itemsPerPage,
+      limit: MAX_ROW_PER_PAGE,
     },
   );
 
@@ -54,19 +53,14 @@ export default function MarchesPublicsTable({
     isPending,
     {
       paramName: 'page_mp',
-      itemsPerPage: itemsPerPage,
+      itemsPerPage: MAX_ROW_PER_PAGE,
     }
   );
 
   // Rendu du contenu selon l'état
   const renderContent = () => {
     if (isPending) {
-      return (
-        <>
-          <MarchesPublicsTableSkeleton rows={itemsPerPage} />
-          <MarchesPublicsMobileSkeleton rows={itemsPerPage} />
-        </>
-      );
+      return <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />;
     }
 
     if (isError) {
@@ -84,20 +78,29 @@ export default function MarchesPublicsTable({
       amount: montant,
       year: annee_notification,
     }));
+    const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
+      id,
+      names: titulaire_names,
+      object: objet,
+      amount: montant,
+      year: annee_notification,
+    }));
 
     return <Table rows={rows} />;
   };
+  return <Table rows={rows} />;
+};
 
-  return (
-    <WithPagination
-      className="min-h-[300px]" // hauteur minimum responsive
-      totalPage={totalPage}
-      urlParam="page_mp"
-      mode="url"
-    >
-      {renderContent()}
-    </WithPagination>
-  );
+return (
+  <WithPagination
+    style={{ height: CHART_HEIGHT }}
+    totalPage={totalPage}
+    urlParam="page_mp"
+    mode="url"
+  >
+    {renderContent()}
+  </WithPagination>
+);
 }
 
 type Row = {
@@ -197,25 +200,25 @@ export function Table({ rows }: Table) {
                   <Skeleton className='h-6 w-[80px] rounded-full' />
                   <Skeleton className='h-6 w-[60px] rounded-full' />
                 </div>
-                
+
                 {/* Title skeleton */}
                 <div className="mb-2.5">
                   <Skeleton className='h-4 w-full mb-2' />
                   <Skeleton className='h-4 w-3/4' />
                 </div>
-                
+
                 {/* Separator */}
                 <div className="border-b border-muted-border mb-2.5" />
-                
+
                 {/* Montant skeleton */}
                 <div className="flex justify-between items-center mb-2.5">
                   <Skeleton className='h-4 w-16' />
                   <Skeleton className='h-5 w-24' />
                 </div>
-                
+
                 {/* Separator */}
                 <div className="border-b border-muted-border mb-2.5" />
-                
+
                 {/* Année skeleton */}
                 <div className="flex justify-between items-center">
                   <Skeleton className='h-4 w-12' />

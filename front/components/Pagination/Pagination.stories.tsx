@@ -62,43 +62,65 @@ export const Default: Story = {
   args: {
     totalPage: 10,
     activePage: 1,
-    maxVisiblePages: 5,
   },
-  render: ({ totalPage, activePage, maxVisiblePages }) => (
-    <PaginationWithState
-      totalPage={totalPage}
-      activePage={activePage}
-      maxVisiblePages={maxVisiblePages}
-    />
-  ),
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const FewPages: Story = {
-  render: () => <PaginationWithState totalPage={5} activePage={3} />,
+  args: {
+    totalPage: 5,
+    activePage: 3,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const ManyPages: Story = {
-  render: () => <PaginationWithState totalPage={50} activePage={25} maxVisiblePages={5} />,
+  args: {
+    totalPage: 50,
+    activePage: 25,
+    maxVisiblePages: 5,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const FirstPage: Story = {
-  render: () => <PaginationWithState totalPage={20} activePage={1} />,
+  args: {
+    totalPage: 20,
+    activePage: 1,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const LastPage: Story = {
-  render: () => <PaginationWithState totalPage={20} activePage={20} />,
+  args: {
+    totalPage: 20,
+    activePage: 20,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const SinglePage: Story = {
-  render: () => <PaginationWithState totalPage={1} activePage={1} />,
+  args: {
+    totalPage: 1,
+    activePage: 1,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 export const LargeDataset: Story = {
-  render: () => <PaginationWithState totalPage={150} activePage={75} />,
+  args: {
+    totalPage: 150,
+    activePage: 75,
+  },
+  render: (args) => <PaginationWithState {...args} />,
 };
 
 // Story spéciale pour tester le comportement mobile
 export const MobileView: Story = {
+  args: {
+    totalPage: 30,
+    activePage: 15,
+  },
   parameters: {
     viewport: {
       defaultViewport: 'mobile1',
@@ -109,25 +131,28 @@ export const MobileView: Story = {
       },
     },
   },
-  render: () => (
+  render: (args) => (
     <div className="w-full max-w-sm p-4">
       <div className="mb-4 text-center">
         <p className="text-sm text-muted">Vue mobile - Navigation par pas de 5</p>
       </div>
-      <PaginationWithState totalPage={30} activePage={15} />
+      <PaginationWithState {...args} />
     </div>
   ),
 };
 
 // Story pour démontrer les cas d'usage réels avec des données
 export const RealWorldExample: Story = {
-  render: function RealWorldExample() {
-    const [currentPage, setCurrentPage] = useState(8);
+  args: {
+    totalPage: 25,
+    activePage: 8,
+  },
+  render: (args) => {
+    const [currentPage, setCurrentPage] = useState(args.activePage);
 
     // Simulation de données paginées
     const itemsPerPage = 10;
-    const totalPage = 25;
-    const totalItems = totalPage * itemsPerPage;
+    const totalItems = args.totalPage * itemsPerPage;
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
@@ -151,7 +176,7 @@ export const RealWorldExample: Story = {
         </div>
 
         <Pagination
-          totalPage={totalPage}
+          totalPage={args.totalPage}
           activePage={currentPage}
           onPageChange={setCurrentPage}
         />
@@ -162,29 +187,32 @@ export const RealWorldExample: Story = {
 
 // Story pour tester le paramètre maxVisiblePages
 export const MaxVisiblePagesTest: Story = {
-  render: function MaxVisiblePagesTest() {
-    return (
-      <div className="p-6 space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold mb-2">3 éléments max (2 flèches + 1 numéro)</h3>
-          <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={3} />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-2">5 éléments max (2 flèches + 3 numéros) - défaut</h3>
-          <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={5} />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-2">7 éléments max (2 flèches + 5 numéros)</h3>
-          <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={7} />
-        </div>
-      </div>
-    );
+  args: {
+    totalPage: 20,
+    activePage: 10,
+    maxVisiblePages: 3,
   },
+  render: (args) => (
+    <div className="p-6 space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">3 éléments max (2 flèches + 1 numéro)</h3>
+        <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={3} />
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">5 éléments max (2 flèches + 3 numéros) - défaut</h3>
+        <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={5} />
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">7 éléments max (2 flèches + 5 numéros)</h3>
+        <PaginationWithState totalPage={20} activePage={10} maxVisiblePages={7} />
+      </div>
+    </div>
+  ),
 };
 
 // Story pour tester le glissement des numéros
 export const SlidingNumbers: Story = {
-  render: function SlidingNumbers() {
+  render: () => {
     const [currentPage, setCurrentPage] = useState(8);
 
     return (
@@ -245,7 +273,7 @@ export const SlidingNumbers: Story = {
 
 // Story pour tester les cas limites
 export const EdgeCases: Story = {
-  render: function EdgeCases() {
+  render: () => {
     const [scenario, setScenario] = useState(0);
     const scenarios = [
       { totalPage: 2, activePage: 1, maxVisiblePages: 5, description: "Seulement 2 pages" },
