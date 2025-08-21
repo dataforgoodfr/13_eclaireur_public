@@ -1,0 +1,78 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/product.schema.json",
+    "title": "Product",
+    "description": "A minimal OFGL changelog API ",
+    "type": "object",
+    "properties":
+    {
+	"parameters":
+	{
+	    "description": "parameters",
+	    "type": "object",
+	    "properties":
+	    {
+		"records":
+		{
+		    "description": "records",
+		    "type": "array",
+		    "items":
+		    {
+			"type": "object",
+			"properties":
+			{
+			    "datasetid":
+			    {
+				"description": "dataset id, this dataset is 'ofgl changelog'",
+				"type": "string"
+			    },
+			    "recordid":
+			    {
+				"description": "uniq hash of this record",
+				"type": "string"
+			    },
+			    "fields":
+			    {
+				"description": "attributs of this record",
+				"type": "object",
+				"properties":
+				{
+				    "jeu_donnees":
+				    {
+					"description": "Requested dataset id",
+					"type": "string"
+				    },
+				    "nature_maj":
+				    {
+					"description": "Short description of the record content",
+					"type": "string"
+				    },
+				    "date":
+				    {
+					"description": "Date of the record",
+					"type": "string"
+				    },
+				    "commentaire_maj":
+				    {
+					"description": "Long description of the content",
+					"type": "string"
+				    },
+				    "categorie_maj":
+				    {
+					"description": "content type",
+					"type": "string"
+				    }
+				},
+				"record_timestamp":
+				{
+				    "description": "generation timestamp",
+				    "type": "timestamp"
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+}

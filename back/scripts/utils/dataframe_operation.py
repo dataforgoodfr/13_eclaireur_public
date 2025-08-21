@@ -271,3 +271,34 @@ def sort_by_format_priorities(df: pd.DataFrame, keep: bool = False) -> pd.DataFr
     if not keep:
         out = out.drop(columns=["priority"])
     return out
+
+
+def merge_cols_into_one(
+    df: pd.DataFrame, origin_cols: list, target_col=None, astype=None
+) -> pd.DataFrame:
+    """
+    merge
+    """
+
+    some_cols_exists_id_df = False
+    for c in origin_cols:
+        some_cols_exists_id_df = c in df.columns or some_cols_exists_id_df
+
+    if some_cols_exists_id_df is False:
+        return df
+
+    if target_col is None:
+        target_col = origin_cols[0]
+    internal_target_col = f"internal_{target_col}"
+
+    df[internal_target_col] = [None] * len(df)
+    for col in origin_cols:
+        if col in df.columns:
+            df[internal_target_col] = df[internal_target_col].combine(
+                df[col], lambda v1, v2: v2 if v1 is None or v1 != np.nan else v1
+            )
+
+    if astype is not None:
+        df[internal_target_col] = df[internal_target_col].astype(astype, errors="ignore")
+
+    return df.assign(**{target_col: df[internal_target_col]}).drop(internal_target_col, axis=1)

@@ -3,7 +3,9 @@ import json
 import logging
 import urllib.request
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
+from typing import IO
 from urllib.error import HTTPError
 
 import pandas as pd
@@ -12,6 +14,7 @@ from tqdm import tqdm
 
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders import BaseLoader
+from back.scripts.utils.dataframe_operation import merge_cols_into_one
 from back.scripts.utils.decorators import tracker
 from back.scripts.utils.typing import PandasRow
 
@@ -28,6 +31,45 @@ def _sha256(s: str | None) -> str | None:
         s (str | None): hexadecimal SHA256 hash of the input string, or None if input is NaN.
     """
     return None if pd.isna(s) else hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+
+def _sha1(f: IO[bytes] | None) -> str | None:
+    """
+    Compute SHA1 hash from a local filestream.
+    Purpose: compare with hash provide by gouvdata_catalog.
+
+    Args:
+        f (file | None): file stream.
+    Returns:
+        s (str | None): hexadecimal SHA1 hash of file stream's content, or None.
+    """
+    return hashlib.file_digest(f, "sha1").hexdigest()
+
+
+def _file_sha1(p: Path | None) -> str | None:
+    """
+    Compute SHA1 hash from a local path.
+    Purpose: compare with hash provide by gouvdata_catalog.
+
+    Args:
+        p (Path | None): existing Path.
+    Returns:
+        s (str | None): hexadecimal SHA1 hash of the content of the file references by path, or None if not exists.
+    """
+    if not p.exists():
+        return None
+    with open(p, "rb") as f:
+        return _sha1(f)
+
+
+def _file_mtime(p: Path | None) -> datetime | None:
+    """
+    return the last modification date of a file as datetime
+    """
+    if not p.exists():
+        return None
+    stat_result = p.stat()
+    return datetime.fromtimestamp(stat_result.st_mtime)
 
 
 class DatasetAggregator(BaseDataset):
@@ -81,47 +123,67 @@ class DatasetAggregator(BaseDataset):
 
     @tracker(ulogger=LOGGER, log_start=True)
     def run(self) -> None:
-        if self.output_filename.exists():
-            return
-        self._process_files()
-        self._post_process()
-        self._concatenate_files()
-        with open(self.data_folder / "errors.json", "w") as f:
-            json.dump(self.errors, f)
+        """
+        Process all files, if at least one is modified, update ouput_file
+        """
+        if self._process_files():
+            self._post_process()
+            self._concatenate_files()
+            with open(self.data_folder / "errors.json", "w") as f:
+                json.dump(self.errors, f)
 
-    def _process_files(self) -> None:
+    def _process_files(self) -> bool:
+        """
+        Process all files in scope.
+        For each one, download if remote is different (sha1 checks) then process normalization if new/updated
+        Return True if at least one file was updated to force concatenation
+        """
+
+        # force to process the complete pipeline if the result not exists.
+        need_rebuild_output = not self.output_filename.exists()
         for file_infos in tqdm(self._remaining_to_normalize()):
+            if not file_infos.need_download and not file_infos.need_normalize:
+                LOGGER.debug(
+                    f"[{self.get_config_key()}]: {file_infos.url} is skipped (checksum || mtime)"
+                )
+                continue
+
             if file_infos.url is None or pd.isna(file_infos.url):
                 LOGGER.warning(f"URL not specified for file {file_infos.title}")
                 continue
 
             try:
                 self._process_file(file_infos)
+                need_rebuild_output = True
             except Exception as e:
                 LOGGER.warning(f"Failed to process file {file_infos.url}: {e}")
                 self.errors[str(e)].append(file_infos.url)
 
+        return need_rebuild_output
+
     def _post_process(self) -> None:
         pass
 
-    def _process_file(self, file: PandasRow) -> None:
+    def _process_file(self, file_metadata: PandasRow) -> None:
         """
-        Download and normalize a spécific file.
+        Download a specific file if different.
+        Normalize it if needed (non existant normalized file, or updated source)
         """
-        self._download_file(file)
-        self._normalize_file(file)
+        if file_metadata.need_download:
+            self._download_file(file_metadata)
+        if file_metadata.need_normalize:
+            self._normalize_file(file_metadata)
 
     def _download_file(self, file_metadata: PandasRow) -> None:
         """
         Save locally the output of the URL.
         """
         output_filename = self._dataset_filename(file_metadata, "raw")
-        if output_filename.exists():
-            LOGGER.debug(f"File {output_filename} already exists, skipping")
-            return
         output_filename.parent.mkdir(exist_ok=True, parents=True)
         try:
             urllib.request.urlretrieve(file_metadata.url, output_filename)
+            LOGGER.info(f"Downloaded file {file_metadata.url}")
+
         except HTTPError as error:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {error}")
             msg = f"HTTP error {error.code}"
@@ -129,7 +191,6 @@ class DatasetAggregator(BaseDataset):
         except Exception as e:
             LOGGER.warning(f"Failed to download file {file_metadata.url}: {e}")
             self.errors[str(e)].append(file_metadata.url)
-        LOGGER.debug(f"Downloaded file {file_metadata.url}")
 
     def _dataset_filename(self, file_metadata: PandasRow, step: str) -> Path:
         """
@@ -142,11 +203,11 @@ class DatasetAggregator(BaseDataset):
         )
 
     def _normalize_file(self, file_metadata: PandasRow) -> None:
+        """
+        process specific and independent steps on file.
+        only call if source file is new or has changed.
+        """
         out_filename = self._dataset_filename(file_metadata, "norm")
-        if out_filename.exists():
-            LOGGER.debug(f"File {out_filename} already exists, skipping")
-            return
-
         raw_filename = self._dataset_filename(file_metadata, "raw")
         if not raw_filename.exists():
             LOGGER.debug(f"File {raw_filename} does not exist, skipping")
@@ -176,24 +237,112 @@ class DatasetAggregator(BaseDataset):
         """
         Select among the input files the ones for which we do not have yet the normalized file.
         """
+
+        def print_df(df: pd.DataFrame):
+            if LOGGER.isEnabledFor(logging.DEBUG):
+                cols_to_query = [
+                    "base_url",
+                    "url_hash",
+                    "checksum_value",
+                    "extras_analysis:checksum",
+                    "need_download",
+                    "need_normalize",
+                    "extras_analysis:last-modified-at",
+                    "modified",
+                    "last-modified",
+                    "internal_last_modified",
+                    "local_mtime",
+                ]
+                existing_cols = []
+                for ctq in cols_to_query:
+                    if ctq in df:
+                        existing_cols.append(ctq)
+
+                print(df[existing_cols])
+
+            return df
+
+        download_all = self.main_config["workflow"]["download_all"]
+        normalize_all = self.main_config["workflow"]["normalize_all"]
+
+        # Cas simple, on télécharge tout, on ajoute les deux attributs (valorisés à True) qui servent à la suite des opérations, et on s'en va.
+        if download_all:
+            LOGGER.debug(
+                f"[{self.get_config_key()}] force download turn on: {self.files_in_scope.shape[0]} files planned to download"
+            )
+            return list(
+                self.files_in_scope.assign(need_download=True, need_normalize=True).itertuples()
+            )
+
+        # Etat de la situation, liste des fichiers sources avec leur date respective et leur somme de contrôle.
         current = pd.DataFrame(
-            {
-                "url_hash": [
-                    str(x.parent.name) for x in self.data_folder.glob("*/norm.parquet")
-                ],
-                "exists": 1,
-            },
-        ).assign(url_hash=lambda df: df["url_hash"].astype(str).where(df["url_hash"].notnull()))
-        return list(
+            [
+                {
+                    "url_hash": str(x.parent.name),
+                    "local_hash": _file_sha1(x),
+                    "local_mtime": _file_mtime(x),
+                }
+                for x in self.data_folder.glob("*/raw.*")
+            ],
+            columns=["url_hash", "local_hash", "local_mtime"],
+        )
+
+        # On associe à chaque fichier à DL au fichier local si il existe.
+        file_to_process = (
             self.files_in_scope.merge(
                 current,
                 how="left",
                 on="url_hash",
             )
-            .pipe(lambda df: df[df["exists"].isnull()])
-            .drop(columns="exists")
-            .itertuples()
+            # On ajoute les deux attributs qui servent à la suite des opérations.
+            .assign(
+                need_download=False,
+                need_normalize=False,
+                url_hash=lambda df: df["url_hash"].astype(str).where(df["url_hash"].notnull())
+                if "url_hash" in df
+                else None,
+                local_hash=lambda df: df["local_hash"]
+                .astype(str)
+                .where(df["local_hash"].notnull(), ""),
+                local_mtime=lambda df: df["local_mtime"]
+                .astype(str)
+                .where(df["local_mtime"].notnull(), pd.Timestamp(0)),
+            )
+            .pipe(print_df)
+            # on met les sommes de contrôle répartis sur plusieurs attributs sur le premier ("checksum_value") pour nous faciliter la vie après
+            .pipe(
+                merge_cols_into_one,
+                ["checksum_value", "analysis:checksum", "extras_analysis:checksum"],
+            )
+            # on met les dates de dernières modifications répartis sur plusieurs attributs sur un nouveau ("last-modified") pour nous faciliter la vie après
+            .pipe(
+                merge_cols_into_one,
+                ["last_update", "modified", "extras_analysis:last-modified-at"],
+                target_col="last-modified",
+                astype="datetime64[ns]",
+            )
+            # on calcule la nécessité de télécharger le fichier
+            .assign(
+                need_download=lambda s: s["local_hash"] != s["checksum_value"]
+                if "checksum_value" in s
+                else s["last_update"] > s["local_mtime"]
+                if "last_update" in s
+                else True
+            )
+            # on calcule la nécessité de traiter le fichier.
+            .assign(need_normalize=lambda s: normalize_all or s["need_download"])
+            .pipe(print_df)
+            .drop(columns=["local_mtime", "local_hash", "last-modified"], errors="ignore")
         )
+
+        total_files = file_to_process.shape[0]
+        download_planned = file_to_process[file_to_process["need_download"]].shape[0]
+        normalization_planned = file_to_process[file_to_process["need_normalize"]].shape[0]
+        LOGGER.info(
+            f"[{self.get_config_key()}] (pool size : {total_files}) {download_planned} files planned to download / {normalization_planned} files planned to normalization"
+        )
+
+        return list(file_to_process.itertuples())
 
     def _add_normalized_filenames(self) -> None:
         """
