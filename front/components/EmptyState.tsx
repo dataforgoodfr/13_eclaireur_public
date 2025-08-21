@@ -76,7 +76,7 @@ const EmptyState: FC<EmptyStateProps> = ({
         </div>
 
         {/* Titre principal */}
-        <h2 className="text-xl md:text-2xl font-bold text-primary text-center mb-4 max-w-md">
+        <h2 className="text-lg md:text-2xl font-bold text-primary text-center mb-4 max-w-xs md:max-w-md px-2">
           Vous pouvez toujours agir !
         </h2>
 
