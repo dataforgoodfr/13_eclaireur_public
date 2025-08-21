@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '#components/ui/table';
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
-import { usePagination } from '#utils/hooks/usePagination';
+import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
 import { formatAmount } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
@@ -22,7 +22,6 @@ import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleto
 type MarchesPublicsTableProps = {
   siren: string;
   year: YearOption;
-  paginationProps: ReturnType<typeof usePagination>;
 };
 
 const MAX_ROW_PER_PAGE = 10;
@@ -30,42 +29,62 @@ const MAX_ROW_PER_PAGE = 10;
 export default function MarchesPublicsTable({
   siren,
   year,
-  paginationProps,
 }: MarchesPublicsTableProps) {
+  // First get initial pagination state
+  const { currentPage } = usePaginationState('page_mp', 1);
+
   const { data, isPending, isError } = useMarchesPublicsPaginated(
     siren,
     year === 'All' ? null : year,
     {
-      page: paginationProps.activePage,
+      page: currentPage,
       limit: MAX_ROW_PER_PAGE,
     },
   );
 
-  if (isPending || isError) {
-    return (
-      <div style={{ height: CHART_HEIGHT }}>
-        <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />
-      </div>
-    );
-  }
+  // Then use persistent pagination with the actual data
+  const { totalPage } = usePaginationStateWithTotal(
+    data,
+    isPending,
+    {
+      paramName: 'page_mp',
+      itemsPerPage: MAX_ROW_PER_PAGE,
+    }
+  );
 
-  if (data.length === 0) {
-    return <NoData style={{ height: CHART_HEIGHT }} />;
-  }
+  // Rendu du contenu selon l'état
+  const renderContent = () => {
+    if (isPending) {
+      return <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />;
+    }
 
-  const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
-    id,
-    names: titulaire_names,
-    object: objet,
-    amount: montant,
-    year: annee_notification,
-  }));
+    if (isError) {
+      return <div className="text-center text-red-500 p-4">Erreur lors du chargement</div>;
+    }
 
-  const totalPage = Math.ceil(data[0].total_row_count / MAX_ROW_PER_PAGE);
+    if (!data || data.length === 0) {
+      return <NoData />;
+    }
+
+    const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
+      id,
+      names: titulaire_names,
+      object: objet,
+      amount: montant,
+      year: annee_notification,
+    }));
+
+    return <Table rows={rows} />;
+  };
 
   return (
-    <WithPagination style={{ height: CHART_HEIGHT }} totalPage={totalPage} {...paginationProps}>
-      <Table rows={rows} />
+    <WithPagination 
+      style={{ height: CHART_HEIGHT }} 
+      totalPage={totalPage}
+      urlParam="page_mp"
+      mode="url"
+    >
+      {renderContent()}
     </WithPagination>
   );
 }
