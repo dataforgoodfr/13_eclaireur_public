@@ -40,6 +40,7 @@ type Story = StoryObj<typeof meta>;
 const PaginationWithState = (args: { totalPage: number; activePage: number; maxVisiblePages?: number }) => {
   const [currentPage, setCurrentPage] = useState(args.activePage);
 
+
   return (
     <div className="p-4">
       <div className="mb-4 text-center">
@@ -131,6 +132,7 @@ export const RealWorldExample: Story = {
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
+
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-4">
@@ -138,6 +140,7 @@ export const RealWorldExample: Story = {
           <p className="text-sm text-muted mb-4">
             Affichage de {startItem} à {endItem} sur {totalItems} résultats
           </p>
+
 
           {/* Simulation d'une liste de résultats */}
           <div className="space-y-3">
@@ -149,6 +152,7 @@ export const RealWorldExample: Story = {
             ))}
           </div>
         </div>
+
 
         <Pagination
           totalPage={totalPage}
@@ -187,6 +191,7 @@ export const SlidingNumbers: Story = {
   render: function SlidingNumbers() {
     const [currentPage, setCurrentPage] = useState(8);
 
+
     return (
       <div className="p-6">
         <div className="mb-4 text-center">
@@ -199,12 +204,14 @@ export const SlidingNumbers: Story = {
           </p>
         </div>
 
+
         <Pagination
           totalPage={20}
           activePage={currentPage}
           onPageChange={setCurrentPage}
           maxVisiblePages={5}
         />
+
 
         <div className="mt-6 flex flex-wrap gap-2 justify-center">
           <button
@@ -256,7 +263,9 @@ export const EdgeCases: Story = {
       { totalPage: 7, activePage: 4, maxVisiblePages: 5, description: "7 pages, milieu sélectionné" },
     ];
 
+
     const currentScenario = scenarios[scenario];
+
 
     return (
       <div className="p-6">
@@ -272,6 +281,7 @@ export const EdgeCases: Story = {
             ))}
           </select>
         </div>
+
 
         <div className="mb-4 text-center">
           <p className="text-sm text-muted">{currentScenario.description}</p>

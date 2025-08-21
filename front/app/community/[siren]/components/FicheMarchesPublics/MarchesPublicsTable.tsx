@@ -14,11 +14,11 @@ import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePagin
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
-import { YearOption } from '../../types/interface';
-import { NoData } from '../NoData';
-import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
-import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
+import EmptyState from '#components/EmptyState';
 import { Skeleton } from '#components/ui/skeleton';
+import { YearOption } from '../../types/interface';
+import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
+import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 
 type MarchesPublicsTableProps = {
   siren: string;
@@ -74,7 +74,14 @@ export default function MarchesPublicsTable({
     }
 
     if (!data || data.length === 0) {
-      return <NoData />;
+      return (
+        <EmptyState
+          title="Aucune donnée de marchés publics disponible"
+          description="Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+          siren={siren}
+          className="h-[450px] w-full"
+        />
+      );
     }
 
     const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
@@ -90,7 +97,7 @@ export default function MarchesPublicsTable({
 
   return (
     <WithPagination
-      className="min-h-[300px]" // hauteur minimum responsive
+      className="min-h-[300px] w-full" // hauteur minimum responsive et pleine largeur
       totalPage={totalPage}
       urlParam="page_mp"
       mode="url"
@@ -116,14 +123,14 @@ export function Table({ rows }: Table) {
   return (
     <>
       {/* Desktop Table */}
-      <div className="hidden md:block">
+      <div className="hidden md:block w-full">
         <ShadCNTable>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-[300px]'>Titulaire</TableHead>
-              <TableHead className=''>Objet</TableHead>
-              <TableHead className='w-[140px] text-right'>Montant (€)</TableHead>
-              <TableHead className='w-[140px] text-right'>Année</TableHead>
+              <TableHead className='w-[25%]'>Titulaire</TableHead>
+              <TableHead className='w-[45%]'>Objet</TableHead>
+              <TableHead className='w-[15%] text-right'>Montant (€)</TableHead>
+              <TableHead className='w-[15%] text-right'>Année</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -197,25 +204,25 @@ export function Table({ rows }: Table) {
                   <Skeleton className='h-6 w-[80px] rounded-full' />
                   <Skeleton className='h-6 w-[60px] rounded-full' />
                 </div>
-                
+
                 {/* Title skeleton */}
                 <div className="mb-2.5">
                   <Skeleton className='h-4 w-full mb-2' />
                   <Skeleton className='h-4 w-3/4' />
                 </div>
-                
+
                 {/* Separator */}
                 <div className="border-b border-muted-border mb-2.5" />
-                
+
                 {/* Montant skeleton */}
                 <div className="flex justify-between items-center mb-2.5">
                   <Skeleton className='h-4 w-16' />
                   <Skeleton className='h-5 w-24' />
                 </div>
-                
+
                 {/* Separator */}
                 <div className="border-b border-muted-border mb-2.5" />
-                
+
                 {/* Année skeleton */}
                 <div className="flex justify-between items-center">
                   <Skeleton className='h-4 w-12' />

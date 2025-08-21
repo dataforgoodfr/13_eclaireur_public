@@ -42,11 +42,12 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           </>
         }
       />
-      {isTableDisplayed ? (
+      <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
-      ) : (
+      </div>
+      <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
-      )}
+      </div>
     </>
   );
 }
