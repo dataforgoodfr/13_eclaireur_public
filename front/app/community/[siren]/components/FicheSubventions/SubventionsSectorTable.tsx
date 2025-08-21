@@ -1,7 +1,7 @@
 'use client';
 
 import { WithPagination } from '#components/Pagination';
-import { usePaginationState } from '#hooks/usePaginationState';
+import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 import { roundNumber } from '#utils/utils';
 
@@ -19,6 +19,7 @@ type SubventionsSectorTableProps = {
 const MAX_ROW_PER_PAGE = 10;
 
 export default function SubventionsSectorTable({ siren, year }: SubventionsSectorTableProps) {
+  // First get initial pagination state
   const { currentPage } = usePaginationState('page_subv_sector', 1);
 
   const { data, isPending, isError } = useSubventionsByNaf(siren, year === 'All' ? null : year, {
@@ -26,33 +27,46 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
     limit: MAX_ROW_PER_PAGE,
   });
 
-  if (isPending || isError) {
-    return (
-      <div style={{ height: CHART_HEIGHT }}>
-        <SectorTableSkeleton rows={MAX_ROW_PER_PAGE} />
-      </div>
-    );
-  }
+  // Then use persistent pagination with the actual data
+  const { totalPage } = usePaginationStateWithTotal(
+    data,
+    isPending,
+    {
+      paramName: 'page_subv_sector',
+      itemsPerPage: MAX_ROW_PER_PAGE,
+    }
+  );
 
-  if (data.length === 0) {
-    return (
-      <EmptyState
-        title="Aucune donnée de subventions par secteur disponible"
-        description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
-        siren={siren}
-        className="h-[450px] w-full"
-      />
-    );
-  }
+  // Rendu du contenu selon l'état
+  const renderContent = () => {
+    if (isPending || isError) {
+      return (
+        <div className="w-full self-stretch" style={{ height: CHART_HEIGHT }}>
+          <SectorTableSkeleton rows={MAX_ROW_PER_PAGE} />
+        </div>
+      );
+    }
 
-  const rows: SectorRow[] = data.map(({ naf2, label, montant, grand_total }) => ({
-    id: naf2,
-    name: label,
-    amount: montant,
-    percentage: roundNumber(montant / grand_total),
-  }));
+    if (data.length === 0) {
+      return (
+        <EmptyState
+          title="Aucune donnée de subventions par secteur disponible"
+          description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+          siren={siren}
+          className="h-[450px] w-full"
+        />
+      );
+    }
 
-  const totalPage = Math.ceil(data[0].total_row_count / MAX_ROW_PER_PAGE);
+    const rows: SectorRow[] = data.map(({ naf2, label, montant, grand_total }) => ({
+      id: naf2,
+      name: label,
+      amount: montant,
+      percentage: roundNumber(montant / grand_total),
+    }));
+
+    return <SectorTable data={rows} />;
+  };
 
   return (
     <WithPagination 
@@ -61,7 +75,7 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
       urlParam="page_subv_sector"
       mode="url"
     >
-      <SectorTable data={rows} />
+      {renderContent()}
     </WithPagination>
   );
 }

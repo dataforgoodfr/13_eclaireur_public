@@ -49,34 +49,39 @@ export default function RankingTable({ siren, year }: SubventionTableProps) {
     }
   );
 
-  if (isPending || isError) {
-    return (
-      <div style={{ height: CHART_HEIGHT }}>
-        <MarchesPublicsTableSkeleton rows={itemsPerPage} />
-      </div>
-    );
-  }
+  // Rendu du contenu selon l'état
+  const renderContent = () => {
+    if (isPending || isError) {
+      return (
+        <div className="w-full self-stretch" style={{ height: CHART_HEIGHT }}>
+          <MarchesPublicsTableSkeleton rows={itemsPerPage} />
+        </div>
+      );
+    }
 
-  if (data.length === 0) {
-    return (
-      <EmptyState
-        title="Aucun classement de subventions disponible"
-        description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
-        siren={siren}
-        className="h-[450px] w-full"
-      />
-    );
-  }
+    if (data.length === 0) {
+      return (
+        <EmptyState
+          title="Aucun classement de subventions disponible"
+          description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+          siren={siren}
+          className="h-[450px] w-full"
+        />
+      );
+    }
 
-  const rows: Row[] = data.map(
-    ({ id_beneficiaire, beneficiaire_names, objet, montant, annee }) => ({
-      id: id_beneficiaire,
-      names: beneficiaire_names,
-      object: objet,
-      amount: montant,
-      year: annee,
-    }),
-  );
+    const rows: Row[] = data.map(
+      ({ id_beneficiaire, beneficiaire_names, objet, montant, annee }) => ({
+        id: id_beneficiaire,
+        names: beneficiaire_names,
+        object: objet,
+        amount: montant,
+        year: annee,
+      }),
+    );
+
+    return <Table rows={rows} />;
+  };
 
   return (
     <WithPagination 
@@ -85,7 +90,7 @@ export default function RankingTable({ siren, year }: SubventionTableProps) {
       urlParam="page_subv_ranking"
       mode="url"
     >
-      <Table rows={rows} />
+      {renderContent()}
     </WithPagination>
   );
 }
