@@ -11,10 +11,11 @@ import {
   TableRow,
 } from '#components/ui/table';
 import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
-import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
+import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
+import { Skeleton } from '#components/ui/skeleton';
 import { Skeleton } from '#components/ui/skeleton';
 import { YearOption } from '../../types/interface';
 import { NoData } from '../NoData';
@@ -27,9 +28,7 @@ type MarchesPublicsTableProps = {
 };
 
 
-const MAX_ROW_PER_PAGE = 10;
-const MAX_ROW_PER_PAGE_MOBILE = 4;
-const getItemsPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768) ? MAX_ROW_PER_PAGE : MAX_ROW_PER_PAGE_MOBILE;
+const MAX_ROW_PER_PAGE = 4;
 
 export default function MarchesPublicsTable({
   siren,
@@ -60,7 +59,12 @@ export default function MarchesPublicsTable({
   // Rendu du contenu selon l'état
   const renderContent = () => {
     if (isPending) {
-      return <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />;
+      return (
+        <>
+          <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />
+          <MarchesPublicsMobileSkeleton rows={MAX_ROW_PER_PAGE} />
+        </>
+      );
     }
 
     if (isError) {
@@ -93,7 +97,7 @@ export default function MarchesPublicsTable({
 
 return (
   <WithPagination
-    style={{ height: CHART_HEIGHT }}
+    className="min-h-[300px]" // hauteur minimum responsive
     totalPage={totalPage}
     urlParam="page_mp"
     mode="url"

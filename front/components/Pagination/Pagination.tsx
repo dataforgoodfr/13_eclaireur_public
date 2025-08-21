@@ -79,34 +79,19 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
     return (
       <ShadCNPagination className={totalPage === 1 ? 'invisible' : ''}>
         <PaginationContent className="flex items-center gap-2">
-          {/* Left Arrow - Desktop */}
+          {/* Left Arrow */}
           {showLeftArrow && (
-            <div className="hidden sm:flex items-center">
-              <button
-                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                onClick={handlePreviousPage}
-                aria-label="Page précédente"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-            </div>
+            <button
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
+              onClick={handlePreviousPage}
+              aria-label="Page précédente"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
           )}
 
-          {/* Left Arrow - Mobile (step by 5) */}
-          {activePage > STEP_SIZE && (
-            <div className="sm:hidden">
-              <button
-                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                onClick={handleStepBackward}
-                aria-label="Reculer de 5 pages"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Page Numbers - Desktop only */}
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Page Numbers */}
+          <div className="flex items-center gap-2">
             {visiblePages.map((page) => (
               <PaginationItem
                 key={page}
@@ -117,37 +102,15 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
             ))}
           </div>
 
-          {/* Current page display for mobile */}
-          <div className="sm:hidden">
-            <span className="px-3 py-1 text-sm text-primary font-medium">
-              {activePage} / {totalPage}
-            </span>
-          </div>
-
-          {/* Right Arrow - Desktop */}
+          {/* Right Arrow */}
           {showRightArrow && (
-            <div className="hidden sm:flex items-center">
-              <button
-                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                onClick={handleNextPage}
-                aria-label="Page suivante"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Right Arrow - Mobile (step by 5) */}
-          {activePage < totalPage - STEP_SIZE + 1 && (
-            <div className="sm:hidden">
-              <button
-                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                onClick={handleStepForward}
-                aria-label="Avancer de 5 pages"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+            <button
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-tl-br bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
+              onClick={handleNextPage}
+              aria-label="Page suivante"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           )}
         </PaginationContent>
       </ShadCNPagination>
