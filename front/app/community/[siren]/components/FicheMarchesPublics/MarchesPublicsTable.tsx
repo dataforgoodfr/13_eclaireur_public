@@ -25,12 +25,17 @@ type MarchesPublicsTableProps = {
   year: YearOption;
 };
 
-const MAX_ROW_PER_PAGE = 4;
+
+const MAX_ROW_PER_PAGE = 10;
+const MAX_ROW_PER_PAGE_MOBILE = 4;
+const getItemsPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768) ? MAX_ROW_PER_PAGE : MAX_ROW_PER_PAGE_MOBILE;
 
 export default function MarchesPublicsTable({
   siren,
   year,
 }: MarchesPublicsTableProps) {
+  const itemsPerPage = getItemsPerPage();
+
   // First get initial pagination state
   const { currentPage } = usePaginationState('page_mp', 1);
 
@@ -39,7 +44,7 @@ export default function MarchesPublicsTable({
     year === 'All' ? null : year,
     {
       page: currentPage,
-      limit: MAX_ROW_PER_PAGE,
+      limit: itemsPerPage,
     },
   );
 
@@ -49,7 +54,7 @@ export default function MarchesPublicsTable({
     isPending,
     {
       paramName: 'page_mp',
-      itemsPerPage: MAX_ROW_PER_PAGE,
+      itemsPerPage: itemsPerPage,
     }
   );
 
@@ -58,8 +63,8 @@ export default function MarchesPublicsTable({
     if (isPending) {
       return (
         <>
-          <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />
-          <MarchesPublicsMobileSkeleton rows={MAX_ROW_PER_PAGE} />
+          <MarchesPublicsTableSkeleton rows={itemsPerPage} />
+          <MarchesPublicsMobileSkeleton rows={itemsPerPage} />
         </>
       );
     }
