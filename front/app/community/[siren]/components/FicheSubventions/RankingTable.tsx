@@ -26,17 +26,20 @@ type SubventionTableProps = {
 };
 
 const MAX_ROW_PER_PAGE = 10;
+const MAX_ROW_PER_PAGE_MOBILE = 4;
+const getItemsPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768) ? MAX_ROW_PER_PAGE : MAX_ROW_PER_PAGE_MOBILE;
 
 export default function RankingTable({ siren, year, paginationProps }: SubventionTableProps) {
+  const itemsPerPage = getItemsPerPage();
   const { data, isPending, isError } = useSubventionPaginated(siren, year === 'All' ? null : year, {
     page: paginationProps.activePage,
-    limit: MAX_ROW_PER_PAGE,
+    limit: itemsPerPage,
   });
 
   if (isPending || isError) {
     return (
       <div style={{ height: CHART_HEIGHT }}>
-        <MarchesPublicsTableSkeleton rows={MAX_ROW_PER_PAGE} />
+        <MarchesPublicsTableSkeleton rows={itemsPerPage} />
       </div>
     );
   }
@@ -55,7 +58,7 @@ export default function RankingTable({ siren, year, paginationProps }: Subventio
     }),
   );
 
-  const totalPage = Math.ceil(data[0].total_row_count / MAX_ROW_PER_PAGE);
+  const totalPage = Math.ceil(data[0].total_row_count / itemsPerPage);
 
   return (
     <WithPagination style={{ height: CHART_HEIGHT }} totalPage={totalPage} {...paginationProps}>
