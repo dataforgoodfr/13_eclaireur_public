@@ -2,6 +2,7 @@ import typing
 from datetime import datetime
 from pathlib import Path
 
+import math
 import polars as pl
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
@@ -67,6 +68,7 @@ class BaremeEnricher(BaseEnricher):
         3. Calcul du score subventions
         4. Calcul du score marchés publics
         5. Jointure finale des scores
+        6. Calcul du score agrégé
 
         Args:
             inputs (typing.List[pl.DataFrame]): Liste des 4 DataFrames d'entrée :
@@ -95,7 +97,10 @@ class BaremeEnricher(BaseEnricher):
         # Left join pour conserver toutes les collectivités même sans données MP
         bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
 
-        return bareme_final
+        # Calcul du score agrégé
+        bareme_score_agrege = cls.bareme_agrege(bareme_final)
+
+        return bareme_score_agrege
 
     @classmethod
     def build_bareme_table(cls, communities: pl.DataFrame) -> pl.DataFrame:
@@ -391,3 +396,83 @@ class BaremeEnricher(BaseEnricher):
 
         # Retour des colonnes essentielles uniquement
         return bareme_score.select(["siren", "annee", "mp_score"])
+
+    @classmethod
+    def bareme_agrege(cls, bareme_df: pl.DataFrame) -> pl.DataFrame:
+        """
+        Calcule le score agrégé en moyennant les scores subventions et marchés publics.
+
+        Processus :
+        1. Conversion des scores lettres (A-E) en valeurs numériques (4-0)
+        2. Calcul de la moyenne des deux scores numériques
+        3. Arrondi au supérieur de la moyenne
+        4. Reconversion du score numérique en lettre
+        5. Gestion des cas avec données manquantes
+
+        Mapping utilisé :
+        - E → 0, D → 1, C → 2, B → 3, A → 4
+        - Moyenne arrondie au supérieur puis reconvertie
+
+        Args:
+            bareme_df (pl.DataFrame): DataFrame avec colonnes subventions_score et mp_score
+
+        Returns:
+            pl.DataFrame: DataFrame enrichi avec la colonne score_agrege
+
+        Examples:
+            subventions_score=A (4), mp_score=B (3) → moyenne=3.5 → ceil=4 → A
+            subventions_score=C (2), mp_score=E (0) → moyenne=1.0 → ceil=1 → D
+            subventions_score=B (3), mp_score=null → score_agrege=null
+        """
+
+        # Définition des mappings de conversion
+        # Dictionnaire lettre → nombre pour le calcul numérique
+        LETTER_TO_NUMBER = {"E": 0, "D": 1, "C": 2, "B": 3, "A": 4}
+
+        # Dictionnaire nombre → lettre pour la reconversion finale
+        NUMBER_TO_LETTER = {0: "E", 1: "D", 2: "C", 3: "B", 4: "A"}
+
+        # Conversion des scores en valeurs numériques
+        bareme_numeric = bareme_df.with_columns(
+            [
+                # Conversion subventions_score : A→4, B→3, etc.
+                pl.col("subventions_score")
+                .replace(LETTER_TO_NUMBER, default=None)
+                .alias("subventions_numeric"),
+                # Conversion mp_score : A→4, B→3, etc.
+                pl.col("mp_score").replace(LETTER_TO_NUMBER, default=None).alias("mp_numeric"),
+            ]
+        )
+
+        # Calcul de la moyenne et du score agrégé
+        bareme_agrege = bareme_numeric.with_columns(
+            [
+                # Calcul de la moyenne uniquement si les deux scores sont présents
+                pl.when(
+                    pl.col("subventions_numeric").is_not_null()
+                    & pl.col("mp_numeric").is_not_null()
+                )
+                .then(
+                    # Moyenne des deux scores numériques
+                    (pl.col("subventions_numeric") + pl.col("mp_numeric")) / 2.0
+                )
+                .otherwise(None)  # Si l'un des scores manque → score agrégé null
+                .alias("moyenne_numeric")
+            ]
+        ).with_columns(
+            [
+                # Arrondi au supérieur et reconversion en lettre
+                pl.col("moyenne_numeric")
+                .map_elements(
+                    lambda x: NUMBER_TO_LETTER.get(math.ceil(x)) if x is not None else None,
+                    return_dtype=pl.Utf8,
+                )
+                .alias("score_agrege")
+            ]
+        )
+
+        # Nettoyage : suppression des colonnes de calcul temporaires
+        # Conservation uniquement des colonnes originales + score_agrege
+        final_columns = [col for col in bareme_df.columns] + ["score_agrege"]
+
+        return bareme_agrege.select(final_columns)
