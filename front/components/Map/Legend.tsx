@@ -1,3 +1,5 @@
+import { TransparencyScore, SCORE_TRANSPARENCY_COLOR } from '#components/TransparencyScore/constants';
+
 export default function ChoroplethLegend({
   populationMinMax,
   selectedRangeOption,
@@ -6,33 +8,55 @@ export default function ChoroplethLegend({
   selectedRangeOption: string;
 }) {
   const grades = [
-    { label: 'A', color: '#1976d2' }, // strong blue
-    { label: 'B', color: '#64b5f6' }, // light blue
-    { label: 'C', color: '#b2dfdb' }, // soft teal
-    { label: 'D', color: '#ffe082' }, // soft yellow
-    { label: 'E', color: '#ffb74d' }, // soft orange
+    TransparencyScore.A,
+    TransparencyScore.B,
+    TransparencyScore.C,
+    TransparencyScore.D,
+    TransparencyScore.E,
   ];
+
   return (
-    <div className='absolute left-4 top-4 z-20 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white/95 px-4 py-3 shadow-lg'>
-      <div>
-        <div className='mb-1 font-semibold text-gray-700'>Score Légende</div>
-        <div className='flex items-center gap-2'>
-          {grades.map((g) => (
-            <div key={g.label} className='flex flex-col items-center'>
-              <div className='h-4 w-8 rounded' style={{ background: g.color }} title={g.label} />
-              <span className='mt-1 text-xs font-medium text-gray-700'>{g.label}</span>
-            </div>
-          ))}
+    <div className="absolute left-4 top-4 z-20 flex flex-col gap-2 rounded-tl-br border border-gray-200 bg-white/95 px-4 py-3 shadow-lg">
+      <h4 className="mb-1">Légende</h4>
+      <div className="flex flex-row gap-x-4">
+        <p className="text-[14px] font-bold font-kanit-bold text-primary">
+          Indices de transparences
+        </p>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
+       {grades.map((score, idx) => {
+              const isEdge = idx === 0 || idx === grades.length - 1;
+              return (
+                <div
+                  key={score}
+                  className={`${isEdge ? 'h-12 w-12' : 'h-10 w-10'} rounded-tl-br flex items-center justify-center ${SCORE_TRANSPARENCY_COLOR[score as TransparencyScore]}`}
+                  title={score}
+                >
+                  <span className={`font-kanit-bold ${isEdge ? 'text-[30px]' : 'text-[28px]'} font-bold leading-[24px]`}>
+                    {score}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="w-full flex items-center justify-between">
+            <span className="text-primary font-kanit-bold text-[16px]">Exemplaire</span>
+            <span className="text-primary font-kanit-bold text-[16px]">Très insuffisant</span>
+          </div>
         </div>
       </div>
       <div>
-        <div className='mb-1 font-semibold capitalize text-gray-700'>
-          {selectedRangeOption} Légende
+        <div className="mb-1 text-[14px] font-bold font-kanit-bold text-primary capitalize">
+          {selectedRangeOption}
         </div>
-        <div className='flex items-center gap-2'>
-          <span className='text-sm text-gray-600'>{populationMinMax.min}</span>
-          <span className='text-sm text-gray-600'>-</span>
-          <span className='text-sm text-gray-600'>{populationMinMax.max}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[16px] text-primary font-kanit-bold font-medium">
+            Min: {(Math.round(populationMinMax.min / 100) * 100).toLocaleString('fr-FR')}
+          </span>
+          <span className="text-[16px] text-primary font-kanit-bold font-medium">-</span>
+          <span className="text-[16px] text-primary font-kanit-bold font-medium">
+            Max: {(Math.round(populationMinMax.max / 100) * 100).toLocaleString('fr-FR')}
+          </span>
         </div>
       </div>
     </div>
