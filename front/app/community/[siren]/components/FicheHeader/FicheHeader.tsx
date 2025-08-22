@@ -22,7 +22,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     <div
       className='relative w-full bg-cover bg-center bg-no-repeat p-6 lg:px-40 lg:pb-12 lg:pt-4'
       style={{
-        backgroundImage: 'url(/collectivite-header.jpg)',
+        backgroundImage: 'url(/collectivite-header.webp)',
       }}
     >
       <div className='relative z-10 flex flex-col gap-6'>
