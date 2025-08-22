@@ -14,6 +14,35 @@ jobs:
             pull-requests: write
             contents: read
         steps:
+          # Vérifier si la branche existe avant le checkout
+          - name: Check if branch exists
+            if: ${{ github.event.action != 'closed' }}
+            id: check-branch
+            run: |
+              REPO="${{ github.event.pull_request.head.repo.full_name }}"
+              BRANCH="${{ github.event.pull_request.head.ref }}"
+              
+              # Tester si la branche existe via l'API GitHub
+              if gh api repos/$REPO/branches/$BRANCH --silent 2>/dev/null; then
+                echo "branch-exists=true" >> $GITHUB_OUTPUT
+                echo "✅ Branch $BRANCH exists"
+              else
+                echo "branch-exists=false" >> $GITHUB_OUTPUT  
+                echo "❌ Branch $BRANCH not found"
+              fi
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              
+          # Checkout seulement si la branche existe
+          - name: Checkout repository
+            if: ${{ steps.check-branch.outputs.branch-exists == 'true' }}
+            uses: actions/checkout@v4
+            with:
+              repository: ${{ github.event.pull_request.head.repo.full_name }}
+              ref: ${{ github.event.pull_request.head.ref }}
+              token: ${{ secrets.GITHUB_TOKEN }}
+              fetch-depth: 0
+    
           - name: Create review app
             uses: CleverCloud/clever-cloud-review-app@v2.0.2
             env:
