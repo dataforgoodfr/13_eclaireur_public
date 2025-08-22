@@ -1,28 +1,32 @@
+import { useMemo } from 'react';
+
 import type { Community } from '#app/models/community';
-import { formatNumberInteger } from '#utils/utils';
+import { formatMonetaryValue, formatNumberInteger, getMonetaryUnit } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
+  budgetTotal?: number | null;
 };
 
-export function CommunityDetails({ community }: CommunityDetailsProps) {
+export function CommunityDetails({ community, budgetTotal }: CommunityDetailsProps) {
+  const unit = useMemo(() => getMonetaryUnit(budgetTotal ?? 0), [budgetTotal]);
+
+  const budgetFormatted = useMemo(
+    () => (budgetTotal != null ? formatMonetaryValue(budgetTotal, unit) : '—'),
+    [budgetTotal, unit],
+  );
+
   return (
     <>
-
       {/* Info blocks */}
-      <div className='flex flex-col gap-4 w-full'>
+      <div className='flex w-full flex-col gap-4'>
         <InfoBlock
           label='Population'
           value={formatNumberInteger(community.population)}
           unit='habitants'
           bgColor='bg-yellow-100'
         />
-        <InfoBlock
-          label='Superficie'
-          value={formatNumberInteger(community.superficie_ha || 0)}
-          unit='hectares'
-          bgColor='bg-lime-100'
-        />
+        <InfoBlock label='Budget total' value={budgetFormatted} unit={unit} bgColor='bg-lime-100' />
         <InfoBlock
           label="Nombre d'agents administratifs"
           value={formatNumberInteger(community.tranche_effectif)}
@@ -44,14 +48,13 @@ type InfoBlockProps = {
 function InfoBlock({ label, value, unit, bgColor = 'bg-gray-100' }: InfoBlockProps) {
   return (
     <div className={`rounded-none rounded-br-2xl rounded-tl-2xl p-3 text-primary ${bgColor}`}>
-      <div className='flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1'>
+      <div className='flex flex-row items-center justify-between gap-2 sm:flex-col sm:items-start sm:justify-start sm:gap-1'>
         <p className='text-base font-medium'>{label}</p>
         <h4 className='text-lg font-bold'>
           {value}
-          {unit && <span className='hidden sm:inline ml-1 text-base font-normal'>{unit}</span>}
+          {unit && <span className='ml-1 hidden text-base font-normal sm:inline'>{unit}</span>}
         </h4>
       </div>
     </div>
   );
 }
-
