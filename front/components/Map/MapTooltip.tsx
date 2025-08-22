@@ -53,9 +53,9 @@ export default function MapTooltip({ hoverInfo, communityMap }: MapTooltipProps)
                 </p>
                 <div className='flex flex-row items-center'>
                   <div
-                    className={`flex size-[38px] items-center justify-center rounded-tl-br-sm ${SCORE_TRANSPARENCY_COLOR[data.subventions_score || 'UNKNOWN']}`}
+                    className={`flex size-[38px] items-center justify-center rounded-tl-br ${SCORE_TRANSPARENCY_COLOR[data.subventions_score || 'UNKNOWN']}`}
                   >
-                    <span className='font-kanit-bold text-[16px] font-bold leading-[24px]'>
+                    <span className='font-kanit-bold text-[28px] font-bold leading-[24px]'>
                       {data.subventions_score}
                     </span>
                   </div>
@@ -67,13 +67,13 @@ export default function MapTooltip({ hoverInfo, communityMap }: MapTooltipProps)
 
               <div className='flex flex-col'>
                 <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-                  Subventions score:
+                  Marchés publics score
                 </p>
                 <div className='flex flex-row items-center'>
                   <div
-                    className={`flex size-[38px] items-center justify-center rounded-tl-br-sm ${SCORE_TRANSPARENCY_COLOR[data.mp_score || 'UNKNOWN']}`}
+                    className={`flex size-[38px] items-center justify-center rounded-tl-br ${SCORE_TRANSPARENCY_COLOR[data.mp_score || 'UNKNOWN']}`}
                   >
-                    <span className='font-kanit-bold text-[16px] font-bold leading-[24px]'>
+                    <span className='font-kanit-bold text-[28px] font-bold leading-[24px]'>
                       {data.mp_score}
                     </span>
                   </div>
