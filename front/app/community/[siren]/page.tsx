@@ -2,10 +2,11 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
+import { getQueryFromPool } from '#utils/db';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
-
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
+
 import { ErrorBoundary } from '../../../components/utils/ErrorBoundary';
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
 import { FicheIdentite } from './components/FicheIdentite/FicheIdentite';
@@ -38,9 +39,20 @@ async function getCommunity(siren: string) {
 
   const { aggregatedScore } = await fetchMostRecentTransparencyScore(siren);
 
+  const sql = `
+    SELECT total_produits AS budget_total
+    FROM comptes_collectivites
+    WHERE siren = $1
+    ORDER BY annee DESC
+    LIMIT 1
+  `;
+  const rows = await getQueryFromPool(sql, [siren]);
+  const budgetTotal: number | null = rows?.[0]?.budget_total ?? null;
+
   return {
     ...communitiesResults[0],
     transparencyScore: aggregatedScore,
+    budgetTotal,
   };
 }
 
@@ -57,7 +69,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   return (
     <>
       <FicheHeader community={community} />
-      <div className='mx-auto mt-4 lg:mt-16 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 lg:gap-y-16 px-4'>
+      <div className='mx-auto mt-4 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 px-4 lg:mt-16 lg:gap-y-16'>
         <Suspense fallback={<FicheIdentiteSkeleton />}>
           <FicheIdentite community={community} />
         </Suspense>
