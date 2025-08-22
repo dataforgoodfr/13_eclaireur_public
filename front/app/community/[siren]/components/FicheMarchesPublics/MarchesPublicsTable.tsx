@@ -153,7 +153,7 @@ export function Table({ rows }: Table) {
 
       {/* Mobile Cards */}
       <div className="block md:hidden space-y-3">
-        {rows.map(({ id, names, object, amount, year }, index) => (
+        {rows.map(({ id, names, object, amount, year }) => (
           <div key={id}>
             {/* Vraie carte */}
             <div className="bg-muted-light rounded-lg p-4 w-full min-h-[200px]">
