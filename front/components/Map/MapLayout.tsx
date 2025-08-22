@@ -66,7 +66,7 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   }, [populationMinMax.min, populationMinMax.max]);
 
   return (
-    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col lg:flex-row'>
+    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col lg:flex-row overflow-y-auto lg:overflow-visible'>
       {/* Mobile: Controls at top */}
       <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white lg:order-2 lg:hidden'>
         {/* Mobile Filters Toggle Button */}
@@ -79,9 +79,11 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
             {showFilters ? 'Masquer' : 'Afficher'} filtres
           </button>
         </div>
-        
-        {/* Collapsible Filters */}
-        {showFilters && (
+      </div>
+      
+      {/* Mobile: Collapsible Filters - Pushes content down */}
+      {showFilters && (
+        <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white border-b border-gray-200 lg:hidden'>
           <div className='flex flex-col gap-4 p-4'>
             <TransparencyScoreControls
               selectedScore={selectedScore}
@@ -101,11 +103,11 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
               onRangeChange={handleRangeChange}
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* Map container */}
-      <div className='order-2 flex w-full flex-1 items-center justify-center bg-white lg:order-1 lg:w-2/3 lg:h-full'>
+      <div className='order-2 flex w-full h-[calc(100vh-80px)] items-center justify-center bg-white lg:order-1 lg:w-2/3 lg:h-full lg:flex-1'>
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
