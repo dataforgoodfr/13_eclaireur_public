@@ -15,7 +15,6 @@ import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPagina
 import { formatAmount } from '#utils/utils';
 
 import EmptyState from '#components/EmptyState';
-import { Skeleton } from '#components/ui/skeleton';
 import { YearOption } from '../../types/interface';
 import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
 import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
@@ -154,7 +153,7 @@ export function Table({ rows }: Table) {
 
       {/* Mobile Cards */}
       <div className="block md:hidden space-y-3">
-        {rows.map(({ id, names, object, amount, year }, index) => (
+        {rows.map(({ id, names, object, amount, year }) => (
           <div key={id}>
             {/* Vraie carte */}
             <div className="bg-muted-light rounded-lg p-4 w-full min-h-[200px]">
@@ -195,41 +194,6 @@ export function Table({ rows }: Table) {
               </div>
             </div>
 
-            {/* Skeleton pour debug (seulement sur la première carte) */}
-            {index === 0 && (
-              <div className="mt-3 bg-muted-light rounded-lg p-4 w-full min-h-[200px] border-2 border-red-500">
-                <div className="text-red-500 text-xs mb-2">DEBUG SKELETON</div>
-                {/* Badges skeleton */}
-                <div className="flex flex-wrap gap-1 mb-2.5">
-                  <Skeleton className='h-6 w-[80px] rounded-full' />
-                  <Skeleton className='h-6 w-[60px] rounded-full' />
-                </div>
-
-                {/* Title skeleton */}
-                <div className="mb-2.5">
-                  <Skeleton className='h-4 w-full mb-2' />
-                  <Skeleton className='h-4 w-3/4' />
-                </div>
-
-                {/* Separator */}
-                <div className="border-b border-muted-border mb-2.5" />
-
-                {/* Montant skeleton */}
-                <div className="flex justify-between items-center mb-2.5">
-                  <Skeleton className='h-4 w-16' />
-                  <Skeleton className='h-5 w-24' />
-                </div>
-
-                {/* Separator */}
-                <div className="border-b border-muted-border mb-2.5" />
-
-                {/* Année skeleton */}
-                <div className="flex justify-between items-center">
-                  <Skeleton className='h-4 w-12' />
-                  <Skeleton className='h-4 w-16' />
-                </div>
-              </div>
-            )}
           </div>
         ))}
       </div>
