@@ -24,8 +24,8 @@ export default function MapTooltip({ hoverInfo, communityMap }: MapTooltipProps)
     >
       {data ? (
         <>
-          <h4>{data.nom}</h4>
-          <div className='flex flex-col'>
+          <h4 className='mb-2'>{data.nom}</h4>
+          <div className='flex flex-col gap-2'>
             <div className='grid w-2/3 grid-cols-2 gap-x-2'>
               <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
                 Population
