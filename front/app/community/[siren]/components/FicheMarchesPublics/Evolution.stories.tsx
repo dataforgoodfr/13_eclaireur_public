@@ -1,27 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+
 import Evolution from './Evolution';
 
 const yearlyAmountsData = [
-  { "year": 2017, "amount": 0 },
-  { "year": 2018, "amount": 1820000 },
-  { "year": 2019, "amount": 1450000 },
-  { "year": 2020, "amount": 2230000 },
-  { "year": 2021, "amount": 4780000 },
-  { "year": 2022, "amount": 1010000 },
-  { "year": 2023, "amount": 1860000 },
-  { "year": 2024, "amount": 660000 }
+  { year: 2017, amount: 0 },
+  { year: 2018, amount: 1820000 },
+  { year: 2019, amount: 1450000 },
+  { year: 2020, amount: 2230000 },
+  { year: 2021, amount: 4780000 },
+  { year: 2022, amount: 1010000 },
+  { year: 2023, amount: 1860000 },
+  { year: 2024, amount: 660000 },
 ];
 
 const yearlyCountsData = [
-  { "year": 2017, "count": 0 },
-  { "year": 2018, "count": 182 },
-  { "year": 2019, "count": 145 },
-  { "year": 2020, "count": 223 },
-  { "year": 2021, "count": 478 },
-  { "year": 2022, "count": 101 },
-  { "year": 2023, "count": 186 },
-  { "year": 2024, "count": 66 }
+  { year: 2017, count: 0 },
+  { year: 2018, count: 182 },
+  { year: 2019, count: 145 },
+  { year: 2020, count: 223 },
+  { year: 2021, count: 478 },
+  { year: 2022, count: 101 },
+  { year: 2023, count: 186 },
+  { year: 2024, count: 66 },
 ];
 
 const meta: Meta<typeof Evolution> = {
@@ -55,7 +56,8 @@ const meta: Meta<typeof Evolution> = {
     },
     docs: {
       description: {
-        component: 'Composant Evolution complet avec header, switch et graphique des marchés publics. Utilise le nouveau EvolutionChart en interne.',
+        component:
+          'Composant Evolution complet avec header, switch et graphique des marchés publics. Utilise le nouveau EvolutionChart en interne.',
       },
     },
   },
@@ -112,7 +114,7 @@ export const NoData: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'État sans données - affiche l\'image no-data-bar avec bouton Interpeller.',
+        story: "État sans données - affiche l'image no-data-bar avec bouton Interpeller.",
       },
     },
   },

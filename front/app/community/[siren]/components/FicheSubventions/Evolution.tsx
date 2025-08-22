@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { ActionButton } from '#components/ui/action-button';
 import { Download } from 'lucide-react';
+
 import { GraphSwitch } from '../DataViz/GraphSwitch';
 import { TabHeader } from '../TabHeader';
 import { SubventionsChart } from './SubventionsChart';
@@ -24,7 +25,7 @@ export default function Evolution({ siren }: EvolutionProps) {
   return (
     <div className='w-full'>
       <TabHeader
-        title="Évolution des subventions au cours du temps"
+        title='Évolution des subventions au cours du temps'
         titleSwitch={
           <GraphSwitch
             isActive={isSubventionsCountDisplayed}

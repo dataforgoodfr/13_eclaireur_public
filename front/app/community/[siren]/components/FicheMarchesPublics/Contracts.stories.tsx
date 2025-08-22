@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+
 import Contracts from './Contracts';
 
 const mockContractsData = [
   {
     id: 1,
     acheteur_id: '213105554',
-    objet: 'Construction d\'une école primaire',
+    objet: "Construction d'une école primaire",
     titulaire_names: ['Entreprise BTP Sud'],
     montant: 1500000,
     codecpv: '45210000-2',
@@ -51,7 +52,7 @@ const mockContractsData = [
     cpv_8: '90910000',
     cpv_8_label: 'Services de nettoyage',
     cpv_2: '90',
-    cpv_2_label: 'Services d\'assainissement',
+    cpv_2_label: "Services d'assainissement",
     annee_notification: 2023,
     annee_publication_donnees: 2023,
     source: 'BOAMP',
@@ -63,14 +64,14 @@ const mockContractsData = [
   {
     id: 4,
     acheteur_id: '213105554',
-    objet: 'Marché de maîtrise d\'œuvre',
+    objet: "Marché de maîtrise d'œuvre",
     titulaire_names: ['Cabinet Architecture Plus'],
     montant: 200000,
     codecpv: '71220000-6',
     cpv_8: '71220000',
-    cpv_8_label: 'Services d\'architecture',
+    cpv_8_label: "Services d'architecture",
     cpv_2: '71',
-    cpv_2_label: 'Services d\'architecture et d\'ingénierie',
+    cpv_2_label: "Services d'architecture et d'ingénierie",
     annee_notification: 2023,
     annee_publication_donnees: 2023,
     source: 'BOAMP',
@@ -205,13 +206,13 @@ const meta: Meta<typeof Contracts> = {
           const url = new URL(request.url);
           const page = url.searchParams.get('page') || '1';
           const limit = url.searchParams.get('limit') || '10';
-          
+
           if (siren === '213105554') {
             const pageNum = parseInt(page as string);
             const limitNum = parseInt(limit as string);
             const startIndex = (pageNum - 1) * limitNum;
             const endIndex = startIndex + limitNum;
-            
+
             return HttpResponse.json(mockContractsData.slice(startIndex, endIndex));
           }
           return HttpResponse.json([]);
@@ -220,7 +221,8 @@ const meta: Meta<typeof Contracts> = {
     },
     docs: {
       description: {
-        component: 'Component displaying contracts ranked by size with year filtering and pagination.',
+        component:
+          'Component displaying contracts ranked by size with year filtering and pagination.',
       },
     },
   },

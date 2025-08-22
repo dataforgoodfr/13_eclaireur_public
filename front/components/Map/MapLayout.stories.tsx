@@ -1,5 +1,5 @@
-
 import type { Meta, StoryObj } from '@storybook/react';
+
 import MapLayout from './MapLayout';
 
 const meta: Meta<typeof MapLayout> = {

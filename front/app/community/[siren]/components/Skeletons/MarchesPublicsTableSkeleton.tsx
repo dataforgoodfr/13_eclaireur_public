@@ -12,9 +12,11 @@ type MarchesPublicsTableSkeletonProps = {
   rows?: number;
 };
 
-export default function MarchesPublicsTableSkeleton({ rows = 4 }: MarchesPublicsTableSkeletonProps) {
+export default function MarchesPublicsTableSkeleton({
+  rows = 4,
+}: MarchesPublicsTableSkeletonProps) {
   return (
-    <div className="hidden md:block w-full self-stretch">
+    <div className='hidden w-full self-stretch md:block'>
       <Table>
         <TableHeader>
           <TableRow>
@@ -30,22 +32,21 @@ export default function MarchesPublicsTableSkeleton({ rows = 4 }: MarchesPublics
               <TableCell>
                 <div className='flex flex-wrap gap-1'>
                   {/* Random number of badge skeletons (1-3) */}
-                  {Array.from({ length: Math.floor(Math.random() * 3) + 1 }).map((_, badgeIndex) => (
-                    <Skeleton 
-                      key={badgeIndex}
-                      className='h-6 w-[80px] rounded-full'
-                    />
-                  ))}
+                  {Array.from({ length: Math.floor(Math.random() * 3) + 1 }).map(
+                    (_, badgeIndex) => (
+                      <Skeleton key={badgeIndex} className='h-6 w-[80px] rounded-full' />
+                    ),
+                  )}
                 </div>
               </TableCell>
               <TableCell>
                 <Skeleton className='h-4 w-full max-w-[400px]' />
               </TableCell>
               <TableCell className='text-right'>
-                <Skeleton className='h-4 w-20 ml-auto' />
+                <Skeleton className='ml-auto h-4 w-20' />
               </TableCell>
               <TableCell className='text-right'>
-                <Skeleton className='h-4 w-12 ml-auto' />
+                <Skeleton className='ml-auto h-4 w-12' />
               </TableCell>
             </TableRow>
           ))}

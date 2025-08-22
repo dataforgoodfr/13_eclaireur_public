@@ -1,11 +1,13 @@
-import { FileText } from 'lucide-react'; // Assuming you're using lucide-react for the FileText icon
+// Assuming you're using lucide-react for the FileText icon
 import type React from 'react';
+
+import { FileText } from 'lucide-react';
+
 // Define a custom type for icon props
 interface IconProps {
   size?: number;
   color?: string;
   className?: string;
-
 }
 interface BadgeProps {
   text: string;
@@ -20,7 +22,8 @@ const Badge: React.FC<BadgeProps> = ({
   iconSize = 12,
   className = '',
 }) => {
-  const baseClasses = 'flex items-center h-8 md:h-10 gap-2 px-4 mt-2 text-xs font-bold rounded-[80px] sm:text-sm sm:mt-0 bg-brand-2 text-primary';
+  const baseClasses =
+    'flex items-center h-8 md:h-10 gap-2 px-4 mt-2 text-xs font-bold rounded-[80px] sm:text-sm sm:mt-0 bg-brand-2 text-primary';
 
   return (
     <span className={`${baseClasses} ${className}`}>

@@ -1,62 +1,63 @@
-import { sign, unsign } from 'cookie-signature-edge'
-import { cookies } from 'next/headers'
+import { cookies } from 'next/headers';
 
-export const userCookieKey = '_un'
-export const cookieSep = '^)&_*($'
+import { sign, unsign } from 'cookie-signature-edge';
 
-const password = 'session-key'
+export const userCookieKey = '_un';
+export const cookieSep = '^)&_*($';
 
-const pwUtf8 = encode(password)
+const password = 'session-key';
+
+const pwUtf8 = encode(password);
 
 function encode(value: string) {
-  return new TextEncoder().encode(value)
+  return new TextEncoder().encode(value);
 }
 
 // Encrypt
 export async function encrypt(data: string) {
-  return await sign(data, pwUtf8.toString())
+  return await sign(data, pwUtf8.toString());
 }
 
 export async function decrypt(data: string) {
-  const decrypted = await unsign(data, pwUtf8.toString())
-  if (decrypted) return decrypted
-  throw new Error('Invalid signature')
+  const decrypted = await unsign(data, pwUtf8.toString());
+  if (decrypted) return decrypted;
+  throw new Error('Invalid signature');
 }
 
 export function getSession(userCookie = '') {
-  const none = [null, null] as const
-  const value = decodeURIComponent(userCookie)
-  if (!value) return none
-  const index = value.indexOf(cookieSep)
-  if (index === -1) return none
-  const user = value.slice(0, index)
-  const session = value.slice(index + cookieSep.length)
-  return [user, session]
+  const none = [null, null] as const;
+  const value = decodeURIComponent(userCookie);
+  if (!value) return none;
+  const index = value.indexOf(cookieSep);
+  if (index === -1) return none;
+  const user = value.slice(0, index);
+  const session = value.slice(index + cookieSep.length);
+  return [user, session];
 }
 
 export async function getUser(userCookie?: string) {
-  const [user, encryptedUser] = getSession(userCookie)
+  const [user, encryptedUser] = getSession(userCookie);
   if (user && encryptedUser) {
     try {
-      const decryptedUser = await decrypt(encryptedUser)
+      const decryptedUser = await decrypt(encryptedUser);
       if (decryptedUser === user) {
-        return user
+        return user;
       }
-      return null
+      return null;
     } catch {
-      return null
+      return null;
     }
   }
-  return user
+  return user;
 }
 
 export async function createUserCookie(token: string) {
-  const encrypted = await encrypt(token)
-  return `${token}${cookieSep}${encrypted}`
+  const encrypted = await encrypt(token);
+  return `${token}${cookieSep}${encrypted}`;
 }
 
 export async function getUserFromSession() {
-  const cookieStore = await cookies()
-  const userCookie = cookieStore.get(userCookieKey)
-  return await getUser(userCookie?.value)
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get(userCookieKey);
+  return await getUser(userCookie?.value);
 }

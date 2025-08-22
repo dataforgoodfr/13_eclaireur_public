@@ -35,21 +35,21 @@ export type WithPaginationProps = PropsWithChildren<
 
 /**
  * Pagination wrapper for tables with automatic URL synchronization via nuqs
- * 
+ *
  * Modes disponibles :
  * - 'url' (défaut) : Synchronisation automatique avec l'URL via nuqs
  * - 'controlled' : Mode controlé externe (pour compatibilité avec l'existant)
- * 
+ *
  * @example
  * ```tsx
  * // Mode URL (nouveau comportement par défaut)
  * <WithPagination totalPage={50}>
  *   <MyTable />
  * </WithPagination>
- * 
+ *
  * // Mode controlé (ancien comportement)
- * <WithPagination 
- *   mode="controlled" 
+ * <WithPagination
+ *   mode="controlled"
  *   totalPage={50}
  *   activePage={currentPage}
  *   onPageChange={setCurrentPage}
@@ -58,16 +58,16 @@ export type WithPaginationProps = PropsWithChildren<
  * </WithPagination>
  * ```
  */
-export function WithPagination({ 
-  children, 
-  className, 
-  style, 
+export function WithPagination({
+  children,
+  className,
+  style,
   mode = 'url',
   urlParam = 'page',
   defaultPage = 1,
   onPageChange,
   activePage,
-  ...restProps 
+  ...restProps
 }: WithPaginationProps) {
   const urlState = usePaginationState(urlParam, defaultPage);
 
@@ -84,7 +84,7 @@ export function WithPagination({
         style={style}
       >
         {children}
-        <Pagination 
+        <Pagination
           {...restProps}
           activePage={urlState.currentPage}
           onPageChange={handlePageChange}
@@ -100,7 +100,7 @@ export function WithPagination({
       style={style}
     >
       {children}
-      <Pagination 
+      <Pagination
         {...restProps}
         activePage={activePage || 1}
         onPageChange={onPageChange || (() => {})}

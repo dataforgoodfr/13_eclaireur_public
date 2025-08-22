@@ -22,15 +22,15 @@ export default function TransparencyScoreControls({
 }: TransparencyScoreControlsProps) {
   return (
     <div className=''>
-      <div className='mb-4 flex items-center'>
-        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#062aad] text-sm font-bold text-white'>
+      <div className='mb-2 mb-4 flex items-center lg:mb-4'>
+        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary font-kanit-bold text-sm font-bold text-white'>
           1
         </span>
-        <span className='text-base font-semibold tracking-wide text-[#062aad]'>
-          CHOISISSEZ UN SCORE
-        </span>
+        <h4 className='text-base text-sm font-semibold tracking-wide text-primary lg:text-base'>
+          Choisissez un score
+        </h4>
       </div>
-      <div className='flex gap-3'>
+      <div className='flex flex-col gap-2 gap-3 lg:flex-row lg:gap-3'>
         {options.map((opt) => {
           const selected = selectedScore === opt.value;
           return (
@@ -38,10 +38,10 @@ export default function TransparencyScoreControls({
               key={opt.value}
               type='button'
               onClick={() => setSelectedScore(opt.value)}
-              className={`rounded border border-black px-4 py-2 text-sm font-medium transition ${
+              className={`rounded-tl-br-lg border border-black px-3 px-4 py-1 py-2 font-kanit-bold text-sm font-medium text-[16x] transition lg:px-4 lg:py-2 lg:text-[16px] ${
                 selected ? 'bg-[#062aad] text-white' : 'bg-white text-[#062aad]'
               } `}
-              style={{ minWidth: 180 }}
+              style={{ minWidth: 'auto' }}
             >
               {opt.label}
             </button>

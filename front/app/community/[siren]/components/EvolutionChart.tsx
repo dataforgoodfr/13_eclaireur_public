@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
 import ChartSkeleton from './ChartSkeleton';
 import DesktopEvolutionChart from './DesktopEvolutionChart';
 import MobileChart from './MobileChart';
 import { CHART_HEIGHT } from './constants';
 import { type ChartDataType, useChartData } from './hooks/useChartData';
+
 export type DisplayMode = 'amounts' | 'counts';
 
 type EvolutionChartProps = {
@@ -27,7 +29,7 @@ const CHART_CONFIG = {
       counts: 'Nombre de marchés publics publiées',
     },
   },
-  'subventions': {
+  subventions: {
     barColor: '#E8F787', // score-transparence subvention (brand-2)
     borderColor: '#303F8D',
     legendLabels: {
@@ -43,7 +45,7 @@ export function EvolutionChart({
   chartType,
   data,
   isPending,
-  isError
+  isError,
 }: EvolutionChartProps) {
   const config = CHART_CONFIG[chartType];
   const isAmountsMode = displayMode === 'amounts';
@@ -60,27 +62,25 @@ export function EvolutionChart({
 
     return initialList.map((el) => {
       const found = data?.find((item) => item.year === el.year);
-      const value = isAmountsMode
-        ? found?.amount ?? el.value
-        : found?.count ?? el.value;
+      const value = isAmountsMode ? (found?.amount ?? el.value) : (found?.count ?? el.value);
       return { ...el, value };
     });
   }, [data, isAmountsMode]);
 
-
   if (isPending) return <ChartSkeleton />;
   if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
 
-  return <BarChart
-    data={chartData}
-    barColor={config.barColor}
-    borderColor={config.borderColor}
-    siren={siren}
-    legendLabel={config.legendLabels[displayMode]}
-    chartType={chartType}
-  />;
+  return (
+    <BarChart
+      data={chartData}
+      barColor={config.barColor}
+      borderColor={config.borderColor}
+      siren={siren}
+      legendLabel={config.legendLabels[displayMode]}
+      chartType={chartType}
+    />
+  );
 }
-
 
 type BarChartData = {
   year: number;
@@ -96,14 +96,7 @@ type BarChartProps = {
   chartType: ChartDataType;
 };
 
-function BarChart({
-  data,
-  barColor,
-  borderColor,
-  siren,
-  legendLabel,
-  chartType
-}: BarChartProps) {
+function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   // Use shared chart data logic
@@ -123,7 +116,7 @@ function BarChart({
   // Pour mobile : utiliser le nouveau composant MobileChart
   if (isMobile) {
     // Transform data for MobileChart format
-    const mobileChartData = data.map(item => ({
+    const mobileChartData = data.map((item) => ({
       year: item.year,
       primary: item.value,
     }));
@@ -131,11 +124,11 @@ function BarChart({
     return (
       <MobileChart
         data={mobileChartData}
-        mode="single"
+        mode='single'
         primaryColor={barColor}
         formatValue={formatValue}
         legendLabel={legendLabel}
-        labelColor="#303F8D"
+        labelColor='#303F8D'
         siren={siren}
         unitLabel={unit}
       />

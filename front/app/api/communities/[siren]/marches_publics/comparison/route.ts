@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchMarchesPublicsComparison } from '#utils/fetchers/marches-publics/fetchMarchesPublicsComparison-server';
 
 export async function GET(
-  request: NextRequest, 
-  { params }: { params: Promise<{ siren: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ siren: string }> },
 ) {
   try {
     const { siren } = await params;

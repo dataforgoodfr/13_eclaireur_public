@@ -1,11 +1,11 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '#components/ui/button';
 import {
   PaginationContent,
+  Pagination as ShadCNPagination,
   PaginationItem as ShadCNPaginationItem,
-  Pagination as ShadCNPagination
 } from '#components/ui/pagination';
-import { Button } from '#components/ui/button';
 import { cn } from '#utils/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FIRST_PAGE = 1;
 
@@ -19,7 +19,12 @@ export type PaginationProps = {
 /**
  * Pagination component with simple page numbers and arrow navigation
  */
-export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePages = 5 }: PaginationProps) {
+export function Pagination({
+  totalPage,
+  activePage,
+  onPageChange,
+  maxVisiblePages = 5,
+}: PaginationProps) {
   function handlePreviousPage() {
     if (activePage === FIRST_PAGE) return;
     onPageChange(activePage - 1);
@@ -61,22 +66,22 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
 
   return (
     <ShadCNPagination className={totalPage === 1 ? 'invisible' : ''}>
-      <PaginationContent className="flex items-center gap-2">
+      <PaginationContent className='flex items-center gap-2'>
         {/* Left Arrow */}
         {showLeftArrow && (
           <Button
-            variant="default"
-            size="icon"
-            className="min-w-[36px] min-h-[36px] rounded-tl-br"
+            variant='default'
+            size='icon'
+            className='min-h-[36px] min-w-[36px] rounded-tl-br'
             onClick={handlePreviousPage}
-            aria-label="Page précédente"
+            aria-label='Page précédente'
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className='h-4 w-4' />
           </Button>
         )}
 
         {/* Page Numbers */}
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           {visiblePages.map((page) => (
             <PaginationItem
               key={page}
@@ -90,13 +95,13 @@ export function Pagination({ totalPage, activePage, onPageChange, maxVisiblePage
         {/* Right Arrow */}
         {showRightArrow && (
           <Button
-            variant="default"
-            size="icon"
-            className="min-w-[36px] min-h-[36px] rounded-tl-br"
+            variant='default'
+            size='icon'
+            className='min-h-[36px] min-w-[36px] rounded-tl-br'
             onClick={handleNextPage}
-            aria-label="Page suivante"
+            aria-label='Page suivante'
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className='h-4 w-4' />
           </Button>
         )}
       </PaginationContent>
@@ -117,10 +122,10 @@ function PaginationItem({ page, activePage, onPageChange }: PaginationItemProps)
     <ShadCNPaginationItem className='cursor-pointer' onClick={() => onPageChange(page)}>
       <div
         className={cn(
-          "flex items-center justify-center min-w-[36px] min-h-[36px] px-4 rounded-tl-br transition-colors text-sm font-medium",
+          'flex min-h-[36px] min-w-[36px] items-center justify-center rounded-tl-br px-4 text-sm font-medium transition-colors',
           isActive
-            ? "bg-primary-light text-primary"
-            : "bg-white text-primary hover:bg-gray-50 border border-gray-200"
+            ? 'bg-primary-light text-primary'
+            : 'border border-gray-200 bg-white text-primary hover:bg-gray-50',
         )}
       >
         {page}

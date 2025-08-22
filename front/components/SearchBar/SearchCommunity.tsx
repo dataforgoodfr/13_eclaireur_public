@@ -1,16 +1,23 @@
 'use client';
 
-import SearchBar from '@/components/SearchBar/SearchBar';
 import { useRouter } from 'next/navigation';
 
+import SearchBar from '@/components/SearchBar/SearchBar';
+
 export default function SearchCommunity({ className }: { className?: string }) {
-    const router = useRouter();
+  const router = useRouter();
 
-    function navigateToCommunityPage({ siren }: { siren: string }) {
-        if (siren) {
-            router.push(`/community/${siren}`);
-        }
+  function navigateToCommunityPage({ siren }: { siren: string }) {
+    if (siren) {
+      router.push(`/community/${siren}`);
     }
+  }
 
-    return <SearchBar className={className} placeholder='Rechercher...' onSelect={navigateToCommunityPage} />;
+  return (
+    <SearchBar
+      className={className}
+      placeholder='Rechercher...'
+      onSelect={navigateToCommunityPage}
+    />
+  );
 }

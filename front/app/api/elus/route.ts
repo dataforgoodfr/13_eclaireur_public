@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createSearchParamsCache, parseAsInteger, parseAsString } from 'nuqs/server';
 
 import { getQueryFromPool } from '#utils/db';
 import { ElusOptions, createSQLQueryParams } from '#utils/fetchers/elus/createSQLQueryParams';
 import { Pagination } from '#utils/fetchers/types';
+import { createSearchParamsCache, parseAsInteger, parseAsString } from 'nuqs/server';
 
 async function getDataFromPool(options: ElusOptions, pagination?: Pagination) {
   const params = createSQLQueryParams(options, pagination);
@@ -29,7 +29,9 @@ const searchParamsCache = createSearchParamsCache({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const params = searchParamsCache.parse(searchParams as unknown as Record<string, string | string[] | undefined>);
+    const params = searchParamsCache.parse(
+      searchParams as unknown as Record<string, string | string[] | undefined>,
+    );
 
     if (params.limit !== null && isLimitValid(params.limit)) {
       return NextResponse.json({ error: 'Limit must be between 1 and 5000' }, { status: 400 });
@@ -42,11 +44,17 @@ export async function GET(request: Request) {
     const pagination =
       params.page !== null && params.limit !== null
         ? {
-          limit: params.limit,
-          page: params.page,
-        }
+            limit: params.limit,
+            page: params.page,
+          }
         : undefined;
-    const data = await getDataFromPool({ filters: { type: params.type ?? undefined, siren: params.siren ?? undefined }, limit: params.limit ?? undefined }, pagination);
+    const data = await getDataFromPool(
+      {
+        filters: { type: params.type ?? undefined, siren: params.siren ?? undefined },
+        limit: params.limit ?? undefined,
+      },
+      pagination,
+    );
 
     return NextResponse.json(data);
   } catch (error) {

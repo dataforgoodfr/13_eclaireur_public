@@ -32,18 +32,18 @@ export default function CtaGroup() {
 
   return (
     <div className='global-margin my-20 flex w-full justify-center px-4'>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 w-full'>
-      {CtaInfo.map((item) => (
-        <CtaCard
-          key={item.title}
-          title={item.title}
-          caption={item.caption}
-          picto={item.picto}
-          buttonText={item.buttonText}
-          href={item.href}
-          colorClassName={item.colorClassName}
-        />
-      ))}
+      <div className='grid w-full grid-cols-1 gap-8 md:grid-cols-3'>
+        {CtaInfo.map((item) => (
+          <CtaCard
+            key={item.title}
+            title={item.title}
+            caption={item.caption}
+            picto={item.picto}
+            buttonText={item.buttonText}
+            href={item.href}
+            colorClassName={item.colorClassName}
+          />
+        ))}
       </div>
     </div>
   );

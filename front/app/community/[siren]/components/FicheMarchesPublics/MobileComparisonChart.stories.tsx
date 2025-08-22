@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import MobileComparisonChart from './MobileComparisonChart';
 
 const regionalComparisonData = [
@@ -107,12 +108,13 @@ const departementalComparisonData = [
 
 const meta: Meta<typeof MobileComparisonChart> = {
   // community-siren-components-fichemarchespublics-mobilecomparisonchart-v2--regional-comparison
-  title: "community/[siren]/components/FicheMarchesPublics/ComparisonMobileV2",
+  title: 'community/[siren]/components/FicheMarchesPublics/ComparisonMobileV2',
   component: MobileComparisonChart,
   parameters: {
     docs: {
       description: {
-        component: 'Mobile component displaying comparison of public markets budget with regional/departmental/national averages.',
+        component:
+          'Mobile component displaying comparison of public markets budget with regional/departmental/national averages.',
       },
     },
     viewport: {
@@ -121,28 +123,41 @@ const meta: Meta<typeof MobileComparisonChart> = {
   },
   decorators: [
     (Story) => (
-      <div className="space-y-2">
-        <div className="flex items-center flex-col gap-4">
-          <div className="text-center">
-            <h3 className="text-xl font-medium mb-2">
-              Comparaison avec la moyenne régionale
-            </h3>
+      <div className='space-y-2'>
+        <div className='flex flex-col items-center gap-4'>
+          <div className='text-center'>
+            <h3 className='mb-2 text-xl font-medium'>Comparaison avec la moyenne régionale</h3>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-12 bg-primary rounded w-12 flex items-center justify-center">
-              <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <div className='flex items-center gap-2'>
+            <div className='flex h-12 w-12 items-center justify-center rounded bg-primary'>
+              <svg
+                className='h-4 w-4 text-white'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z'
+                />
               </svg>
             </div>
-            <div className="h-12 bg-white border border-gray-300 rounded-tl-lg rounded-br-lg px-4 flex items-center gap-2">
+            <div className='flex h-12 items-center gap-2 rounded-br-lg rounded-tl-lg border border-gray-300 bg-white px-4'>
               <span>Régional</span>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M19 9l-7 7-7-7'
+                />
               </svg>
             </div>
           </div>
         </div>
-        <div className="relative">
+        <div className='relative'>
           <Story />
         </div>
       </div>
@@ -161,7 +176,8 @@ export const RegionalComparison: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Mobile view showing comparison with regional average. Bars are normalized across all years for proper visual comparison.',
+        story:
+          'Mobile view showing comparison with regional average. Bars are normalized across all years for proper visual comparison.',
       },
     },
   },
@@ -174,7 +190,8 @@ export const DepartementalComparison: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Mobile view showing comparison with departmental average. The community budget is consistently higher than the departmental average.',
+        story:
+          'Mobile view showing comparison with departmental average. The community budget is consistently higher than the departmental average.',
       },
     },
   },
@@ -209,7 +226,8 @@ export const LowDataExample: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Mobile view with fewer data points and smaller budget values, showing how the component adapts to different data scales.',
+        story:
+          'Mobile view with fewer data points and smaller budget values, showing how the component adapts to different data scales.',
       },
     },
   },

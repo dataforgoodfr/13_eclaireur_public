@@ -1,14 +1,16 @@
+import { useState } from 'react';
+
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 import { CommunityType } from '@/utils/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { Table } from '@tanstack/react-table';
-import { useState } from 'react';
+
 import { AdvancedSearchDataTable } from './AdvancedSearchDataTable';
-import { TableProvider } from './TableContext';
-import { Filters } from './Filters/Filters';
-import { ViewOptionsButton } from './ViewOptionsButton';
 import DownloadingButton from './DownloadingButton';
+import { Filters } from './Filters/Filters';
+import { TableProvider } from './TableContext';
+import { ViewOptionsButton } from './ViewOptionsButton';
 
 // Mock data for communities
 const mockCommunitiesData: AdvancedSearchCommunity[] = [
@@ -127,10 +129,10 @@ export const WithFilters: Story = {
     const [table, setTable] = useState<Table<AdvancedSearchCommunity> | null>(null);
     return (
       <TableProvider table={table} setTable={setTable}>
-        <div className="space-y-4">
-          <div className="flex items-end justify-between">
+        <div className='space-y-4'>
+          <div className='flex items-end justify-between'>
             <Filters />
-            <div className="flex items-end gap-2">
+            <div className='flex items-end gap-2'>
               <ViewOptionsButton table={table} />
               <DownloadingButton />
             </div>
@@ -141,4 +143,3 @@ export const WithFilters: Story = {
     );
   },
 };
-

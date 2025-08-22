@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+
 import TestComponent from './TestComponent';
 
 const meta: Meta<typeof TestComponent> = {

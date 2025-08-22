@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchSubventionsComparison } from '#utils/fetchers/subventions/fetchSubventionsComparison-server';
 
 export async function GET(
-  request: NextRequest, 
-  { params }: { params: Promise<{ siren: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ siren: string }> },
 ) {
   try {
     const { siren } = await params;

@@ -1,6 +1,6 @@
+import { TransparencyScore } from '#components/TransparencyScore/constants';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { TransparencyScoreBar } from './TransparencyScoreBar';
 
 const meta = {

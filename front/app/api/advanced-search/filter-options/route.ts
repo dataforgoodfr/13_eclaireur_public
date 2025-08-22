@@ -10,7 +10,9 @@ const BAREME = DataTable.Bareme;
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const type = searchParams.get('type') as CommunityType | null;
-  const population = searchParams.get('population') ? parseInt(searchParams.get('population')!) : null;
+  const population = searchParams.get('population')
+    ? parseInt(searchParams.get('population')!)
+    : null;
   const mp_score = searchParams.get('mp_score');
   const subventions_score = searchParams.get('subventions_score');
 
@@ -75,7 +77,7 @@ async function fetchFilterOptions(filters: FilterParams) {
     baseQuery += ` AND ${whereConditions.join(' AND ')}`;
   }
 
-  const results = await getQueryFromPool(baseQuery, values) as Array<{
+  const results = (await getQueryFromPool(baseQuery, values)) as Array<{
     type: CommunityType;
     population: number;
     mp_score: string | null;
@@ -83,16 +85,18 @@ async function fetchFilterOptions(filters: FilterParams) {
   }>;
 
   // Extract unique values for each filter
-  const types = [...new Set(results.map(r => r.type).filter(Boolean))];
-  
+  const types = [...new Set(results.map((r) => r.type).filter(Boolean))];
+
   // For populations, use predefined ranges that make sense based on available data
-  const allPopulations = results.map(r => r.population).filter(Boolean);
+  const allPopulations = results.map((r) => r.population).filter(Boolean);
   const maxPopulation = Math.max(...allPopulations);
-  const populationRanges = [2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 500_000, 1_000_000, 2_000_000];
-  const populations = populationRanges.filter(range => range <= maxPopulation * 1.5);
-  
-  const mpScores = [...new Set(results.map(r => r.mp_score).filter(Boolean))];
-  const subventionsScores = [...new Set(results.map(r => r.subventions_score).filter(Boolean))];
+  const populationRanges = [
+    2_000, 5_000, 10_000, 20_000, 50_000, 100_000, 200_000, 500_000, 1_000_000, 2_000_000,
+  ];
+  const populations = populationRanges.filter((range) => range <= maxPopulation * 1.5);
+
+  const mpScores = [...new Set(results.map((r) => r.mp_score).filter(Boolean))];
+  const subventionsScores = [...new Set(results.map((r) => r.subventions_score).filter(Boolean))];
 
   return {
     types,

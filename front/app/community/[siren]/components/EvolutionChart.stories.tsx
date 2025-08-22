@@ -1,51 +1,52 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+
 import { EvolutionChart } from './EvolutionChart';
 
 // Mock data pour les marchés publics
 const marchesPublicsAmountsData = [
-  { "year": 2017, "amount": 0 },
-  { "year": 2018, "amount": 1820000 },
-  { "year": 2019, "amount": 1450000 },
-  { "year": 2020, "amount": 2230000 },
-  { "year": 2021, "amount": 4780000 },
-  { "year": 2022, "amount": 1010000 },
-  { "year": 2023, "amount": 1860000 },
-  { "year": 2024, "amount": 660000 }
+  { year: 2017, amount: 0 },
+  { year: 2018, amount: 1820000 },
+  { year: 2019, amount: 1450000 },
+  { year: 2020, amount: 2230000 },
+  { year: 2021, amount: 4780000 },
+  { year: 2022, amount: 1010000 },
+  { year: 2023, amount: 1860000 },
+  { year: 2024, amount: 660000 },
 ];
 
 const marchesPublicsCountsData = [
-  { "year": 2017, "count": 0 },
-  { "year": 2018, "count": 182 },
-  { "year": 2019, "count": 145 },
-  { "year": 2020, "count": 223 },
-  { "year": 2021, "count": 478 },
-  { "year": 2022, "count": 101 },
-  { "year": 2023, "count": 186 },
-  { "year": 2024, "count": 66 }
+  { year: 2017, count: 0 },
+  { year: 2018, count: 182 },
+  { year: 2019, count: 145 },
+  { year: 2020, count: 223 },
+  { year: 2021, count: 478 },
+  { year: 2022, count: 101 },
+  { year: 2023, count: 186 },
+  { year: 2024, count: 66 },
 ];
 
 // Mock data pour les subventions
 const subventionsAmountsData = [
-  { "year": 2017, "amount": 0 },
-  { "year": 2018, "amount": 850000 },
-  { "year": 2019, "amount": 920000 },
-  { "year": 2020, "amount": 1200000 },
-  { "year": 2021, "amount": 1800000 },
-  { "year": 2022, "amount": 750000 },
-  { "year": 2023, "amount": 980000 },
-  { "year": 2024, "amount": 450000 }
+  { year: 2017, amount: 0 },
+  { year: 2018, amount: 850000 },
+  { year: 2019, amount: 920000 },
+  { year: 2020, amount: 1200000 },
+  { year: 2021, amount: 1800000 },
+  { year: 2022, amount: 750000 },
+  { year: 2023, amount: 980000 },
+  { year: 2024, amount: 450000 },
 ];
 
 const subventionsCountsData = [
-  { "year": 2017, "count": 0 },
-  { "year": 2018, "count": 85 },
-  { "year": 2019, "count": 92 },
-  { "year": 2020, "count": 120 },
-  { "year": 2021, "count": 180 },
-  { "year": 2022, "count": 75 },
-  { "year": 2023, "count": 98 },
-  { "year": 2024, "count": 45 }
+  { year: 2017, count: 0 },
+  { year: 2018, count: 85 },
+  { year: 2019, count: 92 },
+  { year: 2020, count: 120 },
+  { year: 2021, count: 180 },
+  { year: 2022, count: 75 },
+  { year: 2023, count: 98 },
+  { year: 2024, count: 45 },
 ];
 
 const meta: Meta<typeof EvolutionChart> = {
@@ -61,7 +62,8 @@ const meta: Meta<typeof EvolutionChart> = {
           if (siren === '213105554') {
             return HttpResponse.json(marchesPublicsCountsData);
           }
-          if (siren === '000000000') { // SIREN pour no data
+          if (siren === '000000000') {
+            // SIREN pour no data
             return HttpResponse.json([]);
           }
           return HttpResponse.json(marchesPublicsCountsData);
@@ -71,7 +73,8 @@ const meta: Meta<typeof EvolutionChart> = {
           if (siren === '213105554') {
             return HttpResponse.json(marchesPublicsAmountsData);
           }
-          if (siren === '000000000') { // SIREN pour no data
+          if (siren === '000000000') {
+            // SIREN pour no data
             return HttpResponse.json([]);
           }
           return HttpResponse.json(marchesPublicsAmountsData);
@@ -82,7 +85,8 @@ const meta: Meta<typeof EvolutionChart> = {
           if (siren === '213105554') {
             return HttpResponse.json(subventionsCountsData);
           }
-          if (siren === '000000000') { // SIREN pour no data
+          if (siren === '000000000') {
+            // SIREN pour no data
             return HttpResponse.json([]);
           }
           return HttpResponse.json(subventionsCountsData);
@@ -92,7 +96,8 @@ const meta: Meta<typeof EvolutionChart> = {
           if (siren === '213105554') {
             return HttpResponse.json(subventionsAmountsData);
           }
-          if (siren === '000000000') { // SIREN pour no data
+          if (siren === '000000000') {
+            // SIREN pour no data
             return HttpResponse.json([]);
           }
           return HttpResponse.json(subventionsAmountsData);
@@ -101,7 +106,8 @@ const meta: Meta<typeof EvolutionChart> = {
     },
     docs: {
       description: {
-        component: 'Composant unifié pour afficher l\'évolution des marchés publics ou subventions au cours du temps. Support mobile/desktop et état "no data".',
+        component:
+          'Composant unifié pour afficher l\'évolution des marchés publics ou subventions au cours du temps. Support mobile/desktop et état "no data".',
       },
     },
   },
@@ -111,7 +117,7 @@ const meta: Meta<typeof EvolutionChart> = {
       control: { type: 'text' },
     },
     displayMode: {
-      description: 'Mode d\'affichage des données',
+      description: "Mode d'affichage des données",
       control: { type: 'select' },
       options: ['amounts', 'counts'],
     },
@@ -129,7 +135,7 @@ const meta: Meta<typeof EvolutionChart> = {
       control: { type: 'boolean' },
     },
     isError: {
-      description: 'État d\'erreur',
+      description: "État d'erreur",
       control: { type: 'boolean' },
     },
   },
@@ -259,7 +265,7 @@ export const ErrorState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'État d\'erreur de récupération des données.',
+        story: "État d'erreur de récupération des données.",
       },
     },
   },
@@ -285,14 +291,14 @@ export const Interactive: Story = {
 
 // Data avec plusieurs années manquantes pour tester les boutons Interpeller
 const dataWithMissingYears = [
-  { "year": 2017, "amount": 0, "count": 0 }, // Missing data
-  { "year": 2018, "amount": 1820000, "count": 182 },
-  { "year": 2019, "amount": 0, "count": 0 }, // Missing data
-  { "year": 2020, "amount": 2230000, "count": 223 },
-  { "year": 2021, "amount": 0, "count": 0 }, // Missing data
-  { "year": 2022, "amount": 1010000, "count": 101 },
-  { "year": 2023, "amount": 0, "count": 0 }, // Missing data
-  { "year": 2024, "amount": 660000, "count": 66 }
+  { year: 2017, amount: 0, count: 0 }, // Missing data
+  { year: 2018, amount: 1820000, count: 182 },
+  { year: 2019, amount: 0, count: 0 }, // Missing data
+  { year: 2020, amount: 2230000, count: 223 },
+  { year: 2021, amount: 0, count: 0 }, // Missing data
+  { year: 2022, amount: 1010000, count: 101 },
+  { year: 2023, amount: 0, count: 0 }, // Missing data
+  { year: 2024, amount: 660000, count: 66 },
 ];
 
 export const MarchesPublicsWithMissingDataAmounts: Story = {
@@ -307,7 +313,8 @@ export const MarchesPublicsWithMissingDataAmounts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Graphique des montants avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
+        story:
+          'Graphique des montants avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
       },
     },
   },
@@ -325,7 +332,8 @@ export const MarchesPublicsWithMissingDataCounts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Graphique du nombre avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
+        story:
+          'Graphique du nombre avec années manquantes - affiche les boutons Interpeller avec "Aucune donnée".',
       },
     },
   },
@@ -343,7 +351,8 @@ export const SubventionsWithMissingDataAmounts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Graphique des montants subventions avec années manquantes - affiche les boutons Interpeller.',
+        story:
+          'Graphique des montants subventions avec années manquantes - affiche les boutons Interpeller.',
       },
     },
   },
@@ -361,7 +370,8 @@ export const SubventionsWithMissingDataCounts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Graphique du nombre subventions avec années manquantes - affiche les boutons Interpeller.',
+        story:
+          'Graphique du nombre subventions avec années manquantes - affiche les boutons Interpeller.',
       },
     },
   },
@@ -373,14 +383,14 @@ export const AllMissingData: Story = {
     displayMode: 'amounts',
     chartType: 'marches-publics',
     data: [
-      { "year": 2017, "amount": 0, "count": 0 },
-      { "year": 2018, "amount": 0, "count": 0 },
-      { "year": 2019, "amount": 0, "count": 0 },
-      { "year": 2020, "amount": 0, "count": 0 },
-      { "year": 2021, "amount": 0, "count": 0 },
-      { "year": 2022, "amount": 0, "count": 0 },
-      { "year": 2023, "amount": 0, "count": 0 },
-      { "year": 2024, "amount": 0, "count": 0 }
+      { year: 2017, amount: 0, count: 0 },
+      { year: 2018, amount: 0, count: 0 },
+      { year: 2019, amount: 0, count: 0 },
+      { year: 2020, amount: 0, count: 0 },
+      { year: 2021, amount: 0, count: 0 },
+      { year: 2022, amount: 0, count: 0 },
+      { year: 2023, amount: 0, count: 0 },
+      { year: 2024, amount: 0, count: 0 },
     ],
     isPending: false,
     isError: false,
@@ -406,7 +416,8 @@ export const WithoutSiren: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Sans SIREN - les boutons Interpeller ne sont pas affichés même avec données manquantes.',
+        story:
+          'Sans SIREN - les boutons Interpeller ne sont pas affichés même avec données manquantes.',
       },
     },
   },

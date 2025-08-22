@@ -8,9 +8,8 @@ type CommunityDetailsProps = {
 export function CommunityDetails({ community }: CommunityDetailsProps) {
   return (
     <>
-
       {/* Info blocks */}
-      <div className='flex flex-col gap-4 w-full'>
+      <div className='flex w-full flex-col gap-4'>
         <InfoBlock
           label='Population'
           value={formatNumberInteger(community.population)}
@@ -44,14 +43,13 @@ type InfoBlockProps = {
 function InfoBlock({ label, value, unit, bgColor = 'bg-gray-100' }: InfoBlockProps) {
   return (
     <div className={`rounded-none rounded-br-2xl rounded-tl-2xl p-3 text-primary ${bgColor}`}>
-      <div className='flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1'>
+      <div className='flex flex-row items-center justify-between gap-2 sm:flex-col sm:items-start sm:justify-start sm:gap-1'>
         <p className='text-base font-medium'>{label}</p>
         <h4 className='text-lg font-bold'>
           {value}
-          {unit && <span className='hidden sm:inline ml-1 text-base font-normal'>{unit}</span>}
+          {unit && <span className='ml-1 hidden text-base font-normal sm:inline'>{unit}</span>}
         </h4>
       </div>
     </div>
   );
 }
-

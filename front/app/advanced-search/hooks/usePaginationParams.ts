@@ -1,9 +1,7 @@
 'use client';
 
-import { parseAsInteger, useQueryStates } from 'nuqs';
-
-
 import { Pagination } from '#utils/fetchers/types';
+import { parseAsInteger, useQueryStates } from 'nuqs';
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 10;

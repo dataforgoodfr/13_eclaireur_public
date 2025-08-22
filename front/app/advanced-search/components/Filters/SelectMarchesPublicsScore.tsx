@@ -21,7 +21,7 @@ export function SelectMarchesPublicsScore() {
   }
 
   const fallbackOptions = Object.values(TransparencyScore).sort();
-  const options = filterOptions?.mpScores.length 
+  const options = filterOptions?.mpScores.length
     ? (filterOptions.mpScores as TransparencyScore[]).sort()
     : fallbackOptions;
 

@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 
-import SearchBar from '#components/SearchBar/SearchBar';
 import { Community } from '#app/models/community';
+import SearchBar from '#components/SearchBar/SearchBar';
 
 export default function FicheSearchModal() {
   const router = useRouter();
@@ -13,14 +13,11 @@ export default function FicheSearchModal() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="text-sm text-muted-foreground">
+    <div className='space-y-4'>
+      <div className='text-sm text-muted-foreground'>
         Recherchez une collectivité pour consulter sa fiche
       </div>
-      <SearchBar 
-        className="relative w-full" 
-        onSelect={handleSelect} 
-      />
+      <SearchBar className='relative w-full' onSelect={handleSelect} />
     </div>
   );
 }

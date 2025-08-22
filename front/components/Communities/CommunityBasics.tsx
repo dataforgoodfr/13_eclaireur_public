@@ -9,7 +9,7 @@ export default function CommunityBasics({ community }: { community: Community })
   return (
     <div>
       <h3 className='text-h2'>{communityNameToDisplay}</h3>
-      <h4 className='mt-6 text-h4'>
+      <h4 className='text-h4 mt-6'>
         {communityTypeToDisplay} {code_postal ? `· ${code_postal}` : ''}{' '}
       </h4>
     </div>

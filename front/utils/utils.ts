@@ -85,7 +85,10 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
   return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
 }
 
-export function formatCompactPriceInteger(value: number, options?: Intl.NumberFormatOptions): string {
+export function formatCompactPriceInteger(
+  value: number,
+  options?: Intl.NumberFormatOptions,
+): string {
   const defaultOptions = {
     notation: 'compact',
     currency: 'EUR',
@@ -120,7 +123,7 @@ export function formatMonetaryValue(value: number, unit: 'M€' | 'k€'): strin
   const normalizedValue = value / divisor;
   return new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 1
+    maximumFractionDigits: 1,
   }).format(normalizedValue);
 }
 

@@ -1,8 +1,8 @@
 'use client';
 
+import { PopulationSliderFilter } from './PopulationSliderFilter';
 import { SelectCommunityType } from './SelectCommunityType';
 import { SelectMarchesPublicsScore } from './SelectMarchesPublicsScore';
-import { PopulationSliderFilter } from './PopulationSliderFilter';
 import { SelectSubventionsScore } from './SelectSubventionsScore';
 
 export function Filters() {

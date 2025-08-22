@@ -14,11 +14,11 @@ type CopyUrlButtonProps = {
   className?: string;
 };
 
-export default function CopyUrlButton({ 
-  label = DEFAULT_LABEL, 
+export default function CopyUrlButton({
+  label = DEFAULT_LABEL,
   variant = 'outline',
   size = 'sm',
-  className
+  className,
 }: CopyUrlButtonProps) {
   const { toast } = useToast();
 
@@ -34,7 +34,7 @@ export default function CopyUrlButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={variant} size={size} onClick={copyToClipboard} className={className}>
-            {label ? <Share className="h-4 w-4 mr-2" /> : <Share className="h-4 w-4" />}
+            {label ? <Share className='mr-2 h-4 w-4' /> : <Share className='h-4 w-4' />}
             {label}
           </Button>
         </TooltipTrigger>

@@ -27,7 +27,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     >
       <div className='relative z-10 flex flex-col gap-6'>
         {/* Top bar with GoBack and Action buttons - Mobile only */}
-        <div className='flex items-center justify-between lg:hidden h-12'>
+        <div className='flex h-12 items-center justify-between lg:hidden'>
           <GoBack />
           <FicheActionButtons community={community} />
         </div>

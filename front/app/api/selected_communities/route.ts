@@ -51,9 +51,9 @@ export async function GET(request: Request) {
     const pagination =
       page !== undefined && limit !== undefined
         ? {
-          limit,
-          page,
-        }
+            limit,
+            page,
+          }
         : undefined;
     const data = await getDataFromPool({ filters: { type, siren }, limit }, pagination);
 
