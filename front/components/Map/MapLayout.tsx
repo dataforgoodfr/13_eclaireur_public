@@ -78,18 +78,16 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           populationMinMax={populationMinMax}
         />
       </div>
-      <div className='flex min-h-screen w-1/3 flex-col bg-[#ffeccf] px-8 py-20'>
+      <div className='flex gap-12 min-h-screen w-1/3 flex-col bg-white px-8 py-20'>
         <TransparencyScoreControls
           selectedScore={selectedScore}
           setSelectedScore={setSelectedScore}
         />
-        <hr className='my-12 border-t border-[#fdc04e]' />
         <FrenchTerritoriesSelect
           territories={territories}
           selectedTerritory={selectedTerritory}
           onSelectTerritory={setSelectedTerritory}
         />
-        <hr className='my-12 border-t border-[#fdc04e]' />
         <PerspectiveSelector
           minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}

@@ -24,15 +24,15 @@ export default function FrenchTerritoriesSelect({
   return (
     <div className='mb-8'>
       <div className='mb-4 flex items-center'>
-        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#062aad] text-sm font-bold text-white'>
+        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold font-kanit-bold text-white'>
           2
         </span>
-        <span className='text-base font-semibold tracking-wide text-[#062aad]'>
-          CHOISISSEZ UN TERRITOIRE
-        </span>
+        <h4 className='text-primary'>
+         Choisissez un territoire
+        </h4>
       </div>
       <Select value={selectedTerritory} onValueChange={onSelectTerritory}>
-        <SelectTrigger className='w-[280px] rounded border border-black bg-white px-3 py-2 font-medium text-[#062aad] focus:ring-2 focus:ring-[#062aad]'>
+        <SelectTrigger className='w-[280px] rounded border border-black bg-white px-3 py-2 font-medium text-primary focus:ring-2 focus:ring-primary'>
           <SelectValue placeholder='Sélectionnez la France métropolitaine ou un territoire d’outre-mer' />
         </SelectTrigger>
         <SelectContent>

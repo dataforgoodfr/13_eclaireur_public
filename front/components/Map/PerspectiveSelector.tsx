@@ -1,11 +1,10 @@
 'use client';
 
-import { Label } from '#components/ui/label';
-import { RadioGroup, RadioGroupItem } from '#components/ui/radio-group';
 import { Slider } from '#components/ui/slider';
-
+import { cn } from '#utils/utils';
 import type { AdminType } from './types';
 import { formatValue } from './utils/perspectiveFunctions';
+import { Check } from 'lucide-react';
 
 interface CollectiviteMinMax {
   type: string;
@@ -87,61 +86,83 @@ export default function PerspectiveSelector({
   return (
     <div className='mb-8'>
       <div className='mb-4 flex items-center'>
-        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#062aad] text-sm font-bold text-white'>
+        <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold font-kanit-bold text-white'>
           3
         </span>
-        <span className='text-base font-semibold tracking-wide text-[#062aad]'>
+        <h4 className='text-primary'>
           METTEZ EN PERSPECTIVE
-        </span>
+        </h4>
       </div>
 
       <div className='space-y-4'>
-        <RadioGroup
-          // value={selectedOption}
-          onValueChange={onSelectedOptionChange}
-          defaultValue={rangeOptions[0].id}
-          className='space-y-4'
-        >
-          {rangeOptions.map((option) => (
-            <div key={option.id} className='space-y-3'>
-              <div className='flex items-center space-x-2'>
-                <RadioGroupItem
-                  value={option.id}
-                  id={option.id}
-                  className='border-[#062aad] text-[#062aad]'
-                />
-                <Label htmlFor={option.id} className='cursor-pointer font-medium text-[#062aad]'>
-                  {option.label}
-                </Label>
+        <ButtonGroup
+          options={rangeOptions.map(option => ({
+            label: option.label,
+            value: option.id,
+          }))}
+          value={selectedOption}
+          onChange={onSelectedOptionChange}
+          className="mb-4"
+        />
+        {rangeOptions.map((option) =>
+          selectedOption === option.id ? (
+            <div key={option.id} className='space-y-3 rounded-lg p-4'>
+              <div className='flex justify-between text-sm text-gray-600'>
+                <span>{formatValue(ranges[option.id][0], option.unit)}</span>
+                <span>{formatValue(ranges[option.id][1], option.unit)}</span>
               </div>
-              {selectedOption === option.id && (
-                <div className='space-y-3 rounded-lg p-4'>
-                  <div className='flex justify-between text-sm text-gray-600'>
-                    <span>{formatValue(ranges[option.id][0], option.unit)}</span>
-                    <span>{formatValue(ranges[option.id][1], option.unit)}</span>
-                  </div>
 
-                  <div className='px-2'>
-                    <Slider
-                      value={ranges[option.id]}
-                      onValueChange={(value) => onRangeChange(option.id, value as [number, number])}
-                      min={option.min}
-                      max={option.max}
-                      step={option.step}
-                      className='w-full'
-                    />
-                  </div>
+              <div className='px-2'>
+                <Slider
+                  value={ranges[option.id]}
+                  onValueChange={(value) => onRangeChange(option.id, value as [number, number])}
+                  min={option.min}
+                  max={option.max}
+                  step={option.step}
+                  className='w-full'
+                />
+              </div>
 
-                  <div className='flex justify-between text-xs text-gray-500'>
-                    <span>Min</span>
-                    <span>Max</span>
-                  </div>
-                </div>
-              )}
+              <div className='flex justify-between text-xs text-gray-500'>
+                <span>Min</span>
+                <span>Max</span>
+              </div>
             </div>
-          ))}
-        </RadioGroup>
+          ) : null
+        )}
       </div>
+    </div>
+  );
+}
+
+
+interface ButtonGroupProps {
+  options: { label: string; value: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}
+function ButtonGroup({ options, value, onChange, className }: ButtonGroupProps) {
+  return (
+    <div className={cn('grid grid-cols-2 gap-2', className)}>
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          className={cn(
+            'flex items-center px-4 py-2 rounded-full border border-primary text-primary font-kanit-bold transition-colors',
+            value === option.value
+              ? 'bg-primary text-white'
+              : 'bg-white hover:bg-primary/10'
+          )}
+          onClick={() => onChange(option.value)}
+        >
+          {value === option.value && (
+            <Check className="mr-2 h-6 w-6 " />
+          )}
+          {option.label}
+        </button>
+      ))}
     </div>
   );
 }
