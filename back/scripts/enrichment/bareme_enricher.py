@@ -471,7 +471,7 @@ class BaremeEnricher(BaseEnricher):
             ]
         )
 
-        # Nettoyage : suppression des colonnes de calcul temporaires
+        # Suppression des colonnes de calcul temporaires
         # Conservation uniquement des colonnes originales + score_agrege
         final_columns = [col for col in bareme_df.columns] + ["score_agrege"]
 
