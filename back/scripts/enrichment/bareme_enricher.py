@@ -1,8 +1,8 @@
+import math
 import typing
 from datetime import datetime
 from pathlib import Path
 
-import math
 import polars as pl
 
 from back.scripts.communities.communities_selector import CommunitiesSelector
