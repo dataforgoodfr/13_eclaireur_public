@@ -57,7 +57,7 @@ const linkBase = 'text-primary hover:text-primary hover:underline transition-col
 
 const Footer: FC = () => (
   <footer
-    className="relative w-full bg-[url('/eclaireur/project_background.jpg')] bg-cover bg-center object-cover"
+    className="relative w-full bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center object-cover"
     aria-labelledby="footer-title"
   >
     <div className="global-margin flex h-full items-center justify-center py-12">
