@@ -28,6 +28,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
         fill
         className="object-cover -z-10"
         priority
+        fetchPriority='high'
         sizes="100vw"
       />
       <div className='relative z-10 flex flex-col gap-6'>
