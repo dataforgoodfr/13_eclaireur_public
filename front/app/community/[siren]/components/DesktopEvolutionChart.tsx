@@ -8,8 +8,9 @@ import {
   BarChart as RechartsBarChart,
   ResponsiveContainer,
   XAxis,
-  YAxis
+  YAxis,
 } from 'recharts';
+
 import { InterpellerButton } from '../../../../components/ui/interpeller-button';
 import { CHART_HEIGHT } from './constants';
 import type { ChartDataType } from './hooks/useChartData';
@@ -35,10 +36,10 @@ export default function DesktopEvolutionChart({
   avgValue,
   legendLabel,
   chartType,
-  siren
+  siren,
 }: DesktopEvolutionChartProps) {
   return (
-    <div className="relative">
+    <div className='relative'>
       <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
         <RechartsBarChart
           width={500}
@@ -55,16 +56,15 @@ export default function DesktopEvolutionChart({
           <YAxis tickFormatter={(value) => formatValue(value)} />
           <Legend
             content={() => {
-              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
+              const bgColorClass =
+                chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
               return (
-                <div className="flex flex-col items-center gap-2 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
-                    />
-                    <span className="text-primary font-semibold">{legendLabel}</span>
+                <div className='mt-4 flex flex-col items-center gap-2'>
+                  <div className='flex items-center gap-2'>
+                    <div className={`h-6 w-6 rounded border border-primary ${bgColorClass}`} />
+                    <span className='font-semibold text-primary'>{legendLabel}</span>
                   </div>
-                  <div className="text-xs text-primary font-medium">
+                  <div className='text-xs font-medium text-primary'>
                     Montants exprimés en {unit}
                   </div>
                 </div>
@@ -84,13 +84,13 @@ export default function DesktopEvolutionChart({
                     <foreignObject
                       x={props.x + props.width / 2 - 50}
                       y={props.y - 120}
-                      width="100"
-                      height="120"
+                      width='100'
+                      height='120'
                       style={{ pointerEvents: 'auto', zIndex: 1000 }}
                     >
-                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
+                      <div className='pointer-events-auto flex flex-col items-center gap-2'>
                         <InterpellerButton siren={siren} />
-                        <div className="text-lg font-semibold text-primary text-center">
+                        <div className='text-center text-lg font-semibold text-primary'>
                           Aucune donnée
                         </div>
                       </div>
@@ -111,12 +111,12 @@ export default function DesktopEvolutionChart({
             ))}
             <LabelList
               position='top'
-              formatter={(value: number) => value === avgValue ? "" : formatValue(value)}
+              formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
               fill='#303F8D'
               strokeWidth={0}
-              fontSize="16"
-              fontWeight="600"
-              fontFamily="var(--font-kanit), system-ui, sans-serif"
+              fontSize='16'
+              fontWeight='600'
+              fontFamily='var(--font-kanit), system-ui, sans-serif'
               offset={20}
             />
           </Bar>

@@ -15,23 +15,28 @@ interface MapTooltipProps {
   onClose?: () => void;
 }
 
-export default function MapTooltip({ hoverInfo, communityMap, isMobile = false, onClose }: MapTooltipProps) {
+export default function MapTooltip({
+  hoverInfo,
+  communityMap,
+  isMobile = false,
+  onClose,
+}: MapTooltipProps) {
   if (!hoverInfo) return null;
 
   const { feature, type, x, y } = hoverInfo;
   const data = getCommunityDataFromFeature(feature, communityMap);
-  
+
   // Mobile positioning - bottom of screen
-  const tooltipStyle = isMobile 
-    ? { 
-        left: '16px', 
+  const tooltipStyle = isMobile
+    ? {
+        left: '16px',
         right: '16px',
         bottom: '16px',
         maxHeight: '60vh',
-        overflow: 'auto'
+        overflow: 'auto',
       }
     : { left: x + 10, top: y + 10 };
-    
+
   return (
     <div
       className={`absolute z-50 rounded-tl-br-xl border border-primary bg-white p-4 text-primary ${
@@ -111,10 +116,10 @@ export default function MapTooltip({ hoverInfo, communityMap, isMobile = false, 
             </div>
             {/* Mobile: Add link to community page */}
             {isMobile && data?.siren && (
-              <div className='mt-4 pt-4 border-t border-gray-200'>
+              <div className='mt-4 border-t border-gray-200 pt-4'>
                 <a
                   href={`/community/${data.siren}`}
-                  className='block w-full rounded-tl-br bg-primary px-4 py-2 text-center text-white font-medium hover:bg-primary/90'
+                  className='block w-full rounded-tl-br bg-primary px-4 py-2 text-center font-medium text-white hover:bg-primary/90'
                 >
                   Voir les détails
                 </a>

@@ -1,5 +1,5 @@
 import { CommunityType } from '#utils/types';
-import { stringifyCommunityType, getSortedCommunityTypes } from '#utils/utils';
+import { getSortedCommunityTypes, stringifyCommunityType } from '#utils/utils';
 
 import { useFilterOptions } from '../../hooks/useFilterOptions';
 import { useFiltersParams } from '../../hooks/useFiltersParams';
@@ -19,7 +19,7 @@ export function SelectCommunityType() {
     subventions_score,
   });
 
-  const options = filterOptions?.types.length 
+  const options = filterOptions?.types.length
     ? getSortedCommunityTypes(filterOptions.types)
     : getSortedCommunityTypes(fallbackOptions);
 

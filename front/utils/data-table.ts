@@ -1,12 +1,8 @@
 // @ts-nocheck
-import { dataTableConfig } from "@/config/data-table";
-import type {
-  ExtendedColumnFilter,
-  FilterOperator,
-  FilterVariant,
-} from "@/types/data-table";
+import { dataTableConfig } from '@/config/data-table';
+import type { ExtendedColumnFilter, FilterOperator, FilterVariant } from '@/types/data-table';
 // @ts-nocheck
-import type { Column } from "@tanstack/react-table";
+import type { Column } from '@tanstack/react-table';
 
 export function getCommonPinningStyles<TData>({
   column,
@@ -16,34 +12,29 @@ export function getCommonPinningStyles<TData>({
   withBorder?: boolean;
 }): React.CSSProperties {
   const isPinned = column.getIsPinned();
-  const isLastLeftPinnedColumn =
-    isPinned === "left" && column.getIsLastColumn("left");
-  const isFirstRightPinnedColumn =
-    isPinned === "right" && column.getIsFirstColumn("right");
+  const isLastLeftPinnedColumn = isPinned === 'left' && column.getIsLastColumn('left');
+  const isFirstRightPinnedColumn = isPinned === 'right' && column.getIsFirstColumn('right');
 
   return {
     boxShadow: withBorder
       ? isLastLeftPinnedColumn
-        ? "-4px 0 4px -4px hsl(var(--border)) inset"
+        ? '-4px 0 4px -4px hsl(var(--border)) inset'
         : isFirstRightPinnedColumn
-          ? "4px 0 4px -4px hsl(var(--border)) inset"
+          ? '4px 0 4px -4px hsl(var(--border)) inset'
           : undefined
       : undefined,
-    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
-    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
+    left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+    right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
     opacity: isPinned ? 0.97 : 1,
-    position: isPinned ? "sticky" : "relative",
-    background: isPinned ? "hsl(var(--background))" : "hsl(var(--background))",
+    position: isPinned ? 'sticky' : 'relative',
+    background: isPinned ? 'hsl(var(--background))' : 'hsl(var(--background))',
     width: column.getSize(),
     zIndex: isPinned ? 1 : 0,
   };
 }
 
 export function getFilterOperators(filterVariant: FilterVariant) {
-  const operatorMap: Record<
-    FilterVariant,
-    { label: string; value: FilterOperator }[]
-  > = {
+  const operatorMap: Record<FilterVariant, { label: string; value: FilterOperator }[]> = {
     text: dataTableConfig.textOperators,
     number: dataTableConfig.numericOperators,
     range: dataTableConfig.numericOperators,
@@ -60,7 +51,7 @@ export function getFilterOperators(filterVariant: FilterVariant) {
 export function getDefaultFilterOperator(filterVariant: FilterVariant) {
   const operators = getFilterOperators(filterVariant);
 
-  return operators[0]?.value ?? (filterVariant === "text" ? "iLike" : "eq");
+  return operators[0]?.value ?? (filterVariant === 'text' ? 'iLike' : 'eq');
 }
 
 export function getValidFilters<TData>(
@@ -68,12 +59,10 @@ export function getValidFilters<TData>(
 ): ExtendedColumnFilter<TData>[] {
   return filters.filter(
     (filter) =>
-      filter.operator === "isEmpty" ||
-      filter.operator === "isNotEmpty" ||
+      filter.operator === 'isEmpty' ||
+      filter.operator === 'isNotEmpty' ||
       (Array.isArray(filter.value)
         ? filter.value.length > 0
-        : filter.value !== "" &&
-        filter.value !== null &&
-        filter.value !== undefined),
+        : filter.value !== '' && filter.value !== null && filter.value !== undefined),
   );
 }

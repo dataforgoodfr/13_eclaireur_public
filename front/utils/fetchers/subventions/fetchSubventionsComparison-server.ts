@@ -8,14 +8,14 @@ const COMMUNITIES_TABLE = DataTable.Communities;
 
 function createSQLQueryParams(siren: string, scope: string): [string, (string | number)[]] {
   const values = [siren, siren, siren]; // We need siren multiple times
-  
+
   // Build scope condition dynamically - handle both French and English scope names
   let scopeCondition: string | null = '';
   const normalizedScope = scope.toLowerCase();
   if (normalizedScope === 'régional' || normalizedScope === 'regional') {
     scopeCondition = 'code_insee_region';
   } else if (normalizedScope === 'départemental' || normalizedScope === 'departmental') {
-    scopeCondition = 'code_insee_departement'; 
+    scopeCondition = 'code_insee_departement';
   } else {
     // For national, we don't filter by region/department
     scopeCondition = null;
@@ -71,7 +71,7 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
 
   // Adjust values array based on whether we need the third parameter
   const finalValues = scopeCondition ? values : [siren, siren];
-  
+
   return [querySQL, finalValues];
 }
 
@@ -79,8 +79,8 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
  * Fetch subventions comparison data for a community (SSR)
  */
 export async function fetchSubventionsComparison(
-  siren: string, 
-  scope: string = 'régional'
+  siren: string,
+  scope: string = 'régional',
 ): Promise<SubventionsComparisonData[]> {
   try {
     const params = createSQLQueryParams(siren, scope);
@@ -96,9 +96,9 @@ export async function fetchSubventionsComparison(
 
     const communityName = rows[0].community_name;
     const communityType = rows[0].community_type;
-    
+
     const communityLabel = `Budget de ${communityName}`;
-    
+
     // Generate proper French labels
     const normalizedScope = scope.toLowerCase();
     let scopeLabel = '';
@@ -109,10 +109,10 @@ export async function fetchSubventionsComparison(
     } else {
       scopeLabel = 'nationale';
     }
-    
+
     const regionalLabel = `Moyenne ${scopeLabel} des collectivités ${communityType.toLowerCase()}s`;
 
-    return rows.map(row => ({
+    return rows.map((row) => ({
       year: row.year,
       community: row.community,
       communityLabel,

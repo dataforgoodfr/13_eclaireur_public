@@ -102,7 +102,7 @@ export default function FranceMap({
 
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  
+
   const { handleMove, handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
     mapRef,
     setViewState,
@@ -116,7 +116,7 @@ export default function FranceMap({
     selectedTerritoryData,
     isMobile,
   });
-    return (
+  return (
     <div className='relative h-full w-full cursor-grab bg-white'>
       {/* Show legend button for mobile when legend is hidden */}
       {!showLegend && (
@@ -127,7 +127,7 @@ export default function FranceMap({
           Afficher légende
         </button>
       )}
-      
+
       {(communesLoading || departementsLoading || regionsLoading) && (
         <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
@@ -171,9 +171,9 @@ export default function FranceMap({
             onClose={() => setShowLegend(false)}
           />
         )}
-        <MapTooltip 
-          hoverInfo={hoverInfo} 
-          communityMap={communityMap} 
+        <MapTooltip
+          hoverInfo={hoverInfo}
+          communityMap={communityMap}
           isMobile={isMobile}
           onClose={() => setHoverInfo(null)}
         />

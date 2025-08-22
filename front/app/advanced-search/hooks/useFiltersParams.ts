@@ -1,9 +1,7 @@
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
-
-
 import { Community } from '#app/models/community';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { CommunityType } from '#utils/types';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 
 import { DEFAULT_PAGE } from './usePaginationParams';
 

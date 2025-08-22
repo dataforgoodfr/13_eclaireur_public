@@ -67,7 +67,7 @@ export function useFranceMapHandlers({
       setHoverInfo(null);
     }
   };
-  
+
   // Handles click on map features
   const onClick = (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -75,7 +75,7 @@ export function useFranceMapHandlers({
       setHoverInfo(null); // Clear tooltip on empty click
       return;
     }
-    
+
     if (isMobile) {
       // On mobile, show tooltip on click instead of navigating
       const { point } = event;

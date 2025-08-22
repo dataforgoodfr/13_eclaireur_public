@@ -66,11 +66,11 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   }, [populationMinMax.min, populationMinMax.max]);
 
   return (
-    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col lg:flex-row overflow-y-auto lg:overflow-visible'>
+    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col overflow-y-auto lg:flex-row lg:overflow-visible'>
       {/* Mobile: Controls at top */}
       <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white lg:order-2 lg:hidden'>
         {/* Mobile Filters Toggle Button */}
-        <div className='flex items-center justify-between p-4 border-b border-gray-200'>
+        <div className='flex items-center justify-between border-b border-gray-200 p-4'>
           <h3 className='text-lg font-semibold text-primary'>Filtres</h3>
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -80,10 +80,10 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           </button>
         </div>
       </div>
-      
+
       {/* Mobile: Collapsible Filters - Pushes content down */}
       {showFilters && (
-        <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white border-b border-gray-200 lg:hidden'>
+        <div className='order-1 flex w-full flex-shrink-0 flex-col border-b border-gray-200 bg-white lg:hidden'>
           <div className='flex flex-col gap-4 p-4'>
             <TransparencyScoreControls
               selectedScore={selectedScore}
@@ -105,9 +105,9 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           </div>
         </div>
       )}
-      
+
       {/* Map container */}
-      <div className='order-2 flex w-full h-[calc(100vh-80px)] items-center justify-center bg-white lg:order-1 lg:w-2/3 lg:h-full lg:flex-1'>
+      <div className='order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
@@ -121,9 +121,9 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           setShowLegend={setShowLegend}
         />
       </div>
-      
+
       {/* Desktop: Controls on the right */}
-      <div className='order-3 hidden gap-12 w-1/3 flex-col bg-white px-8 py-8 lg:flex'>
+      <div className='order-3 hidden w-1/3 flex-col gap-12 bg-white px-8 py-8 lg:flex'>
         <TransparencyScoreControls
           selectedScore={selectedScore}
           setSelectedScore={setSelectedScore}
