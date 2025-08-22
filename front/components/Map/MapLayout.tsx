@@ -20,6 +20,8 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
   const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population');
+  const [showLegend, setShowLegend] = useState<boolean>(true);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const [viewState, setViewState] = useState<Partial<ViewState>>(
     territories['metropole'].viewState,
@@ -64,8 +66,46 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   }, [populationMinMax.min, populationMinMax.max]);
 
   return (
-    <div className='flex min-h-screen w-full'>
-      <div className='flex w-2/3 items-center justify-center bg-white'>
+    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col lg:flex-row'>
+      {/* Mobile: Controls at top */}
+      <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white lg:order-2 lg:hidden'>
+        {/* Mobile Filters Toggle Button */}
+        <div className='flex items-center justify-between p-4 border-b border-gray-200'>
+          <h3 className='text-lg font-semibold text-primary'>Filtres</h3>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className='rounded-tl-br border border-primary bg-white px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10'
+          >
+            {showFilters ? 'Masquer' : 'Afficher'} filtres
+          </button>
+        </div>
+        
+        {/* Collapsible Filters */}
+        {showFilters && (
+          <div className='flex flex-col gap-4 p-4'>
+            <TransparencyScoreControls
+              selectedScore={selectedScore}
+              setSelectedScore={setSelectedScore}
+            />
+            <FrenchTerritoriesSelect
+              territories={territories}
+              selectedTerritory={selectedTerritory}
+              onSelectTerritory={setSelectedTerritory}
+            />
+            <PerspectiveSelector
+              minMaxValues={minMaxValues}
+              currentAdminLevel={currentAdminLevel}
+              selectedOption={selectedRangeOption}
+              onSelectedOptionChange={setSelectedRangeOption}
+              ranges={ranges}
+              onRangeChange={handleRangeChange}
+            />
+          </div>
+        )}
+      </div>
+      
+      {/* Map container */}
+      <div className='order-2 flex w-full flex-1 items-center justify-center bg-white lg:order-1 lg:w-2/3 lg:h-full'>
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
@@ -73,12 +113,15 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           setViewState={setViewState}
           ranges={ranges}
           selectedRangeOption={selectedRangeOption}
-          // minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}
           populationMinMax={populationMinMax}
+          showLegend={showLegend}
+          setShowLegend={setShowLegend}
         />
       </div>
-      <div className='flex gap-12 min-h-screen w-1/3 flex-col bg-white px-8 py-20'>
+      
+      {/* Desktop: Controls on the right */}
+      <div className='order-3 hidden gap-12 w-1/3 flex-col bg-white px-8 py-8 lg:flex'>
         <TransparencyScoreControls
           selectedScore={selectedScore}
           setSelectedScore={setSelectedScore}

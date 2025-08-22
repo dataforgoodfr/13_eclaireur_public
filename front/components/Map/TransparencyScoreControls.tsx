@@ -22,15 +22,15 @@ export default function TransparencyScoreControls({
 }: TransparencyScoreControlsProps) {
   return (
     <div className=''>
-      <div className='mb-4 flex items-center'>
+      <div className='mb-4 lg:mb-4 mb-2 flex items-center'>
         <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold font-kanit-bold text-white'>
           1
         </span>
-        <h4 className='text-base font-semibold tracking-wide text-primary'>
+        <h4 className='text-base lg:text-base text-sm font-semibold tracking-wide text-primary'>
           Choisissez un score
         </h4>
       </div>
-      <div className='flex gap-3'>
+      <div className='flex gap-3 lg:gap-3 gap-2 flex-col lg:flex-row'>
         {options.map((opt) => {
           const selected = selectedScore === opt.value;
           return (
@@ -38,10 +38,10 @@ export default function TransparencyScoreControls({
               key={opt.value}
               type='button'
               onClick={() => setSelectedScore(opt.value)}
-              className={`rounded-tl-br-lg border border-black px-4 py-2 text-[16x] font-medium font-kanit-bold transition ${
+              className={`rounded-tl-br-lg border border-black px-4 py-2 lg:px-4 lg:py-2 px-3 py-1 text-[16x] lg:text-[16px] text-sm font-medium font-kanit-bold transition ${
                 selected ? 'bg-[#062aad] text-white' : 'bg-white text-[#062aad]'
               } `}
-              style={{ minWidth: 180 }}
+              style={{ minWidth: 'auto' }}
             >
               {opt.label}
             </button>

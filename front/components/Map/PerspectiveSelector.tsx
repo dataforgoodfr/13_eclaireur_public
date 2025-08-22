@@ -84,17 +84,17 @@ export default function PerspectiveSelector({
   ];
 
   return (
-    <div className='mb-8'>
-      <div className='mb-4 flex items-center'>
+    <div className='mb-8 lg:mb-8 mb-4'>
+      <div className='mb-4 lg:mb-4 mb-2 flex items-center'>
         <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold font-kanit-bold text-white'>
           3
         </span>
-        <h4 className='text-primary'>
+        <h4 className='text-primary text-sm lg:text-base'>
           METTEZ EN PERSPECTIVE
         </h4>
       </div>
 
-      <div className='space-y-4'>
+      <div className='space-y-4 lg:space-y-4 space-y-2'>
         <ButtonGroup
           options={rangeOptions.map(option => ({
             label: option.label,
@@ -102,11 +102,11 @@ export default function PerspectiveSelector({
           }))}
           value={selectedOption}
           onChange={onSelectedOptionChange}
-          className="mb-4"
+          className="mb-4 lg:mb-4 mb-2"
         />
         {rangeOptions.map((option) =>
           selectedOption === option.id ? (
-            <div key={option.id} className='space-y-3 rounded-lg p-4'>
+            <div key={option.id} className='space-y-3 lg:space-y-3 space-y-2 rounded-lg p-4 lg:p-4 p-2'>
               <div className='flex justify-between text-[14px] text-primary font-kanit-bold'>
                 <span>{formatValue(ranges[option.id][0], option.unit)}</span>
                 <span>{formatValue(ranges[option.id][1], option.unit)}</span>
@@ -144,13 +144,13 @@ interface ButtonGroupProps {
 }
 function ButtonGroup({ options, value, onChange, className }: ButtonGroupProps) {
   return (
-    <div className={cn('grid grid-cols-2 gap-2', className)}>
+    <div className={cn('grid grid-cols-2 gap-2 lg:gap-2 gap-1', className)}>
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
           className={cn(
-            'flex items-center text-left px-4 py-2 rounded-full border border-primary text-primary font-kanit-bold transition-colors',
+            'flex items-center text-left px-4 py-2 lg:px-4 lg:py-2 px-2 py-1 rounded-full border border-primary text-primary font-kanit-bold transition-colors text-xs lg:text-sm',
             value === option.value
               ? 'bg-primary text-white'
               : 'bg-white hover:bg-primary/10'
@@ -158,8 +158,8 @@ function ButtonGroup({ options, value, onChange, className }: ButtonGroupProps) 
           onClick={() => onChange(option.value)}
         >
           {value === option.value ? (
-            <Check className="mr-2 h-6 w-6 " />
-          ) : (<div className="mr-2 h-6 w-6 " />)}
+            <Check className="mr-2 h-6 w-6 lg:h-6 lg:w-6 h-4 w-4" />
+          ) : (<div className="mr-2 h-6 w-6 lg:h-6 lg:w-6 h-4 w-4" />)}
           {option.label}
         </button>
       ))}

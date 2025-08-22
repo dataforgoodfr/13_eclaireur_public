@@ -37,6 +37,8 @@ interface MapProps {
   selectedRangeOption: string;
   currentAdminLevel: string;
   populationMinMax: { min: number; max: number };
+  showLegend: boolean;
+  setShowLegend: (show: boolean) => void;
 }
 const franceMetropoleBounds: [[number, number], [number, number]] = [
   [-15, 35],
@@ -51,6 +53,8 @@ export default function FranceMap({
   ranges,
   selectedRangeOption,
   populationMinMax,
+  showLegend,
+  setShowLegend,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
@@ -96,6 +100,9 @@ export default function FranceMap({
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   }, [communityMap, choroplethParameter, territoryFilterCode]);
 
+  // Detect mobile device
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  
   const { handleMove, handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
     mapRef,
     setViewState,
@@ -107,9 +114,20 @@ export default function FranceMap({
     choroplethParameter,
     territoryFilterCode,
     selectedTerritoryData,
+    isMobile,
   });
-  return (
+    return (
     <div className='relative h-full w-full cursor-grab bg-white'>
+      {/* Show legend button for mobile when legend is hidden */}
+      {!showLegend && (
+        <button
+          onClick={() => setShowLegend(true)}
+          className='absolute left-4 top-4 z-30 rounded-tl-br border border-gray-200 bg-white/95 px-3 py-2 text-sm font-medium text-primary shadow-lg lg:hidden'
+        >
+          Afficher légende
+        </button>
+      )}
+      
       {(communesLoading || departementsLoading || regionsLoading) && (
         <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
@@ -145,11 +163,20 @@ export default function FranceMap({
         }}
       >
         <NavigationControl position='top-right' showCompass={false} />
-        <ChoroplethLegend
-          populationMinMax={populationMinMax}
-          selectedRangeOption={selectedRangeOption}
+        {/* Legend - always show on desktop, conditional on mobile */}
+        {(showLegend || !isMobile) && (
+          <ChoroplethLegend
+            populationMinMax={populationMinMax}
+            selectedRangeOption={selectedRangeOption}
+            onClose={() => setShowLegend(false)}
+          />
+        )}
+        <MapTooltip 
+          hoverInfo={hoverInfo} 
+          communityMap={communityMap} 
+          isMobile={isMobile}
+          onClose={() => setHoverInfo(null)}
         />
-        <MapTooltip hoverInfo={hoverInfo} communityMap={communityMap} />
         <Source
           id='statesData'
           type='vector'
