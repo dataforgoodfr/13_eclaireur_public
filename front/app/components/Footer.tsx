@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
+import { usePathname } from 'next/navigation';
 
 const FOOTER_DATA = {
   social: [
@@ -55,7 +56,11 @@ const FOOTER_DATA = {
 const btnBase = 'flex w-fit items-center gap-4 rounded-full bg-white pl-4 pr-6 py-3 transition-colors hover:bg-gray-200 overflow-hidden';
 const linkBase = 'text-primary hover:text-primary hover:underline transition-colors text-link';
 
-const Footer: FC = () => (
+const Footer: FC = () => {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/map')) return 
+
+  return (
   <footer
     className="relative w-full bg-[url('/eclaireur/project_background.jpg')] bg-cover bg-center object-cover"
     aria-labelledby="footer-title"
@@ -200,7 +205,8 @@ const Footer: FC = () => (
       </div>
     </div>
   </footer>
-);
+  )
+};
 
 type FooterNavLink = {
   href: string;
