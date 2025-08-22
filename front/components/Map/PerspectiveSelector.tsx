@@ -66,20 +66,20 @@ export default function PerspectiveSelector({
       step: 5,
     },
     {
-      id: 'total-budget',
-      label: 'Montant du budget total',
-      min: 0,
-      max: 10000000,
-      unit: '€',
-      step: 10000,
-    },
-    {
       id: 'budget-per-capita',
       label: 'Budget par habitant',
       min: 0,
       max: 5000,
       unit: '€',
       step: 50,
+    },
+      {
+      id: 'total-budget',
+      label: 'Montant total',
+      min: 0,
+      max: 10000000,
+      unit: '€',
+      step: 10000,
     },
   ];
 
@@ -107,7 +107,7 @@ export default function PerspectiveSelector({
         {rangeOptions.map((option) =>
           selectedOption === option.id ? (
             <div key={option.id} className='space-y-3 rounded-lg p-4'>
-              <div className='flex justify-between text-sm text-gray-600'>
+              <div className='flex justify-between text-[14px] text-primary font-kanit-bold'>
                 <span>{formatValue(ranges[option.id][0], option.unit)}</span>
                 <span>{formatValue(ranges[option.id][1], option.unit)}</span>
               </div>
@@ -123,7 +123,7 @@ export default function PerspectiveSelector({
                 />
               </div>
 
-              <div className='flex justify-between text-xs text-gray-500'>
+              <div className='flex justify-between text-sm text-gray-500 font-kanit-bold'>
                 <span>Min</span>
                 <span>Max</span>
               </div>
@@ -150,16 +150,16 @@ function ButtonGroup({ options, value, onChange, className }: ButtonGroupProps) 
           key={option.value}
           type="button"
           className={cn(
-            'flex items-center px-4 py-2 rounded-full border border-primary text-primary font-kanit-bold transition-colors',
+            'flex items-center text-left px-4 py-2 rounded-full border border-primary text-primary font-kanit-bold transition-colors',
             value === option.value
               ? 'bg-primary text-white'
               : 'bg-white hover:bg-primary/10'
           )}
           onClick={() => onChange(option.value)}
         >
-          {value === option.value && (
+          {value === option.value ? (
             <Check className="mr-2 h-6 w-6 " />
-          )}
+          ) : (<div className="mr-2 h-6 w-6 " />)}
           {option.label}
         </button>
       ))}
