@@ -31,10 +31,25 @@ class CommunitiesEnricher(BaseEnricher):
         current_year = datetime.now().year
         target_year = current_year - 2
 
-        communities = cls.averages_subventions(communities, subventions)
-
-        communities_mp = cls.averages_marches_publics(marches_publics)
-        communities = communities.join(communities_mp, on="siren", how="left")
+        # Calcul des moyennes des montants des subventions
+        communities = cls.calculate_averages(
+            communities, 
+            subventions, 
+            id_join_col="id_attribuant", 
+            year_col="annee",
+            year=target_year,
+            suffix="sub"
+        )
+        
+        # Calcul des moyennes des montants des marches publics
+        communities = cls.calculate_averages(
+            communities, 
+            marches_publics,
+            id_join_col="acheteur_id",
+            year_col="annee_notification",
+            year=target_year,
+            suffix="mp"
+        )
 
         return (
             communities.join(
@@ -64,146 +79,117 @@ class CommunitiesEnricher(BaseEnricher):
         )
     
     @classmethod
-    def averages_subventions(
-        cls, communities, subventions: pl.DataFrame
+    def calculate_averages(
+        cls,
+        communities: pl.DataFrame,
+        datas: pl.DataFrame,
+        id_join_col: str,
+        year_col: str,
+        year: int,
+        suffix: str
     ) -> pl.DataFrame:
-        current_year = datetime.now().year
+        """
+        Calcule et ajoute les moyennes des données (subventions ou marchés publics) pour chaque type :
 
-        # Filtrer les subventions de l'année en cours
-        subventionsFiltred = subventions.filter(pl.col("annee") == current_year)
+        - Pour les communes (COM) : moyennes nationales (de toutes les communes), 
+            régionales (des communes de la même région),
+            départementales (des communes du même département).
+        - Pour les départements (DEP) : moyennes nationales (de tous les départements),
+            régionales (des départements de la même région).
+        - Pour les régions (REG) : moyenne nationale (de toutes les régions).
 
-        ## Communes
-        # Filtrer les communes
+        La méthode prend en compte uniquement les données sur une année et ajoute un suffixe aux colonnes pour différencier plusieurs types de données. 
+        """
+        # Filtrer datas sur l'année courante
+        datas_filtred = datas.filter(pl.col(year_col) == year)
+
+        # ============================================================
+        # COMMUNES
         communes = communities.filter(pl.col("type") == "COM")
 
-        # Moyenne nationale des subventions pour les communes
-        moyenne_nat_com = subventionsFiltred.filter(
-            pl.col("id_attribuant").is_in(communes["siren"])
-        ).select(pl.col("montant")).mean().item()
+        moyenne_nat_com = (
+            datas_filtred.join(
+                communes.select(["siren"]),
+                left_on=id_join_col, right_on="siren", how="inner"
+            )["montant"].mean()
+        )
 
-        # Moyenne régionale des subventions par région (uniquement communes) --> KO !!
         moyenne_reg_com = (
-            subventionsFiltred.join(
+            datas_filtred.join(
                 communes.select(["siren", "code_insee_region"]),
-                left_on="id_attribuant",
-                right_on="siren",
-                how="inner"
+                left_on=id_join_col, right_on="siren", how="inner"
             )
             .group_by("code_insee_region")
-            .agg(pl.mean("montant").alias("moyenne_regionale_com_subventions"))
+            .agg(pl.mean("montant").alias(f"moyenne_reg_com_{suffix}"))
         )
 
-        # Ajouter les moyennes aux communes
-        communities = communities.join(moyenne_reg_com, on="code_insee_region", how="left") \
-                                .with_columns(
-                                    pl.when(pl.col("type") == "COM")
-                                    .then(pl.lit(moyenne_nat_com))
-                                    .otherwise(None)
-                                    .alias("moyenne_nationale_com_subventions")
-                                )
-
-        """
-        # 3️⃣ Moyenne départementale des subventions par département (uniquement communes)
-        moyenne_dep_com = (
-            subventions.join(
-                communes.select(["siren", "departement"]),
-                left_on="id_commune",
-                right_on="siren",
-                how="inner"
+        moyenne_dpt_com = (
+            datas_filtred.join(
+                communes.select(["siren", "code_insee_dept"]),
+                left_on=id_join_col, right_on="siren", how="inner"
             )
-            .group_by("departement")
-            .agg(pl.mean("montant").alias("moyenne_dep_com"))
+            .group_by("code_insee_dept")
+            .agg(pl.mean("montant").alias(f"moyenne_dpt_com_{suffix}"))
         )
 
-        # 4️⃣ Ajouter les moyennes aux communes
-        communities = communities.join(moyenne_reg_com, on="region", how="left") \
-                                .join(moyenne_dep_com, on="departement", how="left") \
-                                .with_columns(
-                                    pl.when(pl.col("type") == "COM")
-                                    .then(pl.lit(moyenne_nat_com))
-                                    .otherwise(None)
-                                    .alias("moyenne_nat_com")
-                                )
-
-        # ✅ Pour les départements : moyenne nationale et régionale des départements
+        # ============================================================
+        # DÉPARTEMENTS
         departements = communities.filter(pl.col("type") == "DEP")
 
-        moyenne_nat_dep = subventions.filter(
-            pl.col("id_commune").is_in(departements["siren"])
-        ).select(pl.col("montant")).mean().item()
+        moyenne_nat_dpt = (
+            datas_filtred.join(
+                departements.select(["siren"]),
+                left_on=id_join_col, right_on="siren", how="inner"
+            )["montant"].mean()
+        )
 
-        moyenne_reg_dep = (
-            subventions.join(
-                departements.select(["siren", "region"]),
-                left_on="id_commune",
-                right_on="siren",
-                how="inner"
+        moyenne_reg_dpt = (
+            datas_filtred.join(
+                departements.select(["siren", "code_insee_region"]),
+                left_on=id_join_col, right_on="siren", how="inner"
             )
-            .group_by("region")
-            .agg(pl.mean("montant").alias("moyenne_reg_dep"))
+            .group_by("code_insee_region")
+            .agg(pl.mean("montant").alias(f"moyenne_reg_dpt_{suffix}"))
         )
 
-        communities = communities.join(moyenne_reg_dep, on="region", how="left") \
-                                .with_columns(
-                                    pl.when(pl.col("type") == "DEP")
-                                    .then(pl.lit(moyenne_nat_dep))
-                                    .otherwise(None)
-                                    .alias("moyenne_nat_dep")
-                                )
-
-        # 5️⃣ Pour les régions : moyenne nationale des régions
+        # ============================================================
+        # RÉGIONS
         regions = communities.filter(pl.col("type") == "REG")
-        moyenne_nat_reg = subventions.filter(
-            pl.col("id_commune").is_in(regions["siren"])
-        ).select(pl.col("montant")).mean().item()
 
-        communities = communities.with_columns(
-            pl.when(pl.col("type") == "REG")
-            .then(pl.lit(moyenne_nat_reg))
-            .otherwise(None)
-            .alias("moyenne_nat_reg")
+        moyenne_nat_reg = (
+            datas_filtred.join(
+                regions.select(["siren"]),
+                left_on=id_join_col, right_on="siren", how="inner"
+            )["montant"].mean()
         )
 
-"""
-
-
-
-        """
-        # Calculer la moyenne par attributant
-        sub_agg = (
-            subventionsFiltred
-            .group_by("id_attribuant")
-            .agg(pl.col("montant").mean().alias("moyenne_nationale_subventions"))
-            .rename({"id_attribuant": "siren"})
+        # ============================================================
+        # ASSEMBLAGE FINAL
+        communities = (
+            communities
+            # communes
+            .join(moyenne_reg_com, on="code_insee_region", how="left")
+            .join(moyenne_dpt_com, on="code_insee_dept", how="left")
+            # départements
+            .join(moyenne_reg_dpt, on="code_insee_region", how="left")
+            # moyennes nationales
+            .with_columns([
+                pl.when(pl.col("type") == "COM").then(pl.lit(moyenne_nat_com)).alias(f"moyenne_nat_com_{suffix}"),
+                pl.when(pl.col("type") == "DEP").then(pl.lit(moyenne_nat_dpt)).alias(f"moyenne_nat_dpt_{suffix}"),
+                pl.when(pl.col("type") == "REG").then(pl.lit(moyenne_nat_reg)).alias(f"moyenne_nat_reg_{suffix}"),
+            ])
+            # Masquer les moyennes type pour les lignes non-type
+            .with_columns([
+                pl.when(pl.col("type") != "COM").then(None).otherwise(pl.col(f"moyenne_reg_com_{suffix}"))
+                  .alias(f"moyenne_reg_com_{suffix}"),
+                pl.when(pl.col("type") != "COM").then(None).otherwise(pl.col(f"moyenne_dpt_com_{suffix}"))
+                  .alias(f"moyenne_dpt_com_{suffix}"),
+                pl.when(pl.col("type") != "DEP").then(None).otherwise(pl.col(f"moyenne_reg_dpt_{suffix}"))
+                  .alias(f"moyenne_reg_dpt_{suffix}")
+            ])
         )
 
-        # Remplacer les valeurs nulles par 0.0
-        sub_agg = sub_agg.with_columns(pl.col("moyenne_nationale_subventions").fill_null(0.0))
-
-        return sub_agg"""
         return communities
-    
-    @classmethod
-    def averages_marches_publics(
-        cls, marches_publics: pl.DataFrame
-    ) -> pl.DataFrame:
-        current_year = datetime.now().year
-
-        # Filtrer les marchés publics de l'année en cours
-        marches_publicsFiltred = marches_publics.filter(pl.col("annee_notification") == current_year)
-
-        # Calculer la moyenne par acheteur
-        marches_publics_agg = (
-            marches_publicsFiltred
-            .group_by("acheteur_id")
-            .agg(pl.col("montant").mean().alias("moyenne_nationale_marches_publics"))
-            .rename({"acheteur_id": "siren"})
-        )
-
-        # Remplacer les valeurs nulles par 0.0
-        marches_publics_agg = marches_publics_agg.with_columns(pl.col("moyenne_nationale_marches_publics").fill_null(0.0))
-
-        return marches_publics_agg
     
     @staticmethod
     def _map_score_to_numeric(column: str) -> pl.Expr:
