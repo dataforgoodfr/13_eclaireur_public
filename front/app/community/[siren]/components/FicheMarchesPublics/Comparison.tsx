@@ -159,10 +159,10 @@ const ChartWithLegend = ({
             <div className="flex items-center gap-2">
               <svg width="16" height="16" className="rounded">
                 <defs>
-                  <pattern 
-                    id="stripes-legend" 
-                    patternUnits="userSpaceOnUse" 
-                    width="6" 
+                  <pattern
+                    id="stripes-legend"
+                    patternUnits="userSpaceOnUse"
+                    width="6"
                     height="6"
                     patternTransform="rotate(45)"
                   >
