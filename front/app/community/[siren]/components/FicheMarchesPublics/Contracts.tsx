@@ -36,7 +36,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
           </>
         }
       />
-      <MarchesPublicsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
+      <MarchesPublicsTable siren={siren} year={selectedYear} />
     </>
   );
 }
