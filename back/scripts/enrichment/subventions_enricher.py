@@ -85,5 +85,7 @@ class SubventionsEnricher:
                 .alias("is_valid_siren_beneficiaire"),
             )
             .drop("raison_sociale_beneficiaire")
+            .unique(subset=[c for c in subventions.columns if c != "url"], keep="first")
         )
+
         return subventions
