@@ -7,7 +7,7 @@ import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
 import Treemap from '../../../../../components/DataViz/Treemap';
 import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
-import { NoData } from '../NoData';
+import EmptyState from '#components/EmptyState';
 
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
@@ -43,7 +43,14 @@ export default function MarchesPublicsSectorTreemap({
   }
 
   if (data.length === 0) {
-    return <NoData />;
+    return (
+      <EmptyState
+        title="Aucune donnée de marchés publics par secteur disponible"
+        description="Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+        siren={siren}
+        className="h-[450px] w-full"
+      />
+    );
   }
 
   const treeLeaves: TreeLeaf[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({

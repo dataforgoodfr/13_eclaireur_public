@@ -84,7 +84,7 @@ const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }
     description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques."
     actionText="Interpeller"
     actionHref="/interpeller"
-    className="h-[450px]"
+    className="h-[450px] w-full"
     siren={siren}
   />
 );
@@ -159,10 +159,10 @@ const ChartWithLegend = ({
             <div className="flex items-center gap-2">
               <svg width="16" height="16" className="rounded">
                 <defs>
-                  <pattern 
-                    id="stripes-legend" 
-                    patternUnits="userSpaceOnUse" 
-                    width="6" 
+                  <pattern
+                    id="stripes-legend"
+                    patternUnits="userSpaceOnUse"
+                    width="6"
                     height="6"
                     patternTransform="rotate(45)"
                   >
