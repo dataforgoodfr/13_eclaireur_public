@@ -7,11 +7,10 @@ import pandas as pd
 
 from back.scripts.adapters.workflow.ofgl import OfglWorkflowFactory
 from back.scripts.communities.communities_selector import CommunitiesSelector
+from back.scripts.datasets.communes import CommunesWorkflow
 from back.scripts.datasets.communities_contacts import CommunitiesContact
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
-from back.scripts.datasets.nuts_departements import NutsDepartementsWorkflow
-from back.scripts.datasets.communes import CommunesWorkflow
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.datagouv_searcher import (
     DataGouvSearcher,
@@ -20,6 +19,7 @@ from back.scripts.datasets.datagouv_searcher import (
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.datasets.elected_officials import ElectedOfficialsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
+from back.scripts.datasets.nuts_departements import NutsDepartementsWorkflow
 from back.scripts.datasets.single_urls_builder import SingleUrlsBuilder
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.datasets.topic_aggregator import TopicAggregator

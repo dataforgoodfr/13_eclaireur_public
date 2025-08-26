@@ -19,5 +19,3 @@ class NutsDepartementsWorkflow(BaseDataset):
         dataset = BaseLoader.loader_factory(self.config["url"]).load()
         dataset["code_departement_insee"] = dataset["code_departement_insee"].astype(str)
         dataset.to_parquet(self.output_filename)
-
-    

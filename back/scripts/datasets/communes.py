@@ -16,6 +16,19 @@ class CommunesWorkflow(BaseDataset):
     def run(self) -> None:
         if self.output_filename.exists():
             return
-        (BaseLoader.loader_factory(self.config["url"]).load()
-        .astype({"Code INSEE": str, "Code Postal": str, "Commune": str, "Département": str, "Code Département": str, "Région": str, "Code Région": str})
-        .to_parquet(self.output_filename))
+        (
+            BaseLoader.loader_factory(self.config["url"])
+            .load()
+            .astype(
+                {
+                    "Code INSEE": str,
+                    "Code Postal": str,
+                    "Commune": str,
+                    "Département": str,
+                    "Code Département": str,
+                    "Région": str,
+                    "Code Région": str,
+                }
+            )
+            .to_parquet(self.output_filename)
+        )
