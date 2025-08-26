@@ -559,26 +559,26 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         types = marches["lieu_execution_type_code"].drop_nulls().unique().to_list()
 
-        return (
-            marches.with_columns(
-                [
-                    pl.when(pl.col("lieu_execution_type_code") == type_code)
-                    .then(pl.col("lieu_execution_code"))
-                    .otherwise(None)
-                    .alias("lieu_execution_" + type_code.replace(" ", "_"))
-                    for type_code in types
-                ]
-            )
-            .with_columns(
-                [
-                    pl.col(col)
-                    .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
-                    .alias(col)
-                    for col in lieu_execution_cols
-                ]
-            )
-            .drop(
-                [
+        marches = marches.with_columns(
+            [
+                pl.when(pl.col("lieu_execution_type_code") == type_code)
+                .then(pl.col("lieu_execution_code"))
+                .otherwise(None)
+                .alias("lieu_execution_" + type_code.replace(" ", "_"))
+                for type_code in types
+            ]
+        ).with_columns(
+            [
+                pl.col(col)
+                .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
+                .alias(col)
+                for col in lieu_execution_cols
+            ]
+        )
+        return marches.drop(
+            [
+                c
+                for c in [
                     "lieu_execution_type_code",
                     "lieu_execution_code",
                     "lieuExecution",
@@ -586,7 +586,8 @@ class MarchesPublicsEnricher(BaseEnricher):
                     "lieu_execution_code_canton",
                     "lieu_execution_code_region",
                 ]
-            )
+                if c in marches.columns
+            ]
         )
 
     @classmethod
