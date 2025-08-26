@@ -10,6 +10,8 @@ from back.scripts.communities.communities_selector import CommunitiesSelector
 from back.scripts.datasets.communities_contacts import CommunitiesContact
 from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
+from back.scripts.datasets.nuts_departements import NutsDepartementsWorkflow
+from back.scripts.datasets.communes import CommunesWorkflow
 from back.scripts.datasets.datagouv_catalog import DataGouvCatalog
 from back.scripts.datasets.datagouv_searcher import (
     DataGouvSearcher,
@@ -56,6 +58,8 @@ class WorkflowManager:
             ElectedOfficialsWorkflow.from_config,
             DeclaInteretWorkflow,
             OfglWorkflowFactory.from_config,
+            NutsDepartementsWorkflow,
+            CommunesWorkflow,
             CommunitiesSelector,
             DataGouvCatalog,
             MarchesPublicsWorkflow.from_config,

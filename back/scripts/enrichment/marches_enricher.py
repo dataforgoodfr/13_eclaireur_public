@@ -7,6 +7,8 @@ from inflection import underscore as to_snake_case
 from unidecode import unidecode
 
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
+from back.scripts.datasets.nuts_departements import NutsDepartementsWorkflow
+from back.scripts.datasets.communes import CommunesWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
 from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
@@ -30,12 +32,38 @@ class MarchesPublicsEnricher(BaseEnricher):
             MarchesPublicsWorkflow.get_output_path(main_config),
             CPVLabelsWorkflow.get_output_path(main_config),
             SireneWorkflow.get_output_path(main_config),
+            NutsDepartementsWorkflow.get_output_path(main_config),
+            CommunesWorkflow.get_output_path(main_config),
         ]
 
     @classmethod
     def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         # Data analysts, please add your code here!
-        marches, cpv_labels, sirene, *_ = inputs
+        marches, cpv_labels, sirene, nuts, communes, *_ = inputs
+
+        # table de correspondance entre codes nuts et codes insee départements
+        nuts = (
+            nuts.filter(pl.col("NUTS level") == 3)
+            .select(["NUTS Code", "code_departement_insee"])
+            .with_columns(pl.col("NUTS Code").str.to_lowercase())
+            )
+
+        # table de correspondance entre le nom département, code département, code région, nom région
+        departements = (
+            communes.select(["Département", "Code Département", "Code Région", "Région"])
+            .with_columns(pl.col("Département").str.to_lowercase().alias("Département_lower"))
+            .with_columns(pl.col("Département_lower").str.replace_all("-", " ").alias("Département_sans_tiret"))
+            .with_columns(pl.when(pl.col("Code Département")=="97")
+                .then(pl.concat_str([pl.col("Code Département"), pl.col("Code Région").str.slice(1, 2)])).otherwise(pl.col("Code Département")))
+            .unique()
+            )
+
+        # table de correspondance entre le nom commune, code insee commune, code postal
+        communes = (
+            communes.select(["Commune", "Code INSEE", "Code Postal"])
+            .with_columns(pl.col("Commune").str.to_lowercase().alias("Commune_lower"))
+            .with_columns(pl.col("Commune_lower").str.replace_all("-", " ").alias("Commune_sans_tiret"))
+            )
 
         marches_pd = (
             marches.to_pandas()
@@ -53,7 +81,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls._add_metadata)
             .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
         )
-
+        
         return (
             pl.from_pandas(marches_pd)
             .pipe(cls.drop_source_duplicates)
@@ -70,7 +98,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.generic_json_column_enrich, "technique", "technique")
             .pipe(cls.generic_json_column_enrich, "typesPrix", "typePrix")
             .pipe(cls.type_prix_enrich)
-            .pipe(cls.lieu_execution_enrich)
+            .pipe(cls.lieu_execution_enrich, nuts, communes, departements)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
             .pipe(cls.drop_rows_with_null_dates_or_amounts)
@@ -97,7 +125,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
             .drop(["titulaire_id_siren", "raison_sociale"])
         )
-        return marches
+        return marches    
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -245,22 +273,192 @@ class MarchesPublicsEnricher(BaseEnricher):
             return {}
         return {}
 
+
     @staticmethod
-    def lieu_execution_enrich(marches: pl.DataFrame) -> pl.DataFrame:
+    def join_nuts_and_coalesce(df: pl.DataFrame, col: str, nuts: pl.DataFrame) -> pl.DataFrame:
         """
-        1 - Parse lieuExecution en 3 champs code, type code et nom
-        2 - Extrait le tout en code commune, code postal, code departement etc
+        Les colonnes lieu_execution_code_truc peuvent contenir des codes nuts qui sont comme des codes de départements mais à la maille de l'Europe
+        Ces codes nuts sont convertis en code départementaux "Français" pour plus de lisibilité
+        """
+        return (
+            df.join(
+                nuts,
+                left_on=col,
+                right_on="NUTS Code",
+                how="left"
+            )
+            .with_columns(
+                pl.coalesce([pl.col("code_departement_insee"), pl.col(col)]).alias(col)
+            )
+            .drop("code_departement_insee")
+        )
+
+    @staticmethod
+    def join_departements_and_coalesce(df: pl.DataFrame, left_col: str, right_col: str, departements: pl.DataFrame, pattern_code_departement: str) -> pl.DataFrame:
+        """
+        Les colonnes lieu_execution_code_truc peuvent contenir des départements écris en toute lettre
+        On les convertit en code département grâce à un fichier insee
         """
 
-        # TODO : Il y a beaucoup de nettoyage à faire dans les différents champs
+        return (
+            df.join(
+                departements.select(pl.col(right_col), pl.col("Code Département")),
+                left_on=left_col,
+                right_on=right_col,
+                how="left"
+            )
+            .with_columns(
+                pl.when(pl.col("lieu_execution_code_departement").is_null() |
+                        ~pl.col("lieu_execution_code_departement").str.contains(pattern_code_departement, literal=False))
+                .then(pl.coalesce([pl.col("Code Département"), pl.col("lieu_execution_code_departement")]))
+                .otherwise(pl.col("lieu_execution_code_departement"))
+                .alias("lieu_execution_code_departement")                
+            )
+            .drop(["Code Département"])
+        )
 
-        # Cas spécifiques où lieu_execution_type_code est soit bourgogne, soit franche-comte
+
+    @classmethod
+    def clean_column_by_regex(cls, marches: pl.DataFrame, c: str, regex: str) -> pl.DataFrame:
+        """
+        Nettoyage des colonnes selon un regex
+        """
+        return marches.with_columns(
+                    pl.when(pl.col(c).str.contains(regex, literal=False))
+                    .then(pl.col(c).str.extract(regex, group_index=1))
+                    .otherwise(pl.col(c))
+                    .alias(c)
+                )
+
+
+    @classmethod
+    def lieu_execution_code_clean(cls, marches: pl.DataFrame, nuts: pl.DataFrame, communes: pl.DataFrame, departements: pl.DataFrame, lieu_execution_cols: list, pattern_code_departement: str, pattern_code_postal: str, pattern_code_commune: str) -> pl.DataFrame:
+        """
+        Nettoie les colonnes lieu_execution_code_postal, lieu_execution_code_commune et lieu_execution_code_departement, lieu_execution_code_arrondissement
+        1- En convertissant les codes nuts (code européen des départements) en code département insee
+        2- En comblant les trous de code commune à partir du code arrondissement
+        3- En comblant les trous de code département à partir des code postal ou code commune ou code arrondissement
+        3- En effaçant tous les codes qui ne correpondent pas au pattern attendu pour ces colonnes
+        """
+
+        regex_for_codes =  [
+            r"^fr\s*(\d{5})$", 
+            r"^f\s*(\d{5})r$", 
+            r"(\d{5})/", 
+            r"^dpt\s*(\d{3})$", 
+            r"^dep\s*(\d{3})$",
+            r"^dpt\s*(\d{2})$", 
+            r"^dep\s*(\d{2})$"
+            ]
+
+        for c in lieu_execution_cols:
+            # Nettoyage quand on a des codes nuts dans les colonnes des codes postal, commune ou departement
+            marches = MarchesPublicsEnricher.join_nuts_and_coalesce(marches, c, nuts)
+            
+            # Nettoyage quand on a des noms de départements à la place des codes postal, commune ou departement
+            marches = MarchesPublicsEnricher.join_departements_and_coalesce(marches, c, "Département_lower", departements, pattern_code_departement)
+            marches = MarchesPublicsEnricher.join_departements_and_coalesce(marches, c, "Département_sans_tiret", departements, pattern_code_departement)
+            
+            # Nettoyage des codes "fr 12345" ou "fr12345" ou "f12345r" ou "dep01" ou "dpt01" ou "12345/23456"
+            for regex in regex_for_codes:
+                marches = MarchesPublicsEnricher.clean_column_by_regex(marches, c, regex)
+
+
+        # Si on a des valeurs abhérrantes dans lieu_execution_code_commune , on complète avec lieu_execution_code_arrondissement
+        # Si on a des valeurs abhérrantes dans lieu_execution_code_departement , on complète avec lieu_execution_code_ + arrondissement|commune|postal
+        # On nettoie les valeurs de lieu_execution_code_departement
+        # On nettoie les valeurs lieu_execution_code_ + postal|commune
+        
+        return (
+            marches
+                .with_columns(
+                    pl.when(
+                        pl.col("lieu_execution_code_departement").is_null() | 
+                                (
+                                    ~pl.col("lieu_execution_code_departement").str.contains(pattern_code_departement, literal = False) &
+                                    ~pl.col("lieu_execution_code_departement").str.contains(pattern_code_commune, literal = False) 
+                                )
+                    )
+                    .then(
+                        pl.coalesce(
+                            "lieu_execution_code_postal", "lieu_execution_code_commune", "lieu_execution_code_arrondissement"
+                        ))
+                    .otherwise(pl.col("lieu_execution_code_departement"))
+                    .alias("lieu_execution_code_departement")
+                )
+                .with_columns(
+                    pl.when(
+                        (
+                            pl.col("lieu_execution_code_commune").is_null() | 
+                            ~pl.col("lieu_execution_code_commune").str.contains(pattern_code_commune, literal = False) 
+                        )
+                    )
+                    .then(pl.col("lieu_execution_code_arrondissement"))
+                    .otherwise(pl.col("lieu_execution_code_commune"))
+                    .alias("lieu_execution_code_commune")
+                )
+                .with_columns(
+                    pl.when(
+                        pl.col("lieu_execution_code_departement").is_not_null() & 
+                        pl.col("lieu_execution_code_departement").str.contains(pattern_code_departement, literal = False)
+                    )
+                    .then(pl.col("lieu_execution_code_departement"))
+                    .otherwise(
+                        pl.when(
+                            pl.col("lieu_execution_code_departement").is_not_null() &  
+                            pl.col("lieu_execution_code_departement").str.contains(pattern_code_commune, literal = False)
+                        )
+                        .then(
+                            pl.when(
+                                pl.col("lieu_execution_code_departement").str.slice(0, 2)=="97"
+                            )
+                                .then(
+                                    pl.col("lieu_execution_code_departement").str.slice(0, 3)
+                                )
+                                .otherwise(
+                                    pl.col("lieu_execution_code_departement").str.slice(0, 2)
+                                )
+                        )
+                        .otherwise(None)
+                            )
+                    .alias("lieu_execution_code_departement")
+                )
+                .with_columns(
+                    pl.when(
+                        pl.col("lieu_execution_code_commune").is_not_null() &  
+                        pl.col("lieu_execution_code_commune").str.contains(pattern_code_commune, literal = False)
+                    )
+                    .then(pl.col("lieu_execution_code_commune"))
+                    .otherwise(None)
+                    .alias("lieu_execution_code_commune")
+                )
+                .with_columns(
+                    pl.when(
+                        pl.col("lieu_execution_code_postal").is_not_null() &  
+                        pl.col("lieu_execution_code_postal").str.contains(pattern_code_postal, literal = False)
+                    )
+                    .then(pl.col("lieu_execution_code_postal"))
+                    .otherwise(None)
+                    .alias("lieu_execution_code_postal")
+                )
+            )
+
+
+    @classmethod
+    def lieu_execution_parse(cls, marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        Parsing de la colonne lieuExecution en 3 colonnes :
+        - code (01 ou 01234 ou autres)
+        - type code (commune, département, région, ...) 
+        - nom 
+        """
+        # Cas spécifiques où lieu_execution_type_code = bourgogne ou franche-comte, au lieu de code departement
         mapping = {
             "bourgogne": "code departement",
             "franche-comte": "code departement",
         }
-
-        df = (
+        
+        return (
             marches.with_columns(
                 pl.col("lieuExecution")
                 .map_elements(
@@ -307,10 +505,18 @@ class MarchesPublicsEnricher(BaseEnricher):
             .drop("lieu_execution_parsed")
         )
 
-        types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
+
+    @classmethod
+    def lieu_execution_categorize_types(cls, marches: pl.DataFrame, lieu_execution_cols: list) -> pl.DataFrame:
+        """
+        A partir de la colonne lieu_execution_type_code, on créé plusieurs colonnes lieu_execution_code_...
+        Et on ne garde pour le moment que lieu_execution_code_departement, lieu_execution_code_arrondissement, lieu_execution_code_postal, lieu_execution_code_commune
+        """   
+        
+        types = marches["lieu_execution_type_code"].drop_nulls().unique().to_list()
 
         return (
-            df.with_columns(
+            marches.with_columns(
                 [
                     pl.when(pl.col("lieu_execution_type_code") == type_code)
                     .then(pl.col("lieu_execution_code"))
@@ -320,22 +526,108 @@ class MarchesPublicsEnricher(BaseEnricher):
                 ]
             )
             .with_columns(
-                pl.when(
-                    pl.col("lieu_execution_code_departement").is_null()
-                    & (
-                        pl.col("lieu_execution_code_postal").is_not_null()
-                        | pl.col("lieu_execution_code_commune").is_not_null()
-                    )
-                )
-                .then(
-                    pl.coalesce(
-                        "lieu_execution_code_postal", "lieu_execution_code_commune"
-                    ).str.slice(0, 2)
-                )
-                .otherwise(pl.col("lieu_execution_code_departement"))
-                .alias("lieu_execution_code_departement")
+                [
+                    pl.col(col)
+                    .map_elements(lambda x: unidecode(x), return_dtype=pl.Utf8)
+                    .alias(col)
+                    for col in lieu_execution_cols
+                ]
+                
             )
-            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"])
+            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution", "lieu_execution_code_pays", "lieu_execution_code_canton", "lieu_execution_code_region"])
+            )
+
+    @classmethod
+    def lieu_execution_complete_code_postal_from_code_commune(cls, marches: pl.DataFrame, communes: pl.DataFrame, pattern_code_postal: str) -> pl.DataFrame:
+        """
+        Complétion de la colonne lieu_execution_code_postal à partir d'un fichier qui contient le lien entre code commune et code postal, et à partir de la colonne lieu_execution_code_commune
+        """
+        return (
+            marches.join(
+                communes.select("Code INSEE", "Code Postal"),
+                left_on="lieu_execution_code_commune",
+                right_on="Code INSEE",
+                how="left"
+            )
+            .with_columns(
+                pl.when(pl.col("lieu_execution_code_postal").is_null() |
+                        ~pl.col("lieu_execution_code_postal").str.contains(pattern_code_postal, literal=False))
+                .then(pl.coalesce([pl.col("Code Postal"), pl.col("lieu_execution_code_postal")]))
+                .otherwise(pl.col("lieu_execution_code_postal"))
+                .alias("lieu_execution_code_postal")   
+            )
+            .drop(["Code Postal"])
+        )
+
+    @classmethod
+    def lieu_execution_add_labels(cls, marches: pl.DataFrame, communes: pl.DataFrame, departements: pl.DataFrame) -> pl.DataFrame:
+        """
+        Ajout des noms de communes, départements, régions et codes de régions :
+        - lieu_execution_label_commune
+        - lieu_execution_label_departement
+        - lieu_execution_code_region
+        - lieu_execution_label_region
+        à partir de lieu_execution_code_commune et lieu_execution_code_departement
+        """
+        return (
+            marches
+                .join(
+                    communes.select("Code INSEE", "Commune"),
+                    left_on="lieu_execution_code_commune",
+                    right_on="Code INSEE",
+                    how="left"
+                )
+                .join(
+                    departements.select("Département", "Code Département", "Code Région", "Région"),
+                    left_on="lieu_execution_code_departement",
+                    right_on="Code Département",
+                    how="left"
+                )
+                .rename(
+                    {"Commune": "lieu_execution_label_commune", 
+                    "Département": "lieu_execution_label_departement", 
+                    "Code Région": "lieu_execution_code_region", 
+                    "Région": "lieu_execution_label_region"}
+                )
+        )
+
+    @classmethod
+    def lieu_execution_enrich(cls, marches: pl.DataFrame, nuts: pl.DataFrame, communes: pl.DataFrame, departements: pl.DataFrame) -> pl.DataFrame:
+        """
+        Fonction qui va traiter la colonne lieuExecution qui peut apporter des informations géographiques
+        1 - parser la colonne lieuExecution en 3 champs code, type code et nom
+        2 - extraire le tout en code commune, code postal, code departement, code arrondissement etc
+        3 - complétion de code département par les autres colonnes si possible
+        4 - nettoyage des codes par regex
+        5 - complétion du code postal à partir de code commune et nettoyage du code postal
+        6 - Ajout des noms de commune, departement et region
+
+        TODO Pistes d'améliorations pour les lieux d'execution:
+        - on a des département en chiffre dans les lieu_execution_nom pour encore compléter le code départements
+        - dans le fichier commune/postal, il y a plusieurs code postaux pour 1 commune .. 
+        - Il y a des codes communes qui n'existent pas dans le fichier des communes, par exemple 69123 pour Lyon, probablement car plusieurs codes postaux pour toute la commune de lyon
+        - on peut avoir plusieurs code départements ou code postal ou code commune pour 1 seul MP, pour l'instant on n'en retient qu'un seul. 
+        """
+
+        lieu_execution_cols = [
+            "lieu_execution_code_departement",
+            "lieu_execution_code_arrondissement",
+            "lieu_execution_code_postal",
+            "lieu_execution_code_commune"
+        ]
+
+        pattern_code_departement = r"^(?:\d{2}|971|972|973|974|975|976|977|978|984|986|987|988|989|2A|2B)$"
+        pattern_code_postal = r"^\d{5}$"
+        pattern_code_commune = r"^(?:\d{2}|\d{3}|2A|2B)\d{3}$"
+
+        return (
+            marches
+            .pipe(cls.lieu_execution_parse)
+            .pipe(cls.lieu_execution_categorize_types, lieu_execution_cols)
+            .pipe(cls.lieu_execution_code_clean, nuts, communes, departements, lieu_execution_cols, pattern_code_departement, pattern_code_postal, pattern_code_commune)
+            .pipe(cls.lieu_execution_complete_code_postal_from_code_commune, communes, pattern_code_postal)
+            .pipe(cls.clean_column_by_regex, "lieu_execution_code_postal", r"(\d{5})/")
+            .pipe(cls.lieu_execution_add_labels, communes, departements)
         )
 
     @classmethod
