@@ -58,7 +58,9 @@ class MarchesPublicsEnricher(BaseEnricher):
                 .alias("Département_sans_tiret")
             )
             .with_columns(
-                pl.when(pl.col("Code Département") == "97")
+                pl.when(
+                    (pl.col("Code Département") == "97") | (pl.col("Code Département") == "98")
+                )
                 .then(
                     pl.concat_str(
                         [pl.col("Code Département"), pl.col("Code Région").str.slice(1, 2)]
@@ -454,7 +456,11 @@ class MarchesPublicsEnricher(BaseEnricher):
                     )
                     .then(
                         pl.when(
-                            pl.col("lieu_execution_code_departement").str.slice(0, 2) == "97"
+                            (pl.col("lieu_execution_code_departement").str.slice(0, 2) == "97")
+                            | (
+                                pl.col("lieu_execution_code_departement").str.slice(0, 2)
+                                == "98"
+                            )
                         )
                         .then(pl.col("lieu_execution_code_departement").str.slice(0, 3))
                         .otherwise(pl.col("lieu_execution_code_departement").str.slice(0, 2))
