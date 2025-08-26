@@ -29,7 +29,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
       siren,
       year ?? null,
       pagination,
-      maxAmount ?? null,
+      maxAmount,
     );
 
     return NextResponse.json(data);
