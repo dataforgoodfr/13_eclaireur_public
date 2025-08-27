@@ -13,12 +13,14 @@ interface MarchesPublicsWithStateProps {
   siren: string;
   availableYears: number[];
   communityType: CommunityType;
+  communityName: string;
 }
 
 export function MarchesPublicsWithState({
   siren,
   availableYears,
   communityType,
+  communityName,
 }: MarchesPublicsWithStateProps) {
   const [activeTab, setActiveTab] = useMarchesPublicsTab();
 
@@ -55,7 +57,7 @@ export function MarchesPublicsWithState({
         <Evolution siren={siren} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.DISTRIBUTION}>
-        <Distribution siren={siren} availableYears={availableYears} />
+        <Distribution siren={siren} availableYears={availableYears} communityName={communityName} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.COMPARISON}>
         <Comparison siren={siren} communityType={communityType} />

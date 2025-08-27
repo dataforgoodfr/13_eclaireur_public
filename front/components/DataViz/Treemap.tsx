@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
@@ -204,6 +204,7 @@ function generateHierarchicalColorMap(
 type TreemapProps = {
   data: TreeData;
   isZoomActive: boolean;
+  ref: RefObject<SVGSVGElement | null>;
   handleClick: (value: number) => void;
   colorPalette?: ColorPalette;
   groupMode?: GroupMode;
@@ -218,6 +219,7 @@ type TreemapProps = {
 function Treemap({
   data,
   isZoomActive,
+  ref,
   handleClick,
   colorPalette = 'mp',
   groupMode = 'none',
@@ -434,8 +436,7 @@ function Treemap({
           )}
         </div>
       )}
-
-      <svg width={width} height={height}>
+      <svg ref={ref} width={width} height={height}>
         {allShapes}
       </svg>
 
