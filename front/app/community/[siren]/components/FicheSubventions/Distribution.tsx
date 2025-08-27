@@ -39,11 +39,12 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           <DownloadSelector onClickDownloadData={handleClickDownloadData} />
         </div>
       </div>
-      {isTableDisplayed ? (
+      <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <SubventionsSectorTable siren={siren} year={selectedYear} />
-      ) : (
+      </div>
+      <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
         <SubventionsSectorTreemap siren={siren} year={selectedYear} />
-      )}
+      </div>
     </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { ActionButton } from '#components/ui/action-button';
 import { Button } from '#components/ui/button';
+import EmptyState from '#components/EmptyState';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,15 +10,18 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { useMediaQuery } from '#hooks/useMediaQuery';
+import { CommunityType } from '#utils/types';
+import { getDefaultComparisonScope, Scope } from '#utils/helpers/getDefaultComparisonScope';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
+import { TabHeader } from '../TabHeader';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
-import { TabHeader } from './TabHeader';
 
 type ComparisonProps = {
   siren: string;
+  communityType?: CommunityType;
 };
 
 type ComparisonData = {
@@ -29,12 +33,11 @@ type ComparisonData = {
 };
 
 const SCOPES = ['Départemental', 'Régional', 'National'] as const;
-type Scope = typeof SCOPES[number];
 
 // Fetch function outside component to enable reusability
 const fetchComparisonData = async (siren: string, scope: string): Promise<ComparisonData[]> => {
   const response = await fetch(
-    `/api/communities/${siren}/marches_publics/comparison?scope=${scope.toLowerCase()}`
+    `/api/communities/${siren}/subventions/comparison?scope=${scope.toLowerCase()}`
   );
 
   if (!response.ok) {
@@ -75,29 +78,15 @@ const ScopeDropdown = ({
   </DropdownMenu>
 );
 
-const EmptyState = ({ scope }: { scope: string }) => (
-  <div className="bg-white rounded-lg h-[450px] flex items-center justify-center p-8">
-    <div className="text-center space-y-4">
-      <div className="text-gray-400">
-        <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1}
-            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-      </div>
-      <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Aucune donnée disponible
-        </h3>
-        <p className="text-gray-500">
-          Aucune donnée de comparaison n'est disponible pour la période {scope.toLowerCase()}e sélectionnée.
-        </p>
-      </div>
-    </div>
-  </div>
+const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }) => (
+  <EmptyState
+    title={`Oups, il n'y a pas de données de comparaison pour la période ${scope.toLowerCase()}e !`}
+    description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques."
+    actionText="Interpeller"
+    actionHref="/interpeller"
+    className="h-[450px] w-full"
+    siren={siren}
+  />
 );
 
 const ErrorState = ({ error, onRetry, isRetrying }: {
@@ -162,7 +151,7 @@ const ChartWithLegend = ({
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-wrap gap-6 justify-center">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-primary rounded" />
+              <div className="w-4 h-4 bg-brand-2 rounded" />
               <span className="text-sm">
                 {data[0]?.regionalLabel || "Moyenne régionale"}
               </span>
@@ -170,14 +159,14 @@ const ChartWithLegend = ({
             <div className="flex items-center gap-2">
               <svg width="16" height="16" className="rounded">
                 <defs>
-                  <pattern 
-                    id="stripes-legend" 
-                    patternUnits="userSpaceOnUse" 
-                    width="6" 
+                  <pattern
+                    id="stripes-legend"
+                    patternUnits="userSpaceOnUse"
+                    width="6"
                     height="6"
                     patternTransform="rotate(45)"
                   >
-                    <rect width="2" height="6" fill="#303F8D" />
+                    <rect width="2" height="6" fill="#E8F787" />
                     <rect x="2" width="4" height="6" fill="white" />
                   </pattern>
                 </defs>
@@ -188,7 +177,7 @@ const ChartWithLegend = ({
               </span>
             </div>
           </div>
-          <div className="text-xs text-primary font-medium">
+          <div className="text-xs text-brand-2 font-medium">
             Montants exprimés en {unit}
           </div>
         </div>
@@ -263,8 +252,9 @@ const ContentSkeleton = ({ isMobile }: { isMobile: boolean }) => (
   </>
 );
 
-export default function Comparison({ siren }: ComparisonProps) {
-  const [selectedScope, setSelectedScope] = useState<Scope>('Départemental');
+export default function Comparison({ siren, communityType }: ComparisonProps) {
+  const defaultScope = communityType ? getDefaultComparisonScope(communityType) : 'Départemental';
+  const [selectedScope, setSelectedScope] = useState<Scope>(defaultScope);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Single query for all data fetching with smart caching
@@ -276,7 +266,7 @@ export default function Comparison({ siren }: ComparisonProps) {
     refetch,
     isFetching
   } = useQuery<ComparisonData[], Error>({
-    queryKey: ['comparison', siren, selectedScope],
+    queryKey: ['subventions-comparison', siren, selectedScope],
     queryFn: () => fetchComparisonData(siren, selectedScope),
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
@@ -328,7 +318,7 @@ export default function Comparison({ siren }: ComparisonProps) {
           isRetrying={isFetching}
         />
       ) : data.length === 0 ? (
-        <EmptyState scope={selectedScope} />
+        <ComparisonEmptyState scope={selectedScope} siren={siren} />
       ) : (
         <ChartWithLegend
           data={data}
