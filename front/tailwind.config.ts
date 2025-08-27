@@ -23,6 +23,10 @@ export default {
 					lineHeight: 'auto',
 					fontWeight: '400',
 				}],
+				'tag-mobile': ['14px', {
+					lineHeight: 'auto',
+					fontWeight: '400',
+				}],
 				'link': ['18px', {
 					lineHeight: 'auto',
 				}],

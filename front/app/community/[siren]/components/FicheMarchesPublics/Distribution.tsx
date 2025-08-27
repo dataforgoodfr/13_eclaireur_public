@@ -8,9 +8,9 @@ import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
+import { TabHeader } from '../TabHeader';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
 import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
-import { TabHeader } from './TabHeader';
 
 type DistributionProps = { siren: string; availableYears: number[] };
 
@@ -26,7 +26,7 @@ export default function Distribution({ siren, availableYears }: DistributionProp
   return (
     <>
       <TabHeader
-        title="Répartition par secteur"
+        title='Répartition par secteur'
         titleSwitch={
           <GraphSwitch
             isActive={isTableDisplayed}
@@ -42,11 +42,12 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           </>
         }
       />
-      {isTableDisplayed ? (
+      <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
-      ) : (
+      </div>
+      <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
-      )}
+      </div>
     </>
   );
 }

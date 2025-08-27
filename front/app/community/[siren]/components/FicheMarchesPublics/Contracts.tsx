@@ -7,8 +7,8 @@ import YearSelector from '#app/community/[siren]/components/YearSelector';
 import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
+import { TabHeader } from '../TabHeader';
 import MarchesPublicsTable from './MarchesPublicsTable';
-import { TabHeader } from './TabHeader';
 
 type ContractsProps = {
   siren: string;
@@ -28,7 +28,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
   return (
     <>
       <TabHeader
-        title="Classement par tailles de contrats"
+        title='Classement par tailles de contrats'
         actions={
           <>
             <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
@@ -36,7 +36,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
           </>
         }
       />
-      <MarchesPublicsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
+      <MarchesPublicsTable siren={siren} year={selectedYear} />
     </>
   );
 }

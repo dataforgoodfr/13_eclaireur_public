@@ -22,7 +22,7 @@ export default async function InterpellateStep4({
         <article className='rounded-3xl border border-primary-light pb-12 shadow'>
           <div
             id='header-article'
-            className='align-center mb-16 rounded-t-3xl bg-[url(/eclaireur/project_background.jpg)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
+            className='align-center mb-16 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
           >
             <h2 className='text-center'> Bravo pour votre action citoyenne !</h2>
           </div>

@@ -55,7 +55,7 @@ export default function Page() {
         </Link>
       </p>
       <h2 className='my-5 text-xl font-bold'>Data for Good</h2>
-      <Image className='float-right' src='/dataforgood.jpg' width={300} height={300} alt='' />
+      <Image className='float-right' src='/dataforgood.webp' width={300} height={300} alt='' />
       <p className='my-6 text-lg'>
         Data for Good est un collectif réunissant des professionnels et des porteurs de projets à
         impact positif afin d’accompagner ces derniers à la mise en place concrète de ces projets.

@@ -15,7 +15,7 @@ import { getDefaultComparisonScope, Scope } from '#utils/helpers/getDefaultCompa
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
-import { TabHeader } from '../FicheMarchesPublics/TabHeader';
+import { TabHeader } from '../TabHeader';
 import DesktopComparisonChart from './DesktopComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
 
@@ -84,7 +84,7 @@ const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }
     description="Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques."
     actionText="Interpeller"
     actionHref="/interpeller"
-    className="h-[450px]"
+    className="h-[450px] w-full"
     siren={siren}
   />
 );
