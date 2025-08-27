@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
@@ -8,10 +8,12 @@ import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
 import Treemap from '../../../../../components/DataViz/Treemap';
 import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
 import type { TreeData, TreeLeaf, YearOption } from '../../types/interface';
+import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
   year: YearOption;
+  ref: RefObject<SVGSVGElement | null>;
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;
@@ -19,6 +21,7 @@ const LIMIT_NUMBER_CATEGORIES = 50;
 export default function MarchesPublicsSectorTreemap({
   siren,
   year,
+  ref,
 }: MarchesPublicsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
@@ -89,6 +92,7 @@ export default function MarchesPublicsSectorTreemap({
 
   return (
     <Treemap
+          ref={ref}
       data={treeData}
       isZoomActive={maxAmount !== null}
       handleClick={updatemaxAmount}

@@ -67,7 +67,11 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         </Suspense>
         <Suspense fallback={<FicheMarchesPublicsSkeleton />}>
           <ErrorBoundary>
-            <FicheMarchesPublics siren={siren} communityType={community.type as CommunityType} />
+            <FicheMarchesPublics
+              siren={siren}
+              communityType={community.type as CommunityType}
+              communityName={community.nom}
+            />
           </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<FicheSubventionsSkeleton />}>

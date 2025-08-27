@@ -10,15 +10,17 @@ import { ArrowDownToLine } from 'lucide-react';
 type DownloadDropDownProps = {
   onClickDownloadData?: () => void;
   onClickDownloadChart?: () => void;
+  disabled?: boolean;
 };
 
 export default function DownloadDropDown({
   onClickDownloadData,
   onClickDownloadChart,
+  disabled,
 }: DownloadDropDownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild disabled={disabled}>
         <Button
           variant='default'
           size='icon'
