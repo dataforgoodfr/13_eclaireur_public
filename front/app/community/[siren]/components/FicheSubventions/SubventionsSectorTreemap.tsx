@@ -40,7 +40,6 @@ export default function SubventionsSectorTreemap({
 	if (isPending || isError) {
 		return <TreemapSkeleton />;
 	}
-
 	if (data.length === 0) {
 		return (
 			<EmptyState

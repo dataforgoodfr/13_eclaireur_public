@@ -145,6 +145,7 @@ function generateHierarchicalColorMap(
   groupMode: GroupMode = 'none',
 ): Record<string, string> {
   const colorMap: Record<string, string> = {};
+
   const baseColors = COLOR_PALETTES[palette].colors;
 
   if (groupMode === 'none') {

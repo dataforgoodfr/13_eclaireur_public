@@ -9,6 +9,7 @@ import Treemap from "../../../../../components/DataViz/Treemap";
 import TreemapSkeleton from "../../../../../components/DataViz/TreemapSkeleton";
 import type { TreeData, TreeLeaf, YearOption } from "../../types/interface";
 
+
 type MarchesPublicsSectorTreemapProps = {
 	siren: string;
 	year: YearOption;
