@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { RefObject, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
@@ -204,7 +204,7 @@ function generateHierarchicalColorMap(
 type TreemapProps = {
   data: TreeData;
   isZoomActive: boolean;
-  ref: RefObject<SVGSVGElement | null>;
+  ref: RefObject<HTMLDivElement | null>;
   handleClick: (value: number) => void;
   colorPalette?: ColorPalette;
   groupMode?: GroupMode;
@@ -240,7 +240,7 @@ function Treemap({
   });
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = ref;
 
   const handleOnMouseEnter = useCallback(
     (e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) => {
@@ -436,7 +436,7 @@ function Treemap({
           )}
         </div>
       )}
-      <svg ref={ref} width={width} height={height}>
+      <svg width={width} height={height}>
         {allShapes}
       </svg>
 

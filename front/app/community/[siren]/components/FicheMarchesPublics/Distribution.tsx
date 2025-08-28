@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 
 import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
-import downloadSVG from '#utils/downloader/downloadSVGChart';
+import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
 import { YearOption } from '../../types/interface';
@@ -16,7 +16,7 @@ import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 type DistributionProps = { siren: string; availableYears: number[]; communityName: string };
 
 export default function Distribution({ siren, availableYears, communityName }: DistributionProps) {
-  const marchesPublicsSectorTreemapRef = useRef<SVGSVGElement | null>(null);
+  const marchesPublicsSectorTreemapRef = useRef<HTMLDivElement | null>(null);
 
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
@@ -27,10 +27,16 @@ export default function Distribution({ siren, availableYears, communityName }: D
   }
 
   function handleDownloadChart() {
-    downloadSVG(marchesPublicsSectorTreemapRef.current, {
-      communityName,
-      chartTitle: 'Répartition par secteur',
-    });
+    if (selectedYear !== 'All' && marchesPublicsSectorTreemapRef.current) {
+      downloadSVGChart(
+        marchesPublicsSectorTreemapRef.current,
+        {
+          communityName,
+          chartTitle: `Répartition par secteur - ${selectedYear}`,
+        },
+        { fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}`, extension: 'png' },
+      );
+    }
   }
 
   return (

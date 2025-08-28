@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { downloadSubventionsByNafCSV } from '#utils/fetchers/subventions/download/downloadSubventionsByNaf';
 
 import { YearOption } from '../../types/interface';
@@ -11,15 +12,30 @@ import { GraphSwitch } from '../DataViz/GraphSwitch';
 import SubventionsSectorTable from './SubventionsSectorTable';
 import SubventionsSectorTreemap from './SubventionsSectorTreemap';
 
-type DistributionProps = { siren: string; availableYears: number[] };
+type DistributionProps = { siren: string; availableYears: number[]; communityName: string };
 
-export default function Distribution({ siren, availableYears }: DistributionProps) {
+export default function Distribution({ siren, availableYears, communityName }: DistributionProps) {
+  const subventionsSectorTreemapRef = useRef<HTMLDivElement | null>(null);
+
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
-  const [selectedYear, setSelectedYear] = useState<YearOption>('All');
+  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   function handleClickDownloadData() {
     downloadSubventionsByNafCSV(siren, selectedYear === 'All' ? null : selectedYear);
+  }
+
+  function handleDownloadChart() {
+    if (selectedYear !== 'All' && subventionsSectorTreemapRef.current) {
+      downloadSVGChart(
+        subventionsSectorTreemapRef.current,
+        {
+          communityName,
+          chartTitle: `Répartition par secteur - ${selectedYear}`,
+        },
+        { fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}` },
+      );
+    }
   }
 
   return (
@@ -35,15 +51,23 @@ export default function Distribution({ siren, availableYears }: DistributionProp
           />
         </div>
         <div className='flex items-center gap-2'>
-          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
-          <DownloadSelector onClickDownloadData={handleClickDownloadData} />
+          <YearSelector defaultValue={selectedYear} onSelect={setSelectedYear} />
+          <DownloadSelector
+            onClickDownloadData={handleClickDownloadData}
+            onClickDownloadChart={handleDownloadChart}
+            disabled={selectedYear === 'All'}
+          />
         </div>
       </div>
       <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <SubventionsSectorTable siren={siren} year={selectedYear} />
       </div>
       <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
-        <SubventionsSectorTreemap siren={siren} year={selectedYear} />
+        <SubventionsSectorTreemap
+          ref={subventionsSectorTreemapRef}
+          siren={siren}
+          year={selectedYear}
+        />
       </div>
     </>
   );

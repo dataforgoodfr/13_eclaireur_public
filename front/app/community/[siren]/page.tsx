@@ -64,7 +64,11 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           communityType={community.type as CommunityType}
           communityName={community.nom}
         />
-        <FicheSubventions siren={siren} communityType={community.type as CommunityType} />
+        <FicheSubventions
+          siren={siren}
+          communityType={community.type as CommunityType}
+          communityName={community.nom}
+        />
       </div>
     </>
   );

@@ -1,3 +1,5 @@
+import html2canvas from 'html2canvas';
+
 import { downloadURL } from './downloadURL';
 import { Extension } from './types';
 
@@ -26,34 +28,167 @@ const DEFAULT_OPTIONS = {
   size: undefined,
 } satisfies Options;
 
-export default async function downloadSVGChart(
-  svg: SVGSVGElement | null,
+export async function downloadSVGChart(
+  chartContainer: HTMLElement | null,
   header: Header,
   options?: Options,
 ) {
-  if (svg === null) {
+  if (chartContainer === null) {
     throw new Error('The SVG element does not exist.');
   }
-
-  const bbox = svg.getBBox();
 
   const {
     fileName = DEFAULT_OPTIONS.fileName,
     extension = DEFAULT_OPTIONS.extension,
-    size = { width: bbox.width, height: bbox.height },
+    size = { width: chartContainer.clientWidth, height: chartContainer.clientHeight },
   } = options ?? DEFAULT_OPTIONS;
 
+  const clonedChartContainer = chartContainer.cloneNode(true) as HTMLElement;
+  clonedChartContainer.setAttribute('width', `${size.width}`);
+  clonedChartContainer.setAttribute('height', `${size.height}`);
+  const svgToDownload = await createSvg(clonedChartContainer, header, size);
+
   if (extension === 'png') {
-    const canvas = await createCanvas(svg, header);
-    const blob = await canvas.convertToBlob();
-    const imageUrl = await toDataURL(blob);
-
-    downloadURL(imageUrl, { fileName, extension });
+    const chartCanvas = await createChartCanvas(svgToDownload);
+    const chartDataUrl = chartCanvas.toDataURL('image/jpeg');
+    downloadURL(chartDataUrl, { fileName, extension });
   } else {
-    const imageUrl = await createSvg(svg, header, size);
-
-    downloadURL(imageUrl, { fileName, extension });
+    downloadURL(convertSVGElementToURL(svgToDownload), { fileName, extension });
   }
+}
+
+async function createSvg(chartContainer: HTMLElement, header: Header, size: Size) {
+  const margin = 15;
+  const headerHeight = 90;
+  const logoHeight = 19;
+  const { width, height } = size;
+  const svgHeight = headerHeight + height + logoHeight + margin * 2;
+
+  applyStylesToForeignObject(chartContainer);
+
+  const svgToDownload = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svgToDownload.setAttribute('width', `${width + margin}`);
+  svgToDownload.setAttribute('height', `${svgHeight}`);
+
+  const communityNameSvg = createHeaderText(header.communityName, { fontSize: '24', y: '30' });
+  const chartTitleSvg = createHeaderText(header.chartTitle, { fontSize: '20', y: '70' });
+
+  const chartSvg = chartContainer.getElementsByTagName('svg')[0];
+  chartSvg.setAttribute('x', `${margin / 2}`);
+  chartSvg.setAttribute('y', `${headerHeight}`);
+  addLegendToChart(chartContainer, height, chartSvg);
+
+  const logoSvg = await createLogoSvg(width, margin, headerHeight, height, logoHeight);
+
+  svgToDownload.appendChild(communityNameSvg);
+  svgToDownload.appendChild(chartTitleSvg);
+  svgToDownload.appendChild(chartSvg);
+  svgToDownload.appendChild(logoSvg);
+
+  return svgToDownload;
+}
+
+async function createChartCanvas(svgToDownload: SVGSVGElement) {
+  const svgContainer = document.createElement('div');
+  svgContainer.setAttribute('width', `${svgToDownload.getAttribute('width')}px`);
+  svgContainer.setAttribute('height', `${svgToDownload.getAttribute('height')}px`);
+
+  svgContainer.appendChild(svgToDownload);
+  document.body.appendChild(svgContainer);
+  const chartCanvas = await html2canvas(svgContainer, {
+    width: parseInt(svgToDownload.getAttribute('width')!),
+    height: parseInt(svgToDownload.getAttribute('height')!),
+  });
+  document.body.removeChild(svgContainer);
+  return chartCanvas;
+}
+
+function createHeaderText(text: string, styleAttributes: { fontSize: string; y: string }) {
+  const chartTitleSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  chartTitleSvg.setAttribute('font-size', styleAttributes.fontSize);
+  chartTitleSvg.setAttribute('font-family', 'sans-serif');
+  chartTitleSvg.setAttribute('fill', '#303f8d');
+  chartTitleSvg.setAttribute('x', '15');
+  chartTitleSvg.setAttribute('y', styleAttributes.y);
+  chartTitleSvg.textContent = text;
+  return chartTitleSvg;
+}
+
+function addLegendToChart(chartContainer: HTMLElement, height: number, chartSvg: SVGSVGElement) {
+  const legend = chartContainer.getElementsByClassName('recharts-legend-wrapper')[0];
+  if (legend) {
+    document.body.appendChild(legend);
+    applyStyleToAllChildren(legend);
+    document.body.removeChild(legend);
+
+    const svgLegendContainer = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'foreignObject',
+    );
+    svgLegendContainer.setAttribute('width', '100%');
+    svgLegendContainer.setAttribute('height', '64');
+    svgLegendContainer.setAttribute('y', `${height - 70}`);
+    svgLegendContainer.appendChild(legend.children[0]);
+    chartSvg.appendChild(svgLegendContainer);
+  }
+}
+
+async function createLogoSvg(
+  width: number,
+  margin: number,
+  headerHeight: number,
+  height: number,
+  logoHeight: number,
+) {
+  const logoWidth = 195;
+  const logoX = width + margin - logoWidth - 10;
+  const logoY = headerHeight + height + margin;
+  const logo = await fetch(`${window.location.origin}/eclaireur/eclaireur-footeur.svg`);
+  const logoTempContainer = document.createElement('div');
+  logoTempContainer.innerHTML = await logo.text();
+  const logoSvg = logoTempContainer.children[0];
+  logoSvg.setAttribute('width', `${logoWidth}`);
+  logoSvg.setAttribute('height', `${logoHeight}`);
+  logoSvg.setAttribute('x', `${logoX}`);
+  logoSvg.setAttribute('y', `${logoY}`);
+  return logoSvg;
+}
+
+function applyStylesToForeignObject(chartContainer: HTMLElement) {
+  document.body.appendChild(chartContainer);
+  const foreignObjects = chartContainer.querySelectorAll('foreignObject');
+  foreignObjects.forEach((object) => {
+    object.setAttribute('y', `${parseInt(object.getAttribute('y') ?? '0') + 50}`);
+    object.querySelector('button')?.remove();
+    if (object.children[0]?.children[0]) {
+      applyStyleToAllChildren(object.children[0]);
+      object.children[0].children[0].innerHTML = object.children[0].children[0].textContent.replace(
+        ' ',
+        '<br/>',
+      );
+    }
+  });
+  document.body.removeChild(chartContainer);
+}
+
+function applyStyleToAllChildren(element: Element) {
+  for (let i = 0; i < element?.children.length; i++) {
+    const child = element.children[i];
+    const cssText = getStyles(child);
+    child.setAttribute('style', cssText);
+    applyStyleToAllChildren(child);
+  }
+}
+
+function getStyles(element: Element) {
+  const computedStyle = window.getComputedStyle(element);
+  let cssText = '';
+  for (let i = 0; i < computedStyle.length; i++) {
+    const prop = computedStyle[i];
+    const value = computedStyle.getPropertyValue(prop);
+    cssText += `${prop}: ${value}; `;
+  }
+  return cssText;
 }
 
 function convertSVGElementToURL(svg: SVGSVGElement) {
@@ -76,96 +211,3 @@ function convertSVGElementToURL(svg: SVGSVGElement) {
 
   return url;
 }
-
-async function createSvg(svg: SVGSVGElement, header: Header, size: Size) {
-  const chartImageURL = convertSVGElementToURL(svg);
-  const margin = 15;
-  const headerHeight = 90;
-  const logoHeight = 19;
-
-  const { width, height } = size;
-  const svgHeight = headerHeight + height + logoHeight + margin * 2;
-
-  const svgToDownload = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svgToDownload.setAttribute('width', `${width + margin}`);
-  svgToDownload.setAttribute('height', `${svgHeight}`);
-
-  const communityNameSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  communityNameSvg.setAttribute('font-size', '24');
-  communityNameSvg.setAttribute('font-family', 'sans-serif');
-  communityNameSvg.setAttribute('fill', '#303f8d');
-  communityNameSvg.setAttribute('x', '15');
-  communityNameSvg.setAttribute('y', '30');
-  communityNameSvg.textContent = header.communityName;
-
-  const chartTitleSvg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  chartTitleSvg.setAttribute('font-size', '20');
-  chartTitleSvg.setAttribute('font-family', 'sans-serif');
-  chartTitleSvg.setAttribute('fill', '#303f8d');
-  chartTitleSvg.setAttribute('x', '15');
-  chartTitleSvg.setAttribute('y', '70');
-  chartTitleSvg.textContent = header.chartTitle;
-
-  const chartSvg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-  chartSvg.setAttribute('width', `${width}`);
-  chartSvg.setAttribute('height', `${height}`);
-  chartSvg.setAttribute('x', `${margin / 2}`);
-  chartSvg.setAttribute('y', `${headerHeight}`);
-  chartSvg.setAttribute('href', chartImageURL);
-
-  const logoWidth = 195;
-  const logoX = width + margin - logoWidth - 10;
-  const logoY = headerHeight + height + margin;
-  const logoSvg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-  logoSvg.setAttribute('width', `${logoWidth}`);
-  logoSvg.setAttribute('height', `${logoHeight}`);
-  logoSvg.setAttribute('x', `${logoX}`);
-  logoSvg.setAttribute('y', `${logoY}`);
-  logoSvg.setAttribute('href', `${window.location.origin}/eclaireur/eclaireur-footeur.svg`);
-
-  svgToDownload.appendChild(communityNameSvg);
-  svgToDownload.appendChild(chartTitleSvg);
-  svgToDownload.appendChild(chartSvg);
-  svgToDownload.appendChild(logoSvg);
-
-  return convertSVGElementToURL(svgToDownload);
-}
-
-async function createCanvas(svg: SVGSVGElement, header: Header) {
-  const imageURL = convertSVGElementToURL(svg);
-  const margin = 15;
-  const headerHeight = 90;
-  const chartImage = new Image(svg.width.baseVal.value, svg.height.baseVal.value);
-  chartImage.src = imageURL;
-  const logoImage = new Image(195, 19);
-  logoImage.src = '/eclaireur/eclaireur-footeur.svg';
-  const canvasHeight = headerHeight + chartImage.height + logoImage.height + margin * 2;
-  const canvasWidth = chartImage.width + margin;
-  const canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
-  const ctx = canvas.getContext('2d');
-
-  if (ctx) {
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#303f8d';
-    ctx.font = '24px sans-serif';
-    ctx.fillText(header.communityName, 15, 35);
-    ctx.font = '20px sans-serif';
-    ctx.fillText(header.chartTitle, 15, 70);
-
-    ctx.drawImage(chartImage, margin / 2, headerHeight + 5, chartImage.width, chartImage.height);
-
-    const logoX = canvasWidth - logoImage.width - 10;
-    const logoY = headerHeight + chartImage.height + margin;
-    ctx.drawImage(logoImage, logoX, logoY, logoImage.width, logoImage.height);
-  }
-
-  return canvas;
-}
-
-const toDataURL = async (data: Blob) =>
-  new Promise<string>((ok) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => ok(reader.result as string));
-    reader.readAsDataURL(data);
-  });
