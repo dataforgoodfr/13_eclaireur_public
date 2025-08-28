@@ -78,6 +78,44 @@ class CommunitiesEnricher(BaseEnricher):
         )
 
     @classmethod
+    def national_mean(
+        cls,
+        filtered_data: pl.DataFrame,
+        communities: pl.DataFrame,
+        id_join_col: str,
+        type_value: str,
+    ) -> float:
+        """Calcule la moyenne nationale pour un type donné."""
+        return filtered_data.join(
+            communities.filter(pl.col("type") == type_value).select("siren"),
+            left_on=id_join_col,
+            right_on="siren",
+            how="inner",
+        )["montant"].mean()
+
+    @classmethod
+    def group_mean(
+        cls,
+        filtered_data: pl.DataFrame,
+        communities: pl.DataFrame,
+        id_join_col: str,
+        type_value: str,
+        group_col: str,
+        alias: str,
+    ) -> pl.DataFrame:
+        """Calcule la moyenne par groupe (région, département) et retourne un DataFrame prêt à join."""
+        return (
+            filtered_data.join(
+                communities.filter(pl.col("type") == type_value).select(["siren", group_col]),
+                left_on=id_join_col,
+                right_on="siren",
+                how="inner",
+            )
+            .group_by(group_col)
+            .agg(pl.mean("montant").alias(alias))
+        )
+
+    @classmethod
     def calculate_averages(
         cls,
         communities: pl.DataFrame,
@@ -89,75 +127,48 @@ class CommunitiesEnricher(BaseEnricher):
     ) -> pl.DataFrame:
         """
         Calcule et ajoute les moyennes des données (subventions ou marchés publics) pour chaque type :
-
-        - Pour les communes (COM) : moyennes nationales (de toutes les communes),
-            régionales (des communes de la même région),
-            départementales (des communes du même département).
-        - Pour les départements (DEP) : moyennes nationales (de tous les départements),
-            régionales (des départements de la même région).
-        - Pour les régions (REG) : moyenne nationale (de toutes les régions).
-
-        La méthode prend en compte uniquement les données sur une année et ajoute un suffixe aux colonnes pour différencier plusieurs types de données.
+        - COM : moyennes nationales, régionales, départementales
+        - DEP : moyennes nationales, régionales
+        - REG : moyenne nationale
         """
-        # Filtrer datas sur l'année courante
-        datas_filtred = datas.filter(pl.col(year_col) == year)
+        # Filtrer sur l’année
+        datas_filtered = datas.filter(pl.col(year_col) == year)
 
         # ============================================================
         # COMMUNES
-        communes = communities.filter(pl.col("type") == "COM")
-
-        moyenne_nat_com = datas_filtred.join(
-            communes.select(["siren"]), left_on=id_join_col, right_on="siren", how="inner"
-        )["montant"].mean()
-
-        moyenne_reg_com = (
-            datas_filtred.join(
-                communes.select(["siren", "code_insee_region"]),
-                left_on=id_join_col,
-                right_on="siren",
-                how="inner",
-            )
-            .group_by("code_insee_region")
-            .agg(pl.mean("montant").alias(f"moyenne_reg_com_{suffix}"))
+        moyenne_nat_com = cls.national_mean(datas_filtered, communities, id_join_col, "COM")
+        moyenne_reg_com = cls.group_mean(
+            datas_filtered,
+            communities,
+            id_join_col,
+            "COM",
+            "code_insee_region",
+            f"moyenne_reg_com_{suffix}",
         )
-
-        moyenne_dpt_com = (
-            datas_filtred.join(
-                communes.select(["siren", "code_insee_dept"]),
-                left_on=id_join_col,
-                right_on="siren",
-                how="inner",
-            )
-            .group_by("code_insee_dept")
-            .agg(pl.mean("montant").alias(f"moyenne_dpt_com_{suffix}"))
+        moyenne_dpt_com = cls.group_mean(
+            datas_filtered,
+            communities,
+            id_join_col,
+            "COM",
+            "code_insee_dept",
+            f"moyenne_dpt_com_{suffix}",
         )
 
         # ============================================================
         # DÉPARTEMENTS
-        departements = communities.filter(pl.col("type") == "DEP")
-
-        moyenne_nat_dpt = datas_filtred.join(
-            departements.select(["siren"]), left_on=id_join_col, right_on="siren", how="inner"
-        )["montant"].mean()
-
-        moyenne_reg_dpt = (
-            datas_filtred.join(
-                departements.select(["siren", "code_insee_region"]),
-                left_on=id_join_col,
-                right_on="siren",
-                how="inner",
-            )
-            .group_by("code_insee_region")
-            .agg(pl.mean("montant").alias(f"moyenne_reg_dpt_{suffix}"))
+        moyenne_nat_dpt = cls.national_mean(datas_filtered, communities, id_join_col, "DEP")
+        moyenne_reg_dpt = cls.group_mean(
+            datas_filtered,
+            communities,
+            id_join_col,
+            "DEP",
+            "code_insee_region",
+            f"moyenne_reg_dpt_{suffix}",
         )
 
         # ============================================================
         # RÉGIONS
-        regions = communities.filter(pl.col("type") == "REG")
-
-        moyenne_nat_reg = datas_filtred.join(
-            regions.select(["siren"]), left_on=id_join_col, right_on="siren", how="inner"
-        )["montant"].mean()
+        moyenne_nat_reg = cls.national_mean(datas_filtered, communities, id_join_col, "REG")
 
         # ============================================================
         # ASSEMBLAGE FINAL
@@ -182,7 +193,7 @@ class CommunitiesEnricher(BaseEnricher):
                     .alias(f"moyenne_nat_reg_{suffix}"),
                 ]
             )
-            # Masquer les moyennes type pour les lignes non-type
+            # Masquer les moyennes non pertinentes
             .with_columns(
                 [
                     pl.when(pl.col("type") != "COM")
