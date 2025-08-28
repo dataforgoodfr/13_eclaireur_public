@@ -1,66 +1,46 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import { formatCompactPrice, formatFirstLetterToUppercase } from "#utils/utils";
-import * as d3 from "d3";
+import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
+import * as d3 from 'd3';
 
-import { CHART_HEIGHT } from "../../app/community/[siren]/components/constants";
-import type {
-  TooltipProps,
-  TreeData,
-} from "../../app/community/[siren]/types/interface";
-import { ActionButton } from "../ui/action-button";
-import TreemapTooltip from "./TreemapTooltip";
+import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
+import type { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
+import { ActionButton } from '../ui/action-button';
+import TreemapTooltip from './TreemapTooltip';
 
-type ColorPalette = "legacy" | "green";
-type GroupMode = "none" | "gradient" | "categorical" | "value-based";
+type ColorPalette = 'mp' | 'subventions';
+type GroupMode = 'none' | 'gradient' | 'categorical' | 'value-based';
 
 const COLOR_PALETTES = {
-  legacy: {
-    colors: [
-      "#E8F787", // light green
-      "#FAF79E", // very light yellow
-      "#CAD2FC", // light blue
-      "#F4D93E", // yellow
-      "#EE8100", // dark orange
-    ],
-    textDark: "#2D3748", // dark text for light backgrounds
-    textLight: "#F7FAFC", // light text for dark backgrounds
+  mp: {
+    colors: ['#ACC66C', '#C2DE7A', '#D7F787'],
+    textDark: '#303F8D',
+    textLight: '#303F8D',
   },
-  green: {
-    colors: [
-      "#003300", // very dark green
-      "#1A5A1A", // dark green
-      "#58A858", // medium green
-      "#C8E6C8", // light green
-    ],
-    textDark: "#2D3748", // dark text for light backgrounds
-    textLight: "#F7FAFC", // light text for dark backgrounds
+  subventions: {
+    colors: ['#A2A8CA', '#B6BDE3', '#CAD2FC'],
+    textDark: '#303F8D',
+    textLight: '#303F8D',
   },
 } as const;
 
 // Generate gradient colors for a group using D3 sequential scale
-function generateGradientColors(
-  groupSize: number,
-  baseColor: string,
-): string[] {
+function generateGradientColors(groupSize: number, baseColor: string): string[] {
   if (groupSize === 1) return [baseColor];
 
   // Create a sequential scale from light to the base color
   const colorScale = d3
     .scaleSequential()
     .domain([0, groupSize - 1])
-    .interpolator(d3.interpolateRgb("#f0f0f0", baseColor));
+    .interpolator(d3.interpolateRgb('#f0f0f0', baseColor));
 
   return Array.from({ length: groupSize }, (_, i) => colorScale(i));
 }
 
 // Calculate quantile thresholds for value-based grouping
-function calculateValueGroups(
-  leaves: d3.HierarchyRectangularNode<TreeData>[],
-  numGroups = 4,
-) {
+function calculateValueGroups(leaves: d3.HierarchyRectangularNode<TreeData>[], numGroups = 4) {
   const values = leaves
     .map((leaf) => leaf.value || 0)
     .filter((value) => value > 0)
@@ -90,10 +70,7 @@ function getValueGroup(value: number, thresholds: number[]): number {
 }
 
 // Create intelligent color scale based on value group
-function createValueBasedColor(
-  groupIndex: number,
-  palette: ColorPalette,
-): string {
+function createValueBasedColor(groupIndex: number, palette: ColorPalette): string {
   const baseColors = COLOR_PALETTES[palette].colors;
 
   // Use the actual colors from the palette instead of generating gradients
@@ -106,10 +83,9 @@ function createValueBasedColor(
 function getTextColor(backgroundColor: string, palette: ColorPalette): string {
   const paletteData = COLOR_PALETTES[palette];
 
-  // Check if it's one of the darker colors (first 2 in green palette)
-  const isDarkBackground = paletteData.colors
-    .slice(0, 2)
-    .includes(backgroundColor);
+  // Check if it's one of the darker colors (first 2 colors in palette)
+  const darkColors = paletteData.colors.slice(0, 2) as readonly string[];
+  const isDarkBackground = (darkColors as readonly string[]).includes(backgroundColor);
 
   return isDarkBackground ? paletteData.textLight : paletteData.textDark;
 }
@@ -120,7 +96,7 @@ function consolidateSmallItemsFunction(
   minThresholdPercent = 2,
   minItemsToConsolidate = 3,
 ): TreeData {
-  if (data.type !== "node" || !data.children) {
+  if (data.type !== 'node' || !data.children) {
     return data;
   }
 
@@ -130,25 +106,22 @@ function consolidateSmallItemsFunction(
   const largeItems: TreeData[] = [];
   const smallItems: TreeData[] = [];
 
-  data.children.forEach((child) => {
+  for (const child of data.children) {
     if (child.value >= minThreshold) {
       largeItems.push(child);
     } else {
       smallItems.push(child);
     }
-  });
+  }
 
   // Only consolidate if we have more than the specified minimum small items
   if (smallItems.length <= minItemsToConsolidate) {
     return data;
   }
 
-  const consolidatedValue = smallItems.reduce(
-    (sum, item) => sum + item.value,
-    0,
-  );
+  const consolidatedValue = smallItems.reduce((sum, item) => sum + item.value, 0);
   const consolidatedPercentage = smallItems.reduce(
-    (sum, item) => sum + (item.type === "leaf" ? item.part : 0),
+    (sum, item) => sum + (item.type === 'leaf' ? item.part : 0),
     0,
   );
 
@@ -156,7 +129,7 @@ function consolidateSmallItemsFunction(
     id: `${data.id}_autres`,
     name: `Autres (${smallItems.length} postes)`,
     value: consolidatedValue,
-    type: "leaf",
+    type: 'leaf',
     part: consolidatedPercentage,
   };
 
@@ -168,13 +141,13 @@ function consolidateSmallItemsFunction(
 
 function generateHierarchicalColorMap(
   root: d3.HierarchyRectangularNode<TreeData>,
-  palette: ColorPalette = "green",
-  groupMode: GroupMode = "none",
+  palette: ColorPalette = 'mp',
+  groupMode: GroupMode = 'none',
 ): Record<string, string> {
   const colorMap: Record<string, string> = {};
   const baseColors = COLOR_PALETTES[palette].colors;
 
-  if (groupMode === "none") {
+  if (groupMode === 'none') {
     // Original behavior - color leaves sequentially
     const leaves = root.leaves();
     leaves.forEach((leaf, index) => {
@@ -184,17 +157,17 @@ function generateHierarchicalColorMap(
     return colorMap;
   }
 
-  if (groupMode === "value-based") {
+  if (groupMode === 'value-based') {
     // NEW: Value-based intelligent grouping
     const leaves = root.leaves();
     const numGroups = 4;
     const { thresholds } = calculateValueGroups(leaves, numGroups);
 
-    leaves.forEach((leaf) => {
+    for (const leaf of leaves) {
       const value = leaf.value || 0;
       const groupIndex = getValueGroup(value, thresholds);
       colorMap[leaf.data.name] = createValueBasedColor(groupIndex, palette);
-    });
+    }
 
     return colorMap;
   }
@@ -207,13 +180,13 @@ function generateHierarchicalColorMap(
     const baseColor = baseColors[groupIndex % baseColors.length];
     const leaves = child.leaves();
 
-    if (groupMode === "gradient") {
+    if (groupMode === 'gradient') {
       // Apply gradient within each group
       const gradientColors = generateGradientColors(leaves.length, baseColor);
       for (const [itemIndex, leaf] of leaves.entries()) {
         colorMap[leaf.data.name] = gradientColors[itemIndex];
       }
-    } else if (groupMode === "categorical") {
+    } else if (groupMode === 'categorical') {
       // Same color for all items in group
       for (const leaf of leaves) {
         colorMap[leaf.data.name] = baseColor;
@@ -245,8 +218,8 @@ export default function Treemap({
   data,
   isZoomActive,
   handleClick,
-  colorPalette = "green",
-  groupMode = "none",
+  colorPalette = 'mp',
+  groupMode = 'none',
   showZoomControls = false,
   onZoomIn,
   onZoomOut,
@@ -259,7 +232,7 @@ export default function Treemap({
     visible: false,
     x: 0,
     y: 0,
-    name: "",
+    name: '',
     value: 0,
     percentage: 0,
   });
@@ -267,17 +240,14 @@ export default function Treemap({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  function handleOnMouseEnter(
-    e: React.MouseEvent,
-    leaf: d3.HierarchyRectangularNode<TreeData>,
-  ) {
+  function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
     setTooltip({
       visible: true,
       x: e.clientX,
       y: e.clientY - 30,
       name: leaf.data.name,
       value: leaf.data.value,
-      percentage: leaf.data.type === "leaf" ? leaf.data.part : 0,
+      percentage: leaf.data.type === 'leaf' ? leaf.data.part : 0,
     });
   }
 
@@ -314,17 +284,11 @@ export default function Treemap({
 
   // Apply small items consolidation before creating hierarchy
   const processedData = consolidateSmallItems
-    ? consolidateSmallItemsFunction(
-      data,
-      consolidationThreshold,
-      minItemsToConsolidate,
-    )
+    ? consolidateSmallItemsFunction(data, consolidationThreshold, minItemsToConsolidate)
     : data;
 
   const hierarchy = d3
-    .hierarchy<TreeData>(processedData, (d) =>
-      d.type === "node" ? d.children : undefined,
-    )
+    .hierarchy<TreeData>(processedData, (d) => (d.type === 'node' ? d.children : undefined))
     .sum((d) => d.value);
 
   const treeGenerator = d3.treemap<TreeData>().size([width, height]).padding(4);
@@ -345,21 +309,21 @@ export default function Treemap({
           Q ${leaf.x0} ${leaf.y0} ${leaf.x0 + 8} ${leaf.y0}
           Z
         `}
-        stroke="#303F8D"
+        stroke='#303F8D'
         strokeWidth={1}
         fill={colorMap[leaf.data.name]}
-        className="transition-all duration-500 ease-in-out"
+        className='transition-all duration-500 ease-in-out'
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
         onMouseMove={(e) => handleOnMouseMove(e)}
         onMouseLeave={() => handleOnMouseLeave()}
         onClick={() => handleClick(leaf.data.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (e.key === 'Enter' || e.key === ' ') {
             handleClick(leaf.data.value);
           }
         }}
         tabIndex={0}
-        role="button"
+        role='button'
         aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
       />
       {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
@@ -369,7 +333,7 @@ export default function Treemap({
           fontSize={16}
           fontWeight={700}
           fill={getTextColor(colorMap[leaf.data.name], colorPalette)}
-          className="pointer-events-none"
+          className='pointer-events-none'
         >
           {formatCompactPrice(leaf.data.value)}
         </text>
@@ -382,7 +346,7 @@ export default function Treemap({
           height={leaf.y1 - leaf.y0 - 46}
         >
           <div
-            className="text-sm font-medium truncate leading-tight pointer-events-none"
+            className='pointer-events-none truncate text-sm font-medium leading-tight'
             style={{
               color: getTextColor(colorMap[leaf.data.name], colorPalette),
             }}
@@ -395,48 +359,43 @@ export default function Treemap({
   ));
 
   return (
-    <div className="relative" ref={containerRef} style={{ height }}>
+    <div className='relative' ref={containerRef} style={{ height }}>
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
       {showZoomControls && (
-        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+        <div className='absolute left-2 top-2 z-10 flex flex-col gap-1'>
           {onZoomIn && (
             <ActionButton
-              icon={<span className="text-lg font-bold">+</span>}
+              icon={<span className='text-lg font-bold'>+</span>}
               onClick={onZoomIn}
-              variant="outline"
-              className="bg-white/90 backdrop-blur-sm hover:bg-white"
+              variant='outline'
+              className='bg-white/90 backdrop-blur-sm hover:bg-white'
             />
           )}
           {onZoomOut && (
             <ActionButton
-              icon={<span className="text-lg font-bold">−</span>}
+              icon={<span className='text-lg font-bold'>−</span>}
               onClick={onZoomOut}
-              variant="outline"
-              className="bg-white/90 backdrop-blur-sm hover:bg-white"
+              variant='outline'
+              className='bg-white/90 backdrop-blur-sm hover:bg-white'
             />
           )}
           {onZoomReset && (
             <ActionButton
-              icon={<span className="text-sm">⌂</span>}
+              icon={<span className='text-sm'>⌂</span>}
               onClick={onZoomReset}
-              variant="outline"
-              className="bg-white/90 backdrop-blur-sm hover:bg-white"
+              variant='outline'
+              className='bg-white/90 backdrop-blur-sm hover:bg-white'
             />
           )}
         </div>
       )}
       {isZoomActive && (
-        <em className="ml-2">
-          Filtre actif: affichage limités aux montants inférieurs ou égaux à{" "}
+        <em className='ml-2'>
+          Filtre actif: affichage limités aux montants inférieurs ou égaux à{' '}
           {formatCompactPrice(root.leaves()[0].value ?? 0)}
         </em>
       )}
-      <svg
-        width={width}
-        height={height}
-        role="img"
-        aria-label="Treemap visualization"
-      >
+      <svg width={width} height={height} role='img' aria-label='Treemap visualization'>
         {allShapes}
       </svg>
     </div>
