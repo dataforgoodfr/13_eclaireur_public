@@ -4,7 +4,7 @@ export type Scope = 'Départemental' | 'Régional' | 'National';
 
 /**
  * Détermine le scope de comparaison par défaut selon le type de collectivité
- * 
+ *
  * Logique :
  * - Région : National (évite la comparaison avec soi-même)
  * - Département : Régional (compare avec autres départements de la région)

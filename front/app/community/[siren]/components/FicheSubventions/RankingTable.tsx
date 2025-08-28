@@ -1,5 +1,6 @@
 'use client';
 
+import EmptyState from '#components/EmptyState';
 import { WithPagination } from '#components/Pagination';
 import { Badge } from '#components/ui/badge';
 import {
@@ -15,7 +16,6 @@ import { useSubventionPaginated } from '#utils/hooks/useSubventionPaginated';
 import { formatAmount } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
-import EmptyState from '#components/EmptyState';
 import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
 import { CHART_HEIGHT } from '../constants';
 
@@ -26,11 +26,14 @@ type SubventionTableProps = {
 
 const MAX_ROW_PER_PAGE = 10;
 const MAX_ROW_PER_PAGE_MOBILE = 4;
-const getItemsPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768) ? MAX_ROW_PER_PAGE : MAX_ROW_PER_PAGE_MOBILE;
+const getItemsPerPage = () =>
+  typeof window !== 'undefined' && window.innerWidth >= 768
+    ? MAX_ROW_PER_PAGE
+    : MAX_ROW_PER_PAGE_MOBILE;
 
 export default function RankingTable({ siren, year }: SubventionTableProps) {
   const itemsPerPage = getItemsPerPage();
-  
+
   // First get initial pagination state
   const { currentPage } = usePaginationState('page_subv_ranking', 1);
 
@@ -40,20 +43,16 @@ export default function RankingTable({ siren, year }: SubventionTableProps) {
   });
 
   // Then use persistent pagination with the actual data
-  const { totalPage } = usePaginationStateWithTotal(
-    data,
-    isPending,
-    {
-      paramName: 'page_subv_ranking',
-      itemsPerPage: itemsPerPage,
-    }
-  );
+  const { totalPage } = usePaginationStateWithTotal(data, isPending, {
+    paramName: 'page_subv_ranking',
+    itemsPerPage: itemsPerPage,
+  });
 
   // Rendu du contenu selon l'état
   const renderContent = () => {
     if (isPending || isError) {
       return (
-        <div className="w-full self-stretch" style={{ height: CHART_HEIGHT }}>
+        <div className='w-full self-stretch' style={{ height: CHART_HEIGHT }}>
           <MarchesPublicsTableSkeleton rows={itemsPerPage} />
         </div>
       );
@@ -62,10 +61,10 @@ export default function RankingTable({ siren, year }: SubventionTableProps) {
     if (data.length === 0) {
       return (
         <EmptyState
-          title="Aucun classement de subventions disponible"
+          title='Aucun classement de subventions disponible'
           description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
           siren={siren}
-          className="h-[450px] w-full"
+          className='h-[450px] w-full'
         />
       );
     }
@@ -84,11 +83,11 @@ export default function RankingTable({ siren, year }: SubventionTableProps) {
   };
 
   return (
-    <WithPagination 
-      style={{ height: CHART_HEIGHT }} 
-      totalPage={totalPage} 
-      urlParam="page_subv_ranking"
-      mode="url"
+    <WithPagination
+      style={{ height: CHART_HEIGHT }}
+      totalPage={totalPage}
+      urlParam='page_subv_ranking'
+      mode='url'
     >
       {renderContent()}
     </WithPagination>
@@ -123,7 +122,10 @@ export function Table({ rows }: Table) {
           <TableRow key={`${id}-${object}-${year}`}>
             <TableCell>
               {names.map((name) => (
-                <Badge key={name} className="bg-brand-2 text-primary rounded-full hover:bg-brand-2/80 m-1">
+                <Badge
+                  key={name}
+                  className='m-1 rounded-full bg-brand-2 text-primary hover:bg-brand-2/80'
+                >
                   {name}
                 </Badge>
               ))}

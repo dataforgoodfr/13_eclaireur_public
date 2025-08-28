@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Bar,
@@ -9,10 +9,11 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
-} from "recharts";
-import { InterpellerButton } from "../../../../components/ui/interpeller-button";
-import { CHART_HEIGHT } from "./constants";
-import type { ChartDataType } from "./hooks/useChartData";
+} from 'recharts';
+
+import { InterpellerButton } from '../../../../components/ui/interpeller-button';
+import { CHART_HEIGHT } from './constants';
+import type { ChartDataType } from './hooks/useChartData';
 
 type DesktopEvolutionChartProps = {
   data: Array<{
@@ -43,8 +44,8 @@ export default function DesktopEvolutionChart({
   siren,
 }: DesktopEvolutionChartProps) {
   return (
-    <div className="relative">
-      <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+    <div className='relative'>
+      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
         <RechartsBarChart
           width={500}
           height={300}
@@ -56,25 +57,19 @@ export default function DesktopEvolutionChart({
             bottom: 5,
           }}
         >
-          <XAxis dataKey="year" axisLine={true} tickLine={true} />
+          <XAxis dataKey='year' axisLine={true} tickLine={true} />
           <YAxis tickFormatter={(value) => formatValue(value)} />
           <Legend
             content={() => {
               const bgColorClass =
-                chartType === "marches-publics"
-                  ? "bg-primary-light"
-                  : "bg-brand-2";
+                chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
               return (
-                <div className="flex flex-col items-center gap-2 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
-                    />
-                    <span className="text-primary font-semibold">
-                      {legendLabel}
-                    </span>
+                <div className='mt-4 flex flex-col items-center gap-2'>
+                  <div className='flex items-center gap-2'>
+                    <div className={`h-6 w-6 rounded border border-primary ${bgColorClass}`} />
+                    <span className='font-semibold text-primary'>{legendLabel}</span>
                   </div>
-                  <div className="text-xs text-primary font-medium">
+                  <div className='text-xs font-medium text-primary'>
                     Montants exprimés en {unit}
                   </div>
                 </div>
@@ -82,8 +77,8 @@ export default function DesktopEvolutionChart({
             }}
           />
           <Bar
-            dataKey="value"
-            stackId="a"
+            dataKey='value'
+            stackId='a'
             strokeWidth={1}
             radius={[16, 0, 0, 0]}
             style={{ zIndex: 1 }}
@@ -95,13 +90,13 @@ export default function DesktopEvolutionChart({
                     <foreignObject
                       x={props.x + props.width / 2 - 50}
                       y={props.y - 120}
-                      width="100"
-                      height="120"
-                      style={{ pointerEvents: "auto", zIndex: 1000 }}
+                      width='100'
+                      height='120'
+                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
                     >
-                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
+                      <div className='pointer-events-auto flex flex-col items-center gap-2'>
                         <InterpellerButton siren={siren} />
-                        <div className="text-lg font-semibold text-primary text-center">
+                        <div className='text-center text-lg font-semibold text-primary'>
                           Aucune donnée
                         </div>
                       </div>
@@ -115,23 +110,21 @@ export default function DesktopEvolutionChart({
             {data.map((entry) => (
               <Cell
                 key={`cell-${entry.year}`}
-                fill={entry.isPrimaryMissing ? "#F4D93E" : barColor}
+                fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
                 // darker
-                stroke={entry.isPrimaryMissing ? "#F4D93E" : borderColor}
+                stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
                 strokeWidth={1}
                 strokeOpacity={entry.isPrimaryMissing ? 0 : 1}
               />
             ))}
             <LabelList
-              position="top"
-              formatter={(value: number) =>
-                value === avgValue ? "" : formatValue(value)
-              }
-              fill="#303F8D"
+              position='top'
+              formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
+              fill='#303F8D'
               strokeWidth={0}
-              fontSize="16"
-              fontWeight="600"
-              fontFamily="var(--font-kanit), system-ui, sans-serif"
+              fontSize='16'
+              fontWeight='600'
+              fontFamily='var(--font-kanit), system-ui, sans-serif'
               offset={20}
             />
           </Bar>

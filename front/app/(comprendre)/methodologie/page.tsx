@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { CRITERIA } from '@/utils/constants';
 
 export const metadata: Metadata = {
@@ -28,8 +29,8 @@ export default function Page() {
       <p className='my-6 text-lg'>
         Pour parvenir à ces fins, Transparency International France et Anticor ont rédigé de concert
         un document préparatoire intitulé « Eclaireur Public - Analyse de la transparence des
-        collectivités locales » définissant les objectifs généraux et un cadre qui donne corps à l'objet 
-        « Eclaireur Public », site internet « permettant aux visiteurs de consulter des
+        collectivités locales » définissant les objectifs généraux et un cadre qui donne corps à
+        l'objet « Eclaireur Public », site internet « permettant aux visiteurs de consulter des
         données à jour sur sa collectivité locale ». Avec comme objectif sous-jacent,
         l'accompagnement des acteurs de ces collectivités et l'incitation à améliorer la
         transparence de ces structures.

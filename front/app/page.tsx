@@ -1,6 +1,6 @@
 import HomePageHeader from '#app/components/HomePageHeader';
-import ProjectDescription from '#app/components/ProjectDescription';
 import OurMethodology from '#app/components/OurMethodology';
+import ProjectDescription from '#app/components/ProjectDescription';
 import WhyChallenge from '#app/components/WhyChallenge';
 import CtaGroup from '#app/components/cta/CtaGroup';
 

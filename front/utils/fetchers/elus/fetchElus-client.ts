@@ -1,7 +1,7 @@
-import { Elu } from '#app/models/elu';
+import type { Elu } from '#app/models/elu';
 
-import { Pagination } from '../types';
-import { ElusOptions } from './createSQLQueryParams';
+import type { Pagination } from '../types';
+import type { ElusOptions } from './createSQLQueryParams';
 
 const API_ROUTE = '/api/selected_communities';
 
@@ -13,7 +13,6 @@ const API_ROUTE = '/api/selected_communities';
 export async function fetchElus(options?: ElusOptions, pagination?: Pagination): Promise<Elu[]> {
   const limit = options?.limit;
   const siren = options?.filters?.siren;
-  const type = options?.filters?.type;
 
   const url = new URL(API_ROUTE, window.location.origin);
 

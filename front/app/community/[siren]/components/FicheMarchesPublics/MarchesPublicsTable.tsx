@@ -1,5 +1,6 @@
 'use client';
 
+import EmptyState from '#components/EmptyState';
 import { WithPagination } from '#components/Pagination';
 import { Badge } from '#components/ui/badge';
 import {
@@ -14,7 +15,6 @@ import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePagin
 import { useMarchesPublicsPaginated } from '#utils/hooks/useMarchesPublicsPaginated';
 import { formatAmount } from '#utils/utils';
 
-import EmptyState from '#components/EmptyState';
 import { YearOption } from '../../types/interface';
 import MarchesPublicsMobileSkeleton from '../Skeletons/MarchesPublicsMobileSkeleton';
 import MarchesPublicsTableSkeleton from '../Skeletons/MarchesPublicsTableSkeleton';
@@ -24,15 +24,14 @@ type MarchesPublicsTableProps = {
   year: YearOption;
 };
 
-
 const MAX_ROW_PER_PAGE = 10;
 const MAX_ROW_PER_PAGE_MOBILE = 4;
-const getItemsPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768) ? MAX_ROW_PER_PAGE : MAX_ROW_PER_PAGE_MOBILE;
+const getItemsPerPage = () =>
+  typeof window !== 'undefined' && window.innerWidth >= 768
+    ? MAX_ROW_PER_PAGE
+    : MAX_ROW_PER_PAGE_MOBILE;
 
-export default function MarchesPublicsTable({
-  siren,
-  year,
-}: MarchesPublicsTableProps) {
+export default function MarchesPublicsTable({ siren, year }: MarchesPublicsTableProps) {
   const itemsPerPage = getItemsPerPage();
 
   // First get initial pagination state
@@ -48,14 +47,10 @@ export default function MarchesPublicsTable({
   );
 
   // Then use persistent pagination with the actual data
-  const { totalPage } = usePaginationStateWithTotal(
-    data,
-    isPending,
-    {
-      paramName: 'page_mp',
-      itemsPerPage: itemsPerPage,
-    }
-  );
+  const { totalPage } = usePaginationStateWithTotal(data, isPending, {
+    paramName: 'page_mp',
+    itemsPerPage: itemsPerPage,
+  });
 
   // Rendu du contenu selon l'état
   const renderContent = () => {
@@ -69,16 +64,16 @@ export default function MarchesPublicsTable({
     }
 
     if (isError) {
-      return <div className="text-center text-red-500 p-4">Erreur lors du chargement</div>;
+      return <div className='p-4 text-center text-red-500'>Erreur lors du chargement</div>;
     }
 
     if (!data || data.length === 0) {
       return (
         <EmptyState
-          title="Aucune donnée de marchés publics disponible"
+          title='Aucune donnée de marchés publics disponible'
           description="Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
           siren={siren}
-          className="h-[450px] w-full"
+          className='h-[450px] w-full'
         />
       );
     }
@@ -96,10 +91,10 @@ export default function MarchesPublicsTable({
 
   return (
     <WithPagination
-      className="min-h-[300px] w-full" // hauteur minimum responsive et pleine largeur
+      className='min-h-[300px] w-full' // hauteur minimum responsive et pleine largeur
       totalPage={totalPage}
-      urlParam="page_mp"
-      mode="url"
+      urlParam='page_mp'
+      mode='url'
     >
       {renderContent()}
     </WithPagination>
@@ -122,7 +117,7 @@ export function Table({ rows }: Table) {
   return (
     <>
       {/* Desktop Table */}
-      <div className="hidden md:block w-full">
+      <div className='hidden w-full md:block'>
         <ShadCNTable>
           <TableHeader>
             <TableRow>
@@ -136,11 +131,16 @@ export function Table({ rows }: Table) {
             {rows.map(({ id, names, object, amount, year }) => (
               <TableRow key={id}>
                 <TableCell>
-                  {names.map((name) => name ? (
-                    <Badge key={name} className="bg-brand-2 text-primary rounded-full hover:bg-brand-2/80 m-1">
-                      {name}
-                    </Badge>
-                  ) : null)}
+                  {names.map((name) =>
+                    name ? (
+                      <Badge
+                        key={name}
+                        className='m-1 rounded-full bg-brand-2 text-primary hover:bg-brand-2/80'
+                      >
+                        {name}
+                      </Badge>
+                    ) : null,
+                  )}
                 </TableCell>
                 <TableCell>{object.toLocaleUpperCase()}</TableCell>
                 <TableCell className='text-right'>{formatAmount(amount)}</TableCell>
@@ -152,48 +152,48 @@ export function Table({ rows }: Table) {
       </div>
 
       {/* Mobile Cards */}
-      <div className="block md:hidden space-y-3">
+      <div className='block space-y-3 md:hidden'>
         {rows.map(({ id, names, object, amount, year }) => (
           <div key={id}>
             {/* Vraie carte */}
-            <div className="bg-muted-light rounded-lg p-4 w-full min-h-[200px]">
+            <div className='min-h-[200px] w-full rounded-lg bg-muted-light p-4'>
               {/* Titulaires badges */}
-              <div className="flex flex-wrap gap-1 mb-2.5">
-                {names.map((name) => name ? (
-                  <Badge key={name} className="bg-brand-2 text-primary rounded-full hover:bg-brand-2/80">
-                    {name}
-                  </Badge>
-                ) : null)}
+              <div className='mb-2.5 flex flex-wrap gap-1'>
+                {names.map((name) =>
+                  name ? (
+                    <Badge
+                      key={name}
+                      className='rounded-full bg-brand-2 text-primary hover:bg-brand-2/80'
+                    >
+                      {name}
+                    </Badge>
+                  ) : null,
+                )}
               </div>
 
               {/* Objet/Title */}
-              <h3 className="text-primary font-semibold text-base leading-tight line-clamp-2 mb-2.5">
+              <h3 className='mb-2.5 line-clamp-2 text-base font-semibold leading-tight text-primary'>
                 {object}
               </h3>
 
               {/* Ligne de séparation avant Montant */}
-              <div className="border-b border-muted-border mb-2.5" />
+              <div className='mb-2.5 border-b border-muted-border' />
 
               {/* Montant */}
-              <div className="flex justify-between items-center mb-2.5">
-                <span className="text-muted text-sm">Montant</span>
-                <span className="text-primary font-semibold text-lg">
-                  {formatAmount(amount)}
-                </span>
+              <div className='mb-2.5 flex items-center justify-between'>
+                <span className='text-sm text-muted'>Montant</span>
+                <span className='text-lg font-semibold text-primary'>{formatAmount(amount)}</span>
               </div>
 
               {/* Ligne de séparation avant Année */}
-              <div className="border-b border-muted-border mb-2.5" />
+              <div className='mb-2.5 border-b border-muted-border' />
 
               {/* Année */}
-              <div className="flex justify-between items-center">
-                <span className="text-muted text-sm">Année</span>
-                <span className="text-primary font-medium">
-                  {year}
-                </span>
+              <div className='flex items-center justify-between'>
+                <span className='text-sm text-muted'>Année</span>
+                <span className='font-medium text-primary'>{year}</span>
               </div>
             </div>
-
           </div>
         ))}
       </div>

@@ -1,7 +1,8 @@
 'use client';
 
-import { Community } from '#app/models/community';
 import Image from 'next/image';
+
+import { Community } from '#app/models/community';
 
 import GoBack from '../GoBack';
 import { FicheActionButtons } from './FicheActionButtons';
@@ -13,8 +14,8 @@ type FicheHeaderProps = {
 const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
 
 export function FicheHeader({ community }: FicheHeaderProps) {
-  const communityTitle = community.nom
-  const communityType = community.type
+  const communityTitle = community.nom;
+  const communityType = community.type;
   const location = community.code_postal ? `${community.code_postal}` : '';
   const departementName = community.nom_departement;
 
@@ -22,17 +23,17 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     <div className='relative w-full p-6 lg:px-40 lg:pb-12 lg:pt-4'>
       {/* Background image with high priority */}
       <Image
-        src="/collectivite-header.webp"
-        alt="En-tête collectivité"
+        src='/collectivite-header.webp'
+        alt='En-tête collectivité'
         fill
-        className="object-cover -z-10"
+        className='-z-10 object-cover'
         priority
         fetchPriority='high'
-        sizes="100vw"
+        sizes='100vw'
       />
       <div className='relative z-10 flex flex-col gap-6'>
         {/* Top bar with GoBack and Action buttons - Mobile only */}
-        <div className='flex items-center justify-between lg:hidden h-12'>
+        <div className='flex h-12 items-center justify-between lg:hidden'>
           <GoBack />
           <FicheActionButtons community={community} />
         </div>

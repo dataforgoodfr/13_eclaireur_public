@@ -31,7 +31,7 @@ function wrapText(text: string, maxWidth: number): string[] {
 
 function generateColorMap(names: string[]): Record<string, string> {
   const colorMap: Record<string, string> = {};
-  
+
   // Colors from score-transparency palette (ordered from light to dark)
   const scoreTransparencyColors = [
     '#E8F787', // score-transparency-1 (vert clair)

@@ -6,7 +6,7 @@ import { Community } from '#app/models/community';
 import SearchBar from '#components/SearchBar/SearchBar';
 import { ActionButton } from '#components/ui/action-button';
 
-type FicheComparisonInput = { 
+type FicheComparisonInput = {
   community: Community;
 };
 
@@ -32,34 +32,38 @@ export function FicheComparisonInput({ community }: FicheComparisonInput) {
     <div className='flex flex-col gap-6 p-4'>
       {/* Titre avec nom de la commune */}
       <div className='text-center'>
-        <h2 className='text-xl font-semibold text-primary mb-2'>
-          Comparer <span className='bg-primary text-primary-foreground px-3 py-1 rounded-full text-base'>{community.nom}</span> à
+        <h2 className='mb-2 text-xl font-semibold text-primary'>
+          Comparer{' '}
+          <span className='rounded-full bg-primary px-3 py-1 text-base text-primary-foreground'>
+            {community.nom}
+          </span>{' '}
+          à
         </h2>
-        <p className='text-primary text-sm'>
+        <p className='text-sm text-primary'>
           Comparer les dernières données de dépenses publiques de vos collectivités locales.
         </p>
       </div>
 
       {/* Barre de recherche */}
       <div>
-        <SearchBar 
-          className="relative block w-full"
-          onSelect={(option) => goToComparison(option.siren)} 
+        <SearchBar
+          className='relative block w-full'
+          onSelect={(option) => goToComparison(option.siren)}
         />
       </div>
 
       {/* Communes similaires (cachées pour le moment) */}
       {SHOW_SIMILAR_COMMUNITIES && (
         <div>
-          <h3 className='text-sm font-medium text-primary mb-3'>Communes similaires</h3>
+          <h3 className='mb-3 text-sm font-medium text-primary'>Communes similaires</h3>
           <div className='flex flex-wrap gap-2'>
             {similarCommunities.map((commune) => (
               <ActionButton
                 key={commune.siren}
-                variant="outline"
+                variant='outline'
                 text={commune.nom}
                 onClick={() => goToComparison(commune.siren)}
-                className='bg-secondary hover:bg-secondary/80 border-secondary text-primary rounded-full'
+                className='rounded-full border-secondary bg-secondary text-primary hover:bg-secondary/80'
               />
             ))}
           </div>
