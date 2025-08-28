@@ -3,9 +3,12 @@ import { formatNumberInteger } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
+  budgetTotal?: number | null;
 };
 
-export function CommunityDetails({ community }: CommunityDetailsProps) {
+export function CommunityDetails({ community, budgetTotal }: CommunityDetailsProps) {
+  const budgetEnMillions =
+    typeof budgetTotal === 'number' ? Math.round(budgetTotal / 1_000_000) : null;
   return (
     <>
 
@@ -18,9 +21,11 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
           bgColor='bg-yellow-100'
         />
         <InfoBlock
-          label='Superficie'
-          value={formatNumberInteger(community.superficie_ha || 0)}
-          unit='hectares'
+          label='Budget total'
+          value={
+            budgetEnMillions !== null ? formatNumberInteger(budgetEnMillions) : '—'
+          }
+          unit='M€'
           bgColor='bg-lime-100'
         />
         <InfoBlock
