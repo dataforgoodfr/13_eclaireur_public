@@ -37,6 +37,14 @@
 - **CPV (Common Procurement Vocabulary)**  
   Vocabulaire standardisé utilisé pour classifier les marchés publics, facilitant la recherche et l’analyse des appels d’offres.
 
+- **NUTS (Nomenclature des unités territoriales statistiques)**  
+  Pour faire référence, à des fins statistiques, aux régions des pays, l’UE a développé une nomenclature appelée NUTS (Nomenclature des unités territoriales statistiques).
+
+  La NUTS divise chaque pays de l’UE en 3 niveaux:
+  -  NUTS 1: grandes régions socio-économiques,
+  -  NUTS 2: régions de base (pour les politiques régionales),
+  -  NUTS 3: petites régions (pour des diagnostics particuliers).
+
 - **Formats de fichiers (Parquet, CSV, JSON)**  
   Différents formats pour stocker les données :  
   - **CSV** : format texte simple, largement utilisé mais moins optimisé pour de gros volumes.  
