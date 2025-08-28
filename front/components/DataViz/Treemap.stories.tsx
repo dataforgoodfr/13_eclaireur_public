@@ -1,3 +1,5 @@
+import React from 'react';
+
 import type { Meta, StoryObj } from '@storybook/react';
 
 import type { TreeData } from '../../app/community/[siren]/types/interface';
@@ -747,6 +749,105 @@ export const ConsolidationComparison: Story = {
       description: {
         story:
           "Comparaison visuelle entre l'affichage avec et sans consolidation automatique des petits éléments. La consolidation améliore la lisibilité en regroupant les éléments de faible valeur.",
+      },
+    },
+  },
+};
+
+// Component for the zoom demo story
+function OneLevelZoomDemoComponent(args: TreemapProps) {
+  const [maxAmount, setMaxAmount] = React.useState<number | null>(null);
+  const [zoomStack, setZoomStack] = React.useState<(number | null)[]>([null]);
+
+  function handleClick(value: number) {
+    // Add current zoom level to stack before zooming in
+    if (value !== null) {
+      setZoomStack((prev) => [...prev, maxAmount]);
+      setMaxAmount(value);
+    }
+  }
+
+  function handleZoomOut() {
+    if (zoomStack.length > 1) {
+      // Go back one level
+      const newStack = [...zoomStack];
+      newStack.pop(); // Remove current level
+      const targetLevel = newStack[newStack.length - 1]; // Get previous level
+
+      setZoomStack(newStack);
+      setMaxAmount(targetLevel);
+    }
+  }
+
+  // Filter data based on current zoom level
+  const filteredData = React.useMemo(() => {
+    if (maxAmount === null) return args.data;
+
+    // Simulate filtering by maxAmount (similar to API behavior)
+    if (args.data.type === 'node' && args.data.children) {
+      const filteredChildren = args.data.children.filter((child) => child.value <= maxAmount);
+      return {
+        ...args.data,
+        children: filteredChildren,
+      };
+    }
+    return args.data;
+  }, [maxAmount, args.data]);
+
+  const zoomInfo = `Niveau ${zoomStack.length - 1} | Stack: [${zoomStack
+    .map((level) => (level === null ? 'overview' : `${Math.round(level / 1000)}K€`))
+    .join(' → ')}]`;
+
+  return (
+    <div className='space-y-4'>
+      <div className='rounded-lg border-2 border-blue-200 bg-blue-50 p-4'>
+        <div className='mb-4 flex items-center justify-between'>
+          <h4 className='font-semibold text-blue-800'>🔍 Test Zoom Progressif</h4>
+          <span className='rounded bg-blue-100 px-2 py-1 font-mono text-sm text-blue-700'>
+            {zoomInfo}
+          </span>
+        </div>
+
+        <Treemap
+          {...args}
+          data={filteredData}
+          isZoomActive={maxAmount !== null}
+          handleClick={handleClick}
+          onZoomOut={zoomStack.length > 1 ? handleZoomOut : undefined}
+        />
+
+        <div className='mt-4 space-y-2 text-sm text-blue-700'>
+          <p>
+            <strong>Instructions de test :</strong>
+          </p>
+          <ol className='ml-4 list-decimal space-y-1'>
+            <li>🔍 Cliquez sur un élément pour zoomer (icône zoom-in en haut-droite)</li>
+            <li>🔄 Utilisez le bouton zoom-out (bas-gauche) pour revenir UN niveau en arrière</li>
+            <li>📊 Observez le stack de zoom qui montre le niveau actuel</li>
+            <li>🎯 Le bouton zoom-out n'apparaît que s'il y a un niveau précédent</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const OneLevelZoomDemo: Story = {
+  name: '🔍 Zoom Progressif - Test One-Level Navigation',
+  render: (args) => <OneLevelZoomDemoComponent {...args} />,
+  args: {
+    data: createLargeMockTreeData(), // Use data with many levels for deep zoom testing
+    colorPalette: 'mp',
+    groupMode: 'value-based',
+  },
+  parameters: {
+    docs: {
+      story: {
+        inline: true,
+      },
+      description: {
+        story:
+          '🔍 **NOUVEAU** : Démontre la navigation zoom progressive niveau par niveau. Cliquez sur les éléments pour zoomer, utilisez le bouton zoom-out (bas-gauche) pour revenir exactement UN niveau en arrière. Le stack de zoom montre la progression : overview → niveau 1 → niveau 2, etc. Test interactif complet de la fonctionnalité de zoom intelligent.',
       },
     },
   },

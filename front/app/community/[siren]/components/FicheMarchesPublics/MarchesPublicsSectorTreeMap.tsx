@@ -25,10 +25,10 @@ export default function MarchesPublicsSectorTreemap({
 
   function updatemaxAmount(value: number | null) {
     // Add current zoom level to stack before zooming in
-    if (value !== null && value !== maxAmount) {
+    if (value !== null) {
       setZoomStack((prev) => [...prev, maxAmount]);
+      setmaxAmount(value);
     }
-    setmaxAmount(value);
   }
 
   function handleZoomOut() {

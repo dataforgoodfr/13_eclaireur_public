@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
-import { ZoomIn, ZoomOut } from 'lucide-react';
+import { ZoomOut } from 'lucide-react';
 
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 import type { TooltipProps, TreeData } from '../../app/community/[siren]/types/interface';
@@ -299,11 +299,8 @@ export default function Treemap({
 
   const colorMap = generateHierarchicalColorMap(root, colorPalette, groupMode);
 
-  // Check if zoom-in is possible (has clickable elements)
-  const canZoomIn = root.leaves().some((leaf) => leaf.data.value > 0) && !isZoomActive;
-
   const allShapes = root.leaves().map((leaf) => (
-    <g key={leaf.data.id}>
+    <g key={leaf.data.id} className='group'>
       <path
         d={`
           M ${leaf.x0 + 8} ${leaf.y0}
@@ -318,7 +315,7 @@ export default function Treemap({
         stroke='#303F8D'
         strokeWidth={1}
         fill={colorMap[leaf.data.name]}
-        className='transition-all duration-500 ease-in-out'
+        className='cursor-pointer transition-all duration-500 ease-in-out hover:opacity-80'
         onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
         onMouseMove={(e) => handleOnMouseMove(e)}
         onMouseLeave={() => handleOnMouseLeave()}
@@ -332,6 +329,31 @@ export default function Treemap({
         role='button'
         aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
       />
+      {/* Permanent zoom indicator - only show if not already zoomed and element is large enough */}
+      {!isZoomActive && leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 50 && (
+        <g className='pointer-events-none'>
+          <circle
+            cx={leaf.x1 - 16}
+            cy={leaf.y0 + 12}
+            r={8}
+            fill='none'
+            stroke='#303F8D'
+            strokeWidth={1.5}
+          />
+          <path
+            d={`M ${leaf.x1 - 20} ${leaf.y0 + 12} L ${leaf.x1 - 12} ${leaf.y0 + 12} M ${leaf.x1 - 16} ${leaf.y0 + 8} L ${leaf.x1 - 16} ${leaf.y0 + 16}`}
+            stroke='#303F8D'
+            strokeWidth={1.5}
+            strokeLinecap='round'
+          />
+          <path
+            d={`M ${leaf.x1 - 10} ${leaf.y0 + 18} L ${leaf.x1 - 6} ${leaf.y0 + 22}`}
+            stroke='#303F8D'
+            strokeWidth={1.5}
+            strokeLinecap='round'
+          />
+        </g>
+      )}
       {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
         <text
           x={leaf.x0 + 8}
@@ -350,6 +372,7 @@ export default function Treemap({
           y={leaf.y0 + 38}
           width={leaf.x1 - leaf.x0 - 16}
           height={leaf.y1 - leaf.y0 - 46}
+          className='pointer-events-none'
         >
           <div
             className='pointer-events-none truncate text-sm font-medium leading-tight'
@@ -367,16 +390,6 @@ export default function Treemap({
   return (
     <div className='relative' ref={containerRef} style={{ height }}>
       {tooltip.visible && <TreemapTooltip {...tooltip} />}
-
-      {/* Zoom-in icon - shown when zoom is possible (top-right) */}
-      {canZoomIn && onZoomIn && (
-        <ActionButton
-          icon={<ZoomIn className='h-4 w-4' />}
-          onClick={onZoomIn}
-          className='absolute right-2 top-2 z-10'
-          aria-label='Cliquer sur un élément pour zoomer'
-        />
-      )}
 
       {showZoomControls && (
         <div className='absolute left-2 top-2 z-10 flex flex-col gap-1'>
