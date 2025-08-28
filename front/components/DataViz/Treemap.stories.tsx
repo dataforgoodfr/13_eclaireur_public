@@ -376,11 +376,11 @@ const meta: Meta<typeof Treemap> = {
 			control: {
 				type: "radio",
 			},
-			options: ["legacy", "green"],
+			options: ["mp", "subventions"],
 			description: "Palette de couleurs à utiliser pour le treemap",
 			table: {
-				type: { summary: "legacy | green" },
-				defaultValue: { summary: "green" },
+				type: { summary: "mp | subventions" },
+				defaultValue: { summary: "mp" },
 			},
 		},
 		groupMode: {
@@ -447,7 +447,7 @@ const meta: Meta<typeof Treemap> = {
 	},
 	args: {
 		isZoomActive: false,
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "none",
 		showZoomControls: false,
 		handleClick: (value: number) => {
@@ -463,10 +463,10 @@ export default meta;
 type Story = StoryObj<typeof Treemap>;
 
 export const RealCPVData: Story = {
-	name: " Données CPV Réelles (Recommandé pour test)",
+	name: " Données CPV Réelles - Marchés Publics (Recommandé pour test)",
 	args: {
 		data: createRealCPVData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 	},
 	parameters: {
@@ -480,10 +480,10 @@ export const RealCPVData: Story = {
 };
 
 export const ValueBasedGrouping: Story = {
-	name: " Groupement par Valeurs (Simulation)",
+	name: " Groupement par Valeurs - Subventions (Simulation)",
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "green",
+		colorPalette: "subventions",
 		groupMode: "value-based",
 	},
 	parameters: {
@@ -500,7 +500,7 @@ export const LargeDatasetValueGrouping: Story = {
 	name: " Données Étendues - Groupement par Valeurs",
 	args: {
 		data: createLargeMockTreeData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 	},
 	parameters: {
@@ -517,7 +517,7 @@ export const HierarchicalGradient: Story = {
 	name: " Mode Hiérarchique - Dégradé",
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "gradient",
 	},
 	parameters: {
@@ -534,7 +534,7 @@ export const HierarchicalCategorical: Story = {
 	name: " Mode Hiérarchique - Catégoriel",
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "categorical",
 	},
 	parameters: {
@@ -551,7 +551,7 @@ export const LegacyModeSimple: Story = {
 	name: " Mode Legacy - Simple",
 	args: {
 		data: createMockTreeData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "none",
 	},
 	parameters: {
@@ -564,18 +564,18 @@ export const LegacyModeSimple: Story = {
 	},
 };
 
-export const LegacyPalette: Story = {
-	name: " Palette Legacy - Multicolore",
+export const SubventionsPalette: Story = {
+	name: " Palette Subventions - Tons Bleus",
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "legacy",
+		colorPalette: "subventions",
 		groupMode: "value-based",
 	},
 	parameters: {
 		docs: {
 			description: {
 				story:
-					"Utilisation de la palette multicolore historique avec le nouveau système de groupement par valeurs. Combine la familiarité visuelle avec l'intelligence du groupement.",
+					"Utilisation de la palette spécialisée pour les subventions avec des tons bleus/violets. Idéale pour la visualisation des données de subventions avec le nouveau système de groupement par valeurs.",
 			},
 		},
 	},
@@ -585,7 +585,7 @@ export const WithZoomAndLegend: Story = {
 	name: " Avec Contrôles et Légende",
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 		showZoomControls: true,
 		isZoomActive: true,
@@ -610,7 +610,7 @@ export const ValueGroupingComparison: Story = {
 					Nouveau : Groupement Intelligent par Valeurs
 				</h3>
 				<div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-					<Treemap {...args} groupMode="value-based" colorPalette="green" />
+					<Treemap {...args} groupMode="value-based" colorPalette="mp" />
 					<p className="text-sm text-green-700 mt-2">
 						Groupement automatique en 4 catégories par quantiles | Dégradés
 						intelligents | Identification rapide des priorités
@@ -622,7 +622,7 @@ export const ValueGroupingComparison: Story = {
 					Traditionnel : Mode Séquentiel
 				</h3>
 				<div className="border rounded-lg p-4">
-					<Treemap {...args} groupMode="none" colorPalette="green" />
+					<Treemap {...args} groupMode="none" colorPalette="mp" />
 					<p className="text-sm text-gray-600 mt-2">
 						Coloration séquentielle simple sans analyse des valeurs
 					</p>
@@ -685,7 +685,7 @@ export const AllGroupingModes: Story = {
 	),
 	args: {
 		data: createValueGroupingData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 	},
 	parameters: {
 		layout: "padded",
@@ -699,28 +699,34 @@ export const AllGroupingModes: Story = {
 };
 
 export const PaletteComparison: Story = {
-	name: " Comparaison : Palettes de Couleurs",
+	name: " Comparaison : Palettes Marchés Publics vs Subventions",
 	render: (args) => (
 		<div className="space-y-8">
 			<div className="space-y-4">
 				<h3 className="text-xl font-bold text-primary">
-					Palette Verte (Recommandée)
+					Palette Marchés Publics (Tons Verts)
 				</h3>
 				<div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-					<Treemap {...args} colorPalette="green" groupMode="value-based" />
+					<Treemap {...args} colorPalette="mp" groupMode="value-based" />
 					<p className="text-sm text-green-700 mt-2">
-						Cohérence visuelle | Lisibilité optimale | Dégradés naturels
+						Palette spécialisée pour les marchés publics | Tons verts cohérents
+						| Lisibilité optimale
 					</p>
 				</div>
 			</div>
 			<div className="space-y-4">
 				<h3 className="text-xl font-bold text-primary">
-					Palette Legacy (Multicolore)
+					Palette Subventions (Tons Bleus/Violets)
 				</h3>
 				<div className="border rounded-lg p-4">
-					<Treemap {...args} colorPalette="legacy" groupMode="value-based" />
+					<Treemap
+						{...args}
+						colorPalette="subventions"
+						groupMode="value-based"
+					/>
 					<p className="text-sm text-gray-600 mt-2">
-						Palette historique avec plus de variété chromatique
+						Palette spécialisée pour les subventions | Tons bleus/violets
+						distinctifs
 					</p>
 				</div>
 			</div>
@@ -735,7 +741,7 @@ export const PaletteComparison: Story = {
 		docs: {
 			description: {
 				story:
-					"Comparaison entre la palette verte moderne (recommandée) et la palette multicolore historique, toutes deux utilisant le nouveau système de groupement par valeurs.",
+					"Comparaison entre les deux palettes spécialisées : Marchés Publics (tons verts) et Subventions (tons bleus/violets), toutes deux utilisant le nouveau système de groupement par valeurs.",
 			},
 		},
 	},
@@ -745,7 +751,7 @@ export const ExtremeValues: Story = {
 	name: " Cas Extrême : Variations de Valeurs Importantes",
 	args: {
 		data: createLargeMockTreeData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 		showZoomControls: true,
 	},
@@ -764,7 +770,7 @@ export const ConsolidationTest: Story = {
 	name: " Test : Contrôle de la Consolidation",
 	args: {
 		data: createRealCPVData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 		consolidateSmallItems: true,
 		consolidationThreshold: 2,
@@ -815,7 +821,7 @@ export const ConsolidationComparison: Story = {
 	),
 	args: {
 		data: createRealCPVData(),
-		colorPalette: "green",
+		colorPalette: "mp",
 		groupMode: "value-based",
 	},
 	parameters: {
