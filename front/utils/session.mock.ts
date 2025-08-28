@@ -1,5 +1,6 @@
-import { fn } from '@storybook/test'
-import * as actual from './session'
+import { fn } from '@storybook/test';
 
-export * from './session'
-export const getUserFromSession = fn(actual.getUserFromSession).mockName('getUserFromSession')
+import * as actual from './session';
+
+export * from './session';
+export const getUserFromSession = fn(actual.getUserFromSession).mockName('getUserFromSession');

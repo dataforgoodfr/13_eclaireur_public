@@ -1,10 +1,12 @@
+import { Metadata } from 'next';
+import { Kanit } from 'next/font/google';
+
 import Footer from '#app/components/Footer';
 import Navbar from '#app/components/Navbar';
 import { Toaster } from '#components/ui/toaster';
-import { Metadata } from 'next';
-import { Kanit } from 'next/font/google';
-import './globals.css';
+
 import Providers from './Providers';
+import './globals.css';
 
 const kanit = Kanit({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -54,7 +56,8 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
   },
   other: {
-    'google-fonts': 'https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;500;600;700;800;900&display=swap',
+    'google-fonts':
+      'https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;500;600;700;800;900&display=swap',
   },
 };
 
@@ -64,10 +67,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body
-        className={`${kanit.variable} flex h-screen flex-col antialiased font-sans`}
-      >
+    <html lang='fr'>
+      <body className={`${kanit.variable} flex h-screen flex-col font-sans antialiased`}>
         <Providers>
           <Navbar />
           <div className='relative flex-grow pt-16'>{children}</div>

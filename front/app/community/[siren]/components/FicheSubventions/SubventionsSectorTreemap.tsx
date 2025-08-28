@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
+import EmptyState from '#components/EmptyState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
 import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
-import EmptyState from '#components/EmptyState';
 
 type SubventionsSectorTreemapProps = {
   siren: string;
@@ -41,10 +41,10 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
   if (data.length === 0) {
     return (
       <EmptyState
-        title="Aucune donnée de subventions par secteur disponible"
+        title='Aucune donnée de subventions par secteur disponible'
         description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
         siren={siren}
-        className="h-[450px] w-full"
+        className='h-[450px] w-full'
       />
     );
   }

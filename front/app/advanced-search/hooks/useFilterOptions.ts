@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-
 import { CommunityType } from '#utils/types';
+import { useQuery } from '@tanstack/react-query';
 
 interface FilterOptions {
   types: CommunityType[];
@@ -21,11 +20,12 @@ export function useFilterOptions(filters: UseFilterOptionsParams) {
     queryKey: ['filter-options', filters],
     queryFn: async () => {
       const searchParams = new URLSearchParams();
-      
+
       if (filters.type) searchParams.set('type', filters.type);
       if (filters.population) searchParams.set('population', filters.population.toString());
       if (filters.mp_score) searchParams.set('mp_score', filters.mp_score);
-      if (filters.subventions_score) searchParams.set('subventions_score', filters.subventions_score);
+      if (filters.subventions_score)
+        searchParams.set('subventions_score', filters.subventions_score);
 
       const response = await fetch(`/api/advanced-search/filter-options?${searchParams}`);
       if (!response.ok) {

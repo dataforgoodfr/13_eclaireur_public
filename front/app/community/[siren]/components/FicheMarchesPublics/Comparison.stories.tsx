@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+
 import Comparison from './Comparison';
 
 const comparisonData = [
@@ -71,7 +72,8 @@ const meta: Meta<typeof Comparison> = {
     },
     docs: {
       description: {
-        component: 'Component displaying comparison of public markets budget with regional average.',
+        component:
+          'Component displaying comparison of public markets budget with regional average.',
       },
     },
   },
@@ -88,7 +90,8 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Default state showing comparison charts with realistic budget data. Shows both desktop and mobile responsive views.',
+        story:
+          'Default state showing comparison charts with realistic budget data. Shows both desktop and mobile responsive views.',
       },
     },
   },
@@ -104,7 +107,8 @@ export const DesktopView: Story = {
     },
     docs: {
       description: {
-        story: 'Desktop view showing the full comparison chart with proper formatting and normalized bar sizing.',
+        story:
+          'Desktop view showing the full comparison chart with proper formatting and normalized bar sizing.',
       },
     },
   },
@@ -120,7 +124,8 @@ export const MobileView: Story = {
     },
     docs: {
       description: {
-        story: 'Mobile view showing the horizontal bar comparison with proper spacing and ISO formatting.',
+        story:
+          'Mobile view showing the horizontal bar comparison with proper spacing and ISO formatting.',
       },
     },
   },
@@ -135,7 +140,7 @@ export const MobileView: Story = {
       // Trigger a resize event to update the mobile detection
       window.dispatchEvent(new Event('resize'));
       return (
-        <div className="bg-white p-4 rounded-lg max-w-md mx-auto">
+        <div className='mx-auto max-w-md rounded-lg bg-white p-4'>
           <Story />
         </div>
       );
@@ -215,7 +220,8 @@ export const MobileDepartementalComparison: Story = {
     },
     docs: {
       description: {
-        story: 'Mobile view showing comparison with departmental average. Shows how the mobile component adapts to different comparison types.',
+        story:
+          'Mobile view showing comparison with departmental average. Shows how the mobile component adapts to different comparison types.',
       },
     },
   },
@@ -230,7 +236,7 @@ export const MobileDepartementalComparison: Story = {
       // Trigger a resize event to update the mobile detection
       window.dispatchEvent(new Event('resize'));
       return (
-        <div className="bg-white p-4 rounded-lg max-w-md mx-auto">
+        <div className='mx-auto max-w-md rounded-lg bg-white p-4'>
           <Story />
         </div>
       );

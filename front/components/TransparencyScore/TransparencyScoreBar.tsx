@@ -1,9 +1,6 @@
 import { SVGProps } from 'react';
 
-import {
-  SCORE_TO_ADJECTIF,
-  TransparencyScore,
-} from '#components/TransparencyScore/constants';
+import { SCORE_TO_ADJECTIF, TransparencyScore } from '#components/TransparencyScore/constants';
 import { cn } from '#utils/utils';
 import { ClassNameValue } from 'tailwind-merge';
 
@@ -12,9 +9,11 @@ const CORNER_RADIUS = 12;
 const ACTIVE_SCORE_SCALE = 1.2;
 const GAP = 10;
 
-const scoreValues = Object.values(TransparencyScore).filter(score => score !== TransparencyScore.UNKNOWN);
+const scoreValues = Object.values(TransparencyScore).filter(
+  (score) => score !== TransparencyScore.UNKNOWN,
+);
 
-const SCALE_PADDING = SQUARE_SIZE * (ACTIVE_SCORE_SCALE - 1) / 2; // Space needed for scaled tile
+const SCALE_PADDING = (SQUARE_SIZE * (ACTIVE_SCORE_SCALE - 1)) / 2; // Space needed for scaled tile
 
 const SVG_CONFIG = {
   viewBoxWidth: scoreValues.length * (SQUARE_SIZE + GAP) - GAP + 2 * SCALE_PADDING,
@@ -73,7 +72,11 @@ type TransparencyScoreBarProps = {
   responsive?: boolean;
 };
 
-export function TransparencyScoreBar({ score: activeScore, className, responsive = true }: TransparencyScoreBarProps) {
+export function TransparencyScoreBar({
+  score: activeScore,
+  className,
+  responsive = true,
+}: TransparencyScoreBarProps) {
   const translateDueToScaleFactor = -5;
 
   const getScoreColor = (score: TransparencyScore) => {
@@ -98,23 +101,23 @@ export function TransparencyScoreBar({ score: activeScore, className, responsive
     if (!activeScore || activeScore === TransparencyScore.UNKNOWN) {
       return SVG_CONFIG.viewBoxWidth / 2;
     }
-    
+
     const scoreIndex = scoreValues.indexOf(activeScore);
     const idealX = SVG_CONFIG.padding + scoreIndex * (SQUARE_SIZE + GAP) + SQUARE_SIZE / 2;
     const minX = 60; // Minimum X to avoid text cutoff on left
     // More space on right for "Très insuffisant" (score E)
-    const maxX = SVG_CONFIG.viewBoxWidth - 90; 
-    
+    const maxX = SVG_CONFIG.viewBoxWidth - 90;
+
     return Math.max(minX, Math.min(maxX, idealX));
   };
 
   return (
     <svg
-      className={cn(responsive && 'w-full h-auto max-w-md', className)}
+      className={cn(responsive && 'h-auto w-full max-w-md', className)}
       width={!responsive ? SVG_CONFIG.viewBoxWidth : undefined}
       height={!responsive ? SVG_CONFIG.viewBoxHeight : undefined}
       viewBox={`0 0 ${SVG_CONFIG.viewBoxWidth} ${SVG_CONFIG.viewBoxHeight}`}
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio='xMidYMid meet'
     >
       <g transform={`translate(${SVG_CONFIG.padding}, ${SVG_CONFIG.padding})`}>
         {scoreValues.map((scoreValue, i) => {
@@ -141,12 +144,11 @@ export function TransparencyScoreBar({ score: activeScore, className, responsive
         x={getTextXPosition()}
         y={SVG_CONFIG.padding + SQUARE_SIZE + 25}
         textAnchor='middle'
-        className='font-bold fill-blue-900 text-lg'
+        className='fill-blue-900 text-lg font-bold'
       >
         {activeScore === TransparencyScore.UNKNOWN || activeScore === null
           ? 'Non communiqué'
-          : SCORE_TO_ADJECTIF[activeScore]
-        }
+          : SCORE_TO_ADJECTIF[activeScore]}
       </text>
     </svg>
   );

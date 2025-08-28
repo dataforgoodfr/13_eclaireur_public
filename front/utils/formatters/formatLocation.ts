@@ -1,38 +1,3 @@
-import { CommunityType } from './types';
-
-export function formatDate(
-  date: Date | string | number | undefined,
-  opts: Intl.DateTimeFormatOptions = {},
-) {
-  if (!date) return '';
-
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      month: opts.month ?? 'long',
-      day: opts.day ?? 'numeric',
-      year: opts.year ?? 'numeric',
-      ...opts,
-    }).format(new Date(date));
-  } catch {
-    return '';
-  }
-}
-
-export function formatCommunityType(type: CommunityType): string {
-  const typeLabels: Record<CommunityType, string> = {
-    [CommunityType.Region]: 'Région',
-    [CommunityType.Departement]: 'Département',
-    [CommunityType.Commune]: 'Commune',
-    [CommunityType.Metropole]: 'Métropole',
-    [CommunityType.CTU]: 'Collectivité territoriale unique',
-    [CommunityType.CA]: "Communauté d'agglomération",
-    [CommunityType.CC]: 'Communauté de communes',
-    [CommunityType.EPT]: 'Établissement public territorial',
-  };
-
-  return typeLabels[type] || type;
-}
-
 /**
  * Normalize French location names (cities, departments) formatting
  * according to French typographic conventions
@@ -45,15 +10,14 @@ export function formatLocationName(name: string): string {
 
   // Fix common missing accents in city names
   formatted = formatted
-    .replace(/\bepartement\b/gi, 'épartement')
-    .replace(/\betropole\b/gi, 'étropole');
+    .replace(/\bdepartement\b/gi, 'département')
+    .replace(/\bmetropole\b/gi, 'métropole');
 
   // Remove prefixes like "Commune de", "Ville de", etc. (but keep Département and Métropole)
   formatted = formatted.replace(/^(commune|ville|city)\s+(de|d')\s*/gi, '');
 
   // Capitalization rules
   formatted = formatted
-
     // Convert to lowercase first
     .toLowerCase()
     // Capitalize first letter
@@ -64,15 +28,18 @@ export function formatLocationName(name: string): string {
     .replace(/'(\w)/g, (_, letter) => `'${letter.toUpperCase()}`)
     // Capitalize definite articles at word boundaries (except de, du, des, de la)
     .replace(
-      /\b(le|la|les|de|du|des|de la|de l'|des)\b/gi,
+      /\b(le|la|les)\b/gi,
       (match) => match.charAt(0).toUpperCase() + match.slice(1).toLowerCase(),
     )
-    // lowercase prepositions
-    .replace(/\b(de|du|des|de la|de l'|des)\b/gi, (match) => match.toLowerCase())
+    // Keep prepositions lowercase
+
     // Capitalize "Saint" and "Sainte"
     .replace(/\bsaint(e?)\b/gi, (_, e) => `Saint${e ? 'e' : ''}`)
     // Capitalize after space
-    .replace(/\s(\w)/g, (_, letter) => ` ${letter.toUpperCase()}`);
+    .replace(/\s(\w)/g, (_, letter) => ` ${letter.toUpperCase()}`)
+    // Final fix for "de la" after space capitalization
+    .replace(/\bde\s+La\b/g, 'de la')
+    .replace(/\b(De|Du|Des)\b/g, (match) => match.toLowerCase());
 
   return formatted;
 }

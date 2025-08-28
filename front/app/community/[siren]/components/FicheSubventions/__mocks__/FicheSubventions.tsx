@@ -1,5 +1,6 @@
 import EmptyState from '#components/EmptyState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
+
 import { FicheCard } from '../FicheCard';
 
 export async function FicheSubventions({ siren }: { siren: string }) {
@@ -8,10 +9,10 @@ export async function FicheSubventions({ siren }: { siren: string }) {
       <FicheCard>
         <h2 className='pb-3 text-center text-2xl'>Subventions</h2>
         <EmptyState
-          title="Aucune donnée de subventions disponible"
+          title='Aucune donnée de subventions disponible'
           description="Il n'y a pas de données de subventions disponibles. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
           siren={siren}
-          className="h-[450px] w-full"
+          className='h-[450px] w-full'
         />
       </FicheCard>
     );
