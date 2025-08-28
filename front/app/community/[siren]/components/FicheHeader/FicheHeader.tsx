@@ -1,7 +1,6 @@
 'use client';
 
 import { Community } from '#app/models/community';
-import { formatCommunityType } from '#utils/format';
 import Image from 'next/image';
 
 import GoBack from '../GoBack';
@@ -14,8 +13,8 @@ type FicheHeaderProps = {
 const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
 
 export function FicheHeader({ community }: FicheHeaderProps) {
-  const communityTitle = community.nom;
-  const communityType = formatCommunityType(community.type);
+  const communityTitle = community.nom
+  const communityType = community.type
   const location = community.code_postal ? `${community.code_postal}` : '';
   const departementName = community.nom_departement;
 

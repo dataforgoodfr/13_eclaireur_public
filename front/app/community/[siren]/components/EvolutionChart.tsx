@@ -23,7 +23,7 @@ const CHART_CONFIG = {
     barColor: '#CAD2FC', // score-transparence mp (brand-2)
     borderColor: '#303F8D',
     legendLabels: {
-      amounts: 'Montant des marchés publics publiées',
+      amounts: 'Montant des marchés publics publiés',
       counts: 'Nombre de marchés publics publiées',
     },
   },

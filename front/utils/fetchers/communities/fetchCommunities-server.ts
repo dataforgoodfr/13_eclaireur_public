@@ -1,8 +1,17 @@
-import { Community } from '#app/models/community';
-import { getQueryFromPool } from '#utils/db';
+import type { Community } from "#app/models/community";
+import { getQueryFromPool } from "#utils/db";
+import { formatCommunityType } from "#utils/format";
+import {
+	formatDepartmentName,
+	formatLocationName,
+} from "#utils/formatters/formatLocation";
+import { CommunityType } from "#utils/types.js";
 
-import { Pagination } from '../types';
-import { CommunitiesOptions, createSQLQueryParams } from './createSQLQueryParams';
+import type { Pagination } from "../types";
+import {
+	type CommunitiesOptions,
+	createSQLQueryParams,
+} from "./createSQLQueryParams";
 
 /**
  * Fetch the communities (SSR) with options/filters
@@ -10,10 +19,20 @@ import { CommunitiesOptions, createSQLQueryParams } from './createSQLQueryParams
  * @returns
  */
 export async function fetchCommunities(
-  options?: CommunitiesOptions,
-  pagination?: Pagination,
+	options?: CommunitiesOptions,
+	pagination?: Pagination,
 ): Promise<Community[]> {
-  const params = createSQLQueryParams(options, pagination);
+	const params = createSQLQueryParams(options, pagination);
 
-  return getQueryFromPool(...params) as Promise<Community[]>;
+	const communities = (await getQueryFromPool(...params)) as Community[];
+
+	// Normalize French location names
+	return communities.map((community) => ({
+		...community,
+		nom: formatLocationName(community.nom),
+		type: formatCommunityType(community.type as CommunityType),
+		nom_departement: community.nom_departement
+			? formatDepartmentName(community.nom_departement)
+			: null,
+	}));
 }

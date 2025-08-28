@@ -6,8 +6,8 @@ import { fetchSubventionsAvailableYears } from '#utils/fetchers/subventions/fetc
 import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
 
-import { FicheCard } from '../FicheCard';
 import EmptyState from '#components/EmptyState';
+import { FicheCard } from '../FicheCard';
 import { SubventionsWithState } from './SubventionsWithState';
 
 async function getFewSubventions(siren: string) {
@@ -29,7 +29,7 @@ const SubventionsHeader = ({ transparencyIndex }: { transparencyIndex?: Transpar
       {transparencyIndex && (
         <div className="order-1 sm:order-2 md:mb-4 mb-2 sm:mb-0">
           <BadgeCommunity
-            text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
+            text={`Indice de transparence : ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
             className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
           />
