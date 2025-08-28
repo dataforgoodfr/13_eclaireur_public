@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
@@ -12,11 +12,16 @@ import type { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 type SubventionsSectorTreemapProps = {
   siren: string;
   year: YearOption;
+  ref: RefObject<HTMLDivElement | null>;
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;
 
-export default function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
+export default function SubventionsSectorTreemap({
+  siren,
+  year,
+  ref,
+}: SubventionsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
 
@@ -85,6 +90,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
 
   return (
     <Treemap
+      ref={ref}
       data={treeData}
       isZoomActive={maxAmount !== null}
       handleClick={updatemaxAmount}

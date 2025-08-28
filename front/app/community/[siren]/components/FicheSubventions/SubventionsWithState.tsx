@@ -15,12 +15,14 @@ interface SubventionsWithStateProps {
   availableYears: number[];
   transparencyIndex?: TransparencyScore | null;
   communityType: CommunityType;
+  communityName: string;
 }
 
 export function SubventionsWithState({
   siren,
   availableYears,
   communityType,
+  communityName,
 }: SubventionsWithStateProps) {
   const [activeTab, setActiveTab] = useSubventionsTab();
 
@@ -54,10 +56,10 @@ export function SubventionsWithState({
       </TabsList>
 
       <TabsContent value={TAB_VALUES.SUBVENTIONS.TRENDS}>
-        <Evolution siren={siren} />
+        <Evolution siren={siren} communityName={communityName} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.DISTRIBUTION}>
-        <Distribution siren={siren} availableYears={availableYears} />
+        <Distribution siren={siren} availableYears={availableYears} communityName={communityName} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.SUBVENTIONS.COMPARISON}>
         <Comparison siren={siren} communityType={communityType} />

@@ -1,5 +1,7 @@
 'use client';
 
+import { RefObject } from 'react';
+
 import { useMarchesPublicsYearlyAmounts } from '#utils/hooks/useMarchesPublicsYearlyAmounts';
 import { useMarchesPublicsYearlyCounts } from '#utils/hooks/useMarchesPublicsYearlyCounts';
 
@@ -8,9 +10,10 @@ import { EvolutionChart } from '../EvolutionChart';
 type MarchesPublicsChartProps = {
   siren: string;
   displayMode: 'amounts' | 'counts';
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-export function MarchesPublicsChart({ siren, displayMode }: MarchesPublicsChartProps) {
+export function MarchesPublicsChart({ siren, displayMode, ref }: MarchesPublicsChartProps) {
   const {
     data: amountsData,
     isPending: amountsPending,
@@ -29,6 +32,7 @@ export function MarchesPublicsChart({ siren, displayMode }: MarchesPublicsChartP
 
   return (
     <EvolutionChart
+      ref={ref}
       siren={siren}
       displayMode={displayMode}
       chartType='marches-publics'

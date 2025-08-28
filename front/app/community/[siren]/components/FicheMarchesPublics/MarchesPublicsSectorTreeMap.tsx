@@ -13,7 +13,7 @@ import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
   year: YearOption;
-  ref: RefObject<SVGSVGElement | null>;
+  ref: RefObject<HTMLDivElement | null>;
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;

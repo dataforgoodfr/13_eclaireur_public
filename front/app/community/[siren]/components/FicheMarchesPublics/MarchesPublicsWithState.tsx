@@ -54,7 +54,7 @@ export function MarchesPublicsWithState({
       </TabsList>
 
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.TRENDS}>
-        <Evolution siren={siren} />
+        <Evolution siren={siren} communityName={communityName} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.DISTRIBUTION}>
         <Distribution siren={siren} availableYears={availableYears} communityName={communityName} />
