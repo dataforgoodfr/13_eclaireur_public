@@ -3,9 +3,11 @@ import { formatNumberInteger } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
+  compare?: boolean;
+  left?: boolean;
 };
 
-export function CommunityDetails({ community }: CommunityDetailsProps) {
+export function CommunityDetails({ community, compare, left }: CommunityDetailsProps) {
   return (
     <>
       {/* Info blocks */}
@@ -14,19 +16,19 @@ export function CommunityDetails({ community }: CommunityDetailsProps) {
           label='Population'
           value={formatNumberInteger(community.population)}
           unit='habitants'
-          bgColor='bg-yellow-100'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-yellow-100'}
         />
         <InfoBlock
           label='Superficie'
           value={formatNumberInteger(community.superficie_ha || 0)}
           unit='hectares'
-          bgColor='bg-lime-100'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-lime-100'}
         />
         <InfoBlock
           label="Nombre d'agents administratifs"
           value={formatNumberInteger(community.tranche_effectif)}
           unit='agents'
-          bgColor='bg-indigo-100'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-indigo-100'}
         />
       </div>
     </>

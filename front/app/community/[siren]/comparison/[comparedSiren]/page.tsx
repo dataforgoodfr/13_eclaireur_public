@@ -9,6 +9,7 @@ import { HeaderComparison } from './components/HeaderComparison';
 import { MPSubvComparison } from './components/MPSubvComparison';
 import { TransparencyComparison } from './components/TransparencyComparison';
 import { ComparisonHeader } from './components/shared/ComparisonHeader';
+import { ComparisonModificationCard } from './components/shared/ComparisonModificationCard';
 import { DataTableSkeleton } from './components/skeletons/DataTableSkeleton';
 import { TransparencySkeleton } from './components/skeletons/TransparencySkeleton';
 
@@ -48,11 +49,10 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      {/* Header statique unifié - rendu immédiat */}
       <ComparisonHeader community1={community1} community2={community2} />
+      <div className='mx-5 my-6 max-w-screen-xl md:my-16'>
+        <ComparisonModificationCard currentCommunity={community1} comparedWith={community2} />
 
-      <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
-        {/* Informations générales - rendu immédiat */}
         <HeaderComparison community1={community1} community2={community2} />
 
         {/* Sections dynamiques avec Suspense pour streaming */}

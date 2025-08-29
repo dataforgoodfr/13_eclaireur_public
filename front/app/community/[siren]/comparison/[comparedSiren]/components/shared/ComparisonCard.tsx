@@ -3,12 +3,12 @@ import type { ReactNode } from 'react';
 import { cn } from '#utils/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 
-const cardVariants = cva('rounded p-4 space-y-4 transition-all duration-200', {
+const cardVariants = cva('rounded-3xl p-4 space-y-4 transition-all duration-200', {
   variants: {
     variant: {
       default: 'bg-gray-100 hover:bg-gray-50',
-      primary: 'bg-blue-50 hover:bg-blue-25 border border-blue-200',
-      secondary: 'bg-green-50 hover:bg-green-25 border border-green-200',
+      primary: 'border border-primary-light',
+      secondary: 'border border-primary-light',
     },
     size: {
       sm: 'w-48 p-3',
