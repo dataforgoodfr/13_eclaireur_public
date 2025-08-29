@@ -107,7 +107,7 @@ class BaremeEnricher(BaseEnricher):
             "C": 2,
             "D": 1,
             "E": 0,
-        }  # correspond à ton ancien bareme_agrege
+        }
         return pl.col(column).replace_strict(mapping).cast(pl.Int64)
 
     @staticmethod
