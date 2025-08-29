@@ -7,6 +7,8 @@ type SideBySideComparisonProps = {
   leftChild: ReactNode;
   rightChild: ReactNode;
   className?: string;
+  leftNoPadding?: boolean;
+  rightNoPadding?: boolean;
 };
 
 export function SideBySideComparison({
@@ -16,9 +18,12 @@ export function SideBySideComparison({
 }: SideBySideComparisonProps) {
   return (
     <div className={cn('flex flex-col justify-between gap-8 md:flex-row', className)}>
-      <Card className='flex-1 border-[1px] border-muted p-8'>{leftChild}</Card>
-
-      <Card className='flex-1 border-[1px] border-muted p-8'>{rightChild}</Card>
+      <Card className="flex h-full flex-1 flex-col rounded-2xl border-[1px] border-muted p-8 has-[img[alt='Erreur']]:p-0">
+        {leftChild}
+      </Card>
+      <Card className="flex h-full flex-1 flex-col rounded-2xl border-[1px] border-muted p-8 has-[img[alt='Erreur']]:p-0">
+        {rightChild}
+      </Card>
     </div>
   );
 }

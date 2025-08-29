@@ -1,5 +1,6 @@
 'use client';
 
+import EmptyState from '#components/EmptyState';
 import Loading from '#components/ui/Loading';
 import {
   Table as ShadCNTable,
@@ -64,13 +65,20 @@ type ComparingMPSubvProperties = {
 function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvProperties) {
   const { data, isPending, isError } = useMPSubvComparison(siren, year, comparisonType);
 
-  if (isPending || isError) {
+  // Show loading state
+  if (isPending) {
     return <Loading />;
   }
 
-  if (data.top5 === undefined) {
+  // Show EmptyState for actual errors or missing data
+  if (isError || !data || data.top5 === undefined) {
     return (
-      <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Aucunes données publiées</div>
+      <EmptyState
+        title={`Aucune donnée de ${getName(comparisonType)} disponible`}
+        description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.`}
+        siren={siren}
+        className='h-full'
+      />
     );
   }
 
