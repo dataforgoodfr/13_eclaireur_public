@@ -58,7 +58,7 @@ export function ScoreTile({
         y={size / 2 + 5 / 2}
         textAnchor='middle'
         dominantBaseline='middle'
-        className='fill-blue-900 font-bold'
+        className='fill-primary font-bold'
       >
         {score}
       </text>

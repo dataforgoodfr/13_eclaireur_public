@@ -66,13 +66,13 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
               <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
             )}
           </svg>
-          <p className='text-center text-xs font-medium'>
+          <h4 className=''>
             {data?.subventions_score && !isPending && !isError
               ? SCORE_TO_ADJECTIF[data.subventions_score]
               : isPending
                 ? ''
                 : 'Non communiqué'}
-          </p>
+          </h4>
         </div>
       </div>
 
@@ -93,13 +93,13 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
               <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
             )}
           </svg>
-          <p className='text-center text-xs font-medium'>
+          <h4>
             {data?.mp_score && !isPending && !isError
               ? SCORE_TO_ADJECTIF[data.mp_score]
               : isPending
                 ? ''
                 : 'Non communiqué'}
-          </p>
+          </h4>
         </div>
       </div>
     </div>
