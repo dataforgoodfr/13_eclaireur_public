@@ -148,7 +148,7 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
           <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
         )}
       </svg>
-      <p className='text-center text-xs font-medium text-blue-900'>{label}</p>
+      <p className='text-center text-xs font-medium text-primary-900'>{label}</p>
     </div>
   );
 
@@ -156,13 +156,13 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
     <Card className='p-4'>
       {/* Header avec les noms des villes */}
       <div className='mb-4 flex items-center justify-between border-b pb-4'>
-        <span className='text-sm font-medium'>Ville de Paris</span>
-        <span className='text-sm font-medium'>Dijon Métropole</span>
+        <span className='text-sm font-medium text-primary'>Ville de Paris</span>
+        <span className='text-sm font-medium text-primary'>Dijon Métropole</span>
       </div>
 
       {/* Section Marchés publics */}
       <div className='mb-4 border-b pb-4'>
-        <h4 className='mb-3 text-center text-sm font-semibold text-blue-900'>
+        <h4 className='mb-3 text-center text-sm font-semibold text-primary-900'>
           Transparence des marchés publics
         </h4>
         <div className='flex justify-around'>
@@ -173,7 +173,7 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
 
       {/* Section Subventions */}
       <div>
-        <h4 className='mb-3 text-center text-sm font-semibold text-blue-900'>
+        <h4 className='mb-3 text-center text-sm font-semibold text-primary-900'>
           Transparence des subventions
         </h4>
         <div className='flex justify-around'>

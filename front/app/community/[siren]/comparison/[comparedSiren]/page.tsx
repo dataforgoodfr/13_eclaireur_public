@@ -62,16 +62,16 @@ export default async function Page({ params }: PageProps) {
 
         <Suspense fallback={<DataTableSkeleton title='Marchés publics' />}>
           <MPSubvComparison
-            siren1={community1.siren}
-            siren2={community2.siren}
+            community1={community1}
+            community2={community2}
             comparisonType={ComparisonType.Marches_Publics}
           />
         </Suspense>
 
         <Suspense fallback={<DataTableSkeleton title='Subventions' />}>
           <MPSubvComparison
-            siren1={community1.siren}
-            siren2={community2.siren}
+            community1={community1}
+            community2={community2}
             comparisonType={ComparisonType.Subventions}
           />
         </Suspense>

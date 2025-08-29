@@ -1,7 +1,6 @@
 import type { Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
-import { formatCommunityType } from '#utils/format';
-import { formatDepartmentName, formatLocationName } from '#utils/formatters/formatLocation';
+import { formatCommunityType, formatDepartmentName, formatLocationName } from '#utils/format';
 import { CommunityType } from '#utils/types.js';
 
 import type { Pagination } from '../types';
