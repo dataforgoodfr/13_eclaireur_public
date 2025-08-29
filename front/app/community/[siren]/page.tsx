@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 
 import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/fetchCommunityBudgetTotal';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
+import { fetchSimilarCommunityList } from '#utils/fetchers/communities/fetchSimilarCommunityList-server';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import type { CommunityType } from '#utils/types';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
@@ -46,7 +47,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
   const community = await getCommunity(siren);
-  const budgetTotal = await fetchCommunityBudgetTotal(siren);
+  const budgetTotal = await fetchCommunityBudgetTotal(siren);  
+  const similarCommunityList = await fetchSimilarCommunityList(siren);
+
   // TODO - get and add the last update date
   // const lastUpdateText = `Derniere mise a jour`;
   const score = community.transparencyScore || TransparencyScore.UNKNOWN;
@@ -54,7 +57,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
   return (
     <>
-      <FicheHeader community={community} />
+      <FicheHeader community={community} similarCommunityList={similarCommunityList} />
       <div className='mx-auto mb-6 mt-4 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 px-4 lg:mb-16 lg:mt-16 lg:gap-y-16'>
         <Suspense fallback={<FicheIdentiteSkeleton />}>
           <FicheIdentite community={community} budgetTotal={budgetTotal} />
