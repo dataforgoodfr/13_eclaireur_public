@@ -40,7 +40,7 @@ function getCustomRoundedRectPath(width: number, height: number, r: number) {
   `;
 }
 
-function ScoreTile({
+export function ScoreTile({
   score,
   rectangleClassName,
   size = SQUARE_SIZE,
@@ -74,6 +74,23 @@ type TransparencyScoreBarProps = {
   isError?: boolean;
 };
 
+export const getScoreColor = (score: TransparencyScore) => {
+  switch (score) {
+    case TransparencyScore.A:
+      return 'fill-score-A';
+    case TransparencyScore.B:
+      return 'fill-score-B';
+    case TransparencyScore.C:
+      return 'fill-score-C';
+    case TransparencyScore.D:
+      return 'fill-score-D';
+    case TransparencyScore.E:
+      return 'fill-score-E';
+    default:
+      return 'fill-muted-light';
+  }
+};
+
 export function TransparencyScoreBar({
   score: activeScore,
   className,
@@ -85,23 +102,6 @@ export function TransparencyScoreBar({
 
   // Use null score for pending/error state to show default appearance
   const displayScore = isPending || isError ? null : activeScore;
-
-  const getScoreColor = (score: TransparencyScore) => {
-    switch (score) {
-      case TransparencyScore.A:
-        return 'fill-score-A';
-      case TransparencyScore.B:
-        return 'fill-score-B';
-      case TransparencyScore.C:
-        return 'fill-score-C';
-      case TransparencyScore.D:
-        return 'fill-score-D';
-      case TransparencyScore.E:
-        return 'fill-score-E';
-      default:
-        return 'fill-muted-light';
-    }
-  };
 
   // Calculate text position - clamp to keep it within bounds
   const getTextXPosition = () => {

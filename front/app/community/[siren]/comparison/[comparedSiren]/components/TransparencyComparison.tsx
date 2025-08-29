@@ -1,7 +1,11 @@
 'use client';
 
-import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScoreBar';
-import { SCORE_NON_DISPONIBLE, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
+import {
+  ScoreTile,
+  TransparencyScoreBar,
+  getScoreColor,
+} from '#components/TransparencyScore/TransparencyScoreBar';
+import { SCORE_TO_ADJECTIF, TransparencyScore } from '#components/TransparencyScore/constants';
 import SectionSeparator from '#components/utils/SectionSeparator';
 import { useTransparencyScore } from '#utils/hooks/comparison/useTransparencyScore';
 
@@ -51,16 +55,25 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
             isError={isError}
           />
         </div>
-        <p className='md:hidden'>
-          <strong>
-            {data?.subventions_score !== null && data?.subventions_score !== undefined
-              ? data.subventions_score.toString()
-              : SCORE_NON_DISPONIBLE}
-          </strong>
-          {data?.subventions_score !== null && data?.subventions_score !== undefined && (
-            <span> : {SCORE_TO_ADJECTIF[data.subventions_score]}</span>
-          )}
-        </p>
+        <div className='flex flex-col items-center gap-2 md:hidden'>
+          <svg width='60' height='60' viewBox='0 0 60 60'>
+            {data?.subventions_score && !isPending && !isError ? (
+              <ScoreTile
+                score={data.subventions_score}
+                rectangleClassName={getScoreColor(data.subventions_score)}
+              />
+            ) : (
+              <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
+            )}
+          </svg>
+          <p className='text-center text-xs font-medium'>
+            {data?.subventions_score && !isPending && !isError
+              ? SCORE_TO_ADJECTIF[data.subventions_score]
+              : isPending
+                ? ''
+                : 'Non communiqué'}
+          </p>
+        </div>
       </div>
 
       <div>
@@ -72,16 +85,22 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
             isError={isError}
           />
         </div>
-        <p className='md:hidden'>
-          <strong>
-            {data?.mp_score !== null && data?.mp_score !== undefined
-              ? data.mp_score.toString()
-              : SCORE_NON_DISPONIBLE}
-          </strong>
-          {data?.mp_score !== null && data?.mp_score !== undefined && (
-            <span> : {SCORE_TO_ADJECTIF[data.mp_score]}</span>
-          )}
-        </p>
+        <div className='flex flex-col items-center gap-2 md:hidden'>
+          <svg width='60' height='60' viewBox='0 0 60 60'>
+            {data?.mp_score && !isPending && !isError ? (
+              <ScoreTile score={data.mp_score} rectangleClassName={getScoreColor(data.mp_score)} />
+            ) : (
+              <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
+            )}
+          </svg>
+          <p className='text-center text-xs font-medium'>
+            {data?.mp_score && !isPending && !isError
+              ? SCORE_TO_ADJECTIF[data.mp_score]
+              : isPending
+                ? ''
+                : 'Non communiqué'}
+          </p>
+        </div>
       </div>
     </div>
   );
