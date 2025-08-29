@@ -26,7 +26,7 @@ const CHART_CONFIG = {
     borderColor: '#303F8D',
     legendLabels: {
       amounts: 'Montant des marchés publics publiés',
-      counts: 'Nombre de marchés publics publiées',
+      counts: 'Nombre de marchés publics publiés',
     },
   },
   subventions: {
@@ -78,6 +78,7 @@ export function EvolutionChart({
       siren={siren}
       legendLabel={config.legendLabels[displayMode]}
       chartType={chartType}
+      showLegendUnit={isAmountsMode}
     />
   );
 }
@@ -94,9 +95,18 @@ type BarChartProps = {
   siren?: string;
   legendLabel: string;
   chartType: ChartDataType;
+  showLegendUnit: boolean;
 };
 
-function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }: BarChartProps) {
+function BarChart({
+  data,
+  barColor,
+  borderColor,
+  siren,
+  legendLabel,
+  chartType,
+  showLegendUnit,
+}: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   // Use shared chart data logic
@@ -130,7 +140,7 @@ function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }
         legendLabel={legendLabel}
         labelColor='#303F8D'
         siren={siren}
-        unitLabel={unit}
+        unitLabel={showLegendUnit ? unit : undefined}
       />
     );
   }
@@ -141,7 +151,7 @@ function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }
       data={chartDataForDisplay}
       barColor={barColor}
       borderColor={borderColor}
-      unit={unit}
+      unit={showLegendUnit ? unit : undefined}
       formatValue={formatValue}
       avgValue={avgValue}
       legendLabel={legendLabel}

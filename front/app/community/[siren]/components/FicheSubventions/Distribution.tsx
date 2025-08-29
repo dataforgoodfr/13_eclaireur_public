@@ -24,14 +24,14 @@ export default function Distribution({ siren, availableYears }: DistributionProp
 
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
+      <div className='mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center'>
+        <div className='flex flex-col items-center gap-2'>
           <h3 className='py-2 text-xl'>Répartition par secteur</h3>
           <GraphSwitch
             isActive={isTableDisplayed}
             onChange={setIsTableDisplayed}
-            label1='graphique'
-            label2='tableau'
+            label1='Graphique'
+            label2='Tableau'
           />
         </div>
         <div className='flex items-center gap-2'>

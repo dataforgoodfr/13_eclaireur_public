@@ -30,12 +30,12 @@ const SubventionsHeader = ({
   transparencyIndex?: TransparencyScore | null;
 }) => {
   return (
-    <div className='flex min-h-[80px] flex-col items-center justify-between sm:flex-row sm:items-center'>
-      <div className='order-2 flex items-center gap-2 sm:order-1'>
+    <div className='flex min-h-[80px] flex-col justify-between sm:flex-row sm:items-center'>
+      <div className='order-2 flex gap-2 sm:order-1'>
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Subventions</h2>
       </div>
       {transparencyIndex && (
-        <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
+        <div className='order-1 mb-2 sm:order-2 sm:mb-0'>
           <BadgeCommunity
             text={`Indice de transparence : ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
