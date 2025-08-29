@@ -8,7 +8,7 @@ type ActionButtonProps = {
   children?: ReactNode;
   icon?: ReactNode;
   text?: string;
-  variant?: 'default' | 'outline';
+  variant?: 'default' | 'outline' | 'action';
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
@@ -41,6 +41,7 @@ export function ActionButton({
         // Variant-specific styles
         variant === 'outline' && 'border-gray-300 bg-white text-primary hover:bg-gray-50',
         variant === 'default' && 'bg-primary hover:bg-primary/90',
+        variant === 'action' && 'h-20 w-16 bg-primary hover:bg-primary/90 [&_svg]:size-6',
         className,
       )}
     >
@@ -48,7 +49,7 @@ export function ActionButton({
         children
       ) : (
         <>
-          {icon}
+          {variant === 'action' ? icon : icon}
           {text && <span className={icon ? 'ml-2' : ''}>{text}</span>}
         </>
       )}
