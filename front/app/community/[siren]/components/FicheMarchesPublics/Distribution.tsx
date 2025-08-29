@@ -8,6 +8,7 @@ import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
+import { TabHeader } from '../TabHeader';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
 import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 
@@ -24,26 +25,29 @@ export default function Distribution({ siren, availableYears }: DistributionProp
 
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Répartition par secteur</h3>
+      <TabHeader
+        title='Répartition par secteur'
+        titleSwitch={
           <GraphSwitch
             isActive={isTableDisplayed}
             onChange={setIsTableDisplayed}
-            label1='graphique'
-            label2='tableau'
+            label1='Graphique'
+            label2='Tableau'
           />
-        </div>
-        <div className='flex items-center gap-2'>
-          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
-          <DownloadSelector onClickDownloadData={handleDownloadData} />
-        </div>
-      </div>
-      {isTableDisplayed ? (
+        }
+        actions={
+          <>
+            <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
+            <DownloadSelector onClickDownloadData={handleDownloadData} />
+          </>
+        }
+      />
+      <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
-      ) : (
+      </div>
+      <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
-      )}
+      </div>
     </>
   );
 }

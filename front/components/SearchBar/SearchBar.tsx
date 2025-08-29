@@ -11,11 +11,13 @@ import Suggestions from './SearchSuggestions';
 
 type SearchBarProps = {
   className?: string;
+  placeholder?: string;
   onSelect: (picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) => void;
 };
 
 export default function SearchBar({
   className = 'relative hidden md:block',
+  placeholder = 'Code postal, commune, département, région',
   onSelect,
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
@@ -26,7 +28,7 @@ export default function SearchBar({
   function handleOnFocus() {
     setIsFocused(true);
   }
-  
+
   function handleOnBlur() {
     setTimeout(() => setIsFocused(false), 200);
   }
@@ -58,24 +60,21 @@ export default function SearchBar({
     }
   }, [isFocused]);
 
-  const handleInputChange = debounce(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setQuery(value);
-    },
-    400,
-  );
+  const handleInputChange = debounce((event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setQuery(value);
+  }, 400);
   const showSuggestions = query.length > 0 && isFocused;
 
   return (
     <div className={className}>
-      <div className="relative m-2" ref={searchBarRef}>
-        <div className="flex items-center">
+      <div className='relative m-2' ref={searchBarRef}>
+        <div className='flex items-center'>
           <Input
             ref={inputRef}
             type='search'
-            placeholder='Code postal, commune, département, région'
-            className='rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            placeholder={placeholder}
+            className='h-14 rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
             onChange={handleInputChange}
             onFocus={handleOnFocus}
             onBlur={(e) => {

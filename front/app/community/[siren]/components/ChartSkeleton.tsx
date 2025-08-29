@@ -1,4 +1,5 @@
 import { Skeleton } from '#components/ui/skeleton';
+
 import { CHART_HEIGHT } from './constants';
 
 type ChartSkeletonProps = {
@@ -20,20 +21,17 @@ export function ChartSkeleton({ style }: ChartSkeletonProps) {
       </div>
 
       {/* Graphique skeleton */}
-      <div className='flex items-end justify-between h-full px-4 pb-12 gap-2'>
+      <div className='flex h-full items-end justify-between gap-2 px-4 pb-12'>
         {bars.map((height, index) => (
-          <div key={index} className='flex flex-col items-center flex-1 max-w-16'>
+          <div key={index} className='flex max-w-16 flex-1 flex-col items-center'>
             {/* Label au-dessus de la barre */}
-            <Skeleton className='h-4 w-12 mb-2' />
-            
+            <Skeleton className='mb-2 h-4 w-12' />
+
             {/* Barre avec hauteur variable */}
-            <Skeleton 
-              className='w-full rounded-t-2xl' 
-              style={{ height: `${height}px` }} 
-            />
-            
+            <Skeleton className='w-full rounded-t-2xl' style={{ height: `${height}px` }} />
+
             {/* Année en bas */}
-            <Skeleton className='h-4 w-10 mt-2' />
+            <Skeleton className='mt-2 h-4 w-10' />
           </div>
         ))}
       </div>

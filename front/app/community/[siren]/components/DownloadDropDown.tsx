@@ -12,12 +12,19 @@ type DownloadDropDownProps = {
   onClickDownloadChart?: () => void;
 };
 
-export default function DownloadDropDown({ onClickDownloadData, onClickDownloadChart }: DownloadDropDownProps) {
+export default function DownloadDropDown({
+  onClickDownloadData,
+  onClickDownloadChart,
+}: DownloadDropDownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="default" size="icon" className='rounded-tl-br'>
-          <ArrowDownToLine />
+        <Button
+          variant='default'
+          size='icon'
+          className='h-12 w-12 rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none bg-primary hover:bg-primary/90'
+        >
+          <ArrowDownToLine className='h-5 w-5' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

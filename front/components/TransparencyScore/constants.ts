@@ -17,13 +17,23 @@ export const SCORE_TO_ADJECTIF = {
 };
 
 export const SCORE_DESCRIPTION = {
-  [TransparencyScore.A]: 'La structure est très transparente et expose de manière exhaustive ses données.',
+  [TransparencyScore.A]:
+    'La structure est très transparente et expose de manière exhaustive ses données.',
   [TransparencyScore.B]: 'La structure est transparente et expose la plupart de ses données.',
-  [TransparencyScore.C]: 'La structure a une transparence moyenne et expose certaines de ses données.',
+  [TransparencyScore.C]:
+    'La structure a une transparence moyenne et expose certaines de ses données.',
   [TransparencyScore.D]: 'La structure manque de transparence et expose peu de ses données.',
   [TransparencyScore.E]: 'La structure est opaque et ne rend pas ses données publiques.',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 
+export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
+  [TransparencyScore.A]: 'bg-score-A',
+  [TransparencyScore.B]: 'bg-score-B',
+  [TransparencyScore.C]: 'bg-score-C',
+  [TransparencyScore.D]: 'bg-score-D',
+  [TransparencyScore.E]: 'bg-score-E',
+  [TransparencyScore.UNKNOWN]: 'bg-muted-light',
+};
 
 export const SCORE_NON_DISPONIBLE = 'Non disponible';

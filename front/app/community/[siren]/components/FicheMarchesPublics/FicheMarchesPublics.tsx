@@ -1,26 +1,18 @@
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#components/ui/tabs';
-
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
-import type { TransparencyScore } from '#components/TransparencyScore/constants';
-import { SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
+import EmptyState from '#components/EmptyState';
+import {
+  SCORE_TO_ADJECTIF,
+  SCORE_TRANSPARENCY_COLOR,
+  TransparencyScore,
+} from '#components/TransparencyScore/constants';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 import { fetchMarchesPublics } from '#utils/fetchers/marches-publics/fetchMarchesPublics-server';
 import { fetchMarchesPublicsAvailableYears } from '#utils/fetchers/marches-publics/fetchMarchesPublicsAvailableYears';
-import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
+import { CommunityType } from '#utils/types';
 import { FileText } from 'lucide-react';
-import { FicheCard } from '../FicheCard';
-import { NoData } from '../NoData';
-import Comparison from './Comparison';
-import Contracts from './Contracts';
-import Distribution from './Distribution';
-import Evolution from './Evolution';
 
-const tabs = {
-  trends: 'trends',
-  distribution: 'distribution',
-  comparison: 'comparison',
-  details: 'details',
-};
+import { FicheCard } from '../FicheCard';
+import { MarchesPublicsWithState } from './MarchesPublicsWithState';
 
 async function getMarchesPublics(siren: string) {
   const marchesPublicsResults = await fetchMarchesPublics({
@@ -32,18 +24,22 @@ async function getMarchesPublics(siren: string) {
   return marchesPublicsResults;
 }
 
-const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: TransparencyScore | null }) => {
+const MarchesPublicsHeader = ({
+  transparencyIndex,
+}: {
+  transparencyIndex?: TransparencyScore | null;
+}) => {
   return (
-    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
-      <div className='flex items-center gap-2 order-2 sm:order-1'>
+    <div className='flex min-h-[80px] flex-col sm:flex-row sm:items-center md:items-center md:justify-between'>
+      <div className='order-2 flex items-center gap-2 sm:order-1'>
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Marchés Publics</h2>
       </div>
       {transparencyIndex && (
-        <div className="order-1 sm:order-2 md:mb-4 mb-2 sm:mb-0">
+        <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
           <BadgeCommunity
-            text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
+            text={`Indice de transparence : ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
-            className='bg-brand-2 text-primary'
+            className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
           />
         </div>
       )}
@@ -51,40 +47,35 @@ const MarchesPublicsHeader = ({ transparencyIndex }: { transparencyIndex?: Trans
   );
 };
 
-export async function FicheMarchesPublics({ siren }: { siren: string }) {
+export async function FicheMarchesPublics({
+  siren,
+  communityType,
+}: {
+  siren: string;
+  communityType: CommunityType;
+}) {
   const marchesPublics = await getMarchesPublics(siren);
-  // const marchesPublics = [];
-  const availableYears = await fetchMarchesPublicsAvailableYears(siren)
-  // const availableYears = [2021, 2022, 2023];
-  
+  const availableYears = await fetchMarchesPublicsAvailableYears(siren);
+
   // Fetch transparency score for Marchés Publics
   const { bareme } = await fetchMostRecentTransparencyScore(siren);
   const transparencyIndex = bareme?.mp_score || null;
   return (
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
-        <Tabs defaultValue={tabs.trends}>
-          <TabsList>
-            <TabsTrigger value={tabs.trends}>Évolution</TabsTrigger>
-            <TabsTrigger value={tabs.distribution}>Répartition</TabsTrigger>
-            <TabsTrigger value={tabs.comparison}>Comparaison</TabsTrigger>
-            <TabsTrigger value={tabs.details}>Contrats</TabsTrigger>
-          </TabsList>
-          <TabsContent value={tabs.trends}>
-            <Evolution siren={siren} transparencyIndex={transparencyIndex} />
-          </TabsContent>
-          <TabsContent value={tabs.distribution}>
-            <Distribution siren={siren} availableYears={availableYears} />
-          </TabsContent>
-          <TabsContent value={tabs.comparison}>
-            <Comparison />
-          </TabsContent>
-          <TabsContent value={tabs.details}>
-            <Contracts siren={siren} availableYears={availableYears} />
-          </TabsContent>
-        </Tabs>
+        <MarchesPublicsWithState
+          siren={siren}
+          availableYears={availableYears}
+          communityType={communityType}
+        />
       ) : (
-        <NoData />
+        <EmptyState
+          title="Oups, il n'y a pas de données sur les marchés publics de cette collectivité !"
+          description='Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les marchés publics.'
+          actionText='Interpeller'
+          actionHref='/interpeller'
+          siren={siren}
+        />
       )}
     </FicheCard>
   );

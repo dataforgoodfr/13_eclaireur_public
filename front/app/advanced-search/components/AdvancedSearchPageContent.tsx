@@ -1,9 +1,9 @@
 'use client';
 
-import type { Table } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import type { AdvancedSearchCommunity } from '@/app/models/community';
+import type { Table } from '@tanstack/react-table';
 
 import CommunitiesTableWithLoader from './CommunitiesTableWithLoader';
 import DownloadingButton from './DownloadingButton';

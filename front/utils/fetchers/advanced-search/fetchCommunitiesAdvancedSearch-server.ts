@@ -1,11 +1,11 @@
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
-import { AdvancedSearchCommunity, Community } from '#app/models/community';
+import type { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import type { AdvancedSearchCommunity, Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
-import { CommunityType } from '#utils/types';
+import type { CommunityType } from '#utils/types';
 
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
-import { Pagination } from '../types';
+import type { Pagination } from '../types';
 
 /**
  * Fetch the communities (SSR) by advanced search
@@ -38,7 +38,6 @@ export type CommunitiesAdvancedSearchFilters = Partial<
   Pick<Community, 'type' | 'population' | 'mp_score' | 'subventions_score'>
 >;
 
-
 /**
  * Create the sql query for the advanced search
  */
@@ -52,12 +51,12 @@ export function createSQLQueryParams(
   const { by, direction } = order;
   const values: (CommunityType | number | string | undefined)[] = [];
 
-  const baseSelectors = SELECTORS.filter(s => s !== 'mp_score' && s !== 'subventions_score');
+  const baseSelectors = SELECTORS.filter((s) => s !== 'mp_score' && s !== 'subventions_score');
   const selectorsStringified = stringifySelectors(baseSelectors, 'c');
-  
+
   // Use the most recent year available in the bareme table (2024)
   const recentYear = 2024;
-  
+
   let query = `
     SELECT ${selectorsStringified},
       b.mp_score,
@@ -69,10 +68,10 @@ export function createSQLQueryParams(
     LEFT JOIN ${BAREME} b ON c.siren = b.siren AND b.annee = $${values.length + 1}
     WHERE c.nom IS NOT NULL
     `;
-  
+
   values.push(recentYear);
 
-  let additionalConditions = [];
+  const additionalConditions = [];
 
   if (type) {
     additionalConditions.push(`c.type = $${values.length + 1}`);
@@ -97,15 +96,15 @@ export function createSQLQueryParams(
 
   // Map order by fields to correct aliases
   const orderByMapping: Record<string, string> = {
-    'nom': 'c.nom',
-    'type': 'c.type', 
-    'population': 'c.population',
-    'mp_score': 'b.mp_score',
-    'subventions_score': 'b.subventions_score',
-    'subventions_budget': 'c.population', // Fallback to population since subventions_budget is NULL
-    'annee': 'b.annee'
+    nom: 'c.nom',
+    type: 'c.type',
+    population: 'c.population',
+    mp_score: 'b.mp_score',
+    subventions_score: 'b.subventions_score',
+    subventions_budget: 'c.population', // Fallback to population since subventions_budget is NULL
+    annee: 'b.annee',
   };
-  
+
   const orderByField = orderByMapping[by] || `c.${by}`;
   query += ` ORDER BY ${orderByField} ${direction}`;
 

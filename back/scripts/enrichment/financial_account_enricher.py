@@ -2,8 +2,8 @@ from pathlib import Path
 
 import polars as pl
 
+from back.scripts.adapters.workflow.financial_accounts import FinancialAccountsWorkflowFactory
 from back.scripts.communities.communities_selector import CommunitiesSelector
-from back.scripts.datasets.communities_financial_accounts import FinancialAccounts
 from back.scripts.enrichment.base_enricher import BaseEnricher
 
 
@@ -16,7 +16,7 @@ class FinancialEnricher(BaseEnricher):
     def get_input_paths(cls, main_config: dict) -> list[Path]:
         return [
             CommunitiesSelector.get_output_path(main_config),
-            FinancialAccounts.get_output_path(main_config),
+            FinancialAccountsWorkflowFactory.from_config(main_config).get_output_path(),
         ]
 
     @classmethod

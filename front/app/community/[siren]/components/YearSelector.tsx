@@ -25,7 +25,7 @@ export default function YearSelector({
       onValueChange={(value) => onSelect(value === 'All' ? 'All' : parseInt(value))}
       defaultValue={defaultValue.toString()}
     >
-      <SelectTrigger className='w-[100px]'>
+      <SelectTrigger className='h-12 w-[100px] rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none border-gray-300 bg-white hover:bg-gray-50'>
         <SelectValue placeholder='Tout voir' />
       </SelectTrigger>
       <SelectContent>

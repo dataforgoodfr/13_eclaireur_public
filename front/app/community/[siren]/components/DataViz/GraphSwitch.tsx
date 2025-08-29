@@ -10,7 +10,7 @@ type GraphSwitchProps = {
 };
 
 function getCursorClassName(isActive: boolean) {
-  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'}`;
+  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'} text-md font-semibold`;
 }
 
 export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchProps) {
@@ -29,6 +29,7 @@ export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchP
         onCheckedChange={() => {
           onChange(!isActive);
         }}
+        className='data-[state=checked]:bg-primary data-[state=unchecked]:bg-primary'
       />
       <div
         onClick={() => {

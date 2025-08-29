@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createSearchParamsCache, parseAsInteger, parseAsString, parseAsStringEnum } from 'nuqs/server';
 
 import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { fetchCommunitiesAdvancedSearch } from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
 import { CommunityType } from '#utils/types';
+import {
+  createSearchParamsCache,
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+} from 'nuqs/server';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
@@ -17,8 +22,14 @@ const DEFAULT_ORDER: AdvancedSearchOrder = {
 const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(DEFAULT_PAGE),
   limit: parseAsInteger.withDefault(DEFAULT_LIMIT),
-  by: parseAsStringEnum(['nom', 'type', 'population', 'mp_score', 'subventions_score', 'subventions_budget'] as const)
-    .withDefault(DEFAULT_ORDER.by),
+  by: parseAsStringEnum([
+    'nom',
+    'type',
+    'population',
+    'mp_score',
+    'subventions_score',
+    'subventions_budget',
+  ] as const).withDefault(DEFAULT_ORDER.by),
   direction: parseAsStringEnum(['ASC', 'DESC'] as const).withDefault(DEFAULT_ORDER.direction),
   type: parseAsString,
   population: parseAsInteger,
@@ -29,13 +40,15 @@ const searchParamsCache = createSearchParamsCache({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const params = searchParamsCache.parse(searchParams as unknown as Record<string, string | string[] | undefined>);
+    const params = searchParamsCache.parse(
+      searchParams as unknown as Record<string, string | string[] | undefined>,
+    );
 
     const filters = {
-      type: params.type as CommunityType ?? undefined,
+      type: (params.type as CommunityType) ?? undefined,
       population: params.population ?? undefined,
-      mp_score: params.mp_score as TransparencyScore ?? undefined,
-      subventions_score: params.subventions_score as TransparencyScore ?? undefined,
+      mp_score: (params.mp_score as TransparencyScore) ?? undefined,
+      subventions_score: (params.subventions_score as TransparencyScore) ?? undefined,
     };
 
     const pagination = {

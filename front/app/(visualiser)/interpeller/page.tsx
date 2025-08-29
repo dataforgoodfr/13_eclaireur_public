@@ -19,8 +19,8 @@ export default function Page() {
         <Stepper currentStep={1} />
       </div>
       <section id='interpellation-step1-nocommunity' className='global-margin mb-16 mt-[-7rem]'>
-        <article className='my-6 flex flex-col justify-start bg-[url(/eclaireur/project_background.jpg)] py-6'>
-          <h2 className='my-6 text-center text-h1 font-bold'>
+        <article className='my-6 flex flex-col justify-start bg-[url(/eclaireur/project_background.webp)] py-6'>
+          <h2 className='text-h1 my-6 text-center font-bold'>
             Trouver une collectivité
             <br />
             <div className='inline-block bg-gradient-fade px-8'>à interpeller</div>

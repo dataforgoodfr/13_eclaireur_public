@@ -306,7 +306,7 @@ jobs:
             const branchSafe = (context.payload.pull_request.head.ref || context.ref).replace(/\//g, "-");
             const pagesUrl = `https://${context.repo.owner}.github.io/${context.repo.repo}/reports/${branchSafe}/html_report`;
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const comment = `## 📸 Visual Regression Test Results
+            const commentBody = `## 📸 Visual Regression Test Results
             ⚠️ Visual differences detected
             ### 📊 Test Artifacts
             - 🔗 **[BackstopJS Complete Report](${pagesUrl})** – View live report
@@ -316,12 +316,36 @@ jobs:
             - Highlighted diffs
             - Interactive viewer
             🕒 Artifacts are retained for 30 days.`;
-            await github.rest.issues.createComment({
+            
+            // Check for existing comments from this bot
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
             });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📸 Visual Regression Test Results')
+            );
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.payload.pull_request.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
 
       - name: Notify if tests failed
         if: failure() && github.event_name == 'pull_request_target' && github.event.pull_request.number

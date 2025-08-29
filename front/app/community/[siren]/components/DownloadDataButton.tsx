@@ -8,10 +8,10 @@ type DownloadDataButtonProps = {
 
 export default function DownloadDataButton({ onClick, disabled }: DownloadDataButtonProps) {
   return (
-    <ActionButton 
+    <ActionButton
       icon={<ArrowDownToLine />}
-      variant="default"
-      onClick={onClick} 
+      variant='default'
+      onClick={onClick}
       disabled={disabled}
     />
   );

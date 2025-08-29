@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "check": "yarn lint && yarn typecheck",
     "format": "prettier --write \"(components|app|utils)/**/*.+(js|jsx|ts|tsx|json|css|md)\" --config ./prettier.config.js",
+    "format:staged": "prettier --config ./prettier.config.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
@@ -20,7 +21,8 @@
     "backstop:reference": "tsx scripts/visual-regression.ts reference",
     "backstop:approve": "backstop approve --config=backstop.json",
     "backstop:report": "backstop openReport --config=backstop.json",
-    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.json"
+    "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.json",
+    "prepare": "cd .. && lefthook install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",
@@ -99,6 +101,7 @@
     "eslint-config-next": "15.1.6",
     "eslint-plugin-storybook": "^9.0.18",
     "jsdom": "^26.1.0",
+    "lefthook": "^1.12.2",
     "msw": "^2.10.4",
     "msw-storybook-addon": "^2.0.5",
     "postcss": "^8",
@@ -139,5 +142,6 @@
       "./*.ts",
       "./*.tsx"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
