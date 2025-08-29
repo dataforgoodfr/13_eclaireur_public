@@ -49,7 +49,7 @@ export function ActionButton({
         children
       ) : (
         <>
-          {variant === 'action' ? icon : icon}
+          {icon}
           {text && <span className={icon ? 'ml-2' : ''}>{text}</span>}
         </>
       )}
