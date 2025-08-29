@@ -95,6 +95,7 @@ class BaremeEnricher(BaseEnricher):
         # Left join pour conserver toutes les collectivités même sans données MP
         bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
         bareme_final = cls.bareme_agrege(bareme_final)
+        bareme_final = cls.add_global_score_evolution_all_years(bareme_final)
 
         return bareme_final
 
@@ -438,3 +439,31 @@ class BaremeEnricher(BaseEnricher):
         )
 
         return bareme_agrege
+
+    @classmethod
+    def add_global_score_evolution_all_years(cls, bareme: pl.DataFrame) -> pl.DataFrame:
+        """
+        Calcule l'évolution du global_score pour toutes les années
+        """
+
+        return (
+            bareme.sort(["siren", "annee"])
+            .with_columns(
+                [pl.col("global_score").shift(1).over("siren").alias("global_score_prev")]
+            )
+            .with_columns(
+                [
+                    pl.when(
+                        pl.col("global_score").is_null() | pl.col("global_score_prev").is_null()
+                    )
+                    .then(None)
+                    .when(pl.col("global_score") < pl.col("global_score_prev"))
+                    .then(pl.lit("En hausse"))
+                    .when(pl.col("global_score") > pl.col("global_score_prev"))
+                    .then(pl.lit("En baisse"))
+                    .otherwise(pl.lit("Stable"))
+                    .alias("evolution_global_score")
+                ]
+            )
+            .drop("global_score_prev")
+        )
