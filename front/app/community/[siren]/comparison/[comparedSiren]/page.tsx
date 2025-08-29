@@ -44,7 +44,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <Suspense key={community1.siren + community2.siren} fallback={<Loading />}>
-      <Header community={community1} community2={community2} />
+      <Header community={community1} community2={community2} similarCommunityList={[]} />
       <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
         <HeaderComparison community1={community1} community2={community2} />
         <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
