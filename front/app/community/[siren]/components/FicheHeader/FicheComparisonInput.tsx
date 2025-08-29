@@ -3,30 +3,21 @@
 import { useRouter } from 'next/navigation';
 
 import { Community } from '#app/models/community';
+import { SimilarCommunity } from '#app/models/comparison.js';
 import SearchBar from '#components/SearchBar/SearchBar';
 import { ActionButton } from '#components/ui/action-button';
 
 type FicheComparisonInput = {
   community: Community;
+  similarCommunityList: SimilarCommunity[];
 };
 
-// Constante pour cacher les communes similaires pour le moment
-const SHOW_SIMILAR_COMMUNITIES = true;
-
-export function FicheComparisonInput({ community }: FicheComparisonInput) {
+export function FicheComparisonInput({ community, similarCommunityList }: FicheComparisonInput) {
   const router = useRouter();
 
   function goToComparison(comparedSiren: string) {
     router.push(`/community/${community.siren}/comparison/${comparedSiren}`);
   }
-
-  // Communes similaires mockées (cachées pour le moment)
-  const similarCommunities = [
-    { nom: 'Évian-les-Bains', siren: '123456789' },
-    { nom: 'Douvaine', siren: '987654321' },
-    { nom: 'Messery', siren: '456789123' },
-    { nom: 'Nernier', siren: '789123456' },
-  ];
 
   return (
     <div className='flex flex-col gap-6 p-4'>
@@ -53,16 +44,16 @@ export function FicheComparisonInput({ community }: FicheComparisonInput) {
       </div>
 
       {/* Communes similaires (cachées pour le moment) */}
-      {SHOW_SIMILAR_COMMUNITIES && (
+      {similarCommunityList.length > 0 && (
         <div>
           <h3 className='mb-3 text-sm font-medium text-muted'>Communes similaires</h3>
           <div className='flex flex-wrap gap-2'>
-            {similarCommunities.map((commune) => (
+            {similarCommunityList.map((similarCommunity) => (
               <ActionButton
-                key={commune.siren}
+                key={similarCommunity.siren}
                 variant='outline'
-                text={commune.nom}
-                onClick={() => goToComparison(commune.siren)}
+                text={similarCommunity.nom}
+                onClick={() => goToComparison(similarCommunity.siren)}
                 className='rounded-full bg-primary-light px-3 py-1 text-base text-sm font-bold text-primary'
               />
             ))}
