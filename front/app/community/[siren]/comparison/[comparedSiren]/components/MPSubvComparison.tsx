@@ -83,11 +83,18 @@ function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvPropert
   }
 
   return (
-    <div className='basis-1/2 flex-col space-y-2 text-center sm:mx-2'>
-      <p>Montant total : {formatCompactPrice(data.total_amount)}</p>
-      <p>
-        Nombre de {getName(comparisonType)} : {data.total_number}
-      </p>
+    <div className=''>
+      <div className='flex flex-row items-center justify-center gap-2'>
+        <h4>
+          Montant total :{' '}
+          <div className='rounded-full bg-brand-2 p-2'>{formatCompactPrice(data.total_amount)}</div>
+        </h4>
+      </div>
+      <div className='flex flex-row items-center justify-center gap-2'>
+        <h4>
+          Nombre de {getName(comparisonType)} : {data.total_number}
+        </h4>
+      </div>
       <div className='md:mx-5'>
         <ShadCNTable className='text-xs sm:text-sm'>
           <TableCaption>Top 5 des {getName(comparisonType)}</TableCaption>
