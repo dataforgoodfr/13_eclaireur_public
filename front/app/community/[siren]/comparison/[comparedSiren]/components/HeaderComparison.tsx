@@ -1,6 +1,7 @@
-import { Community } from '#app/models/community';
+import type { Community } from '#app/models/community';
 
 import { CommunityDetails } from '../../../components/CommunityDetails';
+import { ComparisonCard } from './shared/ComparisonCard';
 
 type HeaderComparisonProps = {
   community1: Community;
@@ -9,22 +10,24 @@ type HeaderComparisonProps = {
 
 export function HeaderComparison({ community1, community2 }: HeaderComparisonProps) {
   return (
-    <div className='flex justify-around max-md:my-6 md:my-10'>
-      <ComparedHeader community={community1} />
-      <ComparedHeader community={community2} />
-    </div>
-  );
-}
+    <div className='flex justify-around gap-4 max-md:my-6 md:my-10'>
+      <ComparisonCard
+        title={community1.nom}
+        variant='primary'
+        size='md'
+        className='max-w-md flex-1'
+      >
+        <CommunityDetails community={community1} />
+      </ComparisonCard>
 
-type ComparedHeaderProps = {
-  community: Community;
-};
-
-function ComparedHeader({ community }: ComparedHeaderProps) {
-  return (
-    <div className='m-1 flex-col rounded bg-gray-100 p-3'>
-      <p className='mb-2 text-center text-xl font-bold'>{community.nom}</p>
-      <CommunityDetails community={community} />
+      <ComparisonCard
+        title={community2.nom}
+        variant='secondary'
+        size='md'
+        className='max-w-md flex-1'
+      >
+        <CommunityDetails community={community2} />
+      </ComparisonCard>
     </div>
   );
 }

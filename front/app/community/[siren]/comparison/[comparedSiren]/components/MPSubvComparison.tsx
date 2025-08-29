@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import Loading from '#components/ui/Loading';
 import {
   Table as ShadCNTable,
@@ -16,8 +14,8 @@ import SectionSeparator from '#components/utils/SectionSeparator';
 import { useMPSubvComparison } from '#utils/hooks/comparison/useMPSubvComparison';
 import { formatCompactPrice } from '#utils/utils';
 
-import { YearOption } from '../../../types/interface';
 import { ComparisonType } from './ComparisonType';
+import { useComparisonYear } from './hooks/useComparisonYear';
 
 type MPSubvComparisonProperties = {
   siren1: string;
@@ -26,8 +24,7 @@ type MPSubvComparisonProperties = {
 };
 
 export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvComparisonProperties) {
-  const defaultYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
+  const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
   return (
     <>

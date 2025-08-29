@@ -2,14 +2,18 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import Loading from '#components/ui/Loading';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 import { ComparisonType } from './components/ComparisonType';
-import { Header } from './components/Header';
 import { HeaderComparison } from './components/HeaderComparison';
 import { MPSubvComparison } from './components/MPSubvComparison';
 import { TransparencyComparison } from './components/TransparencyComparison';
+import { ComparisonHeader } from './components/shared/ComparisonHeader';
+import { DataTableSkeleton } from './components/skeletons/DataTableSkeleton';
+import { TransparencySkeleton } from './components/skeletons/TransparencySkeleton';
+
+// Activer Partial Prerendering pour Next.js 15
+export const experimental_ppr = true;
 
 type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
 
@@ -39,26 +43,39 @@ export default async function Page({ params }: PageProps) {
   const siren = (await params).siren;
   const siren2 = (await params).comparedSiren;
 
-  const community1 = await getCommunity(siren);
-  const community2 = await getCommunity(siren2);
+  // Parallel data fetching pour optimiser les performances
+  const [community1, community2] = await Promise.all([getCommunity(siren), getCommunity(siren2)]);
 
   return (
-    <Suspense key={community1.siren + community2.siren} fallback={<Loading />}>
-      <Header community={community1} community2={community2} />
+    <>
+      {/* Header statique unifié - rendu immédiat */}
+      <ComparisonHeader community1={community1} community2={community2} />
+
       <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
+        {/* Informations générales - rendu immédiat */}
         <HeaderComparison community1={community1} community2={community2} />
-        <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
-        <MPSubvComparison
-          siren1={community1.siren}
-          siren2={community2.siren}
-          comparisonType={ComparisonType.Marches_Publics}
-        />
-        <MPSubvComparison
-          siren1={community1.siren}
-          siren2={community2.siren}
-          comparisonType={ComparisonType.Subventions}
-        />
+
+        {/* Sections dynamiques avec Suspense pour streaming */}
+        <Suspense fallback={<TransparencySkeleton />}>
+          <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
+        </Suspense>
+
+        <Suspense fallback={<DataTableSkeleton title='Marchés publics' />}>
+          <MPSubvComparison
+            siren1={community1.siren}
+            siren2={community2.siren}
+            comparisonType={ComparisonType.Marches_Publics}
+          />
+        </Suspense>
+
+        <Suspense fallback={<DataTableSkeleton title='Subventions' />}>
+          <MPSubvComparison
+            siren1={community1.siren}
+            siren2={community2.siren}
+            comparisonType={ComparisonType.Subventions}
+          />
+        </Suspense>
       </div>
-    </Suspense>
+    </>
   );
 }
