@@ -80,7 +80,7 @@ export default function MapTooltip({
             <div className='grid grid-cols-2 gap-x-4'>
               <div className='flex flex-col'>
                 <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-                  Subventions score:
+                  Score des Subventions :
                 </p>
                 <div className='flex flex-row items-center'>
                   <div
