@@ -35,7 +35,7 @@ export default function ChoroplethLegend({
       <h4 className='mb-1'>Légende</h4>
       <div className='flex flex-col gap-2 lg:flex-row lg:gap-x-4'>
         <p className='font-kanit-bold text-[14px] font-bold text-primary'>
-          Indices de transparences
+          Indice de transparence
         </p>
         <div className='flex flex-col items-center gap-2'>
           <div className='flex flex-row items-center gap-1 lg:gap-2'>
