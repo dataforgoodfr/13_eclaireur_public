@@ -90,7 +90,7 @@ export default function PerspectiveSelector({
         <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary font-kanit-bold text-sm font-bold text-white'>
           3
         </span>
-        <h4 className='text-sm text-primary lg:text-base'>METTEZ EN PERSPECTIVE</h4>
+        <h4 className='text-sm text-primary lg:text-base'>Mettez en perspective</h4>
       </div>
 
       <div className='space-y-2 space-y-4 lg:space-y-4'>
