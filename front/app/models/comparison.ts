@@ -1,3 +1,8 @@
+export type SimilarCommunity = {
+  siren: string;
+  nom: string;
+};
+
 export type MPSubvComparison = {
   /** Primary key [char9] */
   siren: string;
