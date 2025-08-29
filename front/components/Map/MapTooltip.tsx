@@ -98,7 +98,7 @@ export default function MapTooltip({
 
               <div className='flex flex-col'>
                 <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-                  Marchés publics score
+                  Score des Marchés publics :
                 </p>
                 <div className='flex flex-row items-center'>
                   <div
