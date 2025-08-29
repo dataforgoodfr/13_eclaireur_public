@@ -94,8 +94,26 @@ class BaremeEnricher(BaseEnricher):
         # Jointure finale des deux scores sur (siren, annee)
         # Left join pour conserver toutes les collectivités même sans données MP
         bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
+        bareme_final = cls.bareme_agrege(bareme_final)
+        bareme_final = cls.add_global_score_evolution_all_years(bareme_final)
 
         return bareme_final
+
+    @staticmethod
+    def _map_score_to_numeric(column: str) -> pl.Expr:
+        mapping = {
+            "A": 4,
+            "B": 3,
+            "C": 2,
+            "D": 1,
+            "E": 0,
+        }
+        return pl.col(column).replace_strict(mapping).cast(pl.Int64)
+
+    @staticmethod
+    def _map_numeric_to_score(column: str) -> pl.Expr:
+        mapping = {4: "A", 3: "B", 2: "C", 1: "D", 0: "E"}
+        return pl.col(column).replace_strict(mapping)
 
     @classmethod
     def build_bareme_table(cls, communities: pl.DataFrame) -> pl.DataFrame:
@@ -391,3 +409,61 @@ class BaremeEnricher(BaseEnricher):
 
         # Retour des colonnes essentielles uniquement
         return bareme_score.select(["siren", "annee", "mp_score"])
+
+    @classmethod
+    def bareme_agrege(cls, bareme_df: pl.DataFrame) -> pl.DataFrame:
+        # Conversion lettres → nombres et calcul de la moyenne avec arrondi supérieur
+        bareme_agrege = (
+            bareme_df.with_columns(
+                [
+                    pl.when(
+                        pl.col("subventions_score").is_not_null()
+                        & pl.col("mp_score").is_not_null()
+                    )
+                    .then(
+                        (
+                            (
+                                cls._map_score_to_numeric("subventions_score")
+                                + cls._map_score_to_numeric("mp_score")
+                            )
+                            / 2
+                        ).ceil()
+                    )
+                    .otherwise(None)
+                    .cast(pl.Int64)
+                    .alias("global_numeric")
+                ]
+            )
+            .with_columns([cls._map_numeric_to_score("global_numeric").alias("global_score")])
+            .drop(["global_numeric"])
+        )
+
+        return bareme_agrege
+
+    @classmethod
+    def add_global_score_evolution_all_years(cls, bareme: pl.DataFrame) -> pl.DataFrame:
+        """
+        Calcule l'évolution du global_score pour toutes les années
+        """
+
+        return (
+            bareme.sort(["siren", "annee"])
+            .with_columns(
+                [pl.col("global_score").shift(1).over("siren").alias("global_score_prev")]
+            )
+            .with_columns(
+                [
+                    pl.when(
+                        pl.col("global_score").is_null() | pl.col("global_score_prev").is_null()
+                    )
+                    .then(None)
+                    .when(pl.col("global_score") < pl.col("global_score_prev"))
+                    .then(pl.lit("En hausse"))
+                    .when(pl.col("global_score") > pl.col("global_score_prev"))
+                    .then(pl.lit("En baisse"))
+                    .otherwise(pl.lit("Stable"))
+                    .alias("evolution_global_score")
+                ]
+            )
+            .drop("global_score_prev")
+        )
