@@ -16,6 +16,7 @@ import { formatCompactPrice } from '#utils/utils';
 
 import { ComparisonType } from './ComparisonType';
 import { useComparisonYear } from './hooks/useComparisonYear';
+import { SideBySideComparison } from './shared/SideBySideComparison';
 
 type MPSubvComparisonProperties = {
   siren1: string;
@@ -33,18 +34,23 @@ export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvCompa
         year={selectedYear}
         onSelectYear={setSelectedYear}
       />
-      <div className='flex justify-around max-md:my-6 md:my-10'>
-        <ComparingMPSubv
-          siren={siren1}
-          year={selectedYear as number}
-          comparisonType={comparisonType}
-        />
-        <ComparingMPSubv
-          siren={siren2}
-          year={selectedYear as number}
-          comparisonType={comparisonType}
-        />
-      </div>
+      <SideBySideComparison
+        leftChild={
+          <ComparingMPSubv
+            siren={siren1}
+            year={selectedYear as number}
+            comparisonType={comparisonType}
+          />
+        }
+        rightChild={
+          <ComparingMPSubv
+            siren={siren2}
+            year={selectedYear as number}
+            comparisonType={comparisonType}
+          />
+        }
+        className='max-md:my-6 md:my-10'
+      />
     </>
   );
 }

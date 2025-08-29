@@ -12,15 +12,12 @@ export default function SectionSeparator({
   onSelectYear,
 }: SectionSeparatorProperties) {
   return (
-    <div className='flex w-full items-center rounded-full'>
-      <div className='flex-1 border-b border-gray-300'></div>
-      <div className='flex justify-center px-8 py-3 text-lg font-semibold leading-8'>
-        {sectionTitle}
-        <div className='ml-2'>
-          {onSelectYear && year && <YearSelector value={year} onValueChange={onSelectYear} />}
-        </div>
-      </div>
-      <div className='flex-1 border-b border-gray-300'></div>
+    <div className='my-3 flex w-full items-center md:my-12'>
+      <h2 className='flex justify-center font-semibold leading-8'>{sectionTitle}</h2>
+      <span className='mx-4 flex-1 border-b border-gray-300' />
+      {onSelectYear && year && (
+        <YearSelector className='h-12 w-20' value={year} onValueChange={onSelectYear} />
+      )}
     </div>
   );
 }

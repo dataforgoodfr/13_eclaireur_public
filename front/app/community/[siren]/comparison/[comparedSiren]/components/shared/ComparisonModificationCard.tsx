@@ -27,7 +27,7 @@ export function ComparisonModificationCard({
 
   return (
     <Card
-      className={`border-1 mx-auto my-6 w-full max-w-2xl rounded-[20px] border-black md:my-8 ${className || ''}`}
+      className={`mx-auto my-6 w-full max-w-2xl rounded-[20px] border-[1px] border-muted md:my-8 ${className || ''}`}
     >
       <CardHeader className='text-center'>
         <CardTitle className='font-kanit-bold text-4xl text-primary'>
