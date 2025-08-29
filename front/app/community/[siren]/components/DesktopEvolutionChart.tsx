@@ -24,7 +24,7 @@ type DesktopEvolutionChartProps = {
   }>;
   barColor: string;
   borderColor: string;
-  unit: string;
+  unit?: string;
   formatValue: (value: number) => string;
   avgValue: number;
   legendLabel: string;
@@ -57,8 +57,6 @@ export default function DesktopEvolutionChart({
             bottom: 5,
           }}
         >
-          <XAxis dataKey='year' axisLine={true} tickLine={true} />
-          <YAxis tickFormatter={(value) => formatValue(value)} />
           <Legend
             content={() => {
               const bgColorClass =
@@ -67,10 +65,9 @@ export default function DesktopEvolutionChart({
                 <div className='mt-4 flex flex-col items-center gap-2'>
                   <div className='flex items-center gap-2'>
                     <div className={`h-6 w-6 rounded border border-primary ${bgColorClass}`} />
-                    <span className='font-semibold text-primary'>{legendLabel}</span>
-                  </div>
-                  <div className='text-xs font-medium text-primary'>
-                    Montants exprimés en {unit}
+                    <span className='font-semibold text-primary'>
+                      {legendLabel} {unit ? `(${unit})` : ''}
+                    </span>
                   </div>
                 </div>
               );
@@ -89,16 +86,13 @@ export default function DesktopEvolutionChart({
                   <g>
                     <foreignObject
                       x={props.x + props.width / 2 - 50}
-                      y={props.y - 120}
+                      y={props.y - 60}
                       width='100'
                       height='120'
                       style={{ pointerEvents: 'auto', zIndex: 1000 }}
                     >
                       <div className='pointer-events-auto flex flex-col items-center gap-2'>
                         <InterpellerButton siren={siren} />
-                        <div className='text-center text-lg font-semibold text-primary'>
-                          Aucune donnée
-                        </div>
                       </div>
                     </foreignObject>
                   </g>
@@ -111,12 +105,24 @@ export default function DesktopEvolutionChart({
               <Cell
                 key={`cell-${entry.year}`}
                 fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
-                // darker
                 stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
                 strokeWidth={1}
-                strokeOpacity={entry.isPrimaryMissing ? 0 : 1}
+                strokeOpacity={entry.isPrimaryMissing ? 1 : 1}
               />
             ))}
+            <LabelList
+              dataKey='isPrimaryMissing'
+              position='inside'
+              formatter={(isPrimaryMissing: boolean) =>
+                isPrimaryMissing ? 'Aucune donnée publiée' : ''
+              }
+              fill='#303F8D'
+              strokeWidth={0}
+              fontSize='16'
+              fontWeight='600'
+              fontFamily='var(--font-kanit), system-ui, sans-serif'
+              offset={20}
+            />
             <LabelList
               position='top'
               formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
@@ -128,6 +134,8 @@ export default function DesktopEvolutionChart({
               offset={20}
             />
           </Bar>
+          <XAxis dataKey='year' axisLine tickLine />
+          <YAxis tickFormatter={(value) => formatValue(value)} />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>

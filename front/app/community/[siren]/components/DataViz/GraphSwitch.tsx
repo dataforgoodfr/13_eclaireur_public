@@ -10,19 +10,19 @@ type GraphSwitchProps = {
 };
 
 function getCursorClassName(isActive: boolean) {
-  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'} text-md font-semibold`;
+  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'} text-xs font-semibold sm:text-sm whitespace-nowrap`;
 }
 
 export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchProps) {
   return (
-    <div className='flex items-baseline gap-2'>
+    <div className='flex items-center gap-1'>
       <div
         onClick={() => {
           onChange(false);
         }}
         className={getCursorClassName(isActive)}
       >
-        {label1}
+        ({label1}
       </div>
       <Switch
         checked={isActive}
@@ -37,7 +37,7 @@ export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchP
         }}
         className={getCursorClassName(!isActive)}
       >
-        {label2}
+        {label2})
       </div>
     </div>
   );

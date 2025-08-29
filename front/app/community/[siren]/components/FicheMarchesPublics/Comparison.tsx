@@ -82,7 +82,7 @@ const ScopeDropdown = ({
 
 const ComparisonEmptyState = ({ siren }: { siren: string }) => (
   <EmptyState
-    title={`Oups, il n'y a pas de données pour comparer !`}
+    title="Oups, il n'y a pas de données pour comparer !"
     description='Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques.'
     actionText='Interpeller'
     actionHref='/interpeller'

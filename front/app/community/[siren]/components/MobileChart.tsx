@@ -48,7 +48,7 @@ export default function MobileChart({
   );
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
   const chartMax = Math.round(maxValue * 1.1); // Add 10% padding
-  const avgValue = maxValue / 2; // Average value for "Aucune donnée"
+  const noDataValue = (5 * maxValue) / 6; // Average value for "Aucune donnée"
 
   return (
     <>
@@ -64,12 +64,12 @@ export default function MobileChart({
       {data.map((item) => {
         // Check if primary value is 0 or missing - show average in yellow
         const isPrimaryMissing = !item.primary || item.primary === 0;
-        const primaryValue = isPrimaryMissing ? avgValue : item.primary;
+        const primaryValue = isPrimaryMissing ? noDataValue : item.primary;
         const primaryFillColor = isPrimaryMissing ? '#F4D93E' : primaryColor;
 
         // Check if secondary value is 0 or missing - show average in yellow
         const isSecondaryMissing = mode === 'dual' && (!item.secondary || item.secondary === 0);
-        const secondaryValue = isSecondaryMissing ? avgValue : item.secondary;
+        const secondaryValue = isSecondaryMissing ? noDataValue : item.secondary;
         const secondaryFillColor = isSecondaryMissing ? '#F4D93E' : secondaryColor;
 
         return (
@@ -88,15 +88,6 @@ export default function MobileChart({
                 >
                   <XAxis hide type='number' domain={[0, chartMax]} />
                   <YAxis hide type='category' />
-                  {/* <Legend
-                                            formatter={() => <span className='text-primary'>{legendLabel}</span>}
-                                            wrapperStyle={{
-                                                color: '#000000 !important',
-                                                fontWeight: 600
-                                            }}
-                                            iconType="rect"
-                                            iconSize={24}
-                                        /> */}
                   {/* Primary bar */}
                   <Bar dataKey='primary' barSize={40} radius={[0, 0, 16, 0]}>
                     <Cell
@@ -110,9 +101,7 @@ export default function MobileChart({
                       <LabelList
                         dataKey='primary'
                         position='right'
-                        formatter={(value: number) =>
-                          isPrimaryMissing ? 'Aucune donnée' : formatValue(value)
-                        }
+                        formatter={(value: number) => (isPrimaryMissing ? '' : formatValue(value))}
                         style={{
                           fontSize: isPrimaryMissing ? '14px' : '24px',
                           fill: labelColor,
@@ -121,6 +110,19 @@ export default function MobileChart({
                           stroke: 'none',
                           textShadow: '0 1px 2px rgba(0,0,0,0.1)',
                         }}
+                      />
+                    )}
+                    {/* Shows no data published label */}
+                    {mode === 'single' && isPrimaryMissing && siren && (
+                      <LabelList
+                        position='inside'
+                        formatter={() => 'Aucune\u00A0donnée publiée'}
+                        fill='#303F8D'
+                        strokeWidth={0}
+                        fontSize='15'
+                        fontWeight='600'
+                        fontFamily='var(--font-kanit), system-ui, sans-serif'
+                        offset={20}
                       />
                     )}
                   </Bar>
@@ -155,8 +157,7 @@ export default function MobileChart({
 
               {/* Show interpeller button and text for missing data */}
               {mode === 'single' && isPrimaryMissing && siren && (
-                <div className='absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2'>
-                  <div className='max-w-20 text-base font-semibold text-primary'>Aucune donnée</div>
+                <div className='absolute left-[calc(75%-20px)] top-1/2 -translate-y-1/2'>
                   <InterpellerButton siren={siren} />
                 </div>
               )}
@@ -185,12 +186,9 @@ export default function MobileChart({
           <div className='flex items-center gap-2'>
             <div className='h-4 w-4 rounded-sm' style={{ backgroundColor: primaryColor }} />
             <div className='text-sm font-medium' style={{ color: labelColor }}>
-              {legendLabel}
+              {legendLabel} {unitLabel ? `(${unitLabel})` : ''}
             </div>
           </div>
-          {unitLabel && (
-            <div className='text-xs font-medium text-primary'>Montants exprimés en {unitLabel}</div>
-          )}
         </div>
       )}
     </>
