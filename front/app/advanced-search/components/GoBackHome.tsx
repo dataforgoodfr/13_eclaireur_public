@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
+import { Button } from '#components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 export default function GoBackHome() {
@@ -11,8 +12,8 @@ export default function GoBackHome() {
   }
 
   return (
-    <button onClick={goHome} className='flex w-fit items-center justify-start gap-4'>
+    <Button variant='link' onClick={goHome} className='flex w-fit items-center justify-start gap-4'>
       <ArrowLeft /> Retour
-    </button>
+    </Button>
   );
 }

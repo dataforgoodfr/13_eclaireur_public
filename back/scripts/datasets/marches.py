@@ -110,21 +110,25 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         if interim_fn.exists():
             return
 
+        array_location = self.check_json_structure(raw_filename)
+
+        def select_items(content):
+            """
+            filter top level elements according to detected json structure.
+            """
+            root_structure = array_location.split(".")
+            for top_level in root_structure:
+                if top_level in content:  # what to do when 'root_structure == "unknown"'
+                    content = content[top_level]
+            return content
+
         with open(raw_filename, "rb") as raw:
-            array_location = self.check_json_structure(raw_filename) + ".item"
-
+            raw_loaded = json.load(raw)
+            raw_loaded = select_items(raw_loaded)
             with open(interim_fn, "w") as interim:
-                # Ijson identifies each declaration individually
-                # within the marches field.
-                array_declas = ijson.items(
-                    raw,
-                    array_location,
-                    use_float=True,
-                )
                 interim.write("[\n")
-
                 # Iterate over the JSON array items
-                for i, declaration in enumerate(array_declas):
+                for i, declaration in enumerate(raw_loaded):
                     if i:
                         interim.write(",\n")
                     unnested = [json.dumps(x) for x in self.unnest_marche(declaration)]
