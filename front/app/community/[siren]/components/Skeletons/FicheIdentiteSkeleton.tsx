@@ -22,12 +22,12 @@ export function FicheIdentiteSkeleton() {
         {/* Info blocks - Show static labels, skeleton for values */}
         <div className='order-2 w-full md:order-1 md:w-1/3'>
           <div className='flex w-full flex-col gap-4'>
-            <InfoBlockSkeleton label='Population' unit='habitants' bgColor='bg-yellow-100' />
-            <InfoBlockSkeleton label='Superficie' unit='hectares' bgColor='bg-lime-100' />
+            <InfoBlockSkeleton label='Population' unit='habitants' bgColor='bg-brand-3' />
+            <InfoBlockSkeleton label='Superficie' unit='hectares' bgColor='bg-brand-3' />
             <InfoBlockSkeleton
               label="Nombre d'agents administratifs"
               unit='agents'
-              bgColor='bg-indigo-100'
+              bgColor='bg-brand-3'
             />
           </div>
         </div>
