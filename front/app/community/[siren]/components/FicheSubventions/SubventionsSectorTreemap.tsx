@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
@@ -16,26 +16,22 @@ type SubventionsSectorTreemapProps = {
 
 const LIMIT_NUMBER_CATEGORIES = 50;
 
-export default function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
+function SubventionsSectorTreemap({ siren, year }: SubventionsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
 
-  const { data, isPending, isError } = useSubventionsByNaf(
-    siren,
-    year === 'All' ? null : year,
-    { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
-    maxAmount,
+  const updatemaxAmount = useCallback(
+    (value: number | null) => {
+      // Add current zoom level to stack before zooming in
+      if (value !== null) {
+        setZoomStack((prev) => [...prev, maxAmount]);
+        setmaxAmount(value);
+      }
+    },
+    [maxAmount],
   );
 
-  function updatemaxAmount(value: number | null) {
-    // Add current zoom level to stack before zooming in
-    if (value !== null) {
-      setZoomStack((prev) => [...prev, maxAmount]);
-      setmaxAmount(value);
-    }
-  }
-
-  function handleZoomOut() {
+  const handleZoomOut = useCallback(() => {
     if (zoomStack.length > 1) {
       // Go back one level
       const newStack = [...zoomStack];
@@ -45,7 +41,14 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
       setZoomStack(newStack);
       setmaxAmount(targetLevel);
     }
-  }
+  }, [zoomStack]);
+
+  const { data, isPending, isError } = useSubventionsByNaf(
+    siren,
+    year === 'All' ? null : year,
+    { page: 1, limit: LIMIT_NUMBER_CATEGORIES },
+    maxAmount,
+  );
 
   // Reset le "zoom" lors du changement d'année
   useEffect(() => {
@@ -56,6 +59,7 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
   if (isPending || isError) {
     return <TreemapSkeleton />;
   }
+
   if (data.length === 0) {
     return (
       <EmptyState
@@ -94,3 +98,5 @@ export default function SubventionsSectorTreemap({ siren, year }: SubventionsSec
     />
   );
 }
+
+export default memo(SubventionsSectorTreemap);

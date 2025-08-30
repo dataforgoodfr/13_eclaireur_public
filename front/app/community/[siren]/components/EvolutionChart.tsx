@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useStreamingChart } from '#utils/hooks/useStreamingChart';
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
-import ChartSkeleton from './ChartSkeleton';
 import DesktopEvolutionChart from './DesktopEvolutionChart';
 import MobileChart from './MobileChart';
 import { CHART_HEIGHT } from './constants';
@@ -48,36 +49,25 @@ export function EvolutionChart({
   isError,
 }: EvolutionChartProps) {
   const config = CHART_CONFIG[chartType];
-  const isAmountsMode = displayMode === 'amounts';
 
-  // Memoize chart data to avoid recalculations and flashing
-  const chartData = useMemo(() => {
-    const initialList: BarChartData = [];
-    for (let i = 0; i <= 7; i++) {
-      initialList.push({
-        year: new Date(Date.now()).getFullYear() - 7 + i,
-        value: 0,
-      });
-    }
+  // Use streaming chart hook for placeholder-to-real data transition
+  const streamingState = useStreamingChart(data, isPending, isError, {
+    chartType,
+    displayMode,
+  });
 
-    return initialList.map((el) => {
-      const found = data?.find((item) => item.year === el.year);
-      const value = isAmountsMode ? (found?.amount ?? el.value) : (found?.count ?? el.value);
-      return { ...el, value };
-    });
-  }, [data, isAmountsMode]);
-
-  if (isPending) return <ChartSkeleton />;
+  // Show error state only if there's an actual error
   if (isError) return <ErrorFetching style={{ height: CHART_HEIGHT }} />;
 
   return (
     <BarChart
-      data={chartData}
+      data={streamingState.data}
       barColor={config.barColor}
       borderColor={config.borderColor}
       siren={siren}
       legendLabel={config.legendLabels[displayMode]}
       chartType={chartType}
+      hasRealData={streamingState.hasRealData}
     />
   );
 }
@@ -94,9 +84,18 @@ type BarChartProps = {
   siren?: string;
   legendLabel: string;
   chartType: ChartDataType;
+  hasRealData: boolean;
 };
 
-function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }: BarChartProps) {
+function BarChart({
+  data,
+  barColor,
+  borderColor,
+  siren,
+  legendLabel,
+  chartType,
+  hasRealData,
+}: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   // Use shared chart data logic
@@ -131,6 +130,7 @@ function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }
         labelColor='#303F8D'
         siren={siren}
         unitLabel={unit}
+        hasRealData={hasRealData}
       />
     );
   }
@@ -147,6 +147,7 @@ function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }
       legendLabel={legendLabel}
       chartType={chartType}
       siren={siren}
+      hasRealData={hasRealData}
     />
   );
 }
