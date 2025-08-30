@@ -5,6 +5,7 @@
   "scripts": {
     "install": "next build",
     "dev": "next dev --turbopack",
+    "dev:scan": "NEXT_PUBLIC_REACT_SCAN=true next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -22,7 +23,15 @@
     "backstop:approve": "backstop approve --config=backstop.json",
     "backstop:report": "backstop openReport --config=backstop.json",
     "backstop:interactive": "BACKSTOP_REMOTE_HTTP_PORT=3000  backstop remote --config=backstop.json",
-    "prepare": "cd .. && lefthook install"
+    "lighthouse": "bun run lighthouse:mobile & bun run lighthouse:tablet & bun run lighthouse:desktop & wait",
+    "lighthouse:mobile": "unlighthouse --site http://localhost:3000 --urls / /advanced-search?page=2 /map /community/213105554 /community/213105554/comparison/216901231?year=2023 --scanner.device mobile --lighthouseOptions.formFactor mobile --lighthouseOptions.screenEmulation.mobile true --lighthouseOptions.screenEmulation.width 393 --lighthouseOptions.screenEmulation.height 852 --lighthouseOptions.screenEmulation.deviceScaleFactor 3",
+    "lighthouse:tablet": "unlighthouse --site http://localhost:3000 --urls / /advanced-search?page=2 /map /community/213105554 /community/213105554/comparison/216901231?year=2023 --scanner.device desktop --lighthouseOptions.formFactor desktop --lighthouseOptions.screenEmulation.mobile false --lighthouseOptions.screenEmulation.width 1024 --lighthouseOptions.screenEmulation.height 768 --lighthouseOptions.screenEmulation.deviceScaleFactor 1",
+    "lighthouse:desktop": "unlighthouse --site http://localhost:3000 --urls / /advanced-search?page=2 /map /community/213105554 /community/213105554/comparison/216901231?year=2023 --scanner.device desktop --lighthouseOptions.formFactor desktop --lighthouseOptions.screenEmulation.mobile false --lighthouseOptions.screenEmulation.width 1440 --lighthouseOptions.screenEmulation.height 900 --lighthouseOptions.screenEmulation.deviceScaleFactor 1",
+    "prepare": "cd .. && lefthook install",
+    "scan:monitor": "REACT_SCAN=true REACT_SCAN_MONITOR=true next dev --turbopack",
+    "scan:performance": "REACT_SCAN=true REACT_SCAN_PERFORMANCE=true next dev --turbopack",
+    "scan:memory": "REACT_SCAN=true REACT_SCAN_MEMORY=true next dev --turbopack",
+    "scan:export": "REACT_SCAN=true REACT_SCAN_EXPORT=true next dev --turbopack"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.0",
@@ -64,6 +73,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",
     "react-map-gl": "^8.0.1",
+    "react-scan": "^0.4.3",
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
