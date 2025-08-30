@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { CopyPasteButtons } from '#components/Interpellate/CopyPasteButtons';
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -41,13 +42,14 @@ export default async function InterpellateStep4({
           </h3>
 
           <div>
-            <Image
-              src='/eclaireur/partager_EP.png'
-              alt='Interpeller'
-              width={473}
-              height={56}
-              className='mx-auto block'
-            />
+            <div id='input-wrapper' className='relative mx-auto block h-14 w-[473px]'>
+              <input
+                type='url'
+                className='z-0 mx-auto block h-14 w-[473px] rounded-none rounded-br-xl rounded-tl-xl border border-input px-3 py-2 pl-4 text-2xl font-bold text-primary ring-offset-background placeholder:text-primary focus:border-primary focus:ring-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed'
+                value='www.eclaireurpublic.org'
+              />
+              <CopyPasteButtons className='absolute right-0 top-0 z-10' />
+            </div>
           </div>
         </article>
 
