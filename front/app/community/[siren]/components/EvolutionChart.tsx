@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { RefObject, useEffect, useMemo, useState } from 'react';
 
 import { ErrorFetching } from '../../../../components/ui/ErrorFetching';
 import ChartSkeleton from './ChartSkeleton';
@@ -18,6 +18,7 @@ type EvolutionChartProps = {
   data: Array<{ year: number; amount?: number; count?: number }> | null | undefined;
   isPending: boolean;
   isError: boolean;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
 const CHART_CONFIG = {
@@ -46,6 +47,7 @@ export function EvolutionChart({
   data,
   isPending,
   isError,
+  ref,
 }: EvolutionChartProps) {
   const config = CHART_CONFIG[chartType];
   const isAmountsMode = displayMode === 'amounts';
@@ -72,6 +74,7 @@ export function EvolutionChart({
 
   return (
     <BarChart
+      ref={ref}
       data={chartData}
       barColor={config.barColor}
       borderColor={config.borderColor}
@@ -94,9 +97,18 @@ type BarChartProps = {
   siren?: string;
   legendLabel: string;
   chartType: ChartDataType;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }: BarChartProps) {
+function BarChart({
+  data,
+  barColor,
+  borderColor,
+  siren,
+  legendLabel,
+  chartType,
+  ref,
+}: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   // Use shared chart data logic
@@ -138,6 +150,7 @@ function BarChart({ data, barColor, borderColor, siren, legendLabel, chartType }
   // Pour desktop : graphique vertical
   return (
     <DesktopEvolutionChart
+      ref={ref}
       data={chartDataForDisplay}
       barColor={barColor}
       borderColor={borderColor}

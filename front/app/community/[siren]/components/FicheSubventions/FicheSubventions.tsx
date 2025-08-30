@@ -50,9 +50,11 @@ const SubventionsHeader = ({
 export async function FicheSubventions({
   siren,
   communityType,
+  communityName,
 }: {
   siren: string;
   communityType: CommunityType;
+  communityName: string;
 }) {
   const fewSubventions = await getFewSubventions(siren);
   const availableYears = await fetchSubventionsAvailableYears(siren);
@@ -69,6 +71,7 @@ export async function FicheSubventions({
           availableYears={availableYears}
           transparencyIndex={transparencyIndex}
           communityType={communityType}
+          communityName={communityName}
         />
       ) : (
         <EmptyState

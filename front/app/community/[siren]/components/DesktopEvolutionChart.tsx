@@ -1,5 +1,7 @@
 'use client';
 
+import { RefObject } from 'react';
+
 import {
   Bar,
   Cell,
@@ -30,6 +32,7 @@ type DesktopEvolutionChartProps = {
   legendLabel: string;
   chartType: ChartDataType;
   siren?: string;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
 export default function DesktopEvolutionChart({
@@ -42,10 +45,11 @@ export default function DesktopEvolutionChart({
   legendLabel,
   chartType,
   siren,
+  ref,
 }: DesktopEvolutionChartProps) {
   return (
     <div className='relative'>
-      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+      <ResponsiveContainer ref={ref} width='100%' height={CHART_HEIGHT}>
         <RechartsBarChart
           width={500}
           height={300}
