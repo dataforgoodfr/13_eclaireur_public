@@ -56,3 +56,8 @@ playwright-report/
 /playwright/.cache/
 
 *storybook.log
+
+.eslintcache
+.husky
+# Million Lint
+.million

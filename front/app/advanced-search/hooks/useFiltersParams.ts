@@ -1,9 +1,7 @@
+import type { Community } from '#app/models/community';
+import type { TransparencyScore } from '#components/TransparencyScore/constants';
+import type { CommunityType } from '#utils/types';
 import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
-
-
-import { Community } from '#app/models/community';
-import { TransparencyScore } from '#components/TransparencyScore/constants';
-import { CommunityType } from '#utils/types';
 
 import { DEFAULT_PAGE } from './usePaginationParams';
 
@@ -33,7 +31,7 @@ export function useFiltersParams(): ReturnType {
   };
 
   const filters: Filters = {
-    type: params.type as CommunityType,
+    type: params.type as CommunityType | undefined,
     population: params.population ?? undefined,
     mp_score: params.mp_score as TransparencyScore,
     subventions_score: params.subventions_score as TransparencyScore,

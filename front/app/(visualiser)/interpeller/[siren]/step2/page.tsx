@@ -48,7 +48,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
             <>
               <div
                 id='header-article'
-                className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.jpg)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
+                className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
               >
                 <CommunityBasics community={community} />
                 <ButtonBackAndForth linkto={`/interpeller/${siren}/step3`} direction='forth'>

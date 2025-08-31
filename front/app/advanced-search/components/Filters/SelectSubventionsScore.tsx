@@ -1,4 +1,5 @@
 import { TransparencyScore } from '#components/TransparencyScore/constants';
+import type { CommunityType } from '#utils/types';
 
 import { useFilterOptions } from '../../hooks/useFilterOptions';
 import { useFiltersParams } from '../../hooks/useFiltersParams';
@@ -11,7 +12,7 @@ export function SelectSubventionsScore() {
   } = useFiltersParams();
 
   const { data: filterOptions } = useFilterOptions({
-    type,
+    type: type as CommunityType | undefined,
     population,
     mp_score,
   });
@@ -21,7 +22,7 @@ export function SelectSubventionsScore() {
   }
 
   const fallbackOptions = Object.values(TransparencyScore).sort();
-  const options = filterOptions?.subventionsScores.length 
+  const options = filterOptions?.subventionsScores.length
     ? (filterOptions.subventionsScores as TransparencyScore[]).sort()
     : fallbackOptions;
 

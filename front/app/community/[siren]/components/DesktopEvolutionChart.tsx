@@ -8,14 +8,20 @@ import {
   BarChart as RechartsBarChart,
   ResponsiveContainer,
   XAxis,
-  YAxis
+  YAxis,
 } from 'recharts';
+
 import { InterpellerButton } from '../../../../components/ui/interpeller-button';
 import { CHART_HEIGHT } from './constants';
 import type { ChartDataType } from './hooks/useChartData';
 
 type DesktopEvolutionChartProps = {
-  data: Array<{ year: number; value: number; originalValue: number; isPrimaryMissing: boolean }>;
+  data: Array<{
+    year: number;
+    value: number;
+    originalValue: number;
+    isPrimaryMissing: boolean;
+  }>;
   barColor: string;
   borderColor: string;
   unit: string;
@@ -24,6 +30,7 @@ type DesktopEvolutionChartProps = {
   legendLabel: string;
   chartType: ChartDataType;
   siren?: string;
+  hasRealData: boolean;
 };
 
 export default function DesktopEvolutionChart({
@@ -35,10 +42,16 @@ export default function DesktopEvolutionChart({
   avgValue,
   legendLabel,
   chartType,
-  siren
+  siren,
+  hasRealData,
 }: DesktopEvolutionChartProps) {
   return (
-    <div className="relative">
+    <div className='relative'>
+      {!hasRealData && (
+        <div className='absolute right-2 top-2 z-10'>
+          <div className='h-2 w-2 animate-pulse rounded-full bg-gray-400' />
+        </div>
+      )}
       <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
         <RechartsBarChart
           width={500}
@@ -52,19 +65,18 @@ export default function DesktopEvolutionChart({
           }}
         >
           <XAxis dataKey='year' axisLine={true} tickLine={true} />
-          <YAxis tickFormatter={(value) => formatValue(value)} />
+          <YAxis tickFormatter={hasRealData ? (value) => formatValue(value) : () => ''} />
           <Legend
             content={() => {
-              const bgColorClass = chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
+              const bgColorClass =
+                chartType === 'marches-publics' ? 'bg-primary-light' : 'bg-brand-2';
               return (
-                <div className="flex flex-col items-center gap-2 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-6 h-6 rounded border border-primary ${bgColorClass}`}
-                    />
-                    <span className="text-primary font-semibold">{legendLabel}</span>
+                <div className='mt-4 flex flex-col items-center gap-2'>
+                  <div className='flex items-center gap-2'>
+                    <div className={`h-6 w-6 rounded border border-primary ${bgColorClass}`} />
+                    <span className='font-semibold text-primary'>{legendLabel}</span>
                   </div>
-                  <div className="text-xs text-primary font-medium">
+                  <div className='text-xs font-medium text-primary'>
                     Montants exprimés en {unit}
                   </div>
                 </div>
@@ -76,21 +88,22 @@ export default function DesktopEvolutionChart({
             stackId='a'
             strokeWidth={1}
             radius={[16, 0, 0, 0]}
+            style={{ zIndex: 1 }}
             label={(props) => {
               const entry = data[props.index];
-              if (entry?.isPrimaryMissing && siren) {
+              if (entry?.isPrimaryMissing && siren && hasRealData) {
                 return (
                   <g>
                     <foreignObject
                       x={props.x + props.width / 2 - 50}
                       y={props.y - 120}
-                      width="100"
-                      height="120"
+                      width='100'
+                      height='120'
                       style={{ pointerEvents: 'auto', zIndex: 1000 }}
                     >
-                      <div className="flex flex-col items-center gap-2 pointer-events-auto">
+                      <div className='pointer-events-auto flex flex-col items-center gap-2'>
                         <InterpellerButton siren={siren} />
-                        <div className="text-lg font-semibold text-primary text-center">
+                        <div className='text-center text-lg font-semibold text-primary'>
                           Aucune donnée
                         </div>
                       </div>
@@ -101,24 +114,28 @@ export default function DesktopEvolutionChart({
               return <g />;
             }}
           >
-            {data.map((entry, index) => (
+            {data.map((entry) => (
               <Cell
-                key={`cell-${index}`}
+                key={`cell-${entry.year}`}
                 fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
+                fillOpacity={hasRealData ? 1 : 0.7}
                 stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
                 strokeWidth={1}
+                strokeOpacity={entry.isPrimaryMissing ? 0 : hasRealData ? 1 : 0.7}
               />
             ))}
-            <LabelList
-              position='top'
-              formatter={(value: number) => value === avgValue ? "" : formatValue(value)}
-              fill='#303F8D'
-              strokeWidth={0}
-              fontSize="16"
-              fontWeight="600"
-              fontFamily="var(--font-kanit), system-ui, sans-serif"
-              offset={20}
-            />
+            {hasRealData && (
+              <LabelList
+                position='top'
+                formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
+                fill='#303F8D'
+                strokeWidth={0}
+                fontSize='16'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            )}
           </Bar>
         </RechartsBarChart>
       </ResponsiveContainer>
