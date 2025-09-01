@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useState } from 'react';
+import { RefObject, memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
@@ -12,11 +12,12 @@ import type { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
   year: YearOption;
+  ref: RefObject<HTMLDivElement | null>;
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;
 
-function MarchesPublicsSectorTreemap({ siren, year }: MarchesPublicsSectorTreemapProps) {
+function MarchesPublicsSectorTreemap({ siren, year, ref }: MarchesPublicsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
 
@@ -89,6 +90,7 @@ function MarchesPublicsSectorTreemap({ siren, year }: MarchesPublicsSectorTreema
 
   return (
     <Treemap
+      ref={ref}
       data={treeData}
       isZoomActive={maxAmount !== null}
       handleClick={updatemaxAmount}
