@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
 
-import { ChevronLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export function GoToPreviousPage({
   children,
@@ -25,7 +25,8 @@ export function GoToPreviousPage({
         router.back();
       }}
     >
-      <ChevronLeft /> {children}
+      <ArrowLeft className='mr-4 mt-2 md:mt-0' />{' '}
+      <span className='hidden md:block'>{children}</span>
     </Link>
   );
 }

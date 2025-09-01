@@ -5,22 +5,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
+import { Extension } from '#utils/downloader/types';
 import { ArrowDownToLine } from 'lucide-react';
 
-type DownloadDropDownProps = {
-  onClickDownloadData?: () => void;
-  onClickDownloadChart?: () => void;
-  disabled?: boolean;
+type DownloadChartDropDownProps = {
+  onClickDownload: (extension: Extension) => void;
 };
 
-export default function DownloadDropDown({
-  onClickDownloadData,
-  onClickDownloadChart,
-  disabled,
-}: DownloadDropDownProps) {
+export default function DownloadChartDropDown({ onClickDownload }: DownloadChartDropDownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={disabled}>
+      <DropdownMenuTrigger asChild>
         <Button
           variant='default'
           size='icon'
@@ -30,13 +25,21 @@ export default function DownloadDropDown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={onClickDownloadData}>
+        <DropdownMenuItem
+          onClick={() => {
+            onClickDownload('png');
+          }}
+        >
           <ArrowDownToLine />
-          Télécharger les données
+          Télécharger au format PNG
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onClickDownloadChart}>
+        <DropdownMenuItem
+          onClick={() => {
+            onClickDownload('svg');
+          }}
+        >
           <ArrowDownToLine />
-          Télécharger le graphique
+          Télécharger au format SVG
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

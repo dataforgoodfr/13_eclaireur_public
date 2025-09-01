@@ -54,10 +54,13 @@ export default function MobileComparisonChart({
   const mobileChartData = data.map((item) => ({
     year: item.year,
     primary: item.regional,
-    primaryLabel: item.regionalLabel,
     secondary: item.community,
-    secondaryLabel: item.communityLabel,
+    isPrimaryMissing: !item.regional,
+    isSecondaryMissing: !item.community,
   }));
+
+  const primaryLabel = data.find((item) => item.regionalLabel)?.regionalLabel;
+  const secondaryLabel = data.find((item) => item.communityLabel)?.communityLabel;
 
   return (
     <div className='relative'>
@@ -79,6 +82,8 @@ export default function MobileComparisonChart({
         primaryColor='#303F8D'
         secondaryColor='url(#stripes)'
         formatValue={formatValue}
+        legendLabel={primaryLabel}
+        secondaryLabel={secondaryLabel}
       />
     </div>
   );

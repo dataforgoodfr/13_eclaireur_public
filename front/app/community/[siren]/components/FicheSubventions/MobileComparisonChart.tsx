@@ -57,6 +57,8 @@ export default function MobileComparisonChart({
     primaryLabel: item.regionalLabel,
     secondary: item.community,
     secondaryLabel: item.communityLabel,
+    isPrimaryMissing: !item.regional,
+    isSecondaryMissing: !item.community,
   }));
 
   return (
@@ -79,6 +81,7 @@ export default function MobileComparisonChart({
         primaryColor='#E8F787'
         secondaryColor='url(#stripes)'
         formatValue={formatValue}
+        secondaryLabel='Budget de collectivité'
       />
     </div>
   );

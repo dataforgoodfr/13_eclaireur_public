@@ -83,10 +83,6 @@
   }
 }
 
-#simulatedTextAreaContent p {
-  @apply px-3 py-1;
-}
-
 /* All titles */
 /* h1 {
   font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
