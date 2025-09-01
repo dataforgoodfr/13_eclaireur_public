@@ -1,7 +1,7 @@
-import { CommunityContact } from '#app/models/communityContact';
+import type { CommunityContact } from '#app/models/communityContact';
 
-import { Pagination } from '../types';
-import { ContactsOptions } from './createSQLQueryParams';
+import type { Pagination } from '../types';
+import type { ContactsOptions } from './createSQLQueryParams';
 
 const API_ROUTE = '/api/selected_communities';
 
@@ -16,7 +16,6 @@ export async function fetchContacts(
 ): Promise<CommunityContact[]> {
   const limit = options?.limit;
   const siren = options?.filters?.siren;
-  const type = options?.filters?.type;
 
   const url = new URL(API_ROUTE, window.location.origin);
 

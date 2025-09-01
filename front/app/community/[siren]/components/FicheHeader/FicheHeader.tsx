@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
+
 import { Community } from '#app/models/community';
-import { formatCommunityType } from '#utils/format';
 
 import GoBack from '../GoBack';
 import { FicheActionButtons } from './FicheActionButtons';
@@ -14,17 +15,22 @@ const descriptionText = `Visualiser les dernières données de dépenses publiqu
 
 export function FicheHeader({ community }: FicheHeaderProps) {
   const communityTitle = community.nom;
-  const communityType = formatCommunityType(community.type);
+  const communityType = community.type;
   const location = community.code_postal ? `${community.code_postal}` : '';
   const departementName = community.nom_departement;
 
   return (
-    <div
-      className='relative w-full bg-cover bg-center bg-no-repeat p-6 lg:px-40 lg:pb-12 lg:pt-4'
-      style={{
-        backgroundImage: 'url(/collectivite-header.jpg)',
-      }}
-    >
+    <div className='relative w-full p-6 lg:px-40 lg:pb-12 lg:pt-4'>
+      {/* Background image with high priority */}
+      <Image
+        src='/collectivite-header.webp'
+        alt='En-tête collectivité'
+        fill
+        className='-z-10 object-cover'
+        priority
+        fetchPriority='high'
+        sizes='100vw'
+      />
       <div className='relative z-10 flex flex-col gap-6'>
         {/* Top bar with GoBack and Action buttons - Mobile only */}
         <div className='flex h-12 items-center justify-between lg:hidden'>

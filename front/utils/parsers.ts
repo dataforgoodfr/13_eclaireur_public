@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { dataTableConfig } from '@/config/data-table';
 import type { ExtendedColumnFilter, ExtendedColumnSort } from '@/types/data-table';
 import { createParser } from 'nuqs/server';

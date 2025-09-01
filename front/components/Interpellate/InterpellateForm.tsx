@@ -168,8 +168,14 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
         <p className='mb-4 text-3xl font-bold'>Message d'interpellation</p>
 
         <div className='flex flex-row justify-between rounded-tl-3xl border border-secondary-dark font-bold'>
-          <div className='flex flex-col justify-center rounded-tl-3xl bg-secondary-dark px-4 py-2'>
-            <Image src='/eclaireur/error_icon.png' alt='Interpeller' width={24} height={24} />
+          <div className='flex w-14 flex-col justify-center rounded-tl-3xl bg-secondary-dark py-2'>
+            <Image
+              src='/eclaireur/error_icon.png'
+              alt='Interpeller'
+              width={24}
+              height={24}
+              className='self-center'
+            />
           </div>
           <p className='px-8 py-4'>
             Ce message est généré automatiquement avec les informations du destinataire choisi
@@ -224,8 +230,8 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
           </div>
         </fieldset>
 
-        <div className='my-12 flex flex-col items-end gap-4'>
-          <div className='mt-4 flex items-center space-x-2'>
+        <div className='flex flex-col items-end gap-4'>
+          <div className='mt-6 flex items-center space-x-2'>
             <Checkbox id='terms' checked={true} />
             <label htmlFor='terms' className='text-md text-primary'>
               Recevoir une copie du message par e-mail
@@ -235,7 +241,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
             size='lg'
             type='submit'
             disabled={isSubmitting}
-            className='mt-8 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90'
+            className='mt-4 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
           >
             Envoyer le message <ChevronRight />
           </Button>

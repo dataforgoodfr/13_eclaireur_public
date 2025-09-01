@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { useMediaQuery } from '#hooks/useMediaQuery';
-import { Scope, getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
-import { CommunityType } from '#utils/types';
+import { type Scope, getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
+import type { CommunityType } from '#utils/types';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 
@@ -80,9 +80,9 @@ const ScopeDropdown = ({
   </DropdownMenu>
 );
 
-const ComparisonEmptyState = ({ scope, siren }: { scope: string; siren: string }) => (
+const ComparisonEmptyState = ({ siren }: { siren: string }) => (
   <EmptyState
-    title={`Oups, il n'y a pas de données de comparaison pour la période ${scope.toLowerCase()}e !`}
+    title={`Oups, il n'y a pas de données pour comparer !`}
     description='Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques.'
     actionText='Interpeller'
     actionHref='/interpeller'
@@ -319,7 +319,7 @@ export default function Comparison({ siren, communityType }: ComparisonProps) {
           isRetrying={isFetching}
         />
       ) : data.length === 0 ? (
-        <ComparisonEmptyState scope={selectedScope} siren={siren} />
+        <ComparisonEmptyState siren={siren} />
       ) : (
         <ChartWithLegend data={data} isMobile={isMobile} isLoading={isFetching} siren={siren} />
       )}

@@ -37,7 +37,7 @@ const SubventionsHeader = ({
       {transparencyIndex && (
         <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
           <BadgeCommunity
-            text={`Indice de transparence: ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
+            text={`Indice de transparence : ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
             className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
           />

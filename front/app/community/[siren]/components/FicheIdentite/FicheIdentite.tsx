@@ -12,7 +12,7 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
       <div className='order-2 sm:order-1'>
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Informations générales</h2>
       </div>
-      <div className="order-1 sm:order-2 md:mb-4 mb-2 sm:mb-0">
+      <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
         {community.should_publish === true ? (
           <BadgeCommunity
             text="Soumise à l'obligation Loi République Numérique"
@@ -25,14 +25,14 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
             text="Non soumise à l'obligation Loi République Numérique"
             icon={CircleX}
             iconSize={12}
-            className="bg-red-200"
+            className='bg-red-200'
           />
         ) : (
           <BadgeCommunity
-            text="Information manquante Loi République Numérique"
+            text='Information manquante Loi République Numérique'
             icon={CircleX}
             iconSize={12}
-            className="bg-gray-200"
+            className='bg-gray-200'
           />
         )}
       </div>

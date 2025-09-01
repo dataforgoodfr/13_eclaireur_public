@@ -1,11 +1,11 @@
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
-import { AdvancedSearchCommunity, Community } from '#app/models/community';
+import type { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import type { AdvancedSearchCommunity, Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
-import { CommunityType } from '#utils/types';
+import type { CommunityType } from '#utils/types';
 
 import { DataTable } from '../constants';
 import { stringifySelectors } from '../functions/stringifySelectors';
-import { Pagination } from '../types';
+import type { Pagination } from '../types';
 
 /**
  * Fetch the communities (SSR) by advanced search
@@ -71,7 +71,7 @@ export function createSQLQueryParams(
 
   values.push(recentYear);
 
-  let additionalConditions = [];
+  const additionalConditions = [];
 
   if (type) {
     additionalConditions.push(`c.type = $${values.length + 1}`);

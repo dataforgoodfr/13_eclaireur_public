@@ -27,10 +27,10 @@ export function SelectCommunityType() {
     setFilter('type', value);
   }
 
-  function stringifyType(type: CommunityType | null) {
+  function stringifyType(type: string | null) {
     if (type == null) return 'Tout';
 
-    return stringifyCommunityType(type);
+    return stringifyCommunityType(type as CommunityType);
   }
 
   return (

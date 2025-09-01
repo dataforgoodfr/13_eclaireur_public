@@ -12,7 +12,7 @@ export default async function ProjectDescription() {
     <main
       className='w-full'
       style={{
-        backgroundImage: "url('/eclaireur/project_background.jpg')",
+        backgroundImage: "url('/eclaireur/project_background.webp')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

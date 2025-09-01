@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
 
 import Treemap from '../../../../../components/DataViz/Treemap';
 import TreemapSkeleton from '../../../../../components/DataViz/TreemapSkeleton';
-import { TreeData, TreeLeaf, YearOption } from '../../types/interface';
+import type { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
@@ -16,15 +16,32 @@ type MarchesPublicsSectorTreemapProps = {
 
 const LIMIT_NUMBER_CATEGORIES = 50;
 
-export default function MarchesPublicsSectorTreemap({
-  siren,
-  year,
-}: MarchesPublicsSectorTreemapProps) {
+function MarchesPublicsSectorTreemap({ siren, year }: MarchesPublicsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
+  const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
 
-  function updatemaxAmount(value: number | null) {
-    setmaxAmount(value);
-  }
+  const updatemaxAmount = useCallback(
+    (value: number | null) => {
+      // Add current zoom level to stack before zooming in
+      if (value !== null) {
+        setZoomStack((prev) => [...prev, maxAmount]);
+        setmaxAmount(value);
+      }
+    },
+    [maxAmount],
+  );
+
+  const handleZoomOut = useCallback(() => {
+    if (zoomStack.length > 1) {
+      // Go back one level
+      const newStack = [...zoomStack];
+      newStack.pop(); // Remove current level
+      const targetLevel = newStack[newStack.length - 1]; // Get previous level
+
+      setZoomStack(newStack);
+      setmaxAmount(targetLevel);
+    }
+  }, [zoomStack]);
 
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
@@ -36,6 +53,7 @@ export default function MarchesPublicsSectorTreemap({
   // Reset le "zoom" lors du changement d'année
   useEffect(() => {
     setmaxAmount(null);
+    setZoomStack([null]);
   }, [year]);
 
   if (isPending || isError) {
@@ -70,6 +88,15 @@ export default function MarchesPublicsSectorTreemap({
   };
 
   return (
-    <Treemap data={treeData} isZoomActive={maxAmount !== null} handleClick={updatemaxAmount} />
+    <Treemap
+      data={treeData}
+      isZoomActive={maxAmount !== null}
+      handleClick={updatemaxAmount}
+      onZoomOut={zoomStack.length > 1 ? handleZoomOut : undefined}
+      colorPalette='mp'
+      groupMode='value-based'
+    />
   );
 }
+
+export default memo(MarchesPublicsSectorTreemap);

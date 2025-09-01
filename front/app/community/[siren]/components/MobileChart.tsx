@@ -15,7 +15,6 @@ type MobileChartData = {
 
 type MobileChartProps = {
   data: MobileChartData[];
-  dataLoading?: boolean;
   primaryColor?: string;
   secondaryColor?: string;
   mode?: 'single' | 'dual'; // single for evolution, dual for comparison
@@ -24,11 +23,22 @@ type MobileChartProps = {
   labelColor?: string;
   siren?: string; // For interpeller button
   unitLabel?: string; // Unit label like "M€" or "k€"
+  hasRealData?: boolean; // Whether to show actual values or placeholder
+  dataLoading?: boolean;
 };
+
+// Loading overlay component
+const LoadingOverlay = () => (
+  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
+    <div className='flex items-center gap-2 text-primary'>
+      <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      <span>Mise à jour des données...</span>
+    </div>
+  </div>
+);
 
 export default function MobileChart({
   data,
-  dataLoading = false,
   primaryColor = '#303F8D',
   secondaryColor = 'url(#stripes)',
   mode = 'single',
@@ -37,6 +47,8 @@ export default function MobileChart({
   labelColor = '#303F8D',
   siren,
   unitLabel,
+  hasRealData = true,
+  dataLoading = false,
 }: MobileChartProps) {
   if (!data || data.length === 0) {
     return <div className='p-4 text-center text-gray-500'>Aucune donnée disponible</div>;
@@ -52,12 +64,10 @@ export default function MobileChart({
 
   return (
     <>
-      {dataLoading && (
-        <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
-          <div className='flex items-center gap-2 text-primary'>
-            <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent'></div>
-            <span className='text-sm'>Mise à jour...</span>
-          </div>
+      {dataLoading && <LoadingOverlay />}
+      {!hasRealData && (
+        <div className='absolute right-2 top-2 z-10'>
+          <div className='h-2 w-2 animate-pulse rounded-full bg-gray-400' />
         </div>
       )}
 
@@ -82,7 +92,13 @@ export default function MobileChart({
             <div className='relative flex-1'>
               <ResponsiveContainer width='100%' height={50}>
                 <BarChart
-                  data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
+                  data={[
+                    {
+                      ...item,
+                      primary: primaryValue,
+                      secondary: secondaryValue,
+                    },
+                  ]}
                   layout='vertical'
                   margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
                 >
@@ -101,12 +117,14 @@ export default function MobileChart({
                   <Bar dataKey='primary' barSize={40} radius={[0, 0, 16, 0]}>
                     <Cell
                       fill={primaryFillColor}
+                      fillOpacity={hasRealData ? 1 : 0.7}
                       stroke={isPrimaryMissing ? '#E5C72E' : '#303F8D'}
                       strokeWidth={1}
+                      strokeOpacity={hasRealData ? 1 : 0.7}
                       radius={[0, 0, 16, 0] as unknown as number}
                     />
-                    {/* Only show label if not showing interpeller button */}
-                    {!(mode === 'single' && isPrimaryMissing && siren) && (
+                    {/* Only show label if not showing interpeller button and has real data */}
+                    {!(mode === 'single' && isPrimaryMissing && siren) && hasRealData && (
                       <LabelList
                         dataKey='primary'
                         position='right'
@@ -130,31 +148,35 @@ export default function MobileChart({
                     <Bar dataKey='secondary' barSize={40} radius={[0, 0, 4, 0]} y={40}>
                       <Cell
                         fill={secondaryFillColor}
+                        fillOpacity={hasRealData ? 1 : 0.7}
                         stroke={isSecondaryMissing ? '#E5C72E' : '#E5E7EB'}
                         strokeWidth={1}
+                        strokeOpacity={hasRealData ? 1 : 0.7}
                       />
-                      <LabelList
-                        dataKey='secondary'
-                        position='right'
-                        formatter={(value: number) =>
-                          isSecondaryMissing ? 'Aucune donnée' : formatValue(value)
-                        }
-                        style={{
-                          fontSize: isSecondaryMissing ? '14px' : '24px',
-                          fill: labelColor,
-                          fontWeight: isSecondaryMissing ? '600' : '700',
-                          fontFamily: 'var(--font-kanit)',
-                          stroke: 'none',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        }}
-                      />
+                      {hasRealData && (
+                        <LabelList
+                          dataKey='secondary'
+                          position='right'
+                          formatter={(value: number) =>
+                            isSecondaryMissing ? 'Aucune donnée' : formatValue(value)
+                          }
+                          style={{
+                            fontSize: isSecondaryMissing ? '14px' : '24px',
+                            fill: labelColor,
+                            fontWeight: isSecondaryMissing ? '600' : '700',
+                            fontFamily: 'var(--font-kanit)',
+                            stroke: 'none',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                          }}
+                        />
+                      )}
                     </Bar>
                   )}
                 </BarChart>
               </ResponsiveContainer>
 
-              {/* Show interpeller button and text for missing data */}
-              {mode === 'single' && isPrimaryMissing && siren && (
+              {/* Show interpeller button and text for missing data (only with real data) */}
+              {mode === 'single' && isPrimaryMissing && siren && hasRealData && (
                 <div className='absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2'>
                   <div className='max-w-20 text-base font-semibold text-primary'>Aucune donnée</div>
                   <InterpellerButton siren={siren} />

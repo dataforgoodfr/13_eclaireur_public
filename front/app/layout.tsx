@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
 
 import Footer from '#app/components/Footer';
@@ -6,6 +6,7 @@ import Navbar from '#app/components/Navbar';
 import { Toaster } from '#components/ui/toaster';
 
 import Providers from './Providers';
+import ReactScanWrapper from './ReactScanWrapper';
 import './globals.css';
 
 const kanit = Kanit({
@@ -69,6 +70,7 @@ export default function RootLayout({
   return (
     <html lang='fr'>
       <body className={`${kanit.variable} flex h-screen flex-col font-sans antialiased`}>
+        <ReactScanWrapper />
         <Providers>
           <Navbar />
           <div className='relative flex-grow pt-20'>{children}</div>

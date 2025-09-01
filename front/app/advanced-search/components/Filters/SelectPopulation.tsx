@@ -1,3 +1,4 @@
+import type { CommunityType } from '#utils/types';
 import { formatNumber } from '#utils/utils';
 
 import { useFilterOptions } from '../../hooks/useFilterOptions';
@@ -13,7 +14,7 @@ export function SelectPopulation() {
   } = useFiltersParams();
 
   const { data: filterOptions } = useFilterOptions({
-    type,
+    type: type as CommunityType | undefined,
     mp_score,
     subventions_score,
   });

@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '#components/ui/table';
+import { CommunityType } from '#utils/types.js';
 import { cn, formatCompact, stringifyCommunityType } from '#utils/utils';
 import { ArrowUpDown } from 'lucide-react';
 
@@ -81,7 +82,9 @@ export function AdvancedSearchTable({ communities }: AdvancedSearchTableProps) {
           {communities.map((community) => (
             <TableRow key={community.siren + community.type}>
               <TableCell className='font-medium'>{community.nom}</TableCell>
-              <TableCell className='text-right'>{stringifyCommunityType(community.type)}</TableCell>
+              <TableCell className='text-right'>
+                {stringifyCommunityType(community.type as CommunityType)}
+              </TableCell>
               <TableCell className='text-right'>{formatCompact(community.population)}</TableCell>
               <TableCell className='text-right'>
                 {formatCompact(community.subventions_budget)}

@@ -7,6 +7,7 @@ import { Label } from '#components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '#components/ui/popover';
 import { Separator } from '#components/ui/separator';
 import { Slider } from '#components/ui/slider';
+import type { CommunityType } from '#utils/types';
 import { formatNumberInteger } from '#utils/utils';
 import { PlusCircle, XCircle } from 'lucide-react';
 
@@ -24,7 +25,7 @@ export function PopulationSliderFilter() {
   } = useFiltersParams();
 
   const { data: filterOptions } = useFilterOptions({
-    type,
+    type: type as CommunityType | undefined,
     mp_score,
     subventions_score,
   });

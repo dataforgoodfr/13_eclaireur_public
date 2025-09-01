@@ -1,5 +1,5 @@
 import { ComparisonType } from '#app/community/[siren]/comparison/[comparedSiren]/components/ComparisonType';
-import { MPSubvComparison } from '#app/models/comparison';
+import type { MPSubvComparison } from '#app/models/comparison';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
@@ -68,6 +68,7 @@ SELECT
     tc.year,
     tc.total_amount,
     tc.total_number,
+    c.nom as community_name,
     (
         SELECT
             json_agg(
@@ -80,7 +81,8 @@ SELECT
             top5_data top5
     ) AS top5
 FROM
-    total_calculations tc;
+    total_calculations tc
+LEFT JOIN collectivites c ON c.siren = tc.siren;
   `;
 
   return [querySQL, values];
@@ -97,6 +99,6 @@ export async function fetchMPSubvComparison(
   const params = createSQLQueryParams(siren, year, comparisonType);
   const rows = (await getQueryFromPool(...params)) as MPSubvComparison[];
 
-  if (rows.length === 0) return {} as MPSubvComparison;
+  if (rows.length === 0) return { community_name: '' } as MPSubvComparison;
   return rows[0];
 }
