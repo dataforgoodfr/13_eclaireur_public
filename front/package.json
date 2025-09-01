@@ -59,7 +59,6 @@
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "fs": "^0.0.1-security",
-    "html2canvas": "^1.4.1",
     "lucide-react": "^0.528.0",
     "maplibre-gl": "^5.2.0",
     "motion": "^12.23.12",

@@ -43,7 +43,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
         <Stepper currentStep={2} />
       </div>
       <section className='global-margin mb-16 mt-[-7rem]'>
-        <article className='mx-4 rounded-3xl border border-primary-light shadow'>
+        <article className='rounded-3xl border border-primary-light shadow'>
           {emailContactsLen > 0 && (
             <>
               <div

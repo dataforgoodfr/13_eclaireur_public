@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
       limit,
     };
 
-    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxAmount);
+    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxAmount ?? null);
 
     return NextResponse.json(data);
   } catch (error) {
