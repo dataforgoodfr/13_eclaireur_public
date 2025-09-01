@@ -6,7 +6,7 @@ export default function Error() {
   return (
     <ErrorPage
       title='Blackout temporaire ...'
-      description='Même les éclaireurs doivent parfois recharger leurs lampes! Nous faisons tout en oeuvre pour ramener de la lumière.'
+      description='Même les éclaireurs doivent parfois recharger leurs lampes! Nous mettons tout en oeuvre pour ramener de la lumière.'
       errorType='500'
     />
   );
