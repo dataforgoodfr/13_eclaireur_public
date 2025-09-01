@@ -43,15 +43,15 @@ export default function ChoroplethLayer({
             ['linear'],
             ['coalesce', ['feature-state', choroplethParameter], 5],
             1,
-            '#79B381', // A - strong blue
+            '#1976d2', // A - strong blue
             2,
-            '#B2D675', // B - light blue
+            '#64b5f6', // B - light blue
             3,
-            '#FFDE8B', // C - soft teal
+            '#b2dfdb', // C - soft teal
             4,
-            '#FFA466', // D - soft yellow
+            '#ffe082', // D - soft yellow
             5,
-            '#FF8574', // E - soft orange
+            '#ffb74d', // E - soft orange
           ],
           'fill-opacity': fillOpacity,
           'fill-outline-color': outlineColor,

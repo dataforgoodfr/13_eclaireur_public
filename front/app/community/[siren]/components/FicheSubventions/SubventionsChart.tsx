@@ -1,7 +1,5 @@
 'use client';
 
-import { RefObject } from 'react';
-
 import { useSubventionYearlyAmounts } from '#utils/hooks/useSubventionYearlyAmounts';
 import { useSubventionYearlyCounts } from '#utils/hooks/useSubventionYearlyCounts';
 
@@ -10,10 +8,9 @@ import { EvolutionChart } from '../EvolutionChart';
 type SubventionsChartProps = {
   siren: string;
   displayMode: 'amounts' | 'counts';
-  ref?: RefObject<HTMLDivElement | null>;
 };
 
-export function SubventionsChart({ siren, displayMode, ref }: SubventionsChartProps) {
+export function SubventionsChart({ siren, displayMode }: SubventionsChartProps) {
   const {
     data: amountsData,
     isPending: amountsPending,
@@ -32,7 +29,6 @@ export function SubventionsChart({ siren, displayMode, ref }: SubventionsChartPr
 
   return (
     <EvolutionChart
-      ref={ref}
       siren={siren}
       displayMode={displayMode}
       chartType='subventions'

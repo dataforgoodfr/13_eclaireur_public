@@ -1,10 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
-import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
 import { YearOption } from '../../types/interface';
@@ -13,30 +12,15 @@ import { TabHeader } from '../TabHeader';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
 import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 
-type DistributionProps = { siren: string; availableYears: number[]; communityName: string };
+type DistributionProps = { siren: string; availableYears: number[] };
 
-export default function Distribution({ siren, availableYears, communityName }: DistributionProps) {
-  const marchesPublicsSectorTreemapRef = useRef<HTMLDivElement | null>(null);
-
+export default function Distribution({ siren, availableYears }: DistributionProps) {
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
 
   function handleDownloadData() {
     downloadMarchesPublicsByCPV2CSV(siren, selectedYear === 'All' ? null : selectedYear);
-  }
-
-  function handleDownloadChart() {
-    if (selectedYear !== 'All' && marchesPublicsSectorTreemapRef.current) {
-      downloadSVGChart(
-        marchesPublicsSectorTreemapRef.current,
-        {
-          communityName,
-          chartTitle: `Répartition par secteur - ${selectedYear}`,
-        },
-        { fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}`, extension: 'png' },
-      );
-    }
   }
 
   return (
@@ -54,11 +38,7 @@ export default function Distribution({ siren, availableYears, communityName }: D
         actions={
           <>
             <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
-            <DownloadSelector
-              onClickDownloadData={handleDownloadData}
-              onClickDownloadChart={handleDownloadChart}
-              disabled={selectedYear === 'All'}
-            />
+            <DownloadSelector onClickDownloadData={handleDownloadData} />
           </>
         }
       />
@@ -66,11 +46,7 @@ export default function Distribution({ siren, availableYears, communityName }: D
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
       </div>
       <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
-        <MarchesPublicsSectorTreemap
-          ref={marchesPublicsSectorTreemapRef}
-          siren={siren}
-          year={selectedYear}
-        />
+        <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
       </div>
     </>
   );

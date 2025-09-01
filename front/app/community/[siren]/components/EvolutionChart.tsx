@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useStreamingChart } from '#utils/hooks/useStreamingChart';
 
@@ -19,7 +19,6 @@ type EvolutionChartProps = {
   data: Array<{ year: number; amount?: number; count?: number }> | null | undefined;
   isPending: boolean;
   isError: boolean;
-  ref?: RefObject<HTMLDivElement | null>;
 };
 
 const CHART_CONFIG = {
@@ -28,7 +27,7 @@ const CHART_CONFIG = {
     borderColor: '#303F8D',
     legendLabels: {
       amounts: 'Montant des marchés publics publiés',
-      counts: 'Nombre de marchés publics publiés',
+      counts: 'Nombre de marchés publics publiées',
     },
   },
   subventions: {
@@ -48,7 +47,6 @@ export function EvolutionChart({
   data,
   isPending,
   isError,
-  ref,
 }: EvolutionChartProps) {
   const config = CHART_CONFIG[chartType];
 
@@ -63,14 +61,12 @@ export function EvolutionChart({
 
   return (
     <BarChart
-      ref={ref}
       data={streamingState.data}
       barColor={config.barColor}
       borderColor={config.borderColor}
       siren={siren}
       legendLabel={config.legendLabels[displayMode]}
       chartType={chartType}
-      showLegendUnit={displayMode === 'amounts'}
       hasRealData={streamingState.hasRealData}
     />
   );
@@ -88,9 +84,7 @@ type BarChartProps = {
   siren?: string;
   legendLabel: string;
   chartType: ChartDataType;
-  showLegendUnit: boolean;
   hasRealData: boolean;
-  ref?: RefObject<HTMLDivElement | null>;
 };
 
 function BarChart({
@@ -100,9 +94,7 @@ function BarChart({
   siren,
   legendLabel,
   chartType,
-  showLegendUnit,
   hasRealData,
-  ref,
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -126,7 +118,6 @@ function BarChart({
     const mobileChartData = data.map((item) => ({
       year: item.year,
       primary: item.value,
-      isPrimaryMissing: !item.value,
     }));
 
     return (
@@ -138,7 +129,7 @@ function BarChart({
         legendLabel={legendLabel}
         labelColor='#303F8D'
         siren={siren}
-        unitLabel={showLegendUnit ? unit : undefined}
+        unitLabel={unit}
         hasRealData={hasRealData}
       />
     );
@@ -147,11 +138,10 @@ function BarChart({
   // Pour desktop : graphique vertical
   return (
     <DesktopEvolutionChart
-      ref={ref}
       data={chartDataForDisplay}
       barColor={barColor}
       borderColor={borderColor}
-      unit={showLegendUnit ? unit : undefined}
+      unit={unit}
       formatValue={formatValue}
       avgValue={avgValue}
       legendLabel={legendLabel}

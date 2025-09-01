@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import DownloadButton from '#app/community/[siren]/components/DownloadDataButton';
 import YearSelector from '#app/community/[siren]/components/YearSelector';
-import { downloadMarchesPublicsContratsCSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsContrats';
 import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
@@ -26,12 +25,6 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
     paginationProps.onPageChange(1);
   }
 
-  function handleDownloadData() {
-    if (selectedYear !== 'All') {
-      downloadMarchesPublicsContratsCSV(siren, selectedYear);
-    }
-  }
-
   return (
     <>
       <TabHeader
@@ -39,7 +32,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
         actions={
           <>
             <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
-            <DownloadButton onClick={handleDownloadData} disabled={selectedYear === 'All'} />
+            <DownloadButton />
           </>
         }
       />

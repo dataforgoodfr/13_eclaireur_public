@@ -6,7 +6,7 @@ import { stringifySelectors } from '../functions/stringifySelectors';
 
 export type MarchesPublicsParams = {
   selectors?: (keyof MarchePublic)[];
-  filters?: Partial<Pick<MarchePublic, 'acheteur_id' | 'annee_notification'>>;
+  filters?: Partial<Pick<MarchePublic, 'acheteur_id'>>;
   limit?: number;
   orderBy?: { direction: 'asc' | 'desc'; column: keyof MarchePublic };
 };
@@ -19,7 +19,7 @@ const TABLE_NAME = DataTable.MarchesPublics;
  * @returns
  */
 export function createSQLQueryParams(options?: MarchesPublicsParams) {
-  const values: (CommunityType | number | string)[] = [];
+  let values: (CommunityType | number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
   let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
@@ -51,7 +51,7 @@ export function createSQLQueryParams(options?: MarchesPublicsParams) {
   }
 
   if (orderBy) {
-    query += ` ORDER BY $${values.length + 1}:raw $${values.length + 2}:raw`;
+    query += ` ORDER BY $${values.length + 1} $${values.length + 2}`;
     values.push(...[orderBy.column, orderBy.direction]);
   }
 

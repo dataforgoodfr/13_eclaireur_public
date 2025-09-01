@@ -1,35 +1,25 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
-import { Extension } from '#utils/downloader/types';
+import { ActionButton } from '#components/ui/action-button';
+import { Download } from 'lucide-react';
 
 import { GraphSwitch } from '../DataViz/GraphSwitch';
-import DownloadChartDropDown from '../DownloadChartDropDown';
 import { TabHeader } from '../TabHeader';
 import { MarchesPublicsChart } from './MarchesPublicsChart';
 
 type EvolutionProps = {
   siren: string;
-  communityName: string;
 };
 
-export default function Evolution({ siren, communityName }: EvolutionProps) {
+export default function Evolution({ siren }: EvolutionProps) {
   const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
-  const marchesPublicsChartRef = useRef<HTMLDivElement | null>(null);
 
-  const handleDownloadClick = async (extension: Extension) => {
-    if (marchesPublicsChartRef.current) {
-      downloadSVGChart(
-        marchesPublicsChartRef.current,
-        {
-          communityName,
-          chartTitle: 'Évolution des marchés publics au cours du temps',
-        },
-        { fileName: `évolution-${communityName.slice(0, 15)}`, extension },
-      );
-    }
+  const handleDownloadClick = () => {
+    // TODO: Add download functionality
+    console.log('Download clicked');
+    // Peut ouvrir un menu dropdown pour choisir entre CSV et PNG
   };
 
   return (
@@ -44,13 +34,18 @@ export default function Evolution({ siren, communityName }: EvolutionProps) {
             label2='Nombre de contrats'
           />
         }
-        actions={<DownloadChartDropDown onClickDownload={handleDownloadClick} />}
+        actions={
+          <ActionButton
+            onClick={handleDownloadClick}
+            icon={<Download size={20} />}
+            variant='default'
+          />
+        }
       />
 
       {/* Chart Section */}
       <div className='p-4 md:p-6'>
         <MarchesPublicsChart
-          ref={marchesPublicsChartRef}
           siren={siren}
           displayMode={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}
         />

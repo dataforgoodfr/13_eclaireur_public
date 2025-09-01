@@ -13,14 +13,12 @@ interface MarchesPublicsWithStateProps {
   siren: string;
   availableYears: number[];
   communityType: CommunityType;
-  communityName: string;
 }
 
 export function MarchesPublicsWithState({
   siren,
   availableYears,
   communityType,
-  communityName,
 }: MarchesPublicsWithStateProps) {
   const [activeTab, setActiveTab] = useMarchesPublicsTab();
 
@@ -29,35 +27,35 @@ export function MarchesPublicsWithState({
       <TabsList className='h-10 p-0.5 sm:h-12 sm:p-1'>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.TRENDS}
-          className='px-2 text-[10px] sm:px-3 sm:text-sm'
+          className='px-2 text-xs sm:px-3 sm:text-sm'
         >
           Évolution
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.DISTRIBUTION}
-          className='px-2 text-[10px] sm:px-3 sm:text-sm'
+          className='px-2 text-xs sm:px-3 sm:text-sm'
         >
           Répartition
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.COMPARISON}
-          className='px-2 text-[10px] sm:px-3 sm:text-sm'
+          className='px-2 text-xs sm:px-3 sm:text-sm'
         >
           Comparaison
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.DETAILS}
-          className='px-2 text-[10px] sm:px-3 sm:text-sm'
+          className='px-2 text-xs sm:px-3 sm:text-sm'
         >
           Contrats
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.TRENDS}>
-        <Evolution siren={siren} communityName={communityName} />
+        <Evolution siren={siren} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.DISTRIBUTION}>
-        <Distribution siren={siren} availableYears={availableYears} communityName={communityName} />
+        <Distribution siren={siren} availableYears={availableYears} />
       </TabsContent>
       <TabsContent value={TAB_VALUES.MARCHES_PUBLICS.COMPARISON}>
         <Comparison siren={siren} communityType={communityType} />

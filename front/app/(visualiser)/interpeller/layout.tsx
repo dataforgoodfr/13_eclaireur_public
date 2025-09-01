@@ -16,17 +16,17 @@ export const metadata: Metadata = {
 export default function InterpellateLayout({ children }: PropsWithChildren) {
   return (
     <main>
-      <div className='h1-wrapper flex bg-muted-border py-8 md:block md:py-16'>
-        <GoToPreviousPage className='md:global-margin mt-2 shrink md:mb-8 md:flex md:shrink-0'>
+      <div className='h1-wrapper bg-muted-border py-16'>
+        <GoToPreviousPage className='global-margin mb-8 mt-2 block flex flex-row'>
           Retour
         </GoToPreviousPage>
-        <h1 className='md:global-margin flex flex-row-reverse items-center md:flex-row'>
+        <h1 className='global-margin'>
           <Image
             src='/eclaireur/call_icon.png'
             width={48}
             height={39}
             alt=''
-            className='ml-4 mr-4 md:ml-0 md:mt-[-10]'
+            className='mr-4 mt-[-10] inline'
           />
           Interpeller
         </h1>

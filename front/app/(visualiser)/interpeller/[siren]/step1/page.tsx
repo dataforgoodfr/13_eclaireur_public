@@ -41,7 +41,7 @@ export default async function InterpellateStep1({ params }: CommunityPageProps) 
         <Stepper currentStep={1} />
       </div>
       <section className='global-margin mb-16 mt-[-7rem]'>
-        <article className='mx-4 rounded-3xl border border-primary-light shadow'>
+        <article className='rounded-3xl border border-primary-light shadow'>
           <div
             id='header-article'
             className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
