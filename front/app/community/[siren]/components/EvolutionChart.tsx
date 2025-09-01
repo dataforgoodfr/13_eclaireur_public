@@ -28,7 +28,7 @@ const CHART_CONFIG = {
     borderColor: '#303F8D',
     legendLabels: {
       amounts: 'Montant des marchés publics publiés',
-      counts: 'Nombre de marchés publics publiées',
+      counts: 'Nombre de marchés publics publiés',
     },
   },
   subventions: {
@@ -70,6 +70,7 @@ export function EvolutionChart({
       siren={siren}
       legendLabel={config.legendLabels[displayMode]}
       chartType={chartType}
+      showLegendUnit={displayMode === 'amounts'}
       hasRealData={streamingState.hasRealData}
     />
   );
@@ -87,6 +88,7 @@ type BarChartProps = {
   siren?: string;
   legendLabel: string;
   chartType: ChartDataType;
+  showLegendUnit: boolean;
   hasRealData: boolean;
   ref?: RefObject<HTMLDivElement | null>;
 };
@@ -98,6 +100,7 @@ function BarChart({
   siren,
   legendLabel,
   chartType,
+  showLegendUnit,
   hasRealData,
   ref,
 }: BarChartProps) {
@@ -123,6 +126,7 @@ function BarChart({
     const mobileChartData = data.map((item) => ({
       year: item.year,
       primary: item.value,
+      isPrimaryMissing: !item.value,
     }));
 
     return (
@@ -134,7 +138,7 @@ function BarChart({
         legendLabel={legendLabel}
         labelColor='#303F8D'
         siren={siren}
-        unitLabel={unit}
+        unitLabel={showLegendUnit ? unit : undefined}
         hasRealData={hasRealData}
       />
     );
@@ -147,7 +151,7 @@ function BarChart({
       data={chartDataForDisplay}
       barColor={barColor}
       borderColor={borderColor}
-      unit={unit}
+      unit={showLegendUnit ? unit : undefined}
       formatValue={formatValue}
       avgValue={avgValue}
       legendLabel={legendLabel}

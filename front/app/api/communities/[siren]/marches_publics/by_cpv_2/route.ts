@@ -25,12 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
       limit,
     };
 
-    const data = await fetchMarchesPublicsByCPV2(
-      siren,
-      year ?? null,
-      pagination,
-      maxAmount,
-    );
+    const data = await fetchMarchesPublicsByCPV2(siren, year ?? null, pagination, maxAmount);
 
     return NextResponse.json(data);
   } catch (error) {

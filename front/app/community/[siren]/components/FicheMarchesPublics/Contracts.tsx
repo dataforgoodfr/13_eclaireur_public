@@ -39,7 +39,7 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
         actions={
           <>
             <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
-            <DownloadButton onClick={handleDownloadData} disabled={selectedYear === 'All'}/>
+            <DownloadButton onClick={handleDownloadData} disabled={selectedYear === 'All'} />
           </>
         }
       />

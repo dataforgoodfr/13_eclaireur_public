@@ -29,25 +29,25 @@ export function MarchesPublicsWithState({
       <TabsList className='h-10 p-0.5 sm:h-12 sm:p-1'>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.TRENDS}
-          className='px-2 text-xs sm:px-3 sm:text-sm'
+          className='px-2 text-[10px] sm:px-3 sm:text-sm'
         >
           Évolution
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.DISTRIBUTION}
-          className='px-2 text-xs sm:px-3 sm:text-sm'
+          className='px-2 text-[10px] sm:px-3 sm:text-sm'
         >
           Répartition
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.COMPARISON}
-          className='px-2 text-xs sm:px-3 sm:text-sm'
+          className='px-2 text-[10px] sm:px-3 sm:text-sm'
         >
           Comparaison
         </TabsTrigger>
         <TabsTrigger
           value={TAB_VALUES.MARCHES_PUBLICS.DETAILS}
-          className='px-2 text-xs sm:px-3 sm:text-sm'
+          className='px-2 text-[10px] sm:px-3 sm:text-sm'
         >
           Contrats
         </TabsTrigger>

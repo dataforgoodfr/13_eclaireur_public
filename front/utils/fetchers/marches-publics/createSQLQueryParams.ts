@@ -19,7 +19,7 @@ const TABLE_NAME = DataTable.MarchesPublics;
  * @returns
  */
 export function createSQLQueryParams(options?: MarchesPublicsParams) {
-  let values: (CommunityType | number | string)[] = [];
+  const values: (CommunityType | number | string)[] = [];
 
   const selectorsStringified = stringifySelectors(options?.selectors);
   let query = `SELECT ${selectorsStringified} FROM ${TABLE_NAME}`;
