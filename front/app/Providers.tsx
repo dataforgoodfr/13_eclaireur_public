@@ -8,7 +8,14 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 type ProvidersProps = PropsWithChildren;
 
 export default function Providers({ children }: ProvidersProps) {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
   return (
     <NuqsAdapter>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
