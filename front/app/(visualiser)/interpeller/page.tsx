@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
+import FrequentlyAskedQuestions from '#app/components/FrequentlyAskedQuestions';
 import OurMethodology from '#app/components/OurMethodology';
 import WhyChallenge from '#app/components/WhyChallenge';
 import Stepper from '#components/Interpellate/Stepper';
@@ -39,6 +40,7 @@ export default function Page() {
 
         <WhyChallenge />
         <OurMethodology />
+        <FrequentlyAskedQuestions />
       </section>
     </>
   );
