@@ -12,87 +12,85 @@ export default function OurMethodology() {
   const [selectedScore, setSelectedScore] = useState<keyof typeof SCORES>('A');
 
   return (
-    <main className='w-full'>
-      <article className='global-margin px-4 pb-20'>
-        <h2 className='text-h2 mb-5'>Notre méthodologie</h2>
-        <div className='grid gap-4'>
-          <div>
-            <div className='grid gap-4'>
-              <p className='text-lg'>
-                L'indice de transparence des marchés publics repose sur trois facteurs clés :
-              </p>
-            </div>
-            <div className='mt-6 flex flex-col gap-4'>
-              <MethodologyCard
-                picto='/eclaireur/one.png'
-                title='Publication de données sur les marchés inférieurs à 40 000 €'
-                colorClassName='bg-brand-1'
-              />
-              <MethodologyCard
-                picto='/eclaireur/two.png'
-                title='Publication de données sur les marchés supérieurs à 40 000 €'
-                colorClassName='bg-brand-2'
-              />
-              <MethodologyCard
-                picto='/eclaireur/three.png'
-                title='Publication de données sur les 13 critères suivants :'
-                colorClassName='bg-brand-3'
-                criteria={CRITERIA}
-              />
-            </div>
+    <article className='global-margin px-4 pb-2 md:pb-20'>
+      <h2 className='text-h2 mb-5'>Notre méthodologie</h2>
+      <div className='grid gap-4'>
+        <div>
+          <div className='grid gap-4'>
+            <p className='text-lg'>
+              L'indice de transparence des marchés publics repose sur trois facteurs clés :
+            </p>
           </div>
-        </div>
-
-        <div className='flex flex-col gap-8 py-6 md:flex-row'>
-          <div className='flex items-center justify-center md:w-1/3'>
-            <Image
-              src={SCORES[selectedScore].picto}
-              alt={SCORES[selectedScore].title}
-              className='aspect-square w-full max-w-48 object-contain'
-              width={200}
-              height={200}
+          <div className='mt-6 flex flex-col gap-4'>
+            <MethodologyCard
+              picto='/eclaireur/one.png'
+              title='Publication de données sur les marchés inférieurs à 40 000 €'
+              colorClassName='bg-brand-1'
+            />
+            <MethodologyCard
+              picto='/eclaireur/two.png'
+              title='Publication de données sur les marchés supérieurs à 40 000 €'
+              colorClassName='bg-brand-2'
+            />
+            <MethodologyCard
+              picto='/eclaireur/three.png'
+              title='Publication de données sur les 13 critères suivants :'
+              colorClassName='bg-brand-3'
+              criteria={CRITERIA}
             />
           </div>
+        </div>
+      </div>
 
-          <div className='flex flex-col gap-4 md:w-2/3'>
-            {/* Score selector */}
-            <div className='mb-8 mt-8 grid w-full grid-cols-5 items-center border-b border-primary-light'>
-              {Object.keys(SCORES).map((score) => (
-                <div key={score} className='col-span-1 w-full justify-self-center'>
-                  <button
-                    key={score}
-                    onClick={() => setSelectedScore(score as keyof typeof SCORES)}
-                    className={`w-full py-2 text-2xl font-bold transition-all duration-200 ${
-                      selectedScore === score
-                        ? 'border-b-2 border-primary text-primary'
-                        : 'text-primary-light hover:border-b-2 hover:border-primary hover:text-primary'
-                    }`}
-                  >
-                    {score}
-                  </button>
-                </div>
-              ))}
-            </div>
+      <div className='flex flex-col gap-8 py-6 md:flex-row'>
+        <div className='flex items-center justify-center md:w-1/3'>
+          <Image
+            src={SCORES[selectedScore].picto}
+            alt={SCORES[selectedScore].title}
+            className='aspect-square w-full max-w-48 object-contain'
+            width={200}
+            height={200}
+          />
+        </div>
 
-            {/* Score display */}
+        <div className='flex flex-col gap-4 md:w-2/3'>
+          {/* Score selector */}
+          <div className='mb-8 mt-8 grid w-full grid-cols-5 items-center border-b border-primary-light'>
+            {Object.keys(SCORES).map((score) => (
+              <div key={score} className='col-span-1 w-full justify-self-center'>
+                <button
+                  key={score}
+                  onClick={() => setSelectedScore(score as keyof typeof SCORES)}
+                  className={`w-full py-2 text-2xl font-bold transition-all duration-200 ${
+                    selectedScore === score
+                      ? 'border-b-2 border-primary text-primary'
+                      : 'text-primary-light hover:border-b-2 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {score}
+                </button>
+              </div>
+            ))}
+          </div>
 
-            <div className='flex w-full flex-col gap-4'>
-              <h3 className='text-2xl font-bold text-primary'>{SCORES[selectedScore].title}</h3>
-              <p className='text-lg leading-relaxed'>{SCORES[selectedScore].description}</p>
-            </div>
+          {/* Score display */}
+
+          <div className='flex w-full flex-col gap-4'>
+            <h3 className='text-2xl font-bold text-primary'>{SCORES[selectedScore].title}</h3>
+            <p className='text-lg leading-relaxed'>{SCORES[selectedScore].description}</p>
           </div>
         </div>
-        <div className='flex justify-center'>
-          <Link
-            href={'/methodologie'}
-            className='my-10 flex w-full items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2 md:w-80'
-          >
-            <span className='me-2 font-bold'>Découvrir notre méthodologie</span>
-            <ArrowRight />
-          </Link>
-        </div>
-      </article>
-    </main>
+      </div>
+      <div className='flex justify-center'>
+        <Link
+          href={'/methodologie'}
+          className='my-10 flex w-full items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2 md:w-80'
+        >
+          <span className='me-2 font-bold'>Découvrir notre méthodologie</span>
+          <ArrowRight />
+        </Link>
+      </div>
+    </article>
   );
 }
 

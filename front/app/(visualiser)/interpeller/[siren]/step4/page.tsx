@@ -20,7 +20,7 @@ export default async function InterpellateStep4({
         <Stepper currentStep={4} />
       </div>
       <section className='global-margin mb-16 mt-[-7rem]'>
-        <article className='rounded-3xl border border-primary-light pb-12 shadow'>
+        <article className='mx-4 rounded-3xl border border-primary-light pb-12 shadow'>
           <div
             id='header-article'
             className='align-center mb-16 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
@@ -42,13 +42,13 @@ export default async function InterpellateStep4({
           </h3>
 
           <div>
-            <div id='input-wrapper' className='relative mx-auto block h-14 w-[473px]'>
+            <div id='input-wrapper' className='relative mx-auto block h-14 md:w-[473px]'>
               <input
                 type='url'
-                className='z-0 mx-auto block h-14 w-[473px] rounded-none rounded-br-xl rounded-tl-xl border border-input px-3 py-2 pl-4 text-2xl font-bold text-primary ring-offset-background placeholder:text-primary focus:border-primary focus:ring-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed'
+                className='z-0 mx-auto block h-14 w-[300px] rounded-none rounded-br-xl rounded-tl-xl border border-input py-2 pl-2 font-bold text-primary focus:border-primary focus:ring-primary focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed md:w-[473px] md:px-3 md:pl-4 md:text-2xl'
                 value='www.eclaireurpublic.org'
               />
-              <CopyPasteButtons className='absolute right-0 top-0 z-10' />
+              <CopyPasteButtons className='absolute right-10 top-0 z-10 md:right-0' />
             </div>
           </div>
         </article>
