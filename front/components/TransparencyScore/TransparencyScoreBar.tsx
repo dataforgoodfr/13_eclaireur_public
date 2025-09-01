@@ -1,8 +1,8 @@
-import { SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 import { SCORE_TO_ADJECTIF, TransparencyScore } from '#components/TransparencyScore/constants';
 import { cn } from '#utils/utils';
-import { ClassNameValue } from 'tailwind-merge';
+import type { ClassNameValue } from 'tailwind-merge';
 
 const SQUARE_SIZE = 60;
 const CORNER_RADIUS = 12;
@@ -40,7 +40,7 @@ function getCustomRoundedRectPath(width: number, height: number, r: number) {
   `;
 }
 
-function ScoreTile({
+export function ScoreTile({
   score,
   rectangleClassName,
   size = SQUARE_SIZE,
@@ -58,7 +58,7 @@ function ScoreTile({
         y={size / 2 + 5 / 2}
         textAnchor='middle'
         dominantBaseline='middle'
-        className='fill-blue-900 font-bold'
+        className='fill-primary font-bold'
       >
         {score}
       </text>
@@ -70,39 +70,46 @@ type TransparencyScoreBarProps = {
   score: TransparencyScore | null;
   className?: string;
   responsive?: boolean;
+  isPending?: boolean;
+  isError?: boolean;
+};
+
+export const getScoreColor = (score: TransparencyScore) => {
+  switch (score) {
+    case TransparencyScore.A:
+      return 'fill-score-A';
+    case TransparencyScore.B:
+      return 'fill-score-B';
+    case TransparencyScore.C:
+      return 'fill-score-C';
+    case TransparencyScore.D:
+      return 'fill-score-D';
+    case TransparencyScore.E:
+      return 'fill-score-E';
+    default:
+      return 'fill-muted-light';
+  }
 };
 
 export function TransparencyScoreBar({
   score: activeScore,
   className,
   responsive = true,
+  isPending = false,
+  isError = false,
 }: TransparencyScoreBarProps) {
   const translateDueToScaleFactor = -5;
 
-  const getScoreColor = (score: TransparencyScore) => {
-    switch (score) {
-      case TransparencyScore.A:
-        return 'fill-score-A';
-      case TransparencyScore.B:
-        return 'fill-score-B';
-      case TransparencyScore.C:
-        return 'fill-score-C';
-      case TransparencyScore.D:
-        return 'fill-score-D';
-      case TransparencyScore.E:
-        return 'fill-score-E';
-      default:
-        return 'fill-muted-light';
-    }
-  };
+  // Use null score for pending/error state to show default appearance
+  const displayScore = isPending || isError ? null : activeScore;
 
   // Calculate text position - clamp to keep it within bounds
   const getTextXPosition = () => {
-    if (!activeScore || activeScore === TransparencyScore.UNKNOWN) {
+    if (!displayScore || displayScore === TransparencyScore.UNKNOWN) {
       return SVG_CONFIG.viewBoxWidth / 2;
     }
 
-    const scoreIndex = scoreValues.indexOf(activeScore);
+    const scoreIndex = scoreValues.indexOf(displayScore);
     const idealX = SVG_CONFIG.padding + scoreIndex * (SQUARE_SIZE + GAP) + SQUARE_SIZE / 2;
     const minX = 60; // Minimum X to avoid text cutoff on left
     // More space on right for "Très insuffisant" (score E)
@@ -123,7 +130,7 @@ export function TransparencyScoreBar({
         {scoreValues.map((scoreValue, i) => {
           const baseX = i * (SQUARE_SIZE + GAP);
 
-          const isActive = scoreValue === activeScore;
+          const isActive = scoreValue === displayScore;
 
           return (
             <ScoreTile
@@ -146,9 +153,12 @@ export function TransparencyScoreBar({
         textAnchor='middle'
         className='fill-blue-900 text-lg font-bold'
       >
-        {activeScore === TransparencyScore.UNKNOWN || activeScore === null
-          ? 'Non communiqué'
-          : SCORE_TO_ADJECTIF[activeScore]}
+        {/* "Non Communiqué" only if null else nothing displayed */}
+        {displayScore === TransparencyScore.UNKNOWN || displayScore === null
+          ? isPending
+            ? ''
+            : 'Non communiqué'
+          : SCORE_TO_ADJECTIF[displayScore]}
       </text>
     </svg>
   );

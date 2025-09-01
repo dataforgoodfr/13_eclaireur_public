@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { RefObject, memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
@@ -12,26 +12,27 @@ import type { TreeData, TreeLeaf, YearOption } from '../../types/interface';
 type MarchesPublicsSectorTreemapProps = {
   siren: string;
   year: YearOption;
+  ref: RefObject<HTMLDivElement | null>;
 };
 
 const LIMIT_NUMBER_CATEGORIES = 50;
 
-export default function MarchesPublicsSectorTreemap({
-  siren,
-  year,
-}: MarchesPublicsSectorTreemapProps) {
+function MarchesPublicsSectorTreemap({ siren, year, ref }: MarchesPublicsSectorTreemapProps) {
   const [maxAmount, setmaxAmount] = useState<number | null>(null);
   const [zoomStack, setZoomStack] = useState<(number | null)[]>([null]); // Start with overview
 
-  function updatemaxAmount(value: number | null) {
-    // Add current zoom level to stack before zooming in
-    if (value !== null) {
-      setZoomStack((prev) => [...prev, maxAmount]);
-      setmaxAmount(value);
-    }
-  }
+  const updatemaxAmount = useCallback(
+    (value: number | null) => {
+      // Add current zoom level to stack before zooming in
+      if (value !== null) {
+        setZoomStack((prev) => [...prev, maxAmount]);
+        setmaxAmount(value);
+      }
+    },
+    [maxAmount],
+  );
 
-  function handleZoomOut() {
+  const handleZoomOut = useCallback(() => {
     if (zoomStack.length > 1) {
       // Go back one level
       const newStack = [...zoomStack];
@@ -41,7 +42,7 @@ export default function MarchesPublicsSectorTreemap({
       setZoomStack(newStack);
       setmaxAmount(targetLevel);
     }
-  }
+  }, [zoomStack]);
 
   const { data, isPending, isError } = useMarchesPublicsByCPV2(
     siren,
@@ -89,6 +90,7 @@ export default function MarchesPublicsSectorTreemap({
 
   return (
     <Treemap
+      ref={ref}
       data={treeData}
       isZoomActive={maxAmount !== null}
       handleClick={updatemaxAmount}
@@ -98,3 +100,5 @@ export default function MarchesPublicsSectorTreemap({
     />
   );
 }
+
+export default memo(MarchesPublicsSectorTreemap);

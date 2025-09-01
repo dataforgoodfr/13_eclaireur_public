@@ -1,5 +1,7 @@
 'use client';
 
+import { RefObject } from 'react';
+
 import {
   Bar,
   Cell,
@@ -30,6 +32,8 @@ type DesktopEvolutionChartProps = {
   legendLabel: string;
   chartType: ChartDataType;
   siren?: string;
+  hasRealData: boolean;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
 export default function DesktopEvolutionChart({
@@ -42,10 +46,17 @@ export default function DesktopEvolutionChart({
   legendLabel,
   chartType,
   siren,
+  hasRealData,
+  ref,
 }: DesktopEvolutionChartProps) {
   return (
     <div className='relative'>
-      <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+      {!hasRealData && (
+        <div className='absolute right-2 top-2 z-10'>
+          <div className='h-2 w-2 animate-pulse rounded-full bg-gray-400' />
+        </div>
+      )}
+      <ResponsiveContainer ref={ref} width='100%' height={CHART_HEIGHT}>
         <RechartsBarChart
           width={500}
           height={300}
@@ -81,7 +92,7 @@ export default function DesktopEvolutionChart({
             style={{ zIndex: 1 }}
             label={(props) => {
               const entry = data[props.index];
-              if (entry?.isPrimaryMissing && siren) {
+              if (entry?.isPrimaryMissing && siren && hasRealData) {
                 return (
                   <g>
                     <foreignObject
@@ -107,35 +118,40 @@ export default function DesktopEvolutionChart({
                 fill={entry.isPrimaryMissing ? '#F4D93E' : barColor}
                 stroke={entry.isPrimaryMissing ? '#F4D93E' : borderColor}
                 strokeWidth={1}
-                strokeOpacity={entry.isPrimaryMissing ? 1 : 1}
+                strokeOpacity={entry.isPrimaryMissing ? 0 : hasRealData ? 1 : 0.7}
+                fillOpacity={hasRealData ? 1 : 0.7}
               />
             ))}
-            <LabelList
-              dataKey='isPrimaryMissing'
-              position='inside'
-              formatter={(isPrimaryMissing: boolean) =>
-                isPrimaryMissing ? 'Aucune donnée publiée' : ''
-              }
-              fill='#303F8D'
-              strokeWidth={0}
-              fontSize='16'
-              fontWeight='600'
-              fontFamily='var(--font-kanit), system-ui, sans-serif'
-              offset={20}
-            />
-            <LabelList
-              position='top'
-              formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
-              fill='#303F8D'
-              strokeWidth={0}
-              fontSize='16'
-              fontWeight='600'
-              fontFamily='var(--font-kanit), system-ui, sans-serif'
-              offset={20}
-            />
+            {hasRealData && (
+              <LabelList
+                dataKey='isPrimaryMissing'
+                position='inside'
+                formatter={(isPrimaryMissing: boolean) =>
+                  isPrimaryMissing ? 'Aucune donnée publiée' : ''
+                }
+                fill='#303F8D'
+                strokeWidth={0}
+                fontSize='16'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            )}
+            {hasRealData && (
+              <LabelList
+                position='top'
+                formatter={(value: number) => (value === avgValue ? '' : formatValue(value))}
+                fill='#303F8D'
+                strokeWidth={0}
+                fontSize='16'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            )}
           </Bar>
           <XAxis dataKey='year' axisLine tickLine />
-          <YAxis tickFormatter={(value) => formatValue(value)} />
+          <YAxis tickFormatter={hasRealData ? (value) => formatValue(value) : () => ''} />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>

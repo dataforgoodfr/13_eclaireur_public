@@ -6,6 +6,7 @@ export type MPSubvComparison = {
   total_amount: number;
   total_number: number;
   top5: MPSubvKeyData[];
+  community_name: string;
 };
 
 export type MPSubvKeyData = {

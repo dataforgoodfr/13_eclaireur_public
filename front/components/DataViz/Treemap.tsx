@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
@@ -204,21 +204,22 @@ function generateHierarchicalColorMap(
 type TreemapProps = {
   data: TreeData;
   isZoomActive: boolean;
+  ref: RefObject<HTMLDivElement | null>;
   handleClick: (value: number) => void;
   colorPalette?: ColorPalette;
   groupMode?: GroupMode;
   showZoomControls?: boolean;
   onZoomIn?: () => void;
   onZoomOut?: () => void;
-  onZoomReset?: () => void;
   consolidateSmallItems?: boolean;
   consolidationThreshold?: number;
   minItemsToConsolidate?: number;
 };
 
-export default function Treemap({
+function Treemap({
   data,
   isZoomActive,
+  ref,
   handleClick,
   colorPalette = 'mp',
   groupMode = 'none',
@@ -228,8 +229,6 @@ export default function Treemap({
   consolidateSmallItems = true,
   consolidationThreshold = 2,
   minItemsToConsolidate = 3,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ..._rest
 }: TreemapProps) {
   const [tooltip, setTooltip] = useState<TooltipProps>({
     visible: false,
@@ -241,30 +240,33 @@ export default function Treemap({
   });
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = ref;
 
-  function handleOnMouseEnter(e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) {
-    setTooltip({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY - 30,
-      name: leaf.data.name,
-      value: leaf.data.value,
-      percentage: leaf.data.type === 'leaf' ? leaf.data.part : 0,
-    });
-  }
+  const handleOnMouseEnter = useCallback(
+    (e: React.MouseEvent, leaf: d3.HierarchyRectangularNode<TreeData>) => {
+      setTooltip({
+        visible: true,
+        x: e.clientX,
+        y: e.clientY - 30,
+        name: leaf.data.name,
+        value: leaf.data.value,
+        percentage: leaf.data.type === 'leaf' ? leaf.data.part : 0,
+      });
+    },
+    [],
+  );
 
-  function handleOnMouseMove(e: React.MouseEvent) {
+  const handleOnMouseMove = useCallback((e: React.MouseEvent) => {
     setTooltip((prev) => ({
       ...prev,
       x: e.clientX,
       y: e.clientY - 30,
     }));
-  }
+  }, []);
 
-  function handleOnMouseLeave() {
+  const handleOnMouseLeave = useCallback(() => {
     setTooltip((prev) => ({ ...prev, visible: false }));
-  }
+  }, []);
 
   useEffect(() => {
     const resize = () => {
@@ -285,24 +287,38 @@ export default function Treemap({
   const height = CHART_HEIGHT;
   const width = containerWidth || 1486;
 
-  // Apply small items consolidation before creating hierarchy
-  const processedData = consolidateSmallItems
-    ? consolidateSmallItemsFunction(data, consolidationThreshold, minItemsToConsolidate)
-    : data;
+  // Memoize expensive data processing
+  const processedData = useMemo(() => {
+    return consolidateSmallItems
+      ? consolidateSmallItemsFunction(data, consolidationThreshold, minItemsToConsolidate)
+      : data;
+  }, [data, consolidateSmallItems, consolidationThreshold, minItemsToConsolidate]);
 
-  const hierarchy = d3
-    .hierarchy<TreeData>(processedData, (d) => (d.type === 'node' ? d.children : undefined))
-    .sum((d) => d.value);
+  // Memoize D3 hierarchy creation
+  const hierarchy = useMemo(() => {
+    return d3
+      .hierarchy<TreeData>(processedData, (d) => (d.type === 'node' ? d.children : undefined))
+      .sum((d) => d.value);
+  }, [processedData]);
 
-  const treeGenerator = d3.treemap<TreeData>().size([width, height]).padding(4);
-  const root = treeGenerator(hierarchy);
+  // Memoize D3 treemap layout calculation
+  const root = useMemo(() => {
+    const treeGenerator = d3.treemap<TreeData>().size([width, height]).padding(4);
+    return treeGenerator(hierarchy);
+  }, [hierarchy, width, height]);
 
-  const colorMap = generateHierarchicalColorMap(root, colorPalette, groupMode);
+  // Memoize color map generation
+  const colorMap = useMemo(() => {
+    return generateHierarchicalColorMap(root, colorPalette, groupMode);
+  }, [root, colorPalette, groupMode]);
 
-  const allShapes = root.leaves().map((leaf) => (
-    <g key={leaf.data.id} className='group'>
-      <path
-        d={`
+  // Memoize SVG shapes generation
+  const allShapes = useMemo(
+    () =>
+      root.leaves().map((leaf) => (
+        <g key={leaf.data.id} className='group'>
+          <path
+            d={`
           M ${leaf.x0 + 8} ${leaf.y0}
           L ${leaf.x1} ${leaf.y0}
           L ${leaf.x1} ${leaf.y1 - 8}
@@ -312,80 +328,91 @@ export default function Treemap({
           Q ${leaf.x0} ${leaf.y0} ${leaf.x0 + 8} ${leaf.y0}
           Z
         `}
-        stroke='#303F8D'
-        strokeWidth={1}
-        fill={colorMap[leaf.data.name]}
-        className='cursor-pointer transition-all duration-500 ease-in-out hover:opacity-80'
-        onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
-        onMouseMove={(e) => handleOnMouseMove(e)}
-        onMouseLeave={() => handleOnMouseLeave()}
-        onClick={() => handleClick(leaf.data.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleClick(leaf.data.value);
-          }
-        }}
-        tabIndex={0}
-        role='button'
-        aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
-      />
-      {/* Permanent zoom indicator - only show if not already zoomed and element is large enough */}
-      {!isZoomActive && leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 50 && (
-        <g className='pointer-events-none'>
-          <circle
-            cx={leaf.x1 - 16}
-            cy={leaf.y0 + 12}
-            r={8}
-            fill='none'
             stroke='#303F8D'
-            strokeWidth={1.5}
-          />
-          <path
-            d={`M ${leaf.x1 - 20} ${leaf.y0 + 12} L ${leaf.x1 - 12} ${leaf.y0 + 12} M ${leaf.x1 - 16} ${leaf.y0 + 8} L ${leaf.x1 - 16} ${leaf.y0 + 16}`}
-            stroke='#303F8D'
-            strokeWidth={1.5}
-            strokeLinecap='round'
-          />
-          <path
-            d={`M ${leaf.x1 - 10} ${leaf.y0 + 18} L ${leaf.x1 - 6} ${leaf.y0 + 22}`}
-            stroke='#303F8D'
-            strokeWidth={1.5}
-            strokeLinecap='round'
-          />
-        </g>
-      )}
-      {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
-        <text
-          x={leaf.x0 + 8}
-          y={leaf.y0 + 22}
-          fontSize={16}
-          fontWeight={700}
-          fill={getTextColor(colorMap[leaf.data.name], colorPalette)}
-          className='pointer-events-none'
-        >
-          {formatCompactPrice(leaf.data.value)}
-        </text>
-      )}
-      {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
-        <foreignObject
-          x={leaf.x0 + 8}
-          y={leaf.y0 + 38}
-          width={leaf.x1 - leaf.x0 - 16}
-          height={leaf.y1 - leaf.y0 - 46}
-          className='pointer-events-none'
-        >
-          <div
-            className='pointer-events-none truncate text-sm font-medium leading-tight'
-            style={{
-              color: getTextColor(colorMap[leaf.data.name], colorPalette),
+            strokeWidth={1}
+            fill={colorMap[leaf.data.name]}
+            className='cursor-pointer transition-all duration-500 ease-in-out hover:opacity-80'
+            onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
+            onMouseMove={(e) => handleOnMouseMove(e)}
+            onMouseLeave={() => handleOnMouseLeave()}
+            onClick={() => handleClick(leaf.data.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleClick(leaf.data.value);
+              }
             }}
-          >
-            {formatFirstLetterToUppercase(leaf.data.name)}
-          </div>
-        </foreignObject>
-      )}
-    </g>
-  ));
+            tabIndex={0}
+            role='button'
+            aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
+          />
+          {/* Permanent zoom indicator - only show if not already zoomed and element is large enough */}
+          {!isZoomActive && leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 50 && (
+            <g className='pointer-events-none'>
+              <circle
+                cx={leaf.x1 - 16}
+                cy={leaf.y0 + 12}
+                r={8}
+                fill='none'
+                stroke='#303F8D'
+                strokeWidth={1.5}
+              />
+              <path
+                d={`M ${leaf.x1 - 20} ${leaf.y0 + 12} L ${leaf.x1 - 12} ${leaf.y0 + 12} M ${leaf.x1 - 16} ${leaf.y0 + 8} L ${leaf.x1 - 16} ${leaf.y0 + 16}`}
+                stroke='#303F8D'
+                strokeWidth={1.5}
+                strokeLinecap='round'
+              />
+              <path
+                d={`M ${leaf.x1 - 10} ${leaf.y0 + 18} L ${leaf.x1 - 6} ${leaf.y0 + 22}`}
+                stroke='#303F8D'
+                strokeWidth={1.5}
+                strokeLinecap='round'
+              />
+            </g>
+          )}
+          {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
+            <text
+              x={leaf.x0 + 8}
+              y={leaf.y0 + 22}
+              fontSize={16}
+              fontWeight={700}
+              fill={getTextColor(colorMap[leaf.data.name], colorPalette)}
+              className='pointer-events-none'
+            >
+              {formatCompactPrice(leaf.data.value)}
+            </text>
+          )}
+          {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
+            <foreignObject
+              x={leaf.x0 + 8}
+              y={leaf.y0 + 38}
+              width={leaf.x1 - leaf.x0 - 16}
+              height={leaf.y1 - leaf.y0 - 46}
+              className='pointer-events-none'
+            >
+              <div
+                className='pointer-events-none truncate text-sm font-medium leading-tight'
+                style={{
+                  color: getTextColor(colorMap[leaf.data.name], colorPalette),
+                }}
+              >
+                {formatFirstLetterToUppercase(leaf.data.name)}
+              </div>
+            </foreignObject>
+          )}
+        </g>
+      )),
+    [
+      root,
+      colorMap,
+      colorPalette,
+      isZoomActive,
+      handleOnMouseEnter,
+      handleOnMouseMove,
+      handleOnMouseLeave,
+      handleClick,
+    ],
+  );
 
   return (
     <div className='relative' ref={containerRef} style={{ height }}>
@@ -409,7 +436,6 @@ export default function Treemap({
           )}
         </div>
       )}
-
       <svg width={width} height={height}>
         {allShapes}
       </svg>
@@ -426,3 +452,5 @@ export default function Treemap({
     </div>
   );
 }
+
+export default memo(Treemap);

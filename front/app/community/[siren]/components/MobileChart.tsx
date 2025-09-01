@@ -17,7 +17,6 @@ type MobileChartData = {
 
 type MobileChartProps = {
   data: MobileChartData[];
-  dataLoading?: boolean;
   primaryColor?: string;
   secondaryColor?: string;
   mode?: 'single' | 'dual'; // single for evolution, dual for comparison
@@ -27,11 +26,22 @@ type MobileChartProps = {
   labelColor?: string;
   siren?: string; // For interpeller button
   unitLabel?: string; // Unit label like "M€" or "k€"
+  hasRealData?: boolean; // Whether to show actual values or placeholder
+  dataLoading?: boolean;
 };
+
+// Loading overlay component
+const LoadingOverlay = () => (
+  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
+    <div className='flex items-center gap-2 text-primary'>
+      <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      <span>Mise à jour des données...</span>
+    </div>
+  </div>
+);
 
 export default function MobileChart({
   data: incomingData,
-  dataLoading = false,
   primaryColor = '#303F8D',
   secondaryColor = 'url(#stripes)',
   mode = 'single',
@@ -41,6 +51,8 @@ export default function MobileChart({
   labelColor = '#303F8D',
   siren,
   unitLabel,
+  hasRealData = true,
+  dataLoading = false,
 }: MobileChartProps) {
   if (!incomingData || incomingData.length === 0) {
     return <div className='p-4 text-center text-gray-500'>Aucune donnée disponible</div>;
@@ -61,12 +73,10 @@ export default function MobileChart({
 
   return (
     <>
-      {dataLoading && (
-        <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
-          <div className='flex items-center gap-2 text-primary'>
-            <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent'></div>
-            <span className='text-sm'>Mise à jour...</span>
-          </div>
+      {dataLoading && <LoadingOverlay />}
+      {!hasRealData && (
+        <div className='absolute right-2 top-2 z-10'>
+          <div className='h-2 w-2 animate-pulse rounded-full bg-gray-400' />
         </div>
       )}
 
@@ -113,6 +123,8 @@ export default function MobileChart({
                 <Cell
                   key={`cell-${item.year}`}
                   fill={isPrimaryMissing ? '#F4D93E' : primaryColor}
+                  fillOpacity={hasRealData ? 1 : 0.7}
+                  strokeOpacity={hasRealData ? 1 : 0.7}
                   stroke={isPrimaryMissing ? '#E5C72E' : '#303F8D'}
                   strokeWidth={1}
                   radius={[0, 0, 16, 0] as unknown as number}
@@ -120,31 +132,35 @@ export default function MobileChart({
               );
             })}
             {/* Only show label if not showing interpeller button */}
-            <LabelList
-              dataKey='primary'
-              position='right'
-              formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
-              style={{
-                fontSize: '24px',
-                fill: labelColor,
-                fontWeight: '700',
-                fontFamily: 'var(--font-kanit)',
-                stroke: 'none',
-                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-              }}
-            />
+            {hasRealData && (
+              <LabelList
+                dataKey='primary'
+                position='right'
+                formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
+                style={{
+                  fontSize: '24px',
+                  fill: labelColor,
+                  fontWeight: '700',
+                  fontFamily: 'var(--font-kanit)',
+                  stroke: 'none',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+            )}
             {/* Shows no data published label */}
-            <LabelList
-              dataKey='isPrimaryMissing'
-              position='insideLeft'
-              formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
-              fill='#303F8D'
-              strokeWidth={0}
-              fontSize='15'
-              fontWeight='600'
-              fontFamily='var(--font-kanit), system-ui, sans-serif'
-              offset={20}
-            />
+            {hasRealData && (
+              <LabelList
+                dataKey='isPrimaryMissing'
+                position='insideLeft'
+                formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+                fill='#303F8D'
+                strokeWidth={0}
+                fontSize='15'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            )}
           </Bar>
           {mode === 'dual' && (
             <Bar dataKey='secondary' barSize={24} radius={[0, 0, 16, 0]}>
@@ -161,33 +177,39 @@ export default function MobileChart({
                     stroke={isSecondaryMissing ? '#E5C72E' : ''}
                     strokeWidth={1}
                     strokeLinecap='round'
+                    fillOpacity={hasRealData ? 1 : 0.7}
+                    strokeOpacity={hasRealData ? 1 : 0.7}
                   />
                 );
               })}
-              <LabelList
-                dataKey='secondary'
-                position='right'
-                formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
-                style={{
-                  fontSize: '24px',
-                  fill: labelColor,
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-kanit)',
-                  stroke: 'none',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                }}
-              />
-              <LabelList
-                dataKey='isSecondaryMissing'
-                position='insideLeft'
-                formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
-                fill='#303F8D'
-                strokeWidth={0}
-                fontSize='15'
-                fontWeight='600'
-                fontFamily='var(--font-kanit), system-ui, sans-serif'
-                offset={20}
-              />
+              {hasRealData && (
+                <LabelList
+                  dataKey='secondary'
+                  position='right'
+                  formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
+                  style={{
+                    fontSize: '24px',
+                    fill: labelColor,
+                    fontWeight: '700',
+                    fontFamily: 'var(--font-kanit)',
+                    stroke: 'none',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                  }}
+                />
+              )}
+              {hasRealData && (
+                <LabelList
+                  dataKey='isSecondaryMissing'
+                  position='insideLeft'
+                  formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+                  fill='#303F8D'
+                  strokeWidth={0}
+                  fontSize='15'
+                  fontWeight='600'
+                  fontFamily='var(--font-kanit), system-ui, sans-serif'
+                  offset={20}
+                />
+              )}
             </Bar>
           )}
         </BarChart>
