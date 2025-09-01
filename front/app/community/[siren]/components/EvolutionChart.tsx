@@ -129,6 +129,7 @@ function BarChart({
     const mobileChartData = data.map((item) => ({
       year: item.year,
       primary: item.value,
+      isPrimaryMissing: !item.value,
     }));
 
     return (

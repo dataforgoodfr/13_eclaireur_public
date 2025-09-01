@@ -39,7 +39,7 @@ const SCOPES = ['Départemental', 'Régional', 'National'] as const;
 // Fetch function outside component to enable reusability
 const fetchComparisonData = async (siren: string, scope: string): Promise<ComparisonData[]> => {
   const response = await fetch(
-    `/api/communities/${siren}/subventions/comparison?scope=${scope.toLowerCase()}`,
+    `/api/communities/${siren}/marches_publics/comparison?scope=${scope.toLowerCase()}`,
   );
 
   if (!response.ok) {

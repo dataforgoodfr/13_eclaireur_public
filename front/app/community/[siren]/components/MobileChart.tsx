@@ -11,6 +11,8 @@ type MobileChartData = {
   primaryLabel?: string;
   secondary?: number;
   secondaryLabel?: string;
+  isPrimaryMissing: boolean;
+  isSecondaryMissing?: boolean;
 };
 
 type MobileChartProps = {
@@ -21,34 +23,41 @@ type MobileChartProps = {
   mode?: 'single' | 'dual'; // single for evolution, dual for comparison
   formatValue?: (value: number) => string;
   legendLabel?: string;
+  secondaryLabel?: string;
   labelColor?: string;
   siren?: string; // For interpeller button
   unitLabel?: string; // Unit label like "M€" or "k€"
 };
 
 export default function MobileChart({
-  data,
+  data: incomingData,
   dataLoading = false,
   primaryColor = '#303F8D',
   secondaryColor = 'url(#stripes)',
   mode = 'single',
+  secondaryLabel,
   formatValue = formatCompactPrice,
   legendLabel = '',
   labelColor = '#303F8D',
   siren,
   unitLabel,
 }: MobileChartProps) {
-  if (!data || data.length === 0) {
+  if (!incomingData || incomingData.length === 0) {
     return <div className='p-4 text-center text-gray-500'>Aucune donnée disponible</div>;
   }
 
   // Calculate the maximum value across all data to normalize bar sizes
-  const allValues = data.flatMap((d) =>
+  const allValues = incomingData.flatMap((d) =>
     mode === 'dual' && d.secondary !== undefined ? [d.primary, d.secondary] : [d.primary],
   );
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
-  const chartMax = Math.round(maxValue * 1.1); // Add 10% padding
   const noDataValue = (5 * maxValue) / 6; // Average value for "Aucune donnée"
+  const data = incomingData.map((item) => ({
+    ...item,
+    primary: item.primary || noDataValue,
+    secondary: item.secondary || noDataValue,
+  }));
+  const nbData = data.length;
 
   return (
     <>
@@ -61,110 +70,128 @@ export default function MobileChart({
         </div>
       )}
 
-      {data.map((item) => {
-        // Check if primary value is 0 or missing - show average in yellow
-        const isPrimaryMissing = !item.primary || item.primary === 0;
-        const primaryValue = isPrimaryMissing ? noDataValue : item.primary;
-        const primaryFillColor = isPrimaryMissing ? '#F4D93E' : primaryColor;
-
-        // Check if secondary value is 0 or missing - show average in yellow
-        const isSecondaryMissing = mode === 'dual' && (!item.secondary || item.secondary === 0);
-        const secondaryValue = isSecondaryMissing ? noDataValue : item.secondary;
-        const secondaryFillColor = isSecondaryMissing ? '#F4D93E' : secondaryColor;
-
-        return (
-          <div
-            key={item.year}
-            className='flex min-w-0 items-center gap-2 py-1'
-            style={{ height: '60px' }}
+      <ResponsiveContainer width='100%' height={40 + 60 * nbData}>
+        <BarChart
+          data={data}
+          layout='vertical'
+          margin={{ left: 0, right: 80, top: 0, bottom: 0 }}
+          barGap={4}
+        >
+          <XAxis type='number' tickFormatter={(value) => formatValue(value)} />
+          <YAxis type='category' dataKey='year' />
+          {/* Primary bar */}
+          <Bar
+            dataKey='primary'
+            barSize={mode === 'single' ? 40 : 24}
+            radius={[0, 0, 16, 0]}
+            label={(props) => {
+              const entry = data[props.index];
+              if (entry.isPrimaryMissing && siren && mode === 'single') {
+                return (
+                  <g>
+                    <foreignObject
+                      x={props.x + props.width}
+                      y={props.y - 5}
+                      width='100'
+                      height='120'
+                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
+                    >
+                      <div className='pointer-events-auto flex flex-col items-center gap-2'>
+                        <InterpellerButton siren={siren} />
+                      </div>
+                    </foreignObject>
+                  </g>
+                );
+              }
+              return <g />;
+            }}
           >
-            <div className='w-10 flex-shrink-0 text-sm font-medium text-muted'>{item.year}</div>
-            <div className='relative flex-1'>
-              <ResponsiveContainer width='100%' height={50}>
-                <BarChart
-                  data={[{ ...item, primary: primaryValue, secondary: secondaryValue }]}
-                  layout='vertical'
-                  margin={{ left: 0, right: 60, top: 0, bottom: 0 }}
-                >
-                  <XAxis hide type='number' domain={[0, chartMax]} />
-                  <YAxis hide type='category' />
-                  {/* Primary bar */}
-                  <Bar dataKey='primary' barSize={40} radius={[0, 0, 16, 0]}>
-                    <Cell
-                      fill={primaryFillColor}
-                      stroke={isPrimaryMissing ? '#E5C72E' : '#303F8D'}
-                      strokeWidth={1}
-                      radius={[0, 0, 16, 0] as unknown as number}
-                    />
-                    {/* Only show label if not showing interpeller button */}
-                    {!(mode === 'single' && isPrimaryMissing && siren) && (
-                      <LabelList
-                        dataKey='primary'
-                        position='right'
-                        formatter={(value: number) => (isPrimaryMissing ? '' : formatValue(value))}
-                        style={{
-                          fontSize: isPrimaryMissing ? '14px' : '24px',
-                          fill: labelColor,
-                          fontWeight: isPrimaryMissing ? '600' : '700',
-                          fontFamily: 'var(--font-kanit)',
-                          stroke: 'none',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        }}
-                      />
-                    )}
-                    {/* Shows no data published label */}
-                    {mode === 'single' && isPrimaryMissing && siren && (
-                      <LabelList
-                        position='inside'
-                        formatter={() => 'Aucune\u00A0donnée publiée'}
-                        fill='#303F8D'
-                        strokeWidth={0}
-                        fontSize='15'
-                        fontWeight='600'
-                        fontFamily='var(--font-kanit), system-ui, sans-serif'
-                        offset={20}
-                      />
-                    )}
-                  </Bar>
+            {data.map((item) => {
+              const isPrimaryMissing = item.isPrimaryMissing;
 
-                  {/* Secondary bar (only in dual mode) */}
-                  {mode === 'dual' && item.secondary !== undefined && (
-                    <Bar dataKey='secondary' barSize={40} radius={[0, 0, 4, 0]} y={40}>
-                      <Cell
-                        fill={secondaryFillColor}
-                        stroke={isSecondaryMissing ? '#E5C72E' : '#E5E7EB'}
-                        strokeWidth={1}
-                      />
-                      <LabelList
-                        dataKey='secondary'
-                        position='right'
-                        formatter={(value: number) =>
-                          isSecondaryMissing ? 'Aucune donnée' : formatValue(value)
-                        }
-                        style={{
-                          fontSize: isSecondaryMissing ? '14px' : '24px',
-                          fill: labelColor,
-                          fontWeight: isSecondaryMissing ? '600' : '700',
-                          fontFamily: 'var(--font-kanit)',
-                          stroke: 'none',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        }}
-                      />
-                    </Bar>
-                  )}
-                </BarChart>
-              </ResponsiveContainer>
+              return (
+                <Cell
+                  key={`cell-${item.year}`}
+                  fill={isPrimaryMissing ? '#F4D93E' : primaryColor}
+                  stroke={isPrimaryMissing ? '#E5C72E' : '#303F8D'}
+                  strokeWidth={1}
+                  radius={[0, 0, 16, 0] as unknown as number}
+                />
+              );
+            })}
+            {/* Only show label if not showing interpeller button */}
+            <LabelList
+              dataKey='primary'
+              position='right'
+              formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
+              style={{
+                fontSize: '24px',
+                fill: labelColor,
+                fontWeight: '700',
+                fontFamily: 'var(--font-kanit)',
+                stroke: 'none',
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+              }}
+            />
+            {/* Shows no data published label */}
+            <LabelList
+              dataKey='isPrimaryMissing'
+              position='insideLeft'
+              formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+              fill='#303F8D'
+              strokeWidth={0}
+              fontSize='15'
+              fontWeight='600'
+              fontFamily='var(--font-kanit), system-ui, sans-serif'
+              offset={20}
+            />
+          </Bar>
+          {mode === 'dual' && (
+            <Bar dataKey='secondary' barSize={24} radius={[0, 0, 16, 0]}>
+              {/* Secondary data */}
+              {data.map((item) => {
+                const isSecondaryMissing = item.isSecondaryMissing;
 
-              {/* Show interpeller button and text for missing data */}
-              {mode === 'single' && isPrimaryMissing && siren && (
-                <div className='absolute left-[calc(75%-20px)] top-1/2 -translate-y-1/2'>
-                  <InterpellerButton siren={siren} />
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
+                if (item.secondary === undefined) return null;
+
+                return (
+                  <Cell
+                    key={`cell-${item.year}`}
+                    fill={isSecondaryMissing ? '#F4D93E' : secondaryColor}
+                    stroke={isSecondaryMissing ? '#E5C72E' : ''}
+                    strokeWidth={1}
+                    strokeLinecap='round'
+                  />
+                );
+              })}
+              <LabelList
+                dataKey='secondary'
+                position='right'
+                formatter={(value: number) => (value === noDataValue ? '' : formatValue(value))}
+                style={{
+                  fontSize: '24px',
+                  fill: labelColor,
+                  fontWeight: '700',
+                  fontFamily: 'var(--font-kanit)',
+                  stroke: 'none',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                }}
+              />
+              <LabelList
+                dataKey='isSecondaryMissing'
+                position='insideLeft'
+                formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+                fill='#303F8D'
+                strokeWidth={0}
+                fontSize='15'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            </Bar>
+          )}
+        </BarChart>
+      </ResponsiveContainer>
 
       {/* SVG pattern for stripes (used in dual mode) */}
       <svg width='0' height='0'>
@@ -172,23 +199,33 @@ export default function MobileChart({
           <pattern
             id='stripes'
             patternUnits='userSpaceOnUse'
-            width='8'
+            width='6'
             height='8'
             patternTransform='rotate(45)'
           >
-            <rect width='4' height='8' fill='#303F8D' />
-            <rect x='4' width='4' height='8' fill='white' />
+            <rect width='1.5' height='8' fill='#303F8D' />
+            <rect x='4' width='2' height='8' fill='white' />
           </pattern>
         </defs>
       </svg>
       {legendLabel && (
-        <div className='mt-4 flex flex-col items-center gap-2 px-4'>
+        <div className='mt-4 flex flex-col items-start gap-2 px-4 md:items-center'>
           <div className='flex items-center gap-2'>
             <div className='h-4 w-4 rounded-sm' style={{ backgroundColor: primaryColor }} />
             <div className='text-sm font-medium' style={{ color: labelColor }}>
               {legendLabel} {unitLabel ? `(${unitLabel})` : ''}
             </div>
           </div>
+          {secondaryLabel && (
+            <div className='flex items-center gap-2'>
+              <svg width='16' height='16'>
+                <rect width='16' height='16' rx='3' fill={secondaryColor} />
+              </svg>
+              <div className='text-sm font-medium' style={{ color: labelColor }}>
+                {secondaryLabel}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
