@@ -72,7 +72,7 @@ const aProposMenus = [
     description: 'Comment améliorer la transparence dans ma collectivité ?',
   },
   {
-    title: 'Foire aux questions - FAQ',
+    title: 'Foire aux questions',
     href: '/faq',
     description: '',
   },
