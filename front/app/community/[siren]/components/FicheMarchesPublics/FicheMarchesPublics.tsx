@@ -50,9 +50,11 @@ const MarchesPublicsHeader = ({
 export async function FicheMarchesPublics({
   siren,
   communityType,
+  communityName,
 }: {
   siren: string;
   communityType: CommunityType;
+  communityName: string;
 }) {
   const marchesPublics = await getMarchesPublics(siren);
   const availableYears = await fetchMarchesPublicsAvailableYears(siren);
@@ -67,6 +69,7 @@ export async function FicheMarchesPublics({
           siren={siren}
           availableYears={availableYears}
           communityType={communityType}
+          communityName={communityName}
         />
       ) : (
         <EmptyState

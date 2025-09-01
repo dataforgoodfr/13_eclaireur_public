@@ -59,8 +59,16 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           <FicheIdentite community={community} />
         </Suspense>
         <TransparencyScoreWithTrend score={score} trend={trend} />
-        <FicheMarchesPublics siren={siren} communityType={community.type as CommunityType} />
-        <FicheSubventions siren={siren} communityType={community.type as CommunityType} />
+        <FicheMarchesPublics
+          siren={siren}
+          communityType={community.type as CommunityType}
+          communityName={community.nom}
+        />
+        <FicheSubventions
+          siren={siren}
+          communityType={community.type as CommunityType}
+          communityName={community.nom}
+        />
       </div>
     </>
   );

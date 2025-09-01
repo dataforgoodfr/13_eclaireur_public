@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 import { useStreamingChart } from '#utils/hooks/useStreamingChart';
 
@@ -19,6 +19,7 @@ type EvolutionChartProps = {
   data: Array<{ year: number; amount?: number; count?: number }> | null | undefined;
   isPending: boolean;
   isError: boolean;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
 const CHART_CONFIG = {
@@ -47,6 +48,7 @@ export function EvolutionChart({
   data,
   isPending,
   isError,
+  ref,
 }: EvolutionChartProps) {
   const config = CHART_CONFIG[chartType];
 
@@ -61,6 +63,7 @@ export function EvolutionChart({
 
   return (
     <BarChart
+      ref={ref}
       data={streamingState.data}
       barColor={config.barColor}
       borderColor={config.borderColor}
@@ -85,6 +88,7 @@ type BarChartProps = {
   legendLabel: string;
   chartType: ChartDataType;
   hasRealData: boolean;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
 function BarChart({
@@ -95,6 +99,7 @@ function BarChart({
   legendLabel,
   chartType,
   hasRealData,
+  ref,
 }: BarChartProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -138,6 +143,7 @@ function BarChart({
   // Pour desktop : graphique vertical
   return (
     <DesktopEvolutionChart
+      ref={ref}
       data={chartDataForDisplay}
       barColor={barColor}
       borderColor={borderColor}
