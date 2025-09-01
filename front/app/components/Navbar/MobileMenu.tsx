@@ -45,8 +45,13 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
     <div className='lg:hidden'>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button size='icon' variant='ghost' className='rounded-full p-2 hover:bg-primary/10'>
+          <Button
+            size='icon'
+            variant='ghost'
+            className='rounded-full p-2 -indent-[1000px] hover:bg-primary/10'
+          >
             <Menu className='container !h-6 !w-6 text-primary' />
+            Menu
           </Button>
         </DropdownMenuTrigger>
 
