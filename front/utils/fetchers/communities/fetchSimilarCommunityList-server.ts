@@ -1,4 +1,4 @@
-import { SimilarCommunity } from '#app/models/comparison.js';
+import { SimilarCommunity } from '#app/models/comparison';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';

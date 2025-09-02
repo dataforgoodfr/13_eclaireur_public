@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { Community } from '#app/models/community';
-import { SimilarCommunity } from '#app/models/comparison.js';
+import { SimilarCommunity } from '#app/models/comparison';
 import SearchBar from '#components/SearchBar/SearchBar';
 import { ActionButton } from '#components/ui/action-button';
 

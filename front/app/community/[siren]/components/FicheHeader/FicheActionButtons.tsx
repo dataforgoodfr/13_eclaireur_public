@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import type { Community } from '#app/models/community';
-import { SimilarCommunity } from '#app/models/comparison.js';
+import { SimilarCommunity } from '#app/models/comparison';
 import { ActionButton } from '#components/ui/action-button';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '#components/ui/dialog';
 import { useToast } from '#hooks/use-toast';

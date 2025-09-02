@@ -3,7 +3,7 @@
 import Image from 'next/image';
 
 import { Community } from '#app/models/community';
-import { SimilarCommunity } from '#app/models/comparison.js';
+import { SimilarCommunity } from '#app/models/comparison';
 
 import GoBack from '../GoBack';
 import { FicheActionButtons } from './FicheActionButtons';
