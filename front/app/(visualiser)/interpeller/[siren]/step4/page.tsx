@@ -46,7 +46,7 @@ export default async function InterpellateStep4({
               <input
                 type='url'
                 className='z-0 mx-auto block h-14 w-[300px] rounded-none rounded-br-xl rounded-tl-xl border border-input py-2 pl-2 font-bold text-primary focus:border-primary focus:ring-primary focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed md:w-[473px] md:px-3 md:pl-4 md:text-2xl'
-                value='www.eclaireurpublic.org'
+                value='www.eclaireurpublic.fr'
               />
               <CopyPasteButtons className='absolute right-10 top-0 z-10 md:right-0' />
             </div>
