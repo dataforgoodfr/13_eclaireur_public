@@ -31,14 +31,17 @@ export default function SectorTableSkeleton({ rows = 8 }: SectorTableSkeletonPro
             </TableCell>
             <TableCell>
               <div className='flex items-center'>
-                <Skeleton className='h-3 bg-score-transparency-2 rounded-tl-br' style={{ width: `${Math.random() * 80 + 20}%` }} />
+                <Skeleton
+                  className='bg-score-transparency-2 h-3 rounded-tl-br'
+                  style={{ width: `${Math.random() * 80 + 20}%` }}
+                />
               </div>
             </TableCell>
             <TableCell className='text-right'>
-              <Skeleton className='h-4 w-12 ml-auto' />
+              <Skeleton className='ml-auto h-4 w-12' />
             </TableCell>
             <TableCell className='text-right'>
-              <Skeleton className='h-4 w-16 ml-auto' />
+              <Skeleton className='ml-auto h-4 w-16' />
             </TableCell>
           </TableRow>
         ))}

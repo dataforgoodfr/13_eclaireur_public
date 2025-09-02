@@ -3,6 +3,7 @@ import { Community } from '#app/models/community';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { CommunityType } from '#utils/types';
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { FicheHeader } from './FicheHeader';
 
 // Mock data for different community types

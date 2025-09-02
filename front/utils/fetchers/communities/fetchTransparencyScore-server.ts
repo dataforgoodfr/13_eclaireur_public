@@ -41,23 +41,23 @@ export function calculateAggregatedScore(
     return TransparencyScore.UNKNOWN;
   }
 
-  const scoreValues: Record<Exclude<TransparencyScore, TransparencyScore.UNKNOWN>, number> = { 
-    [TransparencyScore.A]: 1, 
-    [TransparencyScore.B]: 2, 
-    [TransparencyScore.C]: 3, 
-    [TransparencyScore.D]: 4, 
-    [TransparencyScore.E]: 5 
+  const scoreValues: Record<Exclude<TransparencyScore, TransparencyScore.UNKNOWN>, number> = {
+    [TransparencyScore.A]: 1,
+    [TransparencyScore.B]: 2,
+    [TransparencyScore.C]: 3,
+    [TransparencyScore.D]: 4,
+    [TransparencyScore.E]: 5,
   };
-  const valueToScore: Record<number, Exclude<TransparencyScore, TransparencyScore.UNKNOWN>> = { 
-    1: TransparencyScore.A, 
-    2: TransparencyScore.B, 
-    3: TransparencyScore.C, 
-    4: TransparencyScore.D, 
-    5: TransparencyScore.E 
+  const valueToScore: Record<number, Exclude<TransparencyScore, TransparencyScore.UNKNOWN>> = {
+    1: TransparencyScore.A,
+    2: TransparencyScore.B,
+    3: TransparencyScore.C,
+    4: TransparencyScore.D,
+    5: TransparencyScore.E,
   };
-  
+
   const avgValue = Math.round((scoreValues[subventionsScore] + scoreValues[mpScore]) / 2);
-  
+
   return valueToScore[avgValue];
 }
 
@@ -92,8 +92,8 @@ export async function fetchMostRecentTransparencyScore(
 
   const rows = (await getQueryFromPool(querySQL, [siren])) as Bareme[];
   const bareme = rows[0] || null;
-  
-  const aggregatedScore = bareme 
+
+  const aggregatedScore = bareme
     ? calculateAggregatedScore(bareme.subventions_score, bareme.mp_score)
     : null;
 

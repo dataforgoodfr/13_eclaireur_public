@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { CHART_HEIGHT } from '../../app/community/[siren]/components/constants';
 
 type TreemapSkeletonProps = {
   height?: number;
 };
 
-export default function TreemapSkeleton({ 
-  height = CHART_HEIGHT
-}: TreemapSkeletonProps) {
+export default function TreemapSkeleton({ height = CHART_HEIGHT }: TreemapSkeletonProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -30,12 +29,12 @@ export default function TreemapSkeleton({
   // Always maintain consistent height to prevent layout shift
   if (!containerWidth) {
     return (
-      <div 
-        className="relative w-full flex items-center justify-center" 
-        ref={containerRef} 
+      <div
+        className='relative flex w-full items-center justify-center'
+        ref={containerRef}
         style={{ height }}
       >
-        <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
       </div>
     );
   }
@@ -54,8 +53,8 @@ export default function TreemapSkeleton({
   ];
 
   return (
-    <div className="relative animate-pulse w-full" ref={containerRef}>
-      <svg width={width} height={height} aria-label="Chargement du treemap">
+    <div className='relative w-full animate-pulse' ref={containerRef}>
+      <svg width={width} height={height} aria-label='Chargement du treemap'>
         <title>Chargement du graphique treemap</title>
         {rectangles.map((rect, index) => (
           <path
@@ -70,47 +69,49 @@ export default function TreemapSkeleton({
               Q ${rect.x} ${rect.y} ${rect.x + 8} ${rect.y}
               Z
             `}
-            fill="#E5E7EB"
-            stroke="#D1D5DB"
+            fill='#E5E7EB'
+            stroke='#D1D5DB'
             strokeWidth={1}
-            className="animate-pulse"
+            className='animate-pulse'
           />
         ))}
         {/* Skeleton text elements */}
-        {rectangles.map((rect, index) => (
-          rect.width > 80 && rect.height > 60 && (
-            <g key={`text-${rect.x}-${rect.y}-${index}`}>
-              {/* Price skeleton */}
-              <rect
-                x={rect.x + 8}
-                y={rect.y + 8}
-                width={Math.min(rect.width * 0.6, 100)}
-                height={16}
-                rx={2}
-                fill="#D1D5DB"
-              />
-              {/* Label skeleton */}
-              <rect
-                x={rect.x + 8}
-                y={rect.y + 32}
-                width={Math.min(rect.width * 0.8, 140)}
-                height={12}
-                rx={2}
-                fill="#D1D5DB"
-              />
-              {rect.height > 80 && (
+        {rectangles.map(
+          (rect, index) =>
+            rect.width > 80 &&
+            rect.height > 60 && (
+              <g key={`text-${rect.x}-${rect.y}-${index}`}>
+                {/* Price skeleton */}
                 <rect
                   x={rect.x + 8}
-                  y={rect.y + 48}
+                  y={rect.y + 8}
                   width={Math.min(rect.width * 0.6, 100)}
+                  height={16}
+                  rx={2}
+                  fill='#D1D5DB'
+                />
+                {/* Label skeleton */}
+                <rect
+                  x={rect.x + 8}
+                  y={rect.y + 32}
+                  width={Math.min(rect.width * 0.8, 140)}
                   height={12}
                   rx={2}
-                  fill="#D1D5DB"
+                  fill='#D1D5DB'
                 />
-              )}
-            </g>
-          )
-        ))}
+                {rect.height > 80 && (
+                  <rect
+                    x={rect.x + 8}
+                    y={rect.y + 48}
+                    width={Math.min(rect.width * 0.6, 100)}
+                    height={12}
+                    rx={2}
+                    fill='#D1D5DB'
+                  />
+                )}
+              </g>
+            ),
+        )}
       </svg>
     </div>
   );

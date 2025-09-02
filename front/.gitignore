@@ -59,3 +59,5 @@ playwright-report/
 
 .eslintcache
 .husky
+# Million Lint
+.million

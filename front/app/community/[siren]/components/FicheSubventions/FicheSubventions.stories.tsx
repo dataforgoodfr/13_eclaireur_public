@@ -1,6 +1,7 @@
 // app/community/[siren]/components/FicheSubventions/FicheSubventions.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react'
-import { FicheSubventions } from './FicheSubventions'
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { FicheSubventions } from './FicheSubventions';
 
 const meta: Meta<typeof FicheSubventions> = {
   // title: 'Community/FicheSubventions',
@@ -15,10 +16,10 @@ const meta: Meta<typeof FicheSubventions> = {
   args: {
     siren: '213105554', // Default siren for stories
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof FicheSubventions>
+export default meta;
+type Story = StoryObj<typeof FicheSubventions>;
 
 export const Default: Story = {
   args: {
@@ -31,7 +32,7 @@ export const Default: Story = {
       },
     },
   },
-}
+};
 
 export const NoData: Story = {
   args: {
@@ -44,7 +45,7 @@ export const NoData: Story = {
       },
     },
   },
-}
+};
 
 export const SingleSubvention: Story = {
   args: {
@@ -57,7 +58,7 @@ export const SingleSubvention: Story = {
       },
     },
   },
-}
+};
 
 export const ManySubventions: Story = {
   args: {
@@ -70,7 +71,7 @@ export const ManySubventions: Story = {
       },
     },
   },
-}
+};
 
 export const ErrorState: Story = {
   args: {
@@ -83,7 +84,7 @@ export const ErrorState: Story = {
       },
     },
   },
-}
+};
 
 export const LoadingState: Story = {
   args: {
@@ -96,4 +97,4 @@ export const LoadingState: Story = {
       },
     },
   },
-}
+};
