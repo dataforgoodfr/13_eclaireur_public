@@ -25,7 +25,7 @@ export default function Page() {
       >
         <article className='mt-6 flex flex-col justify-start bg-[url(/eclaireur/project_background.webp)] md:py-6'>
           <h2 className='text-h1 my-6 text-center font-bold'>
-            Trouver une collectivité
+            Trouver une collectivité <br />
             <div className='inline-block bg-gradient-fade px-8'>à interpeller</div>
           </h2>
           <p className='mx-auto my-4 px-1 text-center text-xl md:w-1/2 md:text-[1.375rem]'>
