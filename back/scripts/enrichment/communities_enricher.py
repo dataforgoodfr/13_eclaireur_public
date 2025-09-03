@@ -58,7 +58,10 @@ class CommunitiesEnricher(BaseEnricher):
             on="siren",
             how="left",
         ).with_columns(
-            pl.when(pl.col("type") == "MET").then("GRP").otherwise(pl.col("type")).alias("type")
+            pl.when(pl.col("type") == "MET")
+            .then(pl.lit("GRP"))
+            .otherwise(pl.col("type"))
+            .alias("type")
         )
 
     @classmethod
