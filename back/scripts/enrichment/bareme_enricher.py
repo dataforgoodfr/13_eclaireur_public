@@ -94,17 +94,11 @@ class BaremeEnricher(BaseEnricher):
         bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
         bareme_final = cls.bareme_agrege(bareme_final)
 
-
         return bareme_final
 
     @staticmethod
     def _map_score_to_numeric(column: str) -> pl.Expr:
-        mapping = {
-            "A": 4,
-            "B": 3,
-            "C": 2,
-            "D": 1,
-            "E": 0,
+        mapping = {"A": 4, "B": 3, "C": 2, "D": 1, "E": 0}
 
         return pl.col(column).replace_strict(mapping).cast(pl.Int64)
 
