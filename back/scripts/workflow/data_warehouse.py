@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import polars as pl
@@ -17,6 +18,7 @@ from back.scripts.utils.psql_connector import PSQLConnector
 class DataWarehouseWorkflow:
     def __init__(self, config: dict):
         self.config = config
+        self.logger = logging.getLogger(__name__)
         self.warehouse_folder = Path(self.config["warehouse"]["data_folder"])
         self.warehouse_folder.mkdir(exist_ok=True, parents=True)
 
@@ -50,16 +52,28 @@ class DataWarehouseWorkflow:
         # or keep the same schema.
         if_table_exists = "replace" if self.config["workflow"]["replace_tables"] else "append"
 
-        with connector.engine.connect() as conn:
-            for table_name, filename in self.send_to_db.items():
-                df = pl.read_parquet(filename)
+        self.logger.info("Connecting to the database to send data...")
+        try:
+            with connector.engine.connect() as conn:
+                with conn.begin():  # Start a transaction
+                    self.logger.info("Database connection successful.")
+                    for table_name, filename in self.send_to_db.items():
+                        self.logger.info(f"Processing table: {table_name} from file {filename}")
+                        df = pl.read_parquet(filename)
 
-                if if_table_exists == "append":
-                    table_exists_query = text(
-                        f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name= '{table_name}')"
-                    )
-                    table_exists = conn.execute(table_exists_query).scalar()
-                    if table_exists:
-                        conn.execute(text(f"TRUNCATE {table_name}"))
+                        if if_table_exists == "append":
+                            table_exists_query = text(
+                                f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name= '{table_name}')"
+                            )
+                            table_exists = conn.execute(table_exists_query).scalar()
+                            if table_exists:
+                                conn.execute(text(f"TRUNCATE {table_name}"))
 
-                df.write_database(table_name, conn, if_table_exists=if_table_exists)
+                        df.write_database(table_name, conn, if_table_exists=if_table_exists)
+                        self.logger.info(f"Successfully wrote data to table: {table_name}")
+
+                    self.logger.info("All tables have been processed.")
+        except Exception as e:
+            self.logger.error(
+                f"An error occurred during the database operation: {e}", exc_info=True
+            )
