@@ -1,33 +1,31 @@
 'use client';
 
-import { useState } from 'react';
-
+import type { Community } from '#app/models/community';
+import EmptyState from '#components/EmptyState';
 import Loading from '#components/ui/Loading';
-import {
-  Table as ShadCNTable,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '#components/ui/table';
+import { Card } from '#components/ui/card';
 import SectionSeparator from '#components/utils/SectionSeparator';
+import { formatLocationName } from '#utils/format';
 import { useMPSubvComparison } from '#utils/hooks/comparison/useMPSubvComparison';
 import { formatCompactPrice } from '#utils/utils';
 
-import { YearOption } from '../../../types/interface';
 import { ComparisonType } from './ComparisonType';
+import { TableInfoBlock } from './TableInfoBlock';
+import { useComparisonYear } from './hooks/useComparisonYear';
+import { SideBySideComparison } from './shared/SideBySideComparison';
 
 type MPSubvComparisonProperties = {
-  siren1: string;
-  siren2: string;
+  community1: Community;
+  community2: Community;
   comparisonType: ComparisonType;
 };
 
-export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvComparisonProperties) {
-  const defaultYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
+export function MPSubvComparison({
+  community1,
+  community2,
+  comparisonType,
+}: MPSubvComparisonProperties) {
+  const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
   return (
     <>
@@ -36,14 +34,34 @@ export function MPSubvComparison({ siren1, siren2, comparisonType }: MPSubvCompa
         year={selectedYear}
         onSelectYear={setSelectedYear}
       />
-      <div className='flex justify-around max-md:my-6 md:my-10'>
-        <ComparingMPSubv
-          siren={siren1}
-          year={selectedYear as number}
-          comparisonType={comparisonType}
+      {/* Desktop layout */}
+      <div className='hidden md:block'>
+        <SideBySideComparison
+          leftChild={
+            <ComparingMPSubv
+              siren={community1.siren}
+              year={selectedYear as number}
+              comparisonType={comparisonType}
+              bgColor='bg-brand-3'
+            />
+          }
+          rightChild={
+            <ComparingMPSubv
+              siren={community2.siren}
+              year={selectedYear as number}
+              comparisonType={comparisonType}
+              bgColor='bg-primary-light'
+            />
+          }
+          className='my-10'
         />
-        <ComparingMPSubv
-          siren={siren2}
+      </div>
+
+      {/* Mobile layout - unified card */}
+      <div className='my-6 md:hidden'>
+        <MobileMPSubvCard
+          siren1={community1.siren}
+          siren2={community2.siren}
           year={selectedYear as number}
           comparisonType={comparisonType}
         />
@@ -56,49 +74,38 @@ type ComparingMPSubvProperties = {
   siren: string;
   year: number;
   comparisonType: ComparisonType;
+  bgColor?: string;
 };
 
-function ComparingMPSubv({ siren, year, comparisonType }: ComparingMPSubvProperties) {
+function ComparingMPSubv({ siren, year, comparisonType, bgColor }: ComparingMPSubvProperties) {
   const { data, isPending, isError } = useMPSubvComparison(siren, year, comparisonType);
 
-  if (isPending || isError) {
+  // Show loading state
+  if (isPending) {
     return <Loading />;
   }
 
-  if (data.top5 === undefined) {
+  // Show EmptyState for actual errors or missing data
+  if (isError || !data || data.top5 === undefined) {
     return (
-      <div className='mx-2 basis-1/2 flex-col space-y-2 text-center'>Aucunes données publiées</div>
+      <EmptyState
+        title={`Aucune donnée de ${getName(comparisonType)} disponible`}
+        description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.`}
+        siren={siren}
+        className='h-full'
+      />
     );
   }
 
   return (
-    <div className='basis-1/2 flex-col space-y-2 text-center sm:mx-2'>
-      <p>Montant total : {formatCompactPrice(data.total_amount)}</p>
-      <p>
-        Nombre de {getName(comparisonType)} : {data.total_number}
-      </p>
-      <div className='md:mx-5'>
-        <ShadCNTable className='text-xs sm:text-sm'>
-          <TableCaption>Top 5 des {getName(comparisonType)}</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className='text-left'>{getColumnLabel(comparisonType)}</TableHead>
-              <TableHead className='w-[75px] text-right'>Montant</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.top5.map(({ label, value }, index) => (
-              <TableRow key={index}>
-                <TableCell className='text-left'>
-                  {label !== null ? label.toLocaleUpperCase() : 'Non précisé'}
-                </TableCell>
-                <TableCell className='text-right'>{formatCompactPrice(value)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </ShadCNTable>
-      </div>
-    </div>
+    <TableInfoBlock
+      totalAmount={data.total_amount}
+      totalNumber={data.total_number}
+      top5Items={data.top5}
+      comparisonName={getName(comparisonType)}
+      columnLabel={getColumnLabel(comparisonType)}
+      bgColor={bgColor}
+    />
   );
 }
 
@@ -133,4 +140,106 @@ function getColumnLabel(comparisonType: ComparisonType) {
     default:
       return '';
   }
+}
+
+type MobileMPSubvCardProps = {
+  siren1: string;
+  siren2: string;
+  year: number;
+  comparisonType: ComparisonType;
+};
+
+function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubvCardProps) {
+  const {
+    data: data1,
+    isPending: isPending1,
+    isError: isError1,
+  } = useMPSubvComparison(siren1, year, comparisonType);
+
+  const {
+    data: data2,
+    isPending: isPending2,
+    isError: isError2,
+  } = useMPSubvComparison(siren2, year, comparisonType);
+
+  if (isPending1 || isPending2) {
+    return <Loading />;
+  }
+
+  if (
+    isError1 ||
+    isError2 ||
+    !data1 ||
+    !data2 ||
+    data1.top5 === undefined ||
+    data2.top5 === undefined
+  ) {
+    return (
+      <EmptyState
+        title={`Aucune donnée de ${getName(comparisonType)} disponible`}
+        description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période.`}
+        siren={siren1}
+        className='h-full'
+      />
+    );
+  }
+
+  const renderInfoBlock = (label: string, value1: string, value2: string) => (
+    <>
+      <h4 className='mb-3 text-sm font-semibold text-primary-900'>{label}</h4>
+      <div className='flex justify-between'>
+        <div className='rounded-full bg-brand-3 px-4 py-2'>
+          <span className='text-lg font-bold text-primary-900'>{value1}</span>
+        </div>
+        <div className='rounded-full bg-primary-light px-4 py-2'>
+          <span className='text-lg font-bold text-primary-900'>{value2}</span>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <Card className='space-y-6 p-4'>
+      {/* Comparaison Montant Total */}
+      <div className='border-b pb-4'>
+        {renderInfoBlock(
+          'Montant total',
+          formatCompactPrice(data1.total_amount),
+          formatCompactPrice(data2.total_amount),
+        )}
+      </div>
+
+      {/* Comparaison Nombre */}
+      <div className='border-b pb-4'>
+        {renderInfoBlock(
+          `Nombre de ${getName(comparisonType)}`,
+          data1.total_number.toString(),
+          data2.total_number.toString(),
+        )}
+      </div>
+
+      {/* Tableaux détaillés */}
+      <div className='space-y-6'>
+        <TableInfoBlock
+          totalAmount={data1.total_amount}
+          totalNumber={data1.total_number}
+          top5Items={data1.top5}
+          comparisonName={getName(comparisonType)}
+          columnLabel={getColumnLabel(comparisonType)}
+          communityName={formatLocationName(data1?.community_name || 'N/A')}
+          bgColor='bg-brand-3'
+        />
+
+        <TableInfoBlock
+          totalAmount={data2.total_amount}
+          totalNumber={data2.total_number}
+          top5Items={data2.top5}
+          comparisonName={getName(comparisonType)}
+          columnLabel={getColumnLabel(comparisonType)}
+          communityName={formatLocationName(data2?.community_name || 'N/A')}
+          bgColor='bg-primary-light'
+        />
+      </div>
+    </Card>
+  );
 }

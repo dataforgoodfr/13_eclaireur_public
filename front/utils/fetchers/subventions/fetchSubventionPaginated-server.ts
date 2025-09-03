@@ -46,7 +46,6 @@ function createSQLQueryParams(
   return [query, values];
 }
 
-
 const DEFAULT_BY: keyof Subvention = 'montant';
 
 /**

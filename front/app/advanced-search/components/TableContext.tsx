@@ -1,9 +1,9 @@
 'use client';
 
-import type { Table } from '@tanstack/react-table';
 import { createContext, useContext } from 'react';
 
 import type { AdvancedSearchCommunity } from '@/app/models/community';
+import type { Table } from '@tanstack/react-table';
 
 interface TableContextType {
   table: Table<AdvancedSearchCommunity> | null;
@@ -20,18 +20,14 @@ export function useTableContext() {
   return context;
 }
 
-export function TableProvider({ 
-  children, 
-  table, 
-  setTable 
-}: { 
+export function TableProvider({
+  children,
+  table,
+  setTable,
+}: {
   children: React.ReactNode;
   table: Table<AdvancedSearchCommunity> | null;
   setTable: (table: Table<AdvancedSearchCommunity> | null) => void;
 }) {
-  return (
-    <TableContext.Provider value={{ table, setTable }}>
-      {children}
-    </TableContext.Provider>
-  );
+  return <TableContext.Provider value={{ table, setTable }}>{children}</TableContext.Provider>;
 }

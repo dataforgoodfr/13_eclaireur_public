@@ -1,12 +1,12 @@
 'use client';
 
+import EmptyState from '#components/EmptyState';
 import { WithPagination } from '#components/Pagination';
 import { usePaginationState, usePaginationStateWithTotal } from '#hooks/usePaginationState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
 import { roundNumber } from '#utils/utils';
 
 import { YearOption } from '../../types/interface';
-import EmptyState from '#components/EmptyState';
 import SectorTable, { SectorRow } from '../SectorTable/SectorTable';
 import SectorTableSkeleton from '../Skeletons/SectorTableSkeleton';
 import { CHART_HEIGHT } from '../constants';
@@ -28,20 +28,16 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
   });
 
   // Then use persistent pagination with the actual data
-  const { totalPage } = usePaginationStateWithTotal(
-    data,
-    isPending,
-    {
-      paramName: 'page_subv_sector',
-      itemsPerPage: MAX_ROW_PER_PAGE,
-    }
-  );
+  const { totalPage } = usePaginationStateWithTotal(data, isPending, {
+    paramName: 'page_subv_sector',
+    itemsPerPage: MAX_ROW_PER_PAGE,
+  });
 
   // Rendu du contenu selon l'état
   const renderContent = () => {
     if (isPending || isError) {
       return (
-        <div className="w-full self-stretch" style={{ height: CHART_HEIGHT }}>
+        <div className='w-full self-stretch' style={{ height: CHART_HEIGHT }}>
           <SectorTableSkeleton rows={MAX_ROW_PER_PAGE} />
         </div>
       );
@@ -50,10 +46,10 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
     if (data.length === 0) {
       return (
         <EmptyState
-          title="Aucune donnée de subventions par secteur disponible"
+          title='Aucune donnée de subventions par secteur disponible'
           description="Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
           siren={siren}
-          className="h-[450px] w-full"
+          className='h-[450px] w-full'
         />
       );
     }
@@ -69,11 +65,11 @@ export default function SubventionsSectorTable({ siren, year }: SubventionsSecto
   };
 
   return (
-    <WithPagination 
-      style={{ height: CHART_HEIGHT }} 
-      totalPage={totalPage} 
-      urlParam="page_subv_sector"
-      mode="url"
+    <WithPagination
+      style={{ height: CHART_HEIGHT }}
+      totalPage={totalPage}
+      urlParam='page_subv_sector'
+      mode='url'
     >
       {renderContent()}
     </WithPagination>

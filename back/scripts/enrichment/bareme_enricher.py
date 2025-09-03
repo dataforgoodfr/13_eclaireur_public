@@ -96,6 +96,7 @@ class BaremeEnricher(BaseEnricher):
         bareme_final = bareme_subvention.join(bareme_mp, on=["siren", "annee"], how="left")
         bareme_final = cls.bareme_agrege(bareme_final)
 
+
         return bareme_final
 
     @staticmethod
@@ -106,7 +107,7 @@ class BaremeEnricher(BaseEnricher):
             "C": 2,
             "D": 1,
             "E": 0,
-        }  # correspond à ton ancien bareme_agrege
+
         return pl.col(column).replace_strict(mapping).cast(pl.Int64)
 
     @staticmethod

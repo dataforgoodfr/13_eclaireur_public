@@ -1,9 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { ActionButton } from '#components/ui/action-button';
 import { formatCompactPrice, formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
 import { MessageSquare } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type ComparisonData = {
@@ -77,13 +78,13 @@ const StripedBar = (props: unknown) => {
       <defs>
         <pattern
           id={patternId}
-          patternUnits="userSpaceOnUse"
-          width="6"
-          height="6"
-          patternTransform="rotate(45)"
+          patternUnits='userSpaceOnUse'
+          width='6'
+          height='6'
+          patternTransform='rotate(45)'
         >
-          <rect width="2" height="6" fill={actualFill} />
-          <rect x="2" width="4" height="6" fill="white" />
+          <rect width='2' height='6' fill={actualFill} />
+          <rect x='2' width='4' height='6' fill='white' />
         </pattern>
       </defs>
       <path
@@ -104,10 +105,12 @@ const StripedBar = (props: unknown) => {
   );
 };
 
-
-
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, label }: {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
   active?: boolean;
   payload?: Array<{
     value: number;
@@ -119,37 +122,42 @@ const CustomTooltip = ({ active, payload, label }: {
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-gray-100">
-        <p className="text-sm font-semibold text-gray-600 mb-3">Année {label}</p>
-        <div className="space-y-2">
+      <div className='rounded-lg border border-gray-100 bg-white/95 p-4 shadow-xl backdrop-blur-sm'>
+        <p className='mb-3 text-sm font-semibold text-gray-600'>Année {label}</p>
+        <div className='space-y-2'>
           {payload.map((entry, index: number) => {
             const isStriped = entry.dataKey === 'regional';
             return (
-              <div key={index} className="flex items-center gap-3">
+              <div key={index} className='flex items-center gap-3'>
                 {isStriped ? (
-                  <svg width="16" height="16" className="flex-shrink-0">
+                  <svg width='16' height='16' className='flex-shrink-0'>
                     <defs>
-                      <pattern 
-                        id="tooltip-stripes" 
-                        patternUnits="userSpaceOnUse" 
-                        width="6" 
-                        height="6"
-                        patternTransform="rotate(45)"
+                      <pattern
+                        id='tooltip-stripes'
+                        patternUnits='userSpaceOnUse'
+                        width='6'
+                        height='6'
+                        patternTransform='rotate(45)'
                       >
-                        <rect width="2" height="6" fill="#303F8D" />
-                        <rect x="2" width="4" height="6" fill="white" />
+                        <rect width='2' height='6' fill='#303F8D' />
+                        <rect x='2' width='4' height='6' fill='white' />
                       </pattern>
                     </defs>
-                    <rect width="16" height="16" fill="url(#tooltip-stripes)" rx="2" className="stroke-primary" strokeWidth="1" />
+                    <rect
+                      width='16'
+                      height='16'
+                      fill='url(#tooltip-stripes)'
+                      rx='2'
+                      className='stroke-primary'
+                      strokeWidth='1'
+                    />
                   </svg>
                 ) : (
-                  <div className="w-4 h-4 rounded bg-primary flex-shrink-0" />
+                  <div className='h-4 w-4 flex-shrink-0 rounded bg-primary' />
                 )}
-                <div className="flex-1">
-                  <p className="text-sm text-gray-700">
-                    {entry.name}
-                  </p>
-                  <p className="text-base font-bold text-primary">
+                <div className='flex-1'>
+                  <p className='text-sm text-gray-700'>{entry.name}</p>
+                  <p className='text-base font-bold text-primary'>
                     {formatCompactPrice(entry.value)}
                   </p>
                 </div>
@@ -185,12 +193,12 @@ const createCustomBarLabel = (formatValue: (value: number) => string) => {
         <text
           x={x + width / 2}
           y={y + height / 2}
-          fill="#303F8D"
-          textAnchor="middle"
-          fontSize="14"
-          fontWeight="600"
-          fontFamily="var(--font-kanit), system-ui, sans-serif"
-          dominantBaseline="middle"
+          fill='#303F8D'
+          textAnchor='middle'
+          fontSize='14'
+          fontWeight='600'
+          fontFamily='var(--font-kanit), system-ui, sans-serif'
+          dominantBaseline='middle'
         >
           Aucune donnée
         </text>
@@ -201,11 +209,11 @@ const createCustomBarLabel = (formatValue: (value: number) => string) => {
       <text
         x={x + width / 2}
         y={y - 8}
-        fill="#303F8D"
-        textAnchor="middle"
-        fontSize="24"
-        fontWeight="700"
-        fontFamily="var(--font-kanit), system-ui, sans-serif"
+        fill='#303F8D'
+        textAnchor='middle'
+        fontSize='24'
+        fontWeight='700'
+        fontFamily='var(--font-kanit), system-ui, sans-serif'
         offset={10}
       >
         {formatValue(value)}
@@ -219,9 +227,9 @@ const createCustomBarLabel = (formatValue: (value: number) => string) => {
 
 // Loading overlay component
 const LoadingOverlay = () => (
-  <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-lg">
-    <div className="flex items-center gap-2 text-primary">
-      <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
+  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
+    <div className='flex items-center gap-2 text-primary'>
+      <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
       <span>Mise à jour des données...</span>
     </div>
   </div>
@@ -231,7 +239,7 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   const router = useRouter();
 
   // Calculate max value for proper Y-axis scaling
-  const allValues = data.flatMap(d => [d.community, d.regional]);
+  const allValues = data.flatMap((d) => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
 
   // Determine the appropriate unit based on max value
@@ -245,15 +253,15 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   const avgValue = maxValue / 2; // Average value for "Aucune donnée"
 
   // Check if any data is missing
-  const hasNoData = data.some(item => item.community === 0 || item.regional === 0);
+  const hasNoData = data.some((item) => item.community === 0 || item.regional === 0);
 
   // Transform data to replace 0 values with average
-  const transformedData = data.map(item => ({
+  const transformedData = data.map((item) => ({
     ...item,
     community: item.community === 0 ? avgValue : item.community,
     regional: item.regional === 0 ? avgValue : item.regional,
     communityMissing: item.community === 0,
-    regionalMissing: item.regional === 0
+    regionalMissing: item.regional === 0,
   }));
 
   const handleInterpellerClick = () => {
@@ -263,13 +271,12 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
   };
 
   return (
-    <div className="relative">
+    <div className='relative'>
       {dataLoading && <LoadingOverlay />}
-
 
       {/* Interpeller button when there's no data */}
       {hasNoData && siren && (
-        <div className="absolute top-4 right-4 z-10">
+        <div className='absolute right-4 top-4 z-10'>
           <ActionButton
             onClick={handleInterpellerClick}
             icon={<MessageSquare size={20} />}
@@ -280,18 +287,14 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
         </div>
       )}
 
-      <ResponsiveContainer width="100%" height={550}>
+      <ResponsiveContainer width='100%' height={550}>
         <BarChart
           data={transformedData}
           margin={{ top: 30, right: 5, left: 10, bottom: 10 }}
           barGap={8}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis
-            dataKey="year"
-            tick={{ fontSize: 12 }}
-            axisLine={{ stroke: '#e5e7eb' }}
-          />
+          <CartesianGrid strokeDasharray='3 3' vertical={false} />
+          <XAxis dataKey='year' tick={{ fontSize: 12 }} axisLine={{ stroke: '#e5e7eb' }} />
           <YAxis
             tick={{ fontSize: 12 }}
             axisLine={{ stroke: '#e5e7eb' }}
@@ -301,16 +304,16 @@ export default function DesktopComparisonChart({ data, dataLoading, siren }: Des
           <Tooltip content={<CustomTooltip />} />
 
           <Bar
-            dataKey="community"
-            fill="#303F8D"
-            name={data.length > 0 ? data[0].communityLabel : "Budget de collectivité"}
+            dataKey='community'
+            fill='#303F8D'
+            name={data.length > 0 ? data[0].communityLabel : 'Budget de collectivité'}
             label={createCustomBarLabel(formatValue)}
             shape={CommunityBar}
           />
           <Bar
-            dataKey="regional"
-            fill="#303F8D"
-            name={data.length > 0 ? data[0].regionalLabel : "Moyenne régionale"}
+            dataKey='regional'
+            fill='#303F8D'
+            name={data.length > 0 ? data[0].regionalLabel : 'Moyenne régionale'}
             label={createCustomBarLabel(formatValue)}
             shape={StripedBar}
           />

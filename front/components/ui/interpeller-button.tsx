@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
 import { ActionButton } from './action-button';
 
 type InterpellerButtonProps = {
@@ -11,11 +12,11 @@ type InterpellerButtonProps = {
   showText?: boolean;
 };
 
-export function InterpellerButton({ 
-  siren, 
+export function InterpellerButton({
+  siren,
   variant = 'default',
   className = '',
-  showText = false
+  showText = false,
 }: InterpellerButtonProps) {
   const router = useRouter();
 
@@ -27,14 +28,7 @@ export function InterpellerButton({
     <ActionButton
       onClick={handleClick}
       variant={variant}
-      icon={
-        <Image
-          src="/eclaireur/interpeller.svg"
-          alt="Interpeller"
-          width={20}
-          height={20}
-        />
-      }
+      icon={<Image src='/eclaireur/interpeller.svg' alt='Interpeller' width={20} height={20} />}
       text={showText ? 'Interpeller' : undefined}
       className={className}
     />

@@ -1,9 +1,7 @@
 'use client';
 
-import { parseAsStringEnum, useQueryStates } from 'nuqs';
-
-
 import { Order } from '#utils/fetchers/types';
+import { parseAsStringEnum, useQueryStates } from 'nuqs';
 
 export type AdvancedSearchOrder = Order<
   'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score' | 'subventions_budget'
@@ -15,8 +13,14 @@ export const DEFAULT_ORDER: AdvancedSearchOrder = {
 };
 
 const orderParser = {
-  by: parseAsStringEnum(['nom', 'type', 'population', 'mp_score', 'subventions_score', 'subventions_budget'] as const)
-    .withDefault(DEFAULT_ORDER.by),
+  by: parseAsStringEnum([
+    'nom',
+    'type',
+    'population',
+    'mp_score',
+    'subventions_score',
+    'subventions_budget',
+  ] as const).withDefault(DEFAULT_ORDER.by),
   direction: parseAsStringEnum(['ASC', 'DESC'] as const).withDefault(DEFAULT_ORDER.direction),
 };
 
