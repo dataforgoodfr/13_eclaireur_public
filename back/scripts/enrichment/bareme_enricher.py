@@ -14,13 +14,11 @@ from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 class BaremeEnricher(BaseEnricher):
     """
     Enrichisseur de données pour créer un barème de notation des collectivités.
-
     Cette classe combine les données de subventions et de marchés publics pour évaluer
     la transparence et la qualité de publication des données par les collectivités.
     Le barème génère des scores de A (excellent) à E (insuffisant) basés sur :
     - Le taux de déclaration des subventions (comparaison déclaré vs budget)
     - La qualité et complétude des données de marchés publics
-
     Hérite de BaseEnricher pour suivre le pattern d'enrichissement standardisé.
     """
 
