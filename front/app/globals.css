@@ -6,8 +6,11 @@
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
   }
-  h1, h2, h3, h4 { 
-    @apply text-primary font-kanit-bold; 
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-kanit-bold text-primary;
   }
 }
 
@@ -78,10 +81,6 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-#simulatedTextAreaContent p {
-  @apply px-3 py-1;
 }
 
 /* All titles */
