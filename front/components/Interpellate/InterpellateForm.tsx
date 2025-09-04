@@ -11,8 +11,7 @@ import { useRouter } from 'next/navigation';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '#app/models/communityContact';
-import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
-import { Button, buttonVariants } from '#components/ui/button';
+import { Button } from '#components/ui/button';
 import { Checkbox } from '#components/ui/checkbox';
 import {
   Form,
@@ -61,7 +60,7 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
   };
 
   const fullName = `${firstName} ${lastName}`;
-  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
+  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
   const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
 
   const form = useForm<FormSchema>({
@@ -70,11 +69,12 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
       firstname: '',
       lastname: '',
       email: '',
-      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production pour que ça fonctionne !!!
+      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!!
       emails: 'olivier.pretre@gmx.fr', // TODO : commenter à la mise en production
       object:
         'Transparence des données publiques – Publication des investissements et marchés publics',
       message: formMessage,
+      isCC: true,
     },
   });
 
@@ -234,12 +234,22 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
         </fieldset>
 
         <div className='flex flex-col gap-4 md:items-end'>
-          <div className='mt-6 flex items-center space-x-2'>
-            <Checkbox id='terms' checked={true} />
-            <label htmlFor='terms' className='text-md text-primary'>
-              Recevoir une copie du message par e-mail
-            </label>
-          </div>
+          <FormField
+            control={form.control}
+            name='isCC'
+            render={({ field }) => (
+              <FormItem className='flex flex-row-reverse gap-2 font-normal'>
+                <FormLabel className='text-md mt-1 font-normal text-primary'>
+                  Recevoir une copie du message par e-mail
+                </FormLabel>
+                <FormControl>
+                  <Checkbox checked={field.value} defaultChecked onCheckedChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             size='lg'
             type='submit'

@@ -13,6 +13,7 @@ export const InterpellateFormSchema = z.object({
   emails: z.string(),
   object: z.string(),
   message: z.any(),
+  isCC: z.boolean().optional(),
 });
 
 export type FormSchema = z.infer<typeof InterpellateFormSchema>;
