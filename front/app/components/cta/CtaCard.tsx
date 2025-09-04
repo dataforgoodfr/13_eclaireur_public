@@ -6,19 +6,23 @@ import { ArrowRight } from 'lucide-react';
 interface CtaCardProps {
   title: string;
   caption: string;
+  isCardBig?: boolean;
   picto: string;
   buttonText: string;
   href: string;
   colorClassName?: string;
+  children?: React.ReactNode;
 }
 
 export default function CtaCard({
   title,
   caption,
+  isCardBig = false,
   picto,
   buttonText,
   href,
   colorClassName,
+  children,
 }: CtaCardProps) {
   return (
     <Link
@@ -27,8 +31,9 @@ export default function CtaCard({
     >
       <div className='flex flex-col'>
         <Image src={picto} alt={title} className='w-6 pb-2' width={36} height={36} />
-        <h3 className='text-h3'>{title}</h3>
-        <p>{caption}</p>
+        <h3 className={`${isCardBig ? 'mb-4' : ''}`}>{title}</h3>
+        <p className={isCardBig ? 'mb-4 font-bold' : ''}>{caption}</p>
+        {children}
       </div>
       <div className='flex justify-between'>
         <span className='font-bold'>{buttonText}</span>
