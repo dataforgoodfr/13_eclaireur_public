@@ -54,7 +54,6 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                 <ButtonBackAndForth
                   linkto={`/interpeller/${siren}/step3`}
                   direction='forth'
-                  siren={siren}
                   step={2}
                 >
                   Continuer
