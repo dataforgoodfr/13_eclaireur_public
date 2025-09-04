@@ -53,7 +53,6 @@ export function MPSubvComparison({
               bgColor='bg-primary-light'
             />
           }
-          className='my-10'
         />
       </div>
 

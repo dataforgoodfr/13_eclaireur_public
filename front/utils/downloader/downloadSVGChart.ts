@@ -1,7 +1,7 @@
 import html2canvas from 'html2canvas';
 
 import { downloadURL } from './downloadURL';
-import { Extension } from './types';
+import type { Extension } from './types';
 
 type Size = { width: number; height: number };
 
@@ -40,7 +40,10 @@ export async function downloadSVGChart(
   const {
     fileName = DEFAULT_OPTIONS.fileName,
     extension = DEFAULT_OPTIONS.extension,
-    size = { width: chartContainer.clientWidth, height: chartContainer.clientHeight },
+    size = {
+      width: chartContainer.clientWidth,
+      height: chartContainer.clientHeight,
+    },
   } = options ?? DEFAULT_OPTIONS;
 
   const clonedChartContainer = chartContainer.cloneNode(true) as HTMLElement;
@@ -70,8 +73,14 @@ async function createSvg(chartContainer: HTMLElement, header: Header, size: Size
   svgToDownload.setAttribute('width', `${width + margin}`);
   svgToDownload.setAttribute('height', `${svgHeight}`);
 
-  const communityNameSvg = createHeaderText(header.communityName, { fontSize: '24', y: '30' });
-  const chartTitleSvg = createHeaderText(header.chartTitle, { fontSize: '20', y: '70' });
+  const communityNameSvg = createHeaderText(header.communityName, {
+    fontSize: '24',
+    y: '30',
+  });
+  const chartTitleSvg = createHeaderText(header.chartTitle, {
+    fontSize: '20',
+    y: '70',
+  });
 
   const chartSvg = chartContainer.getElementsByTagName('svg')[0];
   chartSvg.setAttribute('x', `${margin / 2}`);
@@ -96,8 +105,8 @@ async function createChartCanvas(svgToDownload: SVGSVGElement) {
   svgContainer.appendChild(svgToDownload);
   document.body.appendChild(svgContainer);
   const chartCanvas = await html2canvas(svgContainer, {
-    width: parseInt(svgToDownload.getAttribute('width')!),
-    height: parseInt(svgToDownload.getAttribute('height')!),
+    width: Number.parseInt(svgToDownload.getAttribute('width')!),
+    height: Number.parseInt(svgToDownload.getAttribute('height')!),
   });
   document.body.removeChild(svgContainer);
   return chartCanvas;
@@ -158,14 +167,12 @@ function applyStylesToForeignObject(chartContainer: HTMLElement) {
   document.body.appendChild(chartContainer);
   const foreignObjects = chartContainer.querySelectorAll('foreignObject');
   foreignObjects.forEach((object) => {
-    object.setAttribute('y', `${parseInt(object.getAttribute('y') ?? '0') + 50}`);
+    object.setAttribute('y', `${Number.parseInt(object.getAttribute('y') ?? '0') + 50}`);
     object.querySelector('button')?.remove();
     if (object.children[0]?.children[0]) {
       applyStyleToAllChildren(object.children[0]);
-      object.children[0].children[0].innerHTML = object.children[0].children[0].textContent.replace(
-        ' ',
-        '<br/>',
-      );
+      object.children[0].children[0].innerHTML =
+        object.children[0].children[0].textContent?.replace(' ', '<br/>') || '';
     }
   });
   document.body.removeChild(chartContainer);

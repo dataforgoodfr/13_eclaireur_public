@@ -27,9 +27,9 @@ export function ComparisonModificationCard({
 
   return (
     <Card
-      className={`mx-auto my-6 w-full max-w-2xl rounded-[20px] border-[1px] border-muted md:my-8 ${className || ''}`}
+      className={`border-muted-DEFAULT flex max-w-4xl flex-col items-center justify-center rounded-3xl border bg-card p-4 text-card-foreground shadow-none md:p-8 ${className || ''}`}
     >
-      <CardHeader className='text-center'>
+      <CardHeader className='p-0 py-12 text-center'>
         <CardTitle className='font-kanit-bold text-4xl text-primary'>
           Modifier la ville de comparaison
         </CardTitle>
@@ -37,14 +37,14 @@ export function ComparisonModificationCard({
           Comparer les dernières données de dépenses <br /> publiques de vos collectivités locales.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className='mb-4 flex flex-col items-center gap-3 font-kanit-bold text-2xl lg:flex-row'>
+      <CardContent className='p-0'>
+        <div className='flex flex-col items-center gap-3 font-kanit-bold text-2xl lg:flex-row'>
           <div className='rounded-full bg-brand-2 px-4 py-2 text-sm font-medium text-primary'>
             {currentCommunity.nom}
           </div>
           <span className='text-primary'>avec</span>
           <SearchBar
-            className='w-full'
+            className='w-full p-0'
             placeholder={comparedWith.nom}
             onSelect={handleCommunitySelect}
           />

@@ -50,7 +50,7 @@ export default async function Page({ params }: PageProps) {
   return (
     <>
       <ComparisonHeader community1={community1} community2={community2} />
-      <div className='mx-5 my-6 max-w-screen-xl md:my-16'>
+      <div className='mx-auto mb-6 mt-4 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 px-4 lg:mb-16 lg:mt-16 lg:gap-y-16'>
         <ComparisonModificationCard currentCommunity={community1} comparedWith={community2} />
 
         <HeaderComparison community1={community1} community2={community2} />
