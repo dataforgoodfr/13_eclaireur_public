@@ -34,7 +34,6 @@ export function TransparencyComparison({ siren1, siren2 }: TransparencyCompariso
         <SideBySideComparison
           leftChild={<ComparingScore siren={siren1} year={selectedYear as number} />}
           rightChild={<ComparingScore siren={siren2} year={selectedYear as number} />}
-          className='my-10'
         />
       </div>
 

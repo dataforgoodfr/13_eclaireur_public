@@ -12,7 +12,7 @@ export default function SectionSeparator({
   onSelectYear,
 }: SectionSeparatorProperties) {
   return (
-    <div className='my-3 md:my-12'>
+    <>
       <div className='flex flex-col-reverse items-center gap-3 md:w-full md:flex-row md:items-center'>
         <h2 className='font-semibold leading-8'>{sectionTitle}</h2>
         <div className='hidden flex-1 border-b border-gray-300 md:mx-4 md:block' />
@@ -24,6 +24,6 @@ export default function SectionSeparator({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
