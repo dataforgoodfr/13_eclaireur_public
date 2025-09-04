@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import type { Metadata } from 'next';
 
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
@@ -10,8 +8,6 @@ import { MPSubvComparison } from './components/MPSubvComparison';
 import { TransparencyComparison } from './components/TransparencyComparison';
 import { ComparisonHeader } from './components/shared/ComparisonHeader';
 import { ComparisonModificationCard } from './components/shared/ComparisonModificationCard';
-import { DataTableSkeleton } from './components/skeletons/DataTableSkeleton';
-import { TransparencySkeleton } from './components/skeletons/TransparencySkeleton';
 
 // Activer Partial Prerendering pour Next.js 15
 export const experimental_ppr = true;
@@ -56,25 +52,19 @@ export default async function Page({ params }: PageProps) {
         <HeaderComparison community1={community1} community2={community2} />
 
         {/* Sections dynamiques avec Suspense pour streaming */}
-        <Suspense fallback={<TransparencySkeleton />}>
-          <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
-        </Suspense>
+        <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
 
-        <Suspense fallback={<DataTableSkeleton title='Marchés publics' />}>
-          <MPSubvComparison
-            community1={community1}
-            community2={community2}
-            comparisonType={ComparisonType.Marches_Publics}
-          />
-        </Suspense>
+        <MPSubvComparison
+          community1={community1}
+          community2={community2}
+          comparisonType={ComparisonType.Marches_Publics}
+        />
 
-        <Suspense fallback={<DataTableSkeleton title='Subventions' />}>
-          <MPSubvComparison
-            community1={community1}
-            community2={community2}
-            comparisonType={ComparisonType.Subventions}
-          />
-        </Suspense>
+        <MPSubvComparison
+          community1={community1}
+          community2={community2}
+          comparisonType={ComparisonType.Subventions}
+        />
       </div>
     </>
   );
