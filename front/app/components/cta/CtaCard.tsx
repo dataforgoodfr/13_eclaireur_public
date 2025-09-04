@@ -6,19 +6,23 @@ import { ChevronRight } from 'lucide-react';
 interface CtaCardProps {
   title: string;
   caption: string;
+  isCardBig?: boolean;
   picto: string;
   buttonText: string;
   href: string;
   colorClassName?: string;
+  children?: React.ReactNode;
 }
 
 export default function CtaCard({
   title,
   caption,
+  isCardBig = false,
   picto,
   buttonText,
   href,
   colorClassName,
+  children,
 }: CtaCardProps) {
   return (
     <Link
@@ -30,8 +34,9 @@ export default function CtaCard({
         <Image src={picto} alt={title} className='pb-2 md:hidden' width={40} height={40} />
         {/* Desktop */}
         <Image src={picto} alt={title} className='pb-2 max-md:hidden' width={48} height={48} />
-        <h3 className='text-h3'>{title}</h3>
-        <p>{caption}</p>
+        <h3 className={`${isCardBig ? 'mb-4' : ''}`}>{title}</h3>
+        <p className={isCardBig ? 'mb-4 font-bold' : ''}>{caption}</p>
+        {children}
       </div>
       <div className='flex'>
         <span className='font-bold'>{buttonText}</span>
