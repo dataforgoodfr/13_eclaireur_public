@@ -16,7 +16,7 @@ export const MARCHES_PUBLICS_THEME: ComparisonTheme = {
  */
 export const SUBVENTIONS_THEME: ComparisonTheme = {
   primaryColor: '#E8F787',
-  secondaryColor: '#E8F787',
+  secondaryColor: '#303F8D',
   strokeColor: '#E8F787',
 };
 

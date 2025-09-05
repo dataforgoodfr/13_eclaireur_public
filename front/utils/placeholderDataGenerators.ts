@@ -88,6 +88,30 @@ export function hasRealData(
 }
 
 /**
+ * Check if comparison data contains real values (not all missing)
+ */
+export function hasRealComparisonData(
+  data:
+    | Array<{
+        community: number;
+        regional: number;
+        communityMissing?: boolean;
+        regionalMissing?: boolean;
+      }>
+    | null
+    | undefined,
+): boolean {
+  if (!data || data.length === 0) return false;
+
+  // Check if at least some data points have real values (not missing)
+  return data.some(
+    (item) =>
+      (!item.communityMissing && item.community > 0) ||
+      (!item.regionalMissing && item.regional > 0),
+  );
+}
+
+/**
  * Smooth transition between placeholder and real data
  * Ensures consistent year structure
  */

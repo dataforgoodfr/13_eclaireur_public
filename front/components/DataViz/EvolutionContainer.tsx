@@ -110,7 +110,7 @@ export default function EvolutionContainer({
       />
 
       {/* Chart Section */}
-      <div className='relative p-4 md:p-6'>
+      <div className='relative md:p-6'>
         {isMobile ? (
           <MobileEvolutionChart
             ref={chartRef}

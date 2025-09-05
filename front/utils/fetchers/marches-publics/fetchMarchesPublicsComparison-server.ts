@@ -21,16 +21,15 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
     scopeCondition = null;
   }
 
-  // Simplified query similar to the Python script structure
+  // Generate exactly 8 years of data
   const querySQL = `
-    SELECT 
-      cd.year::TEXT as year,
-      cd.community_amount::BIGINT as community,
-      COALESCE(rd.regional_avg_amount, 0)::BIGINT as regional,
-      ci.nom as community_name,
-      ci.type as community_type
-    FROM (
-      -- Community data
+    WITH years AS (
+      SELECT generate_series(
+        EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER - 7,
+        EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER
+      ) AS year
+    ),
+    community_data AS (
       SELECT 
         mp.annee_notification as year,
         SUM(mp.montant) as community_amount
@@ -38,11 +37,10 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
       WHERE mp.acheteur_id = $1
       AND mp.annee_notification IS NOT NULL
       AND mp.montant IS NOT NULL
-      AND mp.annee_notification >= 2018
+      AND mp.annee_notification >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
       GROUP BY mp.annee_notification
-    ) cd
-    LEFT JOIN (
-      -- Regional averages
+    ),
+    regional_data AS (
       SELECT 
         yearly_data.year,
         AVG(yearly_data.total_amount) as regional_avg_amount
@@ -55,18 +53,27 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
         INNER JOIN ${COMMUNITIES_TABLE} c ON mp.acheteur_id = c.siren
         WHERE mp.annee_notification IS NOT NULL
         AND mp.montant IS NOT NULL  
-        AND mp.annee_notification >= 2018
+        AND mp.annee_notification >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
         AND c.type = (SELECT type FROM ${COMMUNITIES_TABLE} WHERE siren = $2)
         ${scopeCondition ? `AND c.${scopeCondition} = (SELECT ${scopeCondition} FROM ${COMMUNITIES_TABLE} WHERE siren = $3)` : ''}
         AND c.siren != $1
         GROUP BY mp.annee_notification, mp.acheteur_id
       ) yearly_data
       GROUP BY yearly_data.year
-    ) rd ON cd.year = rd.year
+    )
+    SELECT 
+      y.year::TEXT as year,
+      cd.community_amount::BIGINT as community,
+      rd.regional_avg_amount::BIGINT as regional,
+      ci.nom as community_name,
+      ci.type as community_type
+    FROM years y
+    LEFT JOIN community_data cd ON y.year = cd.year
+    LEFT JOIN regional_data rd ON y.year = rd.year
     CROSS JOIN (
       SELECT nom, type FROM ${COMMUNITIES_TABLE} WHERE siren = $1
     ) ci
-    ORDER BY cd.year
+    ORDER BY y.year
   `;
 
   // Adjust values array based on whether we need the third parameter
@@ -114,10 +121,12 @@ export async function fetchMarchesPublicsComparison(
 
     return rows.map((row) => ({
       year: row.year,
-      community: row.community,
+      community: row.community || 0,
       communityLabel,
-      regional: row.regional,
+      regional: row.regional || 0,
       regionalLabel,
+      communityMissing: row.community === null || row.community === undefined,
+      regionalMissing: row.regional === null || row.regional === undefined,
     }));
   } catch (error) {
     console.error('Error fetching marches publics comparison:', error);
