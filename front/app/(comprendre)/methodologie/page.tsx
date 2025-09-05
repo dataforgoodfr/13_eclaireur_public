@@ -126,7 +126,7 @@ export default function Page() {
           la publication de données sur les marchés supérieurs à 40000 €
         </li>
         <li className='my-6 text-lg'>
-          la publication de données sur les 13 critères suivants :
+          la publication de données sur les 10 critères suivants :
           <ul className='list-inside list-disc pl-16'>
             {CRITERIA.map((criterion) => (
               <li key={criterion}>{criterion}</li>

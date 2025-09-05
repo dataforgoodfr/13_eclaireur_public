@@ -74,7 +74,7 @@ export default function SearchBar({
             ref={inputRef}
             type='search'
             placeholder={placeholder}
-            className='h-14 rounded-none rounded-br-xl rounded-tl-xl border pl-4 text-primary placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            className='h-14 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-6 text-primary placeholder:text-ellipsis placeholder:text-lg placeholder:font-semibold placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
             onChange={handleInputChange}
             onFocus={handleOnFocus}
             onBlur={(e) => {

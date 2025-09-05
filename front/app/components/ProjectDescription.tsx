@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import Link from 'next/link';
 
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import Loading from '../../components/ui/Loading';
 import KPIs from './KPIs';
@@ -19,16 +19,16 @@ export default async function ProjectDescription() {
       }}
     >
       <article className='global-margin px-4 py-20'>
-        <h2 className='text-h2 mb-5'>Le projet</h2>
+        <h2 className='text-h2'>Le projet</h2>
         <div className='grid gap-12 md:grid-cols-2'>
           <div>
-            <div className='mb-3 pr-10 text-lg'>
+            <div className='mb-3 text-lg'>
               <p className='my-6 text-lg'>
                 Depuis 2016, les collectivités doivent publier leurs données d'intérêt général.
                 Pourtant, seules 10% le font. Transparency International France et Anticor estiment
                 que la confiance citoyenne repose sur l'exemplarité des institutions.
               </p>
-              <p className='my-6 text-lg'>Le projet Éclaireur Public vise à :</p>
+              <p className='mt-6 text-lg'>Le projet Éclaireur Public vise à :</p>
               <ul className='ml-5 list-disc'>
                 <li>Encourager l'ouverture des données publiques.</li>
                 <li>Rendre ces données accessibles aux citoyens.</li>
@@ -36,10 +36,10 @@ export default async function ProjectDescription() {
             </div>
             <Link
               href={'/le-projet'}
-              className='my-10 flex w-40 items-center justify-center rounded-br-xl rounded-tl-xl bg-primary p-2 text-white'
+              className='my-10 flex items-center justify-center rounded-br-xl rounded-tl-xl bg-primary p-2 text-white md:w-40'
             >
-              <span className='me-2 font-bold'>En savoir plus</span>
-              <ArrowRight />
+              <span className='me-2 font-semibold'>En savoir plus</span>
+              <ChevronRight />
             </Link>
           </div>
           <Suspense fallback={<Loading />}>

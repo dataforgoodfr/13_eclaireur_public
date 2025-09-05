@@ -84,7 +84,7 @@ const aProposMenus = [
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
-  <div className='fixed top-20 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm'>
+  <div className='fixed top-12 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm lg:top-20'>
     <Wrench className='inline scale-x-[-1]' size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines fonctionnalités
     peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
@@ -110,9 +110,9 @@ export default function Navbar() {
     <>
       {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
 
-      <div className='fixed top-0 z-50 flex h-20 w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
+      <div className='fixed top-0 z-50 flex w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
         {/* Mobile Navbar */}
-        <div className='flex w-full items-center justify-between lg:hidden'>
+        <div className='flex h-12 w-full items-center justify-between lg:hidden'>
           {/* Left: Icon logo */}
           <Link href='/'>
             <Image
@@ -144,7 +144,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navbar */}
-        <div className='hidden w-full items-center lg:flex'>
+        <div className='hidden h-20 w-full items-center lg:flex'>
           {/* Desktop Logo */}
           <Link href='/'>
             <Image
