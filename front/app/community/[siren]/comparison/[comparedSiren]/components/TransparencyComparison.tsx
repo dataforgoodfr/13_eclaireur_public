@@ -16,9 +16,16 @@ import { SideBySideComparison } from './shared/SideBySideComparison';
 type TransparencyComparisonProperties = {
   siren1: string;
   siren2: string;
+  community1Name: string;
+  community2Name: string;
 };
 
-export function TransparencyComparison({ siren1, siren2 }: TransparencyComparisonProperties) {
+export function TransparencyComparison({
+  siren1,
+  siren2,
+  community1Name,
+  community2Name,
+}: TransparencyComparisonProperties) {
   const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
   return (
@@ -39,7 +46,13 @@ export function TransparencyComparison({ siren1, siren2 }: TransparencyCompariso
 
       {/* Mobile layout - unified card */}
       <div className='my-6 md:hidden'>
-        <MobileComparisonCard siren1={siren1} siren2={siren2} year={selectedYear as number} />
+        <MobileComparisonCard
+          siren1={siren1}
+          siren2={siren2}
+          year={selectedYear as number}
+          community1Name={community1Name}
+          community2Name={community2Name}
+        />
       </div>
     </>
   );
@@ -119,9 +132,17 @@ type MobileComparisonCardProps = {
   siren1: string;
   siren2: string;
   year: number;
+  community1Name: string;
+  community2Name: string;
 };
 
-function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProps) {
+function MobileComparisonCard({
+  siren1,
+  siren2,
+  year,
+  community1Name,
+  community2Name,
+}: MobileComparisonCardProps) {
   const {
     data: data1,
     isPending: isPending1,
@@ -155,8 +176,8 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
     <Card className='p-4'>
       {/* Header avec les noms des villes */}
       <div className='mb-4 flex items-center justify-between border-b pb-4'>
-        <span className='text-sm font-medium text-primary'>Ville de Paris</span>
-        <span className='text-sm font-medium text-primary'>Dijon Métropole</span>
+        <span className='text-sm font-medium text-primary'>{community1Name}</span>
+        <span className='text-sm font-medium text-primary'>{community2Name}</span>
       </div>
 
       {/* Section Marchés publics */}

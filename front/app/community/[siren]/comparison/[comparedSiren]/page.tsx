@@ -52,7 +52,12 @@ export default async function Page({ params }: PageProps) {
         <HeaderComparison community1={community1} community2={community2} />
 
         {/* Sections dynamiques avec Suspense pour streaming */}
-        <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
+        <TransparencyComparison
+          siren1={community1.siren}
+          siren2={community2.siren}
+          community1Name={community1.nom}
+          community2Name={community2.nom}
+        />
 
         <MPSubvComparison
           community1={community1}
