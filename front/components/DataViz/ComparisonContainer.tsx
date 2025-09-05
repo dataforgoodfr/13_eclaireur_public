@@ -11,13 +11,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
-import { type Scope, getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
+import { type Scope, useComparisonScope } from '#hooks/useTabState';
+import { getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
 import type { CommunityType } from '#utils/types';
 import { getMonetaryUnit } from '#utils/utils';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 
 import { TabHeader } from '../../app/community/[siren]/components/TabHeader';
+import LoadingOverlay from '../ui/LoadingOverlay';
 import ComparisonChart, { type ComparisonData, type ComparisonTheme } from './ComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
 
@@ -208,7 +210,7 @@ export default function ComparisonContainer({
   dataType,
 }: ComparisonContainerProps) {
   const defaultScope = communityType ? getDefaultComparisonScope(communityType) : 'Départemental';
-  const [selectedScope, setSelectedScope] = useState<Scope>(defaultScope);
+  const [selectedScope, setSelectedScope] = useComparisonScope(defaultScope);
   const [isMobile, setIsMobile] = useState(false);
 
   // Mobile detection
@@ -294,17 +296,11 @@ export default function ComparisonContainer({
         )}
 
         {/* Loading overlay when data is being fetched */}
-        {(isLoading || isFetching) && !isError && (
-          <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
-            <div className='flex items-center gap-2' style={{ color: theme.primaryColor }}>
-              <div
-                className='h-5 w-5 animate-spin rounded-full border-2 border-t-transparent'
-                style={{ borderColor: theme.primaryColor }}
-              />
-              <span>Chargement des données...</span>
-            </div>
-          </div>
-        )}
+        <LoadingOverlay
+          isVisible={(isLoading || isFetching) && !isError}
+          color={theme.primaryColor}
+          opacity='medium'
+        />
       </div>
     </>
   );
