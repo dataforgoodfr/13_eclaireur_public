@@ -1,4 +1,4 @@
-import { MarchesPublicsComparisonData } from '#app/models/comparison';
+import type { MarchesPublicsComparisonData } from '#app/models/comparison';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
@@ -15,7 +15,7 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
   if (normalizedScope === 'régional' || normalizedScope === 'regional') {
     scopeCondition = 'code_insee_region';
   } else if (normalizedScope === 'départemental' || normalizedScope === 'departmental') {
-    scopeCondition = 'code_insee_departement';
+    scopeCondition = 'code_insee_dept';
   } else {
     // For national, we don't filter by region/department
     scopeCondition = null;
@@ -80,7 +80,7 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
  */
 export async function fetchMarchesPublicsComparison(
   siren: string,
-  scope: string = 'régional',
+  scope = 'régional',
 ): Promise<MarchesPublicsComparisonData[]> {
   try {
     const params = createSQLQueryParams(siren, scope);
