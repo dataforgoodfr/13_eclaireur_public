@@ -252,7 +252,7 @@ export default function ComparisonContainer({
     }
   };
 
-  const title = `Comparaison avec la moyenne ${selectedScope.toLowerCase()}`;
+  const title = `Comparaison avec la moyenne ${selectedScope.toLowerCase()}e`;
 
   return (
     <>
