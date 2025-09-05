@@ -44,12 +44,12 @@ export default function Page() {
             gérer chaque domaine public au niveau le plus adapté. Ainsi, les communes, les
             départements et les régions ont chacun des rôles bien définis.
           </Paragraph>
-          <div className='mt-4 grid w-full grid-cols-1 gap-8 md:grid-cols-3'>
+          <div className='grid w-full grid-cols-1 gap-8 md:grid-cols-3'>
             <CtaCard
               title='La commune'
               caption="La commune est l'échelon le plus proche des citoyens. Ses principales responsabilités incluent :"
               isCardBig={true}
-              picto='/contexte/commune.png'
+              picto='/contexte/commune.svg'
               buttonText='Le rôle du conseil municipal'
               href='https://www.vie-publique.fr/infographie/270295-infographie-quel-est-le-role-du-conseil-municipal'
               colorClassName='bg-brand-1'
@@ -69,7 +69,7 @@ export default function Page() {
               title='Le département'
               caption='Le département joue un rôle clé dans la solidarité sociale et territoriale. Ses compétences principales sont :'
               isCardBig={true}
-              picto='/contexte/departement.png'
+              picto='/contexte/departement.svg'
               buttonText='Les compétences du département'
               href='https://www.vie-publique.fr/infographie/270019-infographie-quelles-sont-les-competences-du-departement'
               colorClassName='bg-brand-2'
@@ -88,7 +88,7 @@ export default function Page() {
               title='La région'
               caption="La région a des responsabilités plus larges, axées sur le développement et l'aménagement du territoire :"
               isCardBig={true}
-              picto='/contexte/region.png'
+              picto='/contexte/region.svg'
               buttonText='Le rôle de la région'
               href='https://www.vie-publique.fr/infographie/280077-infographie-quelles-sont-les-competences-de-la-region'
               colorClassName='bg-brand-3'
@@ -106,19 +106,19 @@ export default function Page() {
           </div>
           <InfoBox title='Transparence des collectivités : adapter les exigences à la taille et aux moyens'>
             <Paragraph>
-              Toutes les collectivités au-dessus d’un certain seuil sont soumises aux mêmes
+              Toutes les collectivités au-dessus d'un certain seuil sont soumises aux mêmes
               obligations légales de transparence. Mais dans la pratique, la situation varie
               beaucoup.
             </Paragraph>
             <Paragraph>
-              Une petite commune qui vient de dépasser 3 500 habitant·es n’a pas les mêmes moyens
-              humains ou organisationnels qu’une grande métropole ou une région. Elle doit souvent
+              Une petite commune qui vient de dépasser 3 500 habitant·es n'a pas les mêmes moyens
+              humains ou organisationnels qu'une grande métropole ou une région. Elle doit souvent
               gérer de front de nombreux dossiers locaux urgents, avec des équipes limitées.
             </Paragraph>
             <Paragraph>
-              Il est donc important d’aborder la question avec souplesse et bienveillance :
+              Il est donc important d'aborder la question avec souplesse et bienveillance :
               encourager ces communes à publier leurs données, même progressivement, permet déjà de
-              renforcer la transparence et la confiance citoyenne, sans attendre d’elles le même
+              renforcer la transparence et la confiance citoyenne, sans attendre d'elles le même
               niveau de structuration que les plus grandes collectivités.
             </Paragraph>
           </InfoBox>
@@ -158,6 +158,7 @@ export default function Page() {
           title='Les obligations légales de publication : la Loi pour une République numérique'
           subtitle="Un cadre réglementaire pour garantir l'accès aux données publiques"
           columns={2}
+          knowMore='/cadre-reglementaire'
         >
           <Paragraph>
             Depuis 2016, la Loi pour une République numérique impose aux collectivités un cadre
