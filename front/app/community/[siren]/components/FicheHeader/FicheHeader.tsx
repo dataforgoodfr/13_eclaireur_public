@@ -11,7 +11,8 @@ type FicheHeaderProps = {
   community: Community;
 };
 
-const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
+const descriptionText =
+  'Visualiser les dernières données de dépenses publiques de votre collectivité locale';
 
 export function FicheHeader({ community }: FicheHeaderProps) {
   const communityTitle = community.nom;
@@ -23,7 +24,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     <div className='relative w-full p-6 lg:px-40 lg:pb-12 lg:pt-4'>
       {/* Background image with high priority */}
       <Image
-        src='/collectivite-header.webp'
+        src='/collectivite-header.jpg'
         alt='En-tête collectivité'
         fill
         className='-z-10 object-cover'

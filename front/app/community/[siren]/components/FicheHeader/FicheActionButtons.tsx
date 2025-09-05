@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { Community } from '#app/models/community';
+import type { Community } from '#app/models/community';
 import { ActionButton } from '#components/ui/action-button';
-import { Dialog, DialogContent, DialogTrigger } from '#components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '#components/ui/dialog';
 import { useToast } from '#hooks/use-toast';
 import { Share } from 'lucide-react';
 
@@ -45,6 +45,7 @@ export function FicheActionButtons({ community, className }: FicheActionButtonsP
           <ActionButton variant='default' text='Comparer' />
         </DialogTrigger>
         <DialogContent className='rounded-3xl sm:max-w-md [&>button]:left-4 [&>button]:right-auto [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-bl-none [&>button]:rounded-br-lg [&>button]:rounded-tl-lg [&>button]:rounded-tr-none [&>button]:border [&>button]:border-primary [&>button]:bg-white [&>button]:text-primary [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground'>
+          <DialogTitle className='sr-only'>Comparer avec une autre collectivité</DialogTitle>
           <FicheComparisonInput community={community} />
         </DialogContent>
       </Dialog>

@@ -85,5 +85,7 @@ class SubventionsEnricher:
                 .alias("is_valid_siren_beneficiaire"),
             )
             .drop("raison_sociale_beneficiaire")
+            .unique(subset=pl.all().exclude("url"), keep="any")
         )
+
         return subventions

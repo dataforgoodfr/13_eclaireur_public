@@ -56,7 +56,7 @@ export default function MessageToContacts({
         Dans l’attente de votre réponse, veuillez agréer, Madame, Monsieur, l’expression de mes
         salutations distinguées.
       </p>
-      <p>{from}</p>
+      <p>{from && <>{from}</>}</p>
     </>
   );
 }
