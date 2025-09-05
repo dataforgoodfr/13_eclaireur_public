@@ -192,3 +192,6 @@ tests-examples/
 
 **/screenshots/**
 front/NOTES_PERSO/**/*
+
+#ide
+.idea/
