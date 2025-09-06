@@ -12,6 +12,7 @@ import { Wrench } from 'lucide-react';
 
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
+import { SearchButton } from './SearchButton';
 
 const visualiserMenus = [
   {
@@ -116,31 +117,23 @@ export default function Navbar() {
           {/* Left: Icon logo */}
           <Link href='/'>
             <Image
-              src='/eclaireur/logo-navmenu-mobile-1.png'
+              src='/eclaireur/logo-navmenu-desktop.png'
               alt='Éclaireur Icon'
-              width={28}
-              height={28}
-              className='mb-[9px] h-[28px] w-auto'
+              width={110}
+              height={40}
+              className='mb-[9px] h-[40px] w-auto'
               priority
             />
           </Link>
-
-          {/* Center: Text logo */}
-          <Image
-            src='/eclaireur/logo-navmenu-mobile-2.svg'
-            alt='Éclaireur Public'
-            width={360}
-            height={36}
-            className='mb-[6px] h-[68px] w-auto'
-            priority
-          />
-
-          {/* Right: Burger menu */}
-          <MobileMenu
-            visualiserMenus={visualiserMenus}
-            comprendreMenus={comprendreMenus}
-            aProposMenus={aProposMenus}
-          />
+          <div className='flex items-center space-x-2'>
+            <SearchButton />
+            {/* Right: Burger menu */}
+            <MobileMenu
+              visualiserMenus={visualiserMenus}
+              comprendreMenus={comprendreMenus}
+              aProposMenus={aProposMenus}
+            />
+          </div>
         </div>
 
         {/* Desktop Navbar */}
