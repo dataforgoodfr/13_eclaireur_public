@@ -115,8 +115,8 @@ export default function Page() {
         Calcul de l'indice de transparence des marchés publics
       </h3>
       <p className='my-6 text-lg'>
-        L'indice de transparence des marchés publics est établi selon la conjonction de 3 facteurs
-        principaux :
+        L'indice de transparence des <span className='font-bold'>marchés publics</span> est établi
+        selon la conjonction de 3 facteurs principaux :
       </p>
       <ul className='list-inside list-disc'>
         <li className='my-6 text-lg'>
