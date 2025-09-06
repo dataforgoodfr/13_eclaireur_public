@@ -1,7 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
-import { ArrowRight } from 'lucide-react';
+import { KnowMore } from './SectionCard';
 
 export default async function WhyChallenge() {
   return (
@@ -24,13 +23,7 @@ export default async function WhyChallenge() {
                     10% d'entre elles respectent cette obligation.
                   </p>
                 </div>
-                <Link
-                  href={'/le-projet'}
-                  className='my-10 flex w-40 items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2'
-                >
-                  <span className='me-2 font-bold'>En savoir plus</span>
-                  <ArrowRight />
-                </Link>
+                <KnowMore href='/le-projet'></KnowMore>
               </div>
             </div>
           </div>
