@@ -4,11 +4,16 @@ import { useRouter } from 'next/navigation';
 
 import SearchBar from '#components/SearchBar/SearchBar';
 
-export default function SearchModal() {
+interface SearchModalProps {
+  onClose: () => void;
+}
+
+export default function SearchModal({ onClose }: SearchModalProps) {
   const router = useRouter();
 
   function navigateToCommunityPage({ siren }: { siren: string }) {
     if (siren) {
+      onClose();
       router.push(`/community/${siren}`);
     }
   }
@@ -19,7 +24,11 @@ export default function SearchModal() {
       <p className='text-center'>
         Accédez aux données de dépenses publiques de votre commune, département ou région.
       </p>
-      <SearchBar className='relative mb-6' onSelect={navigateToCommunityPage} />{' '}
+      <SearchBar
+        className='relative mb-6'
+        onSelect={navigateToCommunityPage}
+        placeholder='Code postal, commune, département...'
+      />{' '}
     </div>
   );
 }
