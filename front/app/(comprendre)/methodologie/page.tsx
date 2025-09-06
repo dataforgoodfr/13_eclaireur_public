@@ -115,8 +115,8 @@ export default function Page() {
         Calcul de l'indice de transparence des marchés publics
       </h3>
       <p className='my-6 text-lg'>
-        L'indice de transparence des marchés publics est établi selon la conjonction de 3 facteurs
-        principaux :
+        L'indice de transparence des <span className='font-bold'>marchés publics</span> est établi
+        selon la conjonction de 3 facteurs principaux :
       </p>
       <ul className='list-inside list-disc'>
         <li className='my-6 text-lg'>
@@ -126,7 +126,7 @@ export default function Page() {
           la publication de données sur les marchés supérieurs à 40000 €
         </li>
         <li className='my-6 text-lg'>
-          la publication de données sur les 13 critères suivants :
+          la publication de données sur les 10 critères suivants :
           <ul className='list-inside list-disc pl-16'>
             {CRITERIA.map((criterion) => (
               <li key={criterion}>{criterion}</li>

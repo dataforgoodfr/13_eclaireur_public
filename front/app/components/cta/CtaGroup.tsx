@@ -23,7 +23,7 @@ export default function CtaGroup() {
     {
       title: 'Interpeller',
       caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
-      buttonText: 'Engagement citoyen',
+      buttonText: 'Interpeller les élus',
       picto: '/eclaireur/call_icon.png',
       href: '/interpeller',
       colorClassName: 'bg-brand-3',

@@ -1,15 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export default async function WhyChallenge() {
   return (
     <article className='global-margin w-full px-4 py-6 md:py-20'>
       <div className='flex flex-col gap-10 rounded-xl border border-primary-light p-6'>
         <div className='flex flex-col gap-10 rounded-xl bg-muted-border p-6 md:flex-row'>
-          <div className='flex flex-col gap-10 md:w-2/3'>
-            <h2 className='text-h2 mb-5'>Pourquoi interpeller mes élus ?</h2>
+          <div className='flex flex-col gap-5 md:w-2/3'>
+            <h2 className='text-h2'>Pourquoi interpeller mes élu.e.s ?</h2>
             <div className='grid gap-4'>
               <div>
                 <div className='grid gap-4'>
@@ -26,19 +26,19 @@ export default async function WhyChallenge() {
                 </div>
                 <Link
                   href={'/le-projet'}
-                  className='my-10 flex w-40 items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2'
+                  className='my-10 flex items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2 md:w-40'
                 >
                   <span className='me-2 font-bold'>En savoir plus</span>
-                  <ArrowRight />
+                  <ChevronRight />
                 </Link>
               </div>
             </div>
           </div>
-          <div className='flex items-center justify-center md:w-1/3'>
+          <div className='ml-4 flex items-center justify-center md:w-1/3'>
             <Image
               src='/eclaireur/mascotte_call.svg'
               alt='Why challenge'
-              className='w-full object-contain'
+              className='w-full object-contain md:scale-x-[-1] md:transform'
               width={324}
               height={277}
             />

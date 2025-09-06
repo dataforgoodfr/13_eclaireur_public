@@ -39,8 +39,8 @@ type ChiffreCleProps = {
 function ChiffreCle({ value, description, className, ...restProps }: ChiffreCleProps) {
   return (
     <div className={cn('content-center', className)} {...restProps}>
-      <h3 className='text-h3'>{value}</h3>
-      <div className='text-h4'>{description}</div>
+      <h3 className='text-[32px] md:text-[40px]'>{value}</h3>
+      <div className='text-lg md:text-[22px]'>{description}</div>
     </div>
   );
 }

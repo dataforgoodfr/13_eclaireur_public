@@ -51,7 +51,6 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
             className='rounded-full p-2 -indent-[1100px] hover:bg-primary/10'
           >
             <Menu className='container !h-6 !w-6 text-primary' />
-            Menu
           </Button>
         </DropdownMenuTrigger>
 
