@@ -13,6 +13,7 @@ import {
 } from '#components/ui/dropdown-menu';
 import { type Scope, useComparisonScope } from '#hooks/useTabState';
 import { getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
+import { hasRealComparisonData } from '#utils/placeholderDataGenerators';
 import type { CommunityType } from '#utils/types';
 import { getMonetaryUnit } from '#utils/utils';
 import { useQuery } from '@tanstack/react-query';
@@ -131,17 +132,25 @@ const ChartWithLegend = ({
   siren,
   theme,
   isMobile,
+  hasRealData,
 }: {
   data: ComparisonData[];
   isLoading: boolean;
   siren: string;
   theme: ComparisonTheme;
   isMobile: boolean;
+  hasRealData: boolean;
 }) => {
   // For mobile, use the mobile-optimized chart (includes legend)
   if (isMobile) {
     return (
-      <MobileComparisonChart data={data} dataLoading={isLoading} siren={siren} theme={theme} />
+      <MobileComparisonChart
+        data={data}
+        dataLoading={isLoading}
+        siren={siren}
+        theme={theme}
+        hasRealData={hasRealData}
+      />
     );
   }
 
@@ -152,7 +161,13 @@ const ChartWithLegend = ({
 
   return (
     <>
-      <ComparisonChart data={data} dataLoading={isLoading} siren={siren} theme={theme} />
+      <ComparisonChart
+        data={data}
+        dataLoading={isLoading}
+        siren={siren}
+        theme={theme}
+        hasRealData={hasRealData}
+      />
 
       <div className='rounded-lg bg-white p-4'>
         <div className='flex flex-col items-center gap-2'>
@@ -252,7 +267,10 @@ export default function ComparisonContainer({
     }
   };
 
-  const title = `Comparaison avec la moyenne ${selectedScope.toLowerCase()}`;
+  const title = `Comparaison avec la moyenne ${selectedScope.toLowerCase()}e`;
+
+  // Check if we have real data (not all missing)
+  const dataHasRealValues = hasRealComparisonData(data);
 
   return (
     <>
@@ -292,13 +310,14 @@ export default function ComparisonContainer({
             siren={siren}
             theme={theme}
             isMobile={isMobile}
+            hasRealData={dataHasRealValues}
           />
         )}
 
         {/* Loading overlay when data is being fetched */}
         <LoadingOverlay
           isVisible={(isLoading || isFetching) && !isError}
-          color={theme.primaryColor}
+          color={theme.secondaryColor}
           opacity='medium'
         />
       </div>

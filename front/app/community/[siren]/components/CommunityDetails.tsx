@@ -6,9 +6,12 @@ type CommunityDetailsProps = {
   community: Community;
   compare?: boolean;
   left?: boolean;
+  budgetTotal?: number | null;
 };
 
-export function CommunityDetails({ community, compare, left }: CommunityDetailsProps) {
+export function CommunityDetails({ community, compare, left, budgetTotal }: CommunityDetailsProps) {
+  const budgetEnMillions =
+    typeof budgetTotal === 'number' ? Math.round(budgetTotal / 1_000_000) : null;
   return (
     <>
       {/* Info blocks */}
@@ -20,9 +23,9 @@ export function CommunityDetails({ community, compare, left }: CommunityDetailsP
           bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-yellow-100'}
         />
         <InfoBlock
-          label='Superficie'
-          value={formatNumberInteger(community.superficie_ha || 0)}
-          unit='hectares'
+          label='Budget total'
+          value={budgetEnMillions !== null ? formatNumberInteger(budgetEnMillions) : '—'}
+          unit='M€'
           bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-lime-100'}
         />
         <InfoBlock

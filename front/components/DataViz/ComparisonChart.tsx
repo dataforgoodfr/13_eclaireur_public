@@ -1,11 +1,17 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { ActionButton } from '#components/ui/action-button';
+import { InterpellerButton } from '#components/ui/interpeller-button';
 import { formatCompactPrice, formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
-import { MessageSquare } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 export type ComparisonData = {
   year: string;
@@ -13,6 +19,8 @@ export type ComparisonData = {
   communityLabel: string;
   regional: number;
   regionalLabel: string;
+  communityMissing?: boolean;
+  regionalMissing?: boolean;
 };
 
 export type ComparisonTheme = {
@@ -26,6 +34,7 @@ export type ComparisonChartProps = {
   dataLoading: boolean;
   siren?: string;
   theme: ComparisonTheme;
+  hasRealData?: boolean;
 };
 
 // Custom shape for community bars
@@ -158,7 +167,7 @@ const CustomTooltip = ({
                         height='6'
                         patternTransform='rotate(45)'
                       >
-                        <rect width='2' height='6' fill={theme.primaryColor} />
+                        <rect width='2' height='6' fill={theme.secondaryColor} />
                         <rect x='2' width='4' height='6' fill='white' />
                       </pattern>
                     </defs>
@@ -174,12 +183,12 @@ const CustomTooltip = ({
                 ) : (
                   <div
                     className='h-4 w-4 flex-shrink-0 rounded'
-                    style={{ backgroundColor: theme.primaryColor }}
+                    style={{ backgroundColor: theme.secondaryColor }}
                   />
                 )}
                 <div className='flex-1'>
                   <p className='text-sm text-gray-700'>{entry.name}</p>
-                  <p className='text-base font-bold' style={{ color: theme.primaryColor }}>
+                  <p className='text-base font-bold' style={{ color: theme.secondaryColor }}>
                     {formatCompactPrice(entry.value)}
                   </p>
                 </div>
@@ -193,76 +202,26 @@ const CustomTooltip = ({
   return null;
 };
 
-// Custom bar label renderer factory
-const createCustomBarLabel = (formatValue: (value: number) => string, theme: ComparisonTheme) => {
-  const CustomBarLabel = (props: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    value: number;
-    index?: number;
-    payload?: { communityMissing?: boolean; regionalMissing?: boolean };
-  }) => {
-    const { x, y, width, height, value, payload } = props;
-
-    // Check if this bar represents missing data
-    const isMissing = payload?.communityMissing || payload?.regionalMissing;
-
-    if (isMissing) {
-      // Show "Aucune donnée" centered in the bar
-      return (
-        <text
-          x={x + width / 2}
-          y={y + height / 2}
-          fill={theme.primaryColor}
-          textAnchor='middle'
-          fontSize='14'
-          fontWeight='600'
-          fontFamily='var(--font-kanit), system-ui, sans-serif'
-          dominantBaseline='middle'
-        >
-          Aucune donnée
-        </text>
-      );
-    }
-
-    return (
-      <text
-        x={x + width / 2}
-        y={y - 8}
-        fill={theme.primaryColor}
-        textAnchor='middle'
-        fontSize='24'
-        fontWeight='700'
-        fontFamily='var(--font-kanit), system-ui, sans-serif'
-        offset={10}
-      >
-        {formatValue(value)}
-      </text>
-    );
-  };
-
-  CustomBarLabel.displayName = 'CustomBarLabel';
-  return CustomBarLabel;
-};
-
 // Loading overlay component
 const LoadingOverlay = ({ theme }: { theme: ComparisonTheme }) => (
   <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
-    <div className='flex items-center gap-2' style={{ color: theme.primaryColor }}>
+    <div className='flex items-center gap-2' style={{ color: theme.secondaryColor }}>
       <div
         className='h-5 w-5 animate-spin rounded-full border-2 border-t-transparent'
-        style={{ borderColor: theme.primaryColor }}
+        style={{ borderColor: theme.secondaryColor }}
       />
       <span>Mise à jour des données...</span>
     </div>
   </div>
 );
 
-export default function ComparisonChart({ data, dataLoading, siren, theme }: ComparisonChartProps) {
-  const router = useRouter();
-
+export default function ComparisonChart({
+  data,
+  dataLoading,
+  siren,
+  theme,
+  hasRealData = true,
+}: ComparisonChartProps) {
   // Calculate max value for proper Y-axis scaling
   const allValues = data.flatMap((d) => [d.community, d.regional]);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 0;
@@ -276,44 +235,25 @@ export default function ComparisonChart({ data, dataLoading, siren, theme }: Com
   // Add padding to max value to prevent bars from touching the top
   const yAxisMax = Math.round(maxValue * 1.15);
 
-  // Use a minimal value to prevent visual overlapping/crossing
-  // This creates better visual separation between real and missing data bars
-  // Use 2% of max value, or at least 100, to ensure missing data bars are always smaller
-  const minVisualValue = maxValue > 0 ? Math.max(maxValue * 0.02, 100) : 100;
-  const avgValue = minVisualValue; // Minimal value for "Aucune donnée"
+  // Use half of the largest bar height for missing data (matching Evolution charts)
+  // This follows the requirement: "taille = moitié du plus grande barre"
+  const avgValue = maxValue > 0 ? maxValue / 2 : 100;
 
-  // Check if any data is missing
-  const hasNoData = data.some((item) => item.community === 0 || item.regional === 0);
-
-  // Transform data to replace 0 values with average
+  // Transform data to replace missing values with average (half of max bar)
   const transformedData = data.map((item) => ({
     ...item,
-    community: item.community === 0 ? avgValue : item.community,
-    regional: item.regional === 0 ? avgValue : item.regional,
-    communityMissing: item.community === 0,
-    regionalMissing: item.regional === 0,
+    community: item.communityMissing ? avgValue : item.community,
+    regional: item.regionalMissing ? avgValue : item.regional,
   }));
-
-  const handleInterpellerClick = () => {
-    if (siren) {
-      router.push(`/interpeller/${siren}/step1`);
-    }
-  };
 
   return (
     <div className='relative'>
       {dataLoading && <LoadingOverlay theme={theme} />}
 
-      {/* Interpeller button when there's no data */}
-      {hasNoData && siren && (
-        <div className='absolute right-4 top-4 z-10'>
-          <ActionButton
-            onClick={handleInterpellerClick}
-            icon={<MessageSquare size={20} />}
-            variant='default'
-          >
-            Interpeller
-          </ActionButton>
+      {/* Gray pulse indicator when showing placeholder data */}
+      {!hasRealData && (
+        <div className='absolute right-2 top-2 z-10'>
+          <div className='h-2 w-2 animate-pulse rounded-full bg-gray-400' />
         </div>
       )}
 
@@ -337,14 +277,86 @@ export default function ComparisonChart({ data, dataLoading, siren, theme }: Com
             dataKey='community'
             fill={theme.primaryColor}
             name={data.length > 0 ? data[0].communityLabel : 'Budget de collectivité'}
-            label={createCustomBarLabel(formatValue, theme)}
+            label={(props) => {
+              const entry = transformedData[props.index];
+              // Show value when community data is OK (not missing)
+              if (!entry?.communityMissing) {
+                return (
+                  <text
+                    x={props.x + props.width / 2}
+                    y={props.y - 8}
+                    fill={theme.secondaryColor}
+                    textAnchor='middle'
+                    fontSize='24'
+                    fontWeight='700'
+                    fontFamily='var(--font-kanit), system-ui, sans-serif'
+                  >
+                    {formatValue(entry.community)}
+                  </text>
+                );
+              }
+              // Show Interpeller button when any data is missing for this year
+              if ((entry?.communityMissing || entry?.regionalMissing) && siren && hasRealData) {
+                return (
+                  <g>
+                    <foreignObject
+                      x={props.x + props.width / 2 - 30}
+                      y={props.y - 40}
+                      width='60'
+                      height='120'
+                      style={{ pointerEvents: 'auto', zIndex: 1000 }}
+                    >
+                      <div className='pointer-events-auto flex flex-col items-center gap-2'>
+                        <InterpellerButton className='h-8 w-10' siren={siren} />
+                      </div>
+                    </foreignObject>
+                  </g>
+                );
+              }
+              return <g />;
+            }}
             shape={(props: unknown) => CommunityBar(props, theme)}
-          />
+          >
+            {hasRealData && (
+              <LabelList
+                dataKey='communityMissing'
+                position='inside'
+                formatter={(communityMissing: boolean) =>
+                  communityMissing ? 'Aucune donnée publiée' : ''
+                }
+                fill={theme.secondaryColor}
+                strokeWidth={0}
+                fontSize='16'
+                fontWeight='600'
+                fontFamily='var(--font-kanit), system-ui, sans-serif'
+                offset={20}
+              />
+            )}
+          </Bar>
           <Bar
             dataKey='regional'
-            fill={theme.primaryColor}
+            fill={theme.secondaryColor}
             name={data.length > 0 ? data[0].regionalLabel : 'Moyenne régionale'}
-            label={createCustomBarLabel(formatValue, theme)}
+            label={(props) => {
+              const entry = transformedData[props.index];
+              // Only show value for non-missing regional data
+              if (!entry?.regionalMissing) {
+                return (
+                  <text
+                    x={props.x + props.width / 2}
+                    y={props.y - 8}
+                    fill={theme.secondaryColor}
+                    textAnchor='middle'
+                    fontSize='24'
+                    fontWeight='700'
+                    fontFamily='var(--font-kanit), system-ui, sans-serif'
+                  >
+                    {formatValue(entry.regional)}
+                  </text>
+                );
+              }
+              return <g />;
+            }}
             shape={(props: unknown) => StripedBar(props, theme)}
           />
         </BarChart>
