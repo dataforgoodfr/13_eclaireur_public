@@ -60,7 +60,16 @@ function InfoBlock({
   return (
     <div className={`rounded-none rounded-br-2xl rounded-tl-2xl p-3 text-primary ${bgColor}`}>
       <div className='flex flex-row items-center justify-between gap-2 sm:flex-col sm:items-start sm:justify-start sm:gap-1'>
-        <p className='text-base font-medium'>{label}</p>
+        <p className='text-base font-medium'>
+          {label === 'Budget total' && unit === 'M€' ? (
+            <>
+              <span className='sm:hidden'>Budget total (M€)</span>
+              <span className='hidden sm:inline'>{label}</span>
+            </>
+          ) : (
+            label
+          )}
+        </p>
         <h4 className='text-lg font-bold'>
           <SlidingNumber
             number={showRealValue ? numericValue : 0}
