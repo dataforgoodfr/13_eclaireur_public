@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/fetchCommunityBudgetTotal';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 import { ComparisonType } from './components/ComparisonType';
@@ -41,7 +42,12 @@ export default async function Page({ params }: PageProps) {
   const siren2 = (await params).comparedSiren;
 
   // Parallel data fetching pour optimiser les performances
-  const [community1, community2] = await Promise.all([getCommunity(siren), getCommunity(siren2)]);
+  const [community1, community2, budgetTotal1, budgetTotal2] = await Promise.all([
+    getCommunity(siren),
+    getCommunity(siren2),
+    fetchCommunityBudgetTotal(siren),
+    fetchCommunityBudgetTotal(siren2),
+  ]);
 
   return (
     <>
@@ -49,10 +55,15 @@ export default async function Page({ params }: PageProps) {
       <div className='mx-auto mb-6 mt-4 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 px-4 lg:mb-16 lg:mt-16 lg:gap-y-16'>
         <ComparisonModificationCard currentCommunity={community1} comparedWith={community2} />
 
-        <HeaderComparison community1={community1} community2={community2} />
+        <HeaderComparison
+          community1={community1}
+          community2={community2}
+          budgetTotal1={budgetTotal1}
+          budgetTotal2={budgetTotal2}
+        />
 
         {/* Sections dynamiques avec Suspense pour streaming */}
-        <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
+        <TransparencyComparison community1={community1} community2={community2} />
 
         <MPSubvComparison
           community1={community1}

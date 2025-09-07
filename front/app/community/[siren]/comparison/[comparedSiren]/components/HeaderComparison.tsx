@@ -12,9 +12,16 @@ import { SideBySideComparison } from './shared/SideBySideComparison';
 type HeaderComparisonProps = {
   community1: Community;
   community2: Community;
+  budgetTotal1?: number | null;
+  budgetTotal2?: number | null;
 };
 
-export function HeaderComparison({ community1, community2 }: HeaderComparisonProps) {
+export function HeaderComparison({
+  community1,
+  community2,
+  budgetTotal1,
+  budgetTotal2,
+}: HeaderComparisonProps) {
   const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
   return (
@@ -27,14 +34,23 @@ export function HeaderComparison({ community1, community2 }: HeaderComparisonPro
       {/* Desktop layout */}
       <div className='hidden md:block'>
         <SideBySideComparison
-          leftChild={<CommunityDetails community={community1} compare left />}
-          rightChild={<CommunityDetails community={community2} compare />}
+          leftChild={
+            <CommunityDetails community={community1} compare left budgetTotal={budgetTotal1} />
+          }
+          rightChild={
+            <CommunityDetails community={community2} compare budgetTotal={budgetTotal2} />
+          }
         />
       </div>
 
       {/* Mobile layout - unified card */}
       <div className='my-6 md:hidden'>
-        <MobileHeaderCard community1={community1} community2={community2} />
+        <MobileHeaderCard
+          community1={community1}
+          community2={community2}
+          budgetTotal1={budgetTotal1}
+          budgetTotal2={budgetTotal2}
+        />
       </div>
     </>
   );
@@ -43,9 +59,16 @@ export function HeaderComparison({ community1, community2 }: HeaderComparisonPro
 type MobileHeaderCardProps = {
   community1: Community;
   community2: Community;
+  budgetTotal1?: number | null;
+  budgetTotal2?: number | null;
 };
 
-function MobileHeaderCard({ community1, community2 }: MobileHeaderCardProps) {
+function MobileHeaderCard({
+  community1,
+  community2,
+  budgetTotal1,
+  budgetTotal2,
+}: MobileHeaderCardProps) {
   const renderInfoBlock = (
     label: string,
     value1: string,
@@ -85,12 +108,12 @@ function MobileHeaderCard({ community1, community2 }: MobileHeaderCardProps) {
         )}
       </div>
 
-      {/* Section Superficie */}
+      {/* Section Budget Total */}
       <div className='mb-4 border-b pb-4'>
         {renderInfoBlock(
-          'Superficie',
-          formatNumberInteger(community1.superficie_ha || 0),
-          formatNumberInteger(community2.superficie_ha || 0),
+          'Budget total (M€)',
+          budgetTotal1 ? formatNumberInteger(Math.round(budgetTotal1 / 1_000_000)) : '—',
+          budgetTotal2 ? formatNumberInteger(Math.round(budgetTotal2 / 1_000_000)) : '—',
           'bg-brand-3',
           'bg-primary-light',
         )}
