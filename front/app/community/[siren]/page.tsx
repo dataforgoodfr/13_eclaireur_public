@@ -47,7 +47,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
   const community = await getCommunity(siren);
-  const budgetTotal = await fetchCommunityBudgetTotal(siren);  
+  const budgetTotal = await fetchCommunityBudgetTotal(siren);
   const similarCommunityList = await fetchSimilarCommunityList(siren);
 
   // TODO - get and add the last update date
