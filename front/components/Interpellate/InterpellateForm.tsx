@@ -80,7 +80,6 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
 
   const onSubmit = async (data: FormSchema) => {
     const response = await postInterpellate(data);
-    console.log(await response);
     if (!response.ok) {
       alert('Submitting form failed!');
       return;
