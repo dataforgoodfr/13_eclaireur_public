@@ -32,7 +32,7 @@ type MobileChartProps = {
 
 // Loading overlay component
 const LoadingOverlay = () => (
-  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
+  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white'>
     <div className='flex items-center gap-2 text-primary'>
       <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
       <span>Mise à jour des données...</span>

@@ -39,9 +39,9 @@ class MarchesPublicsEnricher(BaseEnricher):
         marches, cpv_labels, sirene, *_ = inputs
 
         marches_pd = (
-            marches.to_pandas()
-            .pipe(cls.set_unique_mp_id)
+            marches.pipe(cls.set_unique_mp_id_hash)
             .pipe(cls.set_unique_mp_titulaire_id)
+            .to_pandas()
             .drop(columns=["id", "uid", "uuid"])
             .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
@@ -129,18 +129,28 @@ class MarchesPublicsEnricher(BaseEnricher):
             return
 
     @staticmethod
-    def set_unique_mp_id(marches: pd.DataFrame) -> pd.DataFrame:
+    def set_unique_mp_id_hash(marches: pd.DataFrame) -> pd.DataFrame:
         """
         Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
 
-        Le but de cette fonction est de créer un id unique par MP, pour ensuite créer un id plus propre par MP.
+        Le but de cette fonction est de créer un id unique par MP.
         """
-        marches["id_mp"] = (
-            marches[["id", "uid", "uuid", "dateNotification", "codeCPV"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
+
+        return marches.with_columns(
+            pl.concat_str(
+                [
+                    pl.col("id").cast(str).fill_null("None"),
+                    pl.col("uid").cast(str).fill_null("None"),
+                    pl.col("uuid").cast(str).fill_null("None"),
+                    pl.col("acheteur_id").cast(str).fill_null("None"),
+                    pl.col("objet").cast(str).fill_null("None"),
+                    pl.col("dateNotification").cast(str).fill_null("None"),
+                    pl.col("codeCPV").cast(str).fill_null("None"),
+                ]
+            )
+            .hash()
+            .alias("id_mp")
         )
-        return marches
 
     @staticmethod
     def set_unique_mp_titulaire_id(marches: pd.DataFrame) -> pd.DataFrame:
@@ -149,12 +159,15 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         Le but de cette fonction est de créer un id unique par MP et titulaire, pour ensuite dédoublonner par ce nouvel id.
         """
-        marches["id_mp_titulaire"] = (
-            marches[["id_mp", "titulaire_id"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
+        return marches.with_columns(
+            pl.concat_str(
+                [
+                    pl.col("id_mp").cast(str).fill_null("None"),
+                    pl.col("titulaire_id").cast(str).fill_null("None"),
+                ],
+                separator="-",
+            ).alias("id_mp_titulaire")
         )
-        return marches
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
