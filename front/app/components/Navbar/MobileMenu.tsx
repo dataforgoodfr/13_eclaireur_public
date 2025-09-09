@@ -4,10 +4,8 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import { Button } from '#components/ui/button';
-import SearchBar from '@/components/SearchBar/SearchBar';
 import { Accordion } from '@radix-ui/react-accordion';
 import {
   DropdownMenu,
@@ -27,19 +25,11 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: MobileMenuProps) {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleMenuClick = () => {
     setIsOpen(false);
   };
-
-  function navigateToCommunityPage({ siren }: { siren: string }) {
-    if (siren) {
-      router.push(`/community/${siren}`);
-      setIsOpen(false); // Close menu after search selection
-    }
-  }
 
   return (
     <div className='lg:hidden'>
@@ -60,9 +50,6 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
           align='end'
           side='bottom'
         >
-          {/* Search Bar with onSelect handler that closes menu */}
-          <SearchBar className='relative mb-6' onSelect={navigateToCommunityPage} />
-
           {/* Interpeller Button */}
           <div className='mb-6'>
             <Button
