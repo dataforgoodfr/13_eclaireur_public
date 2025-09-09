@@ -21,7 +21,7 @@ export function SearchButton({ className }: SearchButtonProps) {
         <DialogTrigger asChild>
           <ActionButton variant='outline' icon={<Search className='h-6 w-6' />} />
         </DialogTrigger>
-        <DialogContent className='rounded-3xl sm:max-w-md [&>button]:left-4 [&>button]:right-auto [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-bl-none [&>button]:rounded-br-lg [&>button]:rounded-tl-lg [&>button]:rounded-tr-none [&>button]:border [&>button]:border-primary [&>button]:bg-white [&>button]:text-primary [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground'>
+        <DialogContent className='w-[95%] rounded-3xl sm:max-w-md [&>button]:left-4 [&>button]:right-auto [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-bl-none [&>button]:rounded-br-lg [&>button]:rounded-tl-lg [&>button]:rounded-tr-none [&>button]:border [&>button]:border-primary [&>button]:bg-white [&>button]:text-primary [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground'>
           <DialogTitle className='sr-only'>Rechercher une collectivité</DialogTitle>
           <SearchModal onClose={() => setSearchModalOpen(false)} />
         </DialogContent>
