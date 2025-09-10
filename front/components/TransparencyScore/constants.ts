@@ -6,7 +6,6 @@ export enum TransparencyScore {
   E = 'E',
   UNKNOWN = 'UNKNOWN',
 }
-
 export const SCORE_TO_ADJECTIF = {
   [TransparencyScore.A]: 'Exemplaire',
   [TransparencyScore.B]: 'Transparent',
@@ -15,7 +14,6 @@ export const SCORE_TO_ADJECTIF = {
   [TransparencyScore.E]: 'Très insuffisant',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
-
 export const SCORE_DESCRIPTION = {
   [TransparencyScore.A]:
     'La structure est très transparente et expose de manière exhaustive ses données.',
@@ -26,7 +24,6 @@ export const SCORE_DESCRIPTION = {
   [TransparencyScore.E]: 'La structure est opaque et ne rend pas ses données publiques.',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
-
 export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
   [TransparencyScore.A]: 'bg-score-A',
   [TransparencyScore.B]: 'bg-score-B',
@@ -35,5 +32,12 @@ export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
   [TransparencyScore.E]: 'bg-score-E',
   [TransparencyScore.UNKNOWN]: 'bg-muted-light',
 };
-
+export const SCORE_INDICE_COLOR: Record<TransparencyScore, string> = {
+  [TransparencyScore.A]: 'bg-scoreIndice-A',
+  [TransparencyScore.B]: 'bg-scoreIndice-B',
+  [TransparencyScore.C]: 'bg-scoreIndice-C',
+  [TransparencyScore.D]: 'bg-scoreIndice-D',
+  [TransparencyScore.E]: 'bg-scoreIndice-E',
+  [TransparencyScore.UNKNOWN]: 'bg-muted-light',
+};
 export const SCORE_NON_DISPONIBLE = 'Non disponible';
