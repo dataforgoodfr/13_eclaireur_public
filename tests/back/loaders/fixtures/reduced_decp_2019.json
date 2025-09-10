@@ -266,7 +266,7 @@
       "countTitulaires": 1,
       "acheteur_id": "26370247400010",
       "source": "e-marchespublics",
-      "lieuExecution": "{\"code\": \"37250\", \"typeCode\": \"Code postal\", \"nom\": \"VEIGNE\"}",
+      "lieuExecution": "{\"code\": \"37250\", \"typeCode\": \"Code arrondissement\", \"nom\": \"VEIGNE\"}",
       "uid": "263702474000102020001CCAS00",
       "_type": "Marché",
       "lieuExecution.code": "test",
