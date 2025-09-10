@@ -1,31 +1,42 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 type MessageToContactsProps = {
-  from?: string;
-  to?: string;
+  from: string;
+  to: string;
   fonction?: string;
-  communityName?: string;
+  communityName: string;
+  communityType: string;
 };
 export default function MessageToContacts({
   from,
   to,
   fonction,
   communityName,
+  communityType,
 }: MessageToContactsProps) {
+  const communityTitle = communityType === 'Commune' ? 'Maire' : 'Président.e';
   return (
     <>
-      <p>
-        {to && <>À l’attention de {to}</>}
+      <p className='mb-4'>
+        {/* {to && <>À l’attention de {to}</>} */}
+        {communityName && communityTitle && (
+          <>
+            À l’attention de M. ou Mme le ou la {communityTitle} de {communityName}
+          </>
+        )}
         {fonction && (
           <>
             <br />
             {fonction}
           </>
         )}
-        {communityName && (
+        {/* {communityName && (
           <>
             <br />
             {communityName}
           </>
-        )}
+        )} */}
       </p>
       <p>Madame, Monsieur,</p>
       <p>
