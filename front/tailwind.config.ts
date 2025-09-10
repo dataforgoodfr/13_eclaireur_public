@@ -119,6 +119,13 @@ export default {
           D: '#FFA466',
           E: '#FF8573',
         },
+        scoreIndice: {
+          A: '#00C882',
+          B: '#7FF083',
+          C: '#F4D93E',
+          D: '#FFB020',
+          E: '#FB735F',
+        },
         'score-transparence': {
           1: '#00C882',
           2: '#7FF083',
