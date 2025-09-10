@@ -32,6 +32,8 @@ import { type FormSchema, InterpellateFormSchema } from './types';
 export type InterpellateFormProps = {
   missingData: unknown;
   communityParam: string;
+  communityType: string;
+  communityName: string;
 };
 function getRecipientName(contacts: CommunityContact[]) {
   if (contacts.length === 0) {
@@ -41,7 +43,12 @@ function getRecipientName(contacts: CommunityContact[]) {
   return contacts[0].nom;
 }
 
-export default function InterpellateForm({ missingData, communityParam }: InterpellateFormProps) {
+export default function InterpellateForm({
+  missingData,
+  communityParam,
+  communityType,
+  communityName,
+}: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const router = useRouter();
@@ -61,7 +68,14 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
 
   const fullName = `${firstName} ${lastName}`;
   // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
-  const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
+  const formMessage = renderToString(
+    <MessageToContacts
+      from={fullName}
+      to={recipientName}
+      communityType={communityType}
+      communityName={communityName}
+    />,
+  );
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -228,7 +242,12 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
           <div className='simulatedTextArea'>
             <div className='hidden'>Votre message</div>
             <div id='simulatedTextAreaContent' className='cursor-not-allowed text-lg text-primary'>
-              <MessageToContacts from={fullName} to={recipientName} />
+              <MessageToContacts
+                from={fullName}
+                to={recipientName}
+                communityName={communityName}
+                communityType={communityType}
+              />
             </div>
           </div>
         </fieldset>
