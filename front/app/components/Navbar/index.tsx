@@ -113,15 +113,15 @@ export default function Navbar() {
 
       <div className='fixed top-0 z-50 flex w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
         {/* Mobile Navbar */}
-        <div className='flex h-12 w-full items-center justify-between lg:hidden'>
+        <div className='flex h-16 w-full items-center justify-between lg:hidden'>
           {/* Left: Icon logo */}
           <Link href='/'>
             <Image
-              src='/eclaireur/logo-navmenu-desktop.png'
+              src='/eclaireur/logo-navmenu-desktop.svg'
               alt='Éclaireur Icon'
-              width={110}
-              height={40}
-              className='mb-[9px] h-[40px] w-auto'
+              width={100}
+              height={100}
+              className='mb-[5px] h-[40px] w-auto lg:h-[50px] lg:w-[142px]'
               priority
             />
           </Link>
@@ -141,7 +141,7 @@ export default function Navbar() {
           {/* Desktop Logo */}
           <Link href='/'>
             <Image
-              src='/eclaireur/logo-navmenu-desktop.png'
+              src='/eclaireur/logo-navmenu-desktop.svg'
               priority
               alt='Éclaireur Public Logo'
               className='mb-[3px] h-[50px] w-[142px]'
