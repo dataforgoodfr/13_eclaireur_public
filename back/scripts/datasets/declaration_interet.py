@@ -3,6 +3,7 @@ import urllib.request
 from datetime import datetime
 from itertools import chain
 
+import chardet
 import pandas as pd
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -74,13 +75,28 @@ class DeclaInteretWorkflow(BaseDataset):
     def _format_to_parquet(self):
         if self.output_filename.exists():
             return
-        with self.input_filename.open(encoding="utf-8") as f:
-            soup = BeautifulSoup(f.read(), features="xml")
 
-        declarations = soup.find_all("declaration")
-        df = pd.DataFrame.from_records(
-            chain(*[self._parse_declaration(declaration) for declaration in tqdm(declarations)])
-        )
+        # Try to detect the encoding
+        with open(self.input_filename, "rb") as f:
+            result = chardet.detect(f.read(1024))
+
+        encoding = result["encoding"]
+        if encoding is None:
+            LOGGER.error(f"Unable to read file {self.input_filename}")
+            df = pd.DataFrame()
+        else:
+            with self.input_filename.open(encoding=encoding) as f:
+                soup = BeautifulSoup(f.read(), features="xml")
+
+            declarations = soup.find_all("declaration")
+            df = pd.DataFrame.from_records(
+                chain(
+                    *[
+                        self._parse_declaration(declaration)
+                        for declaration in tqdm(declarations)
+                    ]
+                )
+            )
         df.to_parquet(self.output_filename)
 
     @staticmethod
