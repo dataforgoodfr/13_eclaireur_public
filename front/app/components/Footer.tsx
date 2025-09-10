@@ -38,7 +38,7 @@ const FOOTER_DATA = {
       title: 'Comprendre',
       links: [
         { href: '/qui-sommes-nous', label: 'Qui sommes‑nous' },
-        { href: '/project', label: 'Le projet' },
+        { href: '/le-projet', label: 'Le projet' },
         { href: '/interpeller', label: 'Interpeller' },
       ],
     },
