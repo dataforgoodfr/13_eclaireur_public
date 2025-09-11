@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main>
-      <div className="flex h-[300px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat">
-        <h1 className='mx-auto max-w-[1128px]'>
+      <div className="flex h-[200px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat lg:h-[300px]">
+        <h1 className='mx-auto max-w-[1128px] p-4'>
           La méthodologie ou <br /> les dessous de l'outil Éclaireur Public
         </h1>
       </div>
