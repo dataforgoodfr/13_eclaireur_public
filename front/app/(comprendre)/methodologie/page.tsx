@@ -26,7 +26,7 @@ export default function Page() {
           Eclaireur Public a vocation à éclairer les citoyens sur les données publiques, et
           particulièrement sur les subventions et marchés publics des différentes strates composant
           les collectivités territoriales, à savoir communes, intercommunalités,
-          agglomérations/métropoles, départements et régions.
+          agglomérations&nbsp;/ métropoles, départements et régions.
         </h4>
         <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
           <div className='space-y-6'>
@@ -50,11 +50,19 @@ export default function Page() {
               l'adresse suivante :{' '}
               <Link
                 href={'https://github.com/m4xim1nus/LocalOuvert'}
-                className='font-medium hover:underline'
+                className='hidden font-medium hover:underline md:block'
                 target='_blank'
                 rel='noopener noreferrer'
               >
                 https://github.com/m4xim1nus/LocalOuvert
+              </Link>
+              <Link
+                href={'https://github.com/m4xim1nus/LocalOuvert'}
+                className='block font-medium hover:underline md:hidden'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                github.com/m4xim1nus
               </Link>
             </p>
             <p>
@@ -143,7 +151,7 @@ export default function Page() {
           La grille ci-dessous établit les notes de transparence, de A à E. Plus la collectivité
           remplit les critères, meilleure est sa note.
         </p>
-        <p className='mb-2 mt-4 text-sm font-bold'>Barème de transparence des marchés publics</p>
+        <p className='my-4 mb-2 text-sm font-bold'>Barème de transparence des marchés publics</p>
         <div className='grid grid-cols-5 text-2xl font-bold'>
           <div className='flex h-[68px] flex-col justify-center rounded-l-md bg-scoreIndice-A text-center'>
             A
@@ -161,24 +169,49 @@ export default function Page() {
             E
           </div>
         </div>
-        <div className='mt-4 grid grid-cols-5 gap-6 text-sm font-medium'>
-          <div className=''>
-            Données communiquées, avec des montants supérieurs ou inférieurs à 40 000 euros, les 10
-            points de données sont alimentés et la date de publication est en moyenne inférieure à 2
-            mois à compter de la date de notification.
+
+        <div className='mt-6 flex flex-col gap-6 text-sm font-medium md:grid md:grid-cols-5'>
+          <div>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-A px-4 py-2 text-center font-semibold md:hidden'>
+              A
+            </div>
+            <p>
+              Données communiquées, avec des montants supérieurs ou inférieurs à 40 000 euros, les
+              10 points de données sont alimentés et la date de publication est en moyenne
+              inférieure à 2 mois à compter de la date de notification.
+            </p>
           </div>
-          <div className=''>
-            Données communiquées avec des montants supérieurs ou obligatoires à 40 000 et les 10
-            données ci-dessous sont alimentées : code CPV, montant, date de notification, lieu
-            exécution, lieu d’exécution nom, forme de prix, objet, nature, durée en mois, procédure,
-            titulaire.
+          <div>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
+              B
+            </div>
+            <p>
+              Données communiquées avec des montants supérieurs ou obligatoires à 40 000 et les 10
+              données ci-dessous sont alimentées : code CPV, montant, date de notification, lieu
+              exécution, lieu d’exécution nom, forme de prix, objet, nature, durée en mois,
+              procédure, titulaire.
+            </p>
           </div>
-          <div className=''>
-            Communiquées avec des montants supérieurs ou inférieurs à 40 000 euros.
+          <div>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
+              C
+            </div>
+            <p>Communiquées avec des montants supérieurs ou inférieurs à 40 000 euros.</p>
           </div>
-          <div className=''>Données communiquées avec des montants supérieurs à 40 000.</div>
-          <div className=''>Données non communiquées.</div>
+          <div>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-D px-4 py-2 text-center font-semibold md:hidden'>
+              D
+            </div>
+            <p>Données communiquées avec des montants supérieurs à 40 000</p>
+          </div>
+          <div className='flex items-center'>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
+              E
+            </div>
+            <p>Données non communiquées.</p>
+          </div>
         </div>
+
         <h3 className='mb-4 mt-10'>Calcul de l’indice de transparence des subventions</h3>
         <p>
           Pour une année N, l'indice de transparence des subventions d'une collectivité se calcule
@@ -213,18 +246,44 @@ export default function Page() {
             E
           </div>
         </div>
-        <div className='mt-4 grid grid-cols-5 gap-6 text-center font-bold'>
-          <div>100% (+/- 5%)</div>
-          <div>De 75% à 95%</div>
-          <div>De 50% à 75%</div>
-          <div>De 25% à 50%</div>
-          <div className='flex flex-col space-y-2 px-2'>
-            <span>Moins de 25% ou données inexploitables</span>
-            <span className='font-normal'>
-              Si plus de 105% → <span className='font-bold'>E</span>
-            </span>
+        <div className='mt-6 flex flex-col gap-6 text-sm font-semibold md:grid md:grid-cols-5'>
+          <div className='flex items-center'>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-A px-4 py-2 text-center font-semibold md:hidden'>
+              A
+            </div>
+            <div>100% (+/- 5%)</div>
+          </div>
+          <div className='flex items-center'>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
+              B
+            </div>
+            <div>De 75% à 95%</div>
+          </div>
+          <div className='flex items-center'>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
+              C
+            </div>
+            <div>De 50% à 75%</div>
+          </div>
+          <div className='flex items-center'>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-D px-4 py-2 text-center font-semibold md:hidden'>
+              D
+            </div>
+            <div>De 25% à 50%</div>
+          </div>
+          <div>
+            <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
+              E
+            </div>
+            <div className='flex flex-col space-y-2 px-2'>
+              <span>Moins de 25% ou données inexploitables</span>
+              <span className='font-normal'>
+                Si plus de 105% → <span className='font-bold'>E</span>
+              </span>
+            </div>
           </div>
         </div>
+
         <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence globale - Score Agrégé</h3>
         <p className='mb-4'>
           L'indice de transparence globale, pour une année N, est la moyenne des indice des
