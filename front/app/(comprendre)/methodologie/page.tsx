@@ -32,10 +32,11 @@ export default function Page() {
           <div className='space-y-6'>
             <p className='text-lg'>
               Pour parvenir à ces fins, Transparency International France et Anticor ont rédigé de
-              concert un document préparatoire intitulé « Eclaireur Public - Analyse de la
-              transparence des collectivités locales » définissant les objectifs généraux et un
-              cadre qui donne corps à l'objet « Eclaireur Public », site internet « permettant aux
-              visiteurs de consulter des données à jour sur sa collectivité locale ».
+              concert un document préparatoire intitulé «&nbsp;Eclaireur Public - Analyse de la
+              transparence des collectivités locales&nbsp;» définissant les objectifs généraux et un
+              cadre qui donne corps à l'objet «&nbsp;Eclaireur Public&nbsp;», site internet
+              «&nbsp;permettant aux visiteurs de consulter des données à jour sur sa collectivité
+              locale&nbsp;».
             </p>
             <p className='text-lg'>
               Avec comme objectif sous-jacent, l'accompagnement des acteurs de ces collectivités et
@@ -47,7 +48,7 @@ export default function Page() {
               Un pré-travail de défrichage des données (via un pipeline de scraping automatisé)
               avait été mis en place grâce à un script en langage Python pour récupérer les données
               spécifiquement sur data.gouv.fr. L'algorithme est disponible en open source à
-              l'adresse suivante :{' '}
+              l'adresse suivante&nbsp;:{' '}
               <Link
                 href={'https://github.com/m4xim1nus/LocalOuvert'}
                 className='hidden font-medium hover:underline md:block'
@@ -68,7 +69,7 @@ export default function Page() {
             <p>
               Décision est prise fin 2024 par TIF et Anticor de faire appel au réseau de bénévolat
               Data For Good le bien nommé pour répondre aux attentes d'un projet d'ouverture des
-              données d'envergure au service du bien publi
+              données d'envergure au service du bien public.
             </p>
             <p>
               Fin février, le projet, parmi 11 autres, est présenté aux bénévoles sur la chaîne{' '}
@@ -89,7 +90,8 @@ export default function Page() {
         <h2 className='mb-10'>La collecte des données</h2>
         <h4 className='my-10'>
           En théorie, les données sur les subventions et les marchés publics sont toutes disponibles
-          en « open data » sur le site dédié aux données censées être publiques data.gouv.fr.
+          en «&nbsp;open data&nbsp;» sur le site dédié aux données censées être publiques
+          data.gouv.fr.
         </h4>
         <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
           <div className='space-y-6'>
@@ -103,7 +105,7 @@ export default function Page() {
           <div className='space-y-6'>
             <p className='font-bold'>
               À l'initialisation du projet (en avril 2025), 31 jeux de données ont été nécessaires
-              pour mettre en place cet outil, Eclaireur Public, dont voici les principaux :
+              pour mettre en place cet outil, Eclaireur Public, dont voici les principaux&nbsp;:
             </p>
             <ul className='list-disc pl-5'>
               <li>OFGL Régions</li>
@@ -121,8 +123,8 @@ export default function Page() {
           Il est apparu évident, et nécessaire, dès le début que pour comparer les collectivités
           entre elles et pour mesurer leur degré d'ouverture des données publiques, il fallait
           construire un indice qui repose sur un certain nombre de critères objectifs. Le groupe de
-          travail « barème de transparence », en étroite collaboration avec TIF et Anticor a
-          finalement élaboré 3 indices de transparence, calqué sur une notation allant de A à E
+          travail «&nbsp;barème de transparence&nbsp;», en étroite collaboration avec TIF et Anticor
+          a finalement élaboré 3 indices de transparence, calqué sur une notation allant de A à E
           (comme le nutriscore) :{' '}
         </p>
         <ul className='list-disc pl-5'>
@@ -133,12 +135,12 @@ export default function Page() {
         <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence des subventions</h3>
         <p className='font-bold'>
           L'indice de transparence des marchés publics est établi selon la conjonction de 3 facteurs
-          principaux :
+          principaux&nbsp;:
         </p>
         <ul className='list-disc pl-5'>
-          <li>la publication de données sur les marchés inférieurs à 40000 €</li>
-          <li>la publication de données sur les marchés supérieurs à 40000 €</li>
-          <li>la publication de données sur les 10 critères suivants :</li>
+          <li>la publication de données sur les marchés inférieurs à 40000&nbsp;€</li>
+          <li>la publication de données sur les marchés supérieurs à 40000&nbsp;€</li>
+          <li>la publication de données sur les 10 critères suivants&nbsp;:</li>
         </ul>
         <div className='my-8 flex flex-wrap gap-2'>
           {CRITERIA.map((criterion) => (
@@ -176,8 +178,8 @@ export default function Page() {
               A
             </div>
             <p>
-              Données communiquées, avec des montants supérieurs ou inférieurs à 40 000 euros, les
-              10 points de données sont alimentés et la date de publication est en moyenne
+              Données communiquées, avec des montants supérieurs ou inférieurs à 40&nbsp;000 euros,
+              les 10 points de données sont alimentés et la date de publication est en moyenne
               inférieure à 2 mois à compter de la date de notification.
             </p>
           </div>
@@ -186,8 +188,8 @@ export default function Page() {
               B
             </div>
             <p>
-              Données communiquées avec des montants supérieurs ou obligatoires à 40 000 et les 10
-              données ci-dessous sont alimentées : code CPV, montant, date de notification, lieu
+              Données communiquées avec des montants supérieurs ou obligatoires à 40&nbsp;000 et les
+              10 données ci-dessous sont alimentées : code CPV, montant, date de notification, lieu
               exécution, lieu d’exécution nom, forme de prix, objet, nature, durée en mois,
               procédure, titulaire.
             </p>
@@ -196,13 +198,13 @@ export default function Page() {
             <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
               C
             </div>
-            <p>Communiquées avec des montants supérieurs ou inférieurs à 40 000 euros.</p>
+            <p>Communiquées avec des montants supérieurs ou inférieurs à 40&nbsp;000 euros.</p>
           </div>
           <div>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-D px-4 py-2 text-center font-semibold md:hidden'>
               D
             </div>
-            <p>Données communiquées avec des montants supérieurs à 40 000</p>
+            <p>Données communiquées avec des montants supérieurs à 40&nbsp;000</p>
           </div>
           <div className='flex items-center'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
@@ -215,19 +217,19 @@ export default function Page() {
         <h3 className='mb-4 mt-10'>Calcul de l’indice de transparence des subventions</h3>
         <p>
           Pour une année N, l'indice de transparence des subventions d'une collectivité se calcule
-          comme suit : Somme des subventions détaillées divisée par somme totale des subventions
-          indiquée dans le budget du compte administratif. La grille ci-dessous établit les notes de
-          transparence, de A à E, en fonction du taux de publication, la valeur A étant la note
-          maximale avec un taux de publication de 100 %, et la valeur E la note la plus basse avec
-          un taux de publication inférieur{' '}
+          comme suit&nbsp;: Somme des subventions détaillées divisée par somme totale des
+          subventions indiquée dans le budget du compte administratif. La grille ci-dessous établit
+          les notes de transparence, de A à E, en fonction du taux de publication, la valeur A étant
+          la note maximale avec un taux de publication de 100&nbsp;%, et la valeur E la note la plus
+          basse avec un taux de publication inférieur{' '}
         </p>
         <p>
           La grille ci-dessous établit les notes de transparence, de A à E. Plus la collectivité
           remplit les critères, meilleure est sa note.
         </p>
         <p className='mb-2 mt-4 text-sm font-bold'>
-          Variable : taux de publication (en valeur) = somme Subventions Détaillées / Budget Compte
-          Administratif
+          Variable&nbsp;: taux de publication (en valeur) = somme Subventions Détaillées&nbsp;/
+          Budget Compte Administratif
         </p>
         <div className='grid grid-cols-5 text-2xl font-bold'>
           <div className='flex h-[68px] flex-col justify-center rounded-l-md bg-scoreIndice-A text-center'>
@@ -284,7 +286,9 @@ export default function Page() {
           </div>
         </div>
 
-        <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence globale - Score Agrégé</h3>
+        <h3 className='mb-4 mt-10'>
+          Calcul de l'indice de transparence globale&nbsp;- Score Agrégé
+        </h3>
         <p className='mb-4'>
           L'indice de transparence globale, pour une année N, est la moyenne des indice des
           subventions et indice des marchés publics, arrondi à l'échelon supérieur en cas de
