@@ -206,7 +206,7 @@ export default function Page() {
             </div>
             <p>Données communiquées avec des montants supérieurs à 40&nbsp;000</p>
           </div>
-          <div className='flex items-center'>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
               E
             </div>
@@ -249,35 +249,35 @@ export default function Page() {
           </div>
         </div>
         <div className='mt-6 flex flex-col gap-6 text-sm font-semibold md:grid md:grid-cols-5'>
-          <div className='flex items-center'>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-A px-4 py-2 text-center font-semibold md:hidden'>
               A
             </div>
-            <div>100% (+/- 5%)</div>
+            <div className='text-center'>100% (+/- 5%)</div>
           </div>
-          <div className='flex items-center'>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
               B
             </div>
-            <div>De 75% à 95%</div>
+            <div className='text-center'>De 75% à 95%</div>
           </div>
-          <div className='flex items-center'>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
               C
             </div>
-            <div>De 50% à 75%</div>
+            <div className='text-center'>De 50% à 75%</div>
           </div>
-          <div className='flex items-center'>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-D px-4 py-2 text-center font-semibold md:hidden'>
               D
             </div>
-            <div>De 25% à 50%</div>
+            <div className='text-center'>De 25% à 50%</div>
           </div>
-          <div>
+          <div className='flex items-center md:block'>
             <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
               E
             </div>
-            <div className='flex flex-col space-y-2 px-2'>
+            <div className='flex flex-col space-y-2 pr-4 text-center'>
               <span>Moins de 25% ou données inexploitables</span>
               <span className='font-normal'>
                 Si plus de 105% → <span className='font-bold'>E</span>
