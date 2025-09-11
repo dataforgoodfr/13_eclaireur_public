@@ -13,11 +13,11 @@ export default function Page() {
   return (
     <main>
       <div className="flex h-[300px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat">
-        <h1 className='global-margin mx-auto'>
+        <h1 className='mx-auto max-w-[1128px]'>
           La méthodologie ou <br /> les dessous de l'outil Éclaireur Public
         </h1>
       </div>
-      <div className='global-margin mx-auto my-16 rounded-3xl border border-primary-light p-10'>
+      <div className='doc-margin'>
         <h2 className='mb-10'>
           Comment réunir savoir-faire, technologies dernier cri et bonnes volontés pour la
           transparence des données publiques, revue de détails
@@ -77,7 +77,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <div className='global-margin mx-auto my-16 rounded-3xl border border-primary-light p-10'>
+      <div className='doc-margin'>
         <h2 className='mb-10'>La collecte des données</h2>
         <h4 className='my-10'>
           En théorie, les données sur les subventions et les marchés publics sont toutes disponibles
@@ -107,7 +107,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <div className='global-margin mx-auto my-16 rounded-3xl border border-primary-light p-10'>
+      <div className='doc-margin'>
         <h2 className='mb-10'>L'élaboration d'un indice de transparence des collectivités</h2>
         <p>
           Il est apparu évident, et nécessaire, dès le début que pour comparer les collectivités
@@ -240,6 +240,266 @@ export default function Page() {
           <div className='flex h-[68px] flex-col justify-center bg-score-D text-center'>D</div>
           <div className='flex h-[68px] flex-col justify-center rounded-r-md bg-score-E text-center'>
             E
+          </div>
+        </div>
+      </div>
+      <div className='doc-margin'>
+        <h2 className='mb-10'>L'organisation du projet</h2>
+        <div className='hidden md:block'>
+          <div className='my-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>L'ingénierie de données</h4>
+              <p>
+                Nous avons développé des scripts et automatisations pour collecter, nettoyer et
+                structurer les données issues de différentes sources (
+                <Link
+                  href={'https://www.data.gouv.fr/'}
+                  target='_blank'
+                  className='font-medium hover:underline'
+                >
+                  data.gouv.fr
+                </Link>{' '}
+                , sites institutionnels, etc.). Ce travail de fond a permis de transformer des
+                fichiers parfois bruts ou hétérogènes en bases de données cohérentes, exploitables
+                et comparables entre collectivités.
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>L'analyse des données</h4>
+              <p>
+                Une fois les données structurées, nous les avons analysées afin de créer des
+                indicateurs de transparence clairs et pertinents. Cette étape a consisté à définir
+                les critères de calcul des indices (par exemple : délais de publication,
+                exhaustivité des informations, cohérence des formats), puis à automatiser le
+                traitement pour obtenir des résultats fiables et reproductibles.
+              </p>
+            </div>
+          </div>
+          <div className='my-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>L'architecture d'information et l'expérience utilisateur</h4>
+              <p>
+                Notre démarche s'appuie sur des principes agiles et centrés sur l'utilisateur, tout
+                en adoptant une approche transparente, collaborative et progressive, dans le but de
+                rendre accessibles à tous les citoyens les données publiques essentielles liées à la
+                gestion des collectivités locales.
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>Design Thinking</h4>
+              <p>
+                Nous avons appliqué la méthodologie Design Thinking pour comprendre en profondeur
+                les besoins des utilisateurs. Cela a permis de définir des solutions innovantes en
+                prenant en compte l'expérience utilisateur, l'accessibilité des données publiques et
+                l'engagement des citoyens.
+              </p>
+            </div>
+          </div>
+          <div className='my-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>Personas et Identification des utilisateurs</h4>
+              <p>
+                Nous avons créé des personas basés sur les différents profils d'utilisateurs
+                (citoyens, élus, chercheurs, journalistes) afin de comprendre leurs attentes et
+                leurs parcours. Cette étape nous a permis de mieux définir les fonctionnalités et
+                d'orienter le design de manière pertinente.
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>Story Mapping</h4>
+              <p>
+                En utilisant la technique de Story Mapping, nous avons découpé les fonctionnalités
+                en thématique et user stories pour prioriser les éléments clés à développer. Cela a
+                facilité la gestion de notre backlog et permis de structurer les sprints de
+                développement pour répondre au mieux aux besoins des utilisateurs.
+              </p>
+            </div>
+          </div>
+          <div className='my-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>User Flow, Arborescence et Wireframing</h4>
+              <p>
+                À partir des User Flows et de l'arborescence du site, nous avons conçu des
+                wireframes (maquette basse fidélité) pour tester les interactions et le parcours
+                utilisateur de manière simple et intuitive. Cela a permis de valider les principales
+                interactions avant de passer à la conception visuelle détaillée (maquette haute
+                définition) à partir de la charte graphique élaborer par l'équipe design
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>Prototypage et Développement Agile</h4>
+              <p>
+                Le prototypage a évolué en designs haute fidélité. Nous avons opté pour une approche
+                agile et itérative, permettant des ajustements réguliers et une prise en compte des
+                retours (association et membre du projet) à chaque étape du projet. Le développement
+                a avancé parallèlement à la création des maquettes. Chaque fonctionnalité a été
+                intégrée au fur et à mesure, avec un focus sur les sections principales
+                (consultation des données, interpellation des élus, etc.).
+              </p>
+            </div>
+          </div>
+          <div className='my-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>Conception de la recherche et de la comparaison</h4>
+              <p>
+                Nous avons conçu des outils de recherche avancée et de comparaison des
+                collectivités, afin de permettre aux utilisateurs de filtrer et analyser les données
+                en fonction de critères spécifiques (population, budget, score de transparence).
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>Tests Utilisateurs et Itérations</h4>
+              <p>
+                Bien que les tests utilisateurs formels aient été limités, nous avons procédé à des
+                tests informels au fil de l'avancement pour ajuster l'interface en fonction des
+                retours internes.
+              </p>
+            </div>
+          </div>
+          <div className='mt-8 grid grid-cols-2 gap-8'>
+            <div className='space-y-2'>
+              <h4>Mise en Production et Suivi</h4>
+              <p>
+                Le lancement de la version MVP permettra de tester l'outil en conditions réelles,
+                avec une attention particulière portée aux retours des utilisateurs pour des
+                améliorations continues. Cela nous permet de garantir une expérience fluide et
+                intuitive, tout en restant flexible pour apporter des améliorations continues à la
+                plateforme Éclaireur Public.
+              </p>
+            </div>
+            <div className='space-y-2'>
+              <h4>Le développement</h4>
+              <p>
+                Côté technique, nous avons conçu et mis en place la plateforme web permettant de
+                restituer ces données de manière lisible et accessible à toutes et tous. Le
+                développement s’est appuyé sur une approche agile : incrémenter les fonctionnalités
+                au fil des sprints, tester régulièrement et intégrer les retours des utilisateurs.
+                Cela garantit un outil robuste mais aussi évolutif, capable de s’enrichir en
+                continu.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className='block md:hidden'>
+          <div className='mt-6 space-y-2'>
+            <h4>L'ingénierie de données</h4>
+            <p>
+              Nous avons développé des scripts et automatisations pour collecter, nettoyer et
+              structurer les données issues de différentes sources (
+              <Link
+                href={'https://www.data.gouv.fr/'}
+                target='_blank'
+                className='font-medium hover:underline'
+              >
+                data.gouv.fr
+              </Link>{' '}
+              , sites institutionnels, etc.). Ce travail de fond a permis de transformer des
+              fichiers parfois bruts ou hétérogènes en bases de données cohérentes, exploitables et
+              comparables entre collectivités.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>L'architecture d'information et l'expérience utilisateur</h4>
+            <p>
+              Notre démarche s'appuie sur des principes agiles et centrés sur l'utilisateur, tout en
+              adoptant une approche transparente, collaborative et progressive, dans le but de
+              rendre accessibles à tous les citoyens les données publiques essentielles liées à la
+              gestion des collectivités locales.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Personas et Identification des utilisateurs</h4>
+            <p>
+              Nous avons créé des personas basés sur les différents profils d'utilisateurs
+              (citoyens, élus, chercheurs, journalistes) afin de comprendre leurs attentes et leurs
+              parcours. Cette étape nous a permis de mieux définir les fonctionnalités et d'orienter
+              le design de manière pertinente.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>User Flow, Arborescence et Wireframing</h4>
+            <p>
+              À partir des User Flows et de l'arborescence du site, nous avons conçu des wireframes
+              (maquette basse fidélité) pour tester les interactions et le parcours utilisateur de
+              manière simple et intuitive. Cela a permis de valider les principales interactions
+              avant de passer à la conception visuelle détaillée (maquette haute définition) à
+              partir de la charte graphique élaborer par l'équipe design
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Conception de la recherche et de la comparaison</h4>
+            <p>
+              Nous avons conçu des outils de recherche avancée et de comparaison des collectivités,
+              afin de permettre aux utilisateurs de filtrer et analyser les données en fonction de
+              critères spécifiques (population, budget, score de transparence).
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Mise en Production et Suivi</h4>
+            <p>
+              Le lancement de la version MVP permettra de tester l'outil en conditions réelles, avec
+              une attention particulière portée aux retours des utilisateurs pour des améliorations
+              continues. Cela nous permet de garantir une expérience fluide et intuitive, tout en
+              restant flexible pour apporter des améliorations continues à la plateforme Éclaireur
+              Public.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>L'analyse des données</h4>
+            <p>
+              Une fois les données structurées, nous les avons analysées afin de créer des
+              indicateurs de transparence clairs et pertinents. Cette étape a consisté à définir les
+              critères de calcul des indices (par exemple : délais de publication, exhaustivité des
+              informations, cohérence des formats), puis à automatiser le traitement pour obtenir
+              des résultats fiables et reproductibles.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Design Thinking</h4>
+            <p>
+              Nous avons appliqué la méthodologie Design Thinking pour comprendre en profondeur les
+              besoins des utilisateurs. Cela a permis de définir des solutions innovantes en prenant
+              en compte l'expérience utilisateur, l'accessibilité des données publiques et
+              l'engagement des citoyens.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Story Mapping</h4>
+            <p>
+              En utilisant la technique de Story Mapping, nous avons découpé les fonctionnalités en
+              thématique et user stories pour prioriser les éléments clés à développer. Cela a
+              facilité la gestion de notre backlog et permis de structurer les sprints de
+              développement pour répondre au mieux aux besoins des utilisateurs.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Prototypage et Développement Agile</h4>
+            <p>
+              Le prototypage a évolué en designs haute fidélité. Nous avons opté pour une approche
+              agile et itérative, permettant des ajustements réguliers et une prise en compte des
+              retours (association et membre du projet) à chaque étape du projet. Le développement a
+              avancé parallèlement à la création des maquettes. Chaque fonctionnalité a été intégrée
+              au fur et à mesure, avec un focus sur les sections principales (consultation des
+              données, interpellation des élus, etc.).
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Tests Utilisateurs et Itérations</h4>
+            <p>
+              Bien que les tests utilisateurs formels aient été limités, nous avons procédé à des
+              tests informels au fil de l'avancement pour ajuster l'interface en fonction des
+              retours internes.
+            </p>
+          </div>
+          <div className='mt-6 space-y-2'>
+            <h4>Le développement</h4>
+            <p>
+              Côté technique, nous avons conçu et mis en place la plateforme web permettant de
+              restituer ces données de manière lisible et accessible à toutes et tous. Le
+              développement s’est appuyé sur une approche agile : incrémenter les fonctionnalités au
+              fil des sprints, tester régulièrement et intégrer les retours des utilisateurs. Cela
+              garantit un outil robuste mais aussi évolutif, capable de s’enrichir en continu.
+            </p>
           </div>
         </div>
       </div>
