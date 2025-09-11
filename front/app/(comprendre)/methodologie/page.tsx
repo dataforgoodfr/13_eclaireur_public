@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <main>
       <div className="flex h-[200px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat lg:h-[300px]">
-        <h1 className='mx-auto max-w-[1128px] p-4'>
+        <h1 className='mx-auto w-full p-4 md:p-8 xl:max-w-[1128px] xl:p-0'>
           La méthodologie ou <br /> les dessous de l'outil Éclaireur Public
         </h1>
       </div>
