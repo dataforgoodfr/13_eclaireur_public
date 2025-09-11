@@ -1,3 +1,8 @@
+export type SimilarCommunity = {
+  siren: string;
+  nom: string;
+};
+
 export type MPSubvComparison = {
   /** Primary key [char9] */
   siren: string;
@@ -20,6 +25,8 @@ export type MarchesPublicsComparisonData = {
   communityLabel: string;
   regional: number;
   regionalLabel: string;
+  communityMissing?: boolean;
+  regionalMissing?: boolean;
 };
 
 export type SubventionsComparisonData = {
@@ -28,4 +35,6 @@ export type SubventionsComparisonData = {
   communityLabel: string;
   regional: number;
   regionalLabel: string;
+  communityMissing?: boolean;
+  regionalMissing?: boolean;
 };

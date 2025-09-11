@@ -43,15 +43,17 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
 export function FicheIdentite({
   community,
   className,
+  budgetTotal,
 }: {
   community: Community;
   className?: string;
+  budgetTotal?: number | null;
 }) {
   return (
     <FicheCard header={<FicheIndentiteEnTete community={community} />} className={className}>
       <div className='mb-10 flex w-full flex-col gap-6 md:flex-row'>
         <div className='order-2 w-full md:order-1 md:w-1/3'>
-          <CommunityDetails community={community} />
+          <CommunityDetails community={community} budgetTotal={budgetTotal} />
         </div>
         <div className='order-1 h-64 w-full rounded-lg md:order-2 md:h-auto md:w-2/3'>
           <NeighboursMap community={community} />

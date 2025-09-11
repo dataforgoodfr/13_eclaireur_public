@@ -29,7 +29,7 @@ export function ComparisonHeader({ community1, community2, className }: Comparis
       <div className='relative z-10 flex flex-col gap-6'>
         {/* Top bar - Mobile only */}
         <div className='flex h-12 items-center justify-between lg:hidden'>
-          <GoBack />
+          <GoBack siren={community1.siren} />
           <Button variant='ghost' size='sm' className='text-white hover:text-gray-200'>
             <Share2 size={20} />
           </Button>
@@ -37,7 +37,7 @@ export function ComparisonHeader({ community1, community2, className }: Comparis
 
         {/* Desktop: GoBack seul avec espacement réduit */}
         <div className='hidden h-12 lg:block'>
-          <GoBack />
+          <GoBack siren={community1.siren} />
         </div>
 
         {/* Main content aligné à gauche comme FicheHeader */}

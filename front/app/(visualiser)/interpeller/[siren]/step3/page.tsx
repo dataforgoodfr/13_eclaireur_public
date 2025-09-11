@@ -17,6 +17,7 @@ async function getCommunity(siren: string) {
 export default async function InterpellateStep3({ params }: CommunityPageProps) {
   const { siren } = await params;
   const community = await getCommunity(siren);
+  const { type, nom } = community;
 
   return (
     <>
@@ -32,7 +33,12 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
             <CommunityBasics community={community} />
           </div>
 
-          <InterpellateForm missingData='' communityParam={siren} />
+          <InterpellateForm
+            missingData=''
+            communityParam={siren}
+            communityType={type}
+            communityName={nom}
+          />
         </article>
       </section>
     </>

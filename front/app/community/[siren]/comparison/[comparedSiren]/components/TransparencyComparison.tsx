@@ -1,11 +1,12 @@
 'use client';
 
+import type { Community } from '#app/models/community';
 import {
   ScoreTile,
   TransparencyScoreBar,
   getScoreColor,
 } from '#components/TransparencyScore/TransparencyScoreBar';
-import { SCORE_TO_ADJECTIF, TransparencyScore } from '#components/TransparencyScore/constants';
+import { SCORE_TO_ADJECTIF, type TransparencyScore } from '#components/TransparencyScore/constants';
 import { Card } from '#components/ui/card';
 import SectionSeparator from '#components/utils/SectionSeparator';
 import { useTransparencyScore } from '#utils/hooks/comparison/useTransparencyScore';
@@ -14,11 +15,14 @@ import { useComparisonYear } from './hooks/useComparisonYear';
 import { SideBySideComparison } from './shared/SideBySideComparison';
 
 type TransparencyComparisonProperties = {
-  siren1: string;
-  siren2: string;
+  community1: Community;
+  community2: Community;
 };
 
-export function TransparencyComparison({ siren1, siren2 }: TransparencyComparisonProperties) {
+export function TransparencyComparison({
+  community1,
+  community2,
+}: TransparencyComparisonProperties) {
   const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
   return (
@@ -32,14 +36,18 @@ export function TransparencyComparison({ siren1, siren2 }: TransparencyCompariso
       {/* Desktop layout */}
       <div className='hidden md:block'>
         <SideBySideComparison
-          leftChild={<ComparingScore siren={siren1} year={selectedYear as number} />}
-          rightChild={<ComparingScore siren={siren2} year={selectedYear as number} />}
+          leftChild={<ComparingScore siren={community1.siren} year={selectedYear as number} />}
+          rightChild={<ComparingScore siren={community2.siren} year={selectedYear as number} />}
         />
       </div>
 
       {/* Mobile layout - unified card */}
       <div className='my-6 md:hidden'>
-        <MobileComparisonCard siren1={siren1} siren2={siren2} year={selectedYear as number} />
+        <MobileComparisonCard
+          community1={community1}
+          community2={community2}
+          year={selectedYear as number}
+        />
       </div>
     </>
   );
@@ -66,13 +74,14 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
         </div>
         <div className='flex flex-col items-center gap-2 md:hidden'>
           <svg width='60' height='60' viewBox='0 0 60 60'>
+            <title>Score de transparence des subventions</title>
             {data?.subventions_score && !isPending && !isError ? (
               <ScoreTile
                 score={data.subventions_score}
                 rectangleClassName={getScoreColor(data.subventions_score)}
               />
             ) : (
-              <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
+              <rect width='60' height='60' rx='12' className='fill-muted-light' />
             )}
           </svg>
           <h4 className=''>
@@ -96,10 +105,11 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
         </div>
         <div className='flex flex-col items-center gap-2 md:hidden'>
           <svg width='60' height='60' viewBox='0 0 60 60'>
+            <title>Score de transparence des marchés publics</title>
             {data?.mp_score && !isPending && !isError ? (
               <ScoreTile score={data.mp_score} rectangleClassName={getScoreColor(data.mp_score)} />
             ) : (
-              <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
+              <rect width='60' height='60' rx='12' className='fill-muted-light' />
             )}
           </svg>
           <h4>
@@ -116,22 +126,22 @@ function ComparingScore({ siren, year }: ComparingScoreProperties) {
 }
 
 type MobileComparisonCardProps = {
-  siren1: string;
-  siren2: string;
+  community1: Community;
+  community2: Community;
   year: number;
 };
 
-function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProps) {
+function MobileComparisonCard({ community1, community2, year }: MobileComparisonCardProps) {
   const {
     data: data1,
     isPending: isPending1,
     isError: isError1,
-  } = useTransparencyScore(siren1, year);
+  } = useTransparencyScore(community1.siren, year);
   const {
     data: data2,
     isPending: isPending2,
     isError: isError2,
-  } = useTransparencyScore(siren2, year);
+  } = useTransparencyScore(community2.siren, year);
 
   const renderScoreTile = (
     score: TransparencyScore | null | undefined,
@@ -141,10 +151,11 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
   ) => (
     <div className='flex flex-col items-center gap-2'>
       <svg width='60' height='60' viewBox='0 0 60 60'>
+        <title>{label}</title>
         {score && !isPending && !isError ? (
           <ScoreTile score={score} rectangleClassName={getScoreColor(score)} />
         ) : (
-          <ScoreTile score={TransparencyScore.UNKNOWN} rectangleClassName='fill-muted-light' />
+          <rect width='60' height='60' rx='12' className='fill-muted-light' />
         )}
       </svg>
       <p className='text-center text-xs font-medium text-primary-900'>{label}</p>
@@ -155,8 +166,8 @@ function MobileComparisonCard({ siren1, siren2, year }: MobileComparisonCardProp
     <Card className='p-4'>
       {/* Header avec les noms des villes */}
       <div className='mb-4 flex items-center justify-between border-b pb-4'>
-        <span className='text-sm font-medium text-primary'>Ville de Paris</span>
-        <span className='text-sm font-medium text-primary'>Dijon Métropole</span>
+        <span className='text-sm font-medium text-primary'>{community1.nom}</span>
+        <span className='text-sm font-medium text-primary'>{community2.nom}</span>
       </div>
 
       {/* Section Marchés publics */}

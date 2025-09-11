@@ -32,7 +32,7 @@ type MobileChartProps = {
 
 // Loading overlay component
 const LoadingOverlay = () => (
-  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70'>
+  <div className='absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white'>
     <div className='flex items-center gap-2 text-primary'>
       <div className='h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent' />
       <span>Mise à jour des données...</span>
@@ -104,18 +104,25 @@ export default function MobileChart({
               radius={[0, 0, 16, 0]}
               label={(props) => {
                 const entry = data[props.index];
-                if (entry.isPrimaryMissing && siren && mode === 'single') {
+                // Show Interpeller button when any data is missing (for both single and dual mode)
+                const shouldShowButton =
+                  mode === 'single'
+                    ? entry.isPrimaryMissing
+                    : entry.isPrimaryMissing || entry.isSecondaryMissing;
+
+                if (shouldShowButton && siren) {
                   return (
                     <g>
                       <foreignObject
-                        x={props.x + props.width}
-                        y={props.y - 5}
-                        width='100'
-                        height='120'
+                        // should be ok for mode single and dual for dual you should take half of the two bars
+                        x={`${mode === 'dual' ? 5 * props.x : props.x + props.width + 10}`}
+                        y={`${mode === 'dual' ? props.y + props.height / 2 : props.y + 5}`}
+                        width='60'
+                        height='60'
                         style={{ pointerEvents: 'auto', zIndex: 1000 }}
                       >
                         <div className='pointer-events-auto flex flex-col items-center gap-2'>
-                          <InterpellerButton siren={siren} />
+                          <InterpellerButton className='h-8 w-8' siren={siren} />
                         </div>
                       </foreignObject>
                     </g>
@@ -155,15 +162,18 @@ export default function MobileChart({
                   }}
                 />
               )}
-              {/* Shows no data published label */}
+              {/* Shows no data published label - only when no siren (no interpeller button) */}
               {hasRealData && (
                 <LabelList
                   dataKey='isPrimaryMissing'
                   position='insideLeft'
-                  formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+                  // Should not display publié in dual mode
+                  formatter={(value: boolean) =>
+                    value ? `${mode === 'dual' ? 'Aucune donnée' : 'Aucune donnée publiée'}` : ''
+                  }
                   fill='#303F8D'
                   strokeWidth={0}
-                  fontSize='15'
+                  fontSize='12'
                   fontWeight='600'
                   fontFamily='var(--font-kanit), system-ui, sans-serif'
                   offset={20}
@@ -209,10 +219,10 @@ export default function MobileChart({
                   <LabelList
                     dataKey='isSecondaryMissing'
                     position='insideLeft'
-                    formatter={(value: boolean) => (value ? 'Aucune\u00A0donnée publiée' : '')}
+                    formatter={(value: boolean) => (value ? 'Aucune donnée' : '')}
                     fill='#303F8D'
                     strokeWidth={0}
-                    fontSize='15'
+                    fontSize='12'
                     fontWeight='600'
                     fontFamily='var(--font-kanit), system-ui, sans-serif'
                     offset={20}
