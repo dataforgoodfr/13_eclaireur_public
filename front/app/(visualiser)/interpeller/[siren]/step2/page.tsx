@@ -56,7 +56,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                   linkto={`/interpeller/${siren}/step3`}
                   direction='forth'
                   step={2}
-                  className='hidden md:block'
+                  className='hidden md:flex'
                 >
                   Continuer
                 </ButtonBackAndForth>
