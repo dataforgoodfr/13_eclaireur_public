@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { SectionHeader } from '#app/components/SectionHeader';
 import { CRITERIA } from '@/utils/constants';
 
 export const metadata: Metadata = {
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main>
-      <div className="flex h-[200px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat lg:h-[300px]">
-        <h1 className='mx-auto w-full p-4 md:p-8 xl:max-w-[1128px] xl:p-0'>
-          La méthodologie ou <br /> les dessous de l'outil Éclaireur Public
-        </h1>
-      </div>
+      <SectionHeader
+        sectionTitle={
+          <>
+            La méthodologie ou <br /> les dessous de l'outil Éclaireur Public
+          </>
+        }
+      />
       <article>
         <div className='section-format'>
           <h2 className='mb-10'>
