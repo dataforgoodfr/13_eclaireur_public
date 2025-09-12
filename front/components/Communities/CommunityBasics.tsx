@@ -5,7 +5,7 @@ export default function CommunityBasics({ community }: { community: Community })
   return (
     <div>
       <h3 className='text-h2'>{nom}</h3>
-      <h4 className='text-h4 mt-6'>
+      <h4 className='text-h4 mt-4'>
         {type} {nom_departement && <>· {nom_departement}</>} {code_postal && <>· {code_postal}</>}
       </h4>
     </div>
