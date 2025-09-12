@@ -49,25 +49,37 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
             <>
               <div
                 id='header-article'
-                className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
+                className='align-center flex flex-col justify-between gap-4 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-cover px-4 py-4 md:flex-row md:gap-0 md:px-8 md:py-12'
               >
                 <CommunityBasics community={community} />
                 <ButtonBackAndForth
                   linkto={`/interpeller/${siren}/step3`}
                   direction='forth'
                   step={2}
+                  className='hidden md:flex'
                 >
                   Continuer
                 </ButtonBackAndForth>
               </div>
 
-              <h3 className='text-h3 mb-12 mt-6 px-8'>
-                Choisir le ou les contacts ou élu.e.s à interpeller
+              <h3 className='text-h3 mb-6 mt-6 px-4 md:mb-12 md:px-8'>
+                Choisir le ou les contacts à interpeller
               </h3>
               {emailContacts && (
-                <ul className='flex flex-wrap justify-between gap-4 px-8 pb-8'>
-                  <ContactList contacts={emailContacts} />
-                </ul>
+                <>
+                  <ul className='flex flex-wrap justify-between gap-4 px-4 pb-8 md:px-8'>
+                    <ContactList contacts={emailContacts} />
+                  </ul>
+                  <div className='mb-4 block text-center md:hidden'>
+                    <ButtonBackAndForth
+                      linkto={`/interpeller/${siren}/step3`}
+                      direction='forth'
+                      step={2}
+                    >
+                      Continuer
+                    </ButtonBackAndForth>
+                  </div>
+                </>
               )}
             </>
           )}

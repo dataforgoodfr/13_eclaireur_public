@@ -2,7 +2,7 @@
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '#app/models/communityContact';
-import { Card, CardContent, CardHeader, CardTitle } from '#components/ui/card';
+import { Card, CardHeader, CardTitle } from '#components/ui/card';
 import { Checkbox } from '#components/ui/checkbox';
 
 type ContactListProps = {
@@ -66,9 +66,6 @@ export default function ContactList({ contacts }: ContactListProps) {
               </CardTitle>
             </CardHeader>
           )}
-          <CardContent>
-            {contact.fonction && <p className='text-primary'>{contact.nom}</p>}
-          </CardContent>
         </Card>
       </li>
     );

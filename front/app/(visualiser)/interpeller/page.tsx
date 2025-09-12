@@ -29,9 +29,9 @@ export default function Page() {
             <div className='inline-block bg-gradient-fade px-8'>à interpeller</div>
           </h2>
           <p className='mx-auto my-4 px-1 text-center text-xl md:w-1/2 md:text-[1.375rem]'>
-            Accédez aux données de dépenses publique
-            <br />
-            de votre commune, département ou région.
+            Accédez aux données de dépenses <br className='block md:hidden' />
+            publiques <br className='hidden md:block' />
+            de votre commune, <br className='block md:hidden' /> département ou région.
           </p>
           <div className='mx-auto mb-4 w-4/5 min-w-[400px] justify-center md:w-[473px]'>
             <SearchBar className='block' onSelect={({ siren }) => goToStep1(siren)} />

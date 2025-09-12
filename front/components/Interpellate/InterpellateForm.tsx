@@ -134,7 +134,9 @@ export default function InterpellateForm({
         className='flex flex-col gap-4 px-4 py-6 md:px-8'
       >
         <fieldset className='gap-4 md:flex'>
-          <legend className='mb-4 flex-none text-3xl font-bold'>Vos coordonnées</legend>
+          <legend className='mb-4 flex-none text-[28px] font-bold md:text-3xl'>
+            Vos coordonnées
+          </legend>
           <FormField
             control={form.control}
             name='firstname'
@@ -182,7 +184,9 @@ export default function InterpellateForm({
           />
         </fieldset>
 
-        <p className='mb-4 text-3xl font-bold'>Message d'interpellation</p>
+        <p className='mb-4 mt-4 text-[22px] font-bold md:mt-0 md:text-3xl'>
+          Message d'interpellation
+        </p>
 
         <div className='flex flex-row justify-between rounded-tl-3xl border border-secondary-dark font-bold'>
           <div className='flex w-36 flex-col justify-center rounded-tl-3xl bg-secondary-dark py-2 md:w-14'>
@@ -206,14 +210,14 @@ export default function InterpellateForm({
             control={form.control}
             name='emails'
             render={({ field }) => (
-              <FormItem className='mb-4 flex flex-row items-center gap-4'>
-                <FormLabel className='text-lg font-bold uppercase text-muted'>
+              <FormItem className='mb-4 block flex-row items-center gap-4 md:flex'>
+                <FormLabel className='text-sm font-bold uppercase text-muted md:text-lg'>
                   Destinataire
                 </FormLabel>
                 <FormControl>
                   <Input
                     disabled
-                    className='!m-0 border-none bg-transparent p-0 !text-lg !text-primary !opacity-100'
+                    className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'
                     {...field}
                   />
                 </FormControl>
@@ -225,12 +229,14 @@ export default function InterpellateForm({
             control={form.control}
             name='object'
             render={({ field }) => (
-              <FormItem className='mb-4 flex flex-row items-center gap-4'>
-                <FormLabel className='text-lg font-bold uppercase text-muted'>Objet</FormLabel>
+              <FormItem className='mb-4 block flex-row items-center gap-4 md:flex'>
+                <FormLabel className='text-sm font-bold uppercase text-muted md:text-lg'>
+                  Objet
+                </FormLabel>
                 <FormControl>
                   <Input
                     disabled
-                    className='!m-0 border-none bg-transparent p-0 !text-lg !text-primary !opacity-100'
+                    className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'
                     {...field}
                   />
                 </FormControl>
@@ -241,7 +247,10 @@ export default function InterpellateForm({
 
           <div className='simulatedTextArea'>
             <div className='hidden'>Votre message</div>
-            <div id='simulatedTextAreaContent' className='cursor-not-allowed text-lg text-primary'>
+            <div
+              id='simulatedTextAreaContent'
+              className='cursor-not-allowed text-sm text-primary md:text-lg'
+            >
               <MessageToContacts
                 from={fullName}
                 to={recipientName}
@@ -252,17 +261,22 @@ export default function InterpellateForm({
           </div>
         </fieldset>
 
-        <div className='flex flex-col gap-4 md:items-end'>
+        <div className='flex flex-col md:items-end md:gap-4'>
           <FormField
             control={form.control}
             name='isCC'
             render={({ field }) => (
-              <FormItem className='flex flex-row-reverse gap-2 font-normal'>
-                <FormLabel className='text-md mt-1 font-normal text-primary'>
+              <FormItem className='flex flex-row-reverse justify-end gap-2 font-normal'>
+                <FormLabel className='mt-1 text-sm font-normal text-primary md:text-lg'>
                   Recevoir une copie du message par e-mail
                 </FormLabel>
                 <FormControl>
-                  <Checkbox checked={field.value} defaultChecked onCheckedChange={field.onChange} />
+                  <Checkbox
+                    checked={field.value}
+                    defaultChecked
+                    onCheckedChange={field.onChange}
+                    className='relative -top-1 md:top-1'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

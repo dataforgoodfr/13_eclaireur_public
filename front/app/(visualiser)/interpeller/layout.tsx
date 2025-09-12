@@ -17,7 +17,7 @@ export default function InterpellateLayout({ children }: PropsWithChildren) {
   return (
     <main>
       <div className='h1-wrapper flex bg-muted-border py-8 md:block md:py-16'>
-        <GoToPreviousPage className='md:global-margin mt-2 shrink md:mb-8 md:flex md:shrink-0'>
+        <GoToPreviousPage className='md:global-margin mt-2 shrink pl-4 md:mb-8 md:flex md:shrink-0'>
           Retour
         </GoToPreviousPage>
         <h1 className='md:global-margin flex flex-row-reverse items-center md:flex-row'>
