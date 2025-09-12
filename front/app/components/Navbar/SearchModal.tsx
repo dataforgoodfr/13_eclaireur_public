@@ -25,10 +25,20 @@ export default function SearchModal({ onClose }: SearchModalProps) {
         Accédez aux données de dépenses publiques de votre commune, département ou région.
       </p>
       <SearchBar
-        className='relative mb-6'
+        className='relative mx-2 mb-6 block min-[425px]:hidden'
         onSelect={navigateToCommunityPage}
-        placeholder='Code postal, commune, département...'
-      />{' '}
+        placeholder='Code postal, commune, ...'
+      />
+      <SearchBar
+        className='relative mx-2 mb-6 block max-[424px]:hidden sm:hidden'
+        onSelect={navigateToCommunityPage}
+        placeholder='Code postal, commune, département, région'
+      />
+      <SearchBar
+        className='relative mx-2 mb-6 hidden sm:block'
+        onSelect={navigateToCommunityPage}
+        placeholder='Code postal, commune, département, région'
+      />
     </div>
   );
 }
