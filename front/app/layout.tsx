@@ -73,7 +73,7 @@ export default function RootLayout({
         <ReactScanWrapper />
         <Providers>
           <Navbar />
-          <div className='relative flex-grow pt-20'>{children}</div>
+          <div className='relative flex-grow pt-16 lg:pt-20'>{children}</div>
           <Footer />
         </Providers>
         <Toaster />
