@@ -35,5 +35,12 @@ export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
   [TransparencyScore.E]: 'bg-score-E',
   [TransparencyScore.UNKNOWN]: 'bg-muted-light',
 };
-
+export const SCORE_INDICE_COLOR: Record<TransparencyScore, string> = {
+  [TransparencyScore.A]: 'bg-scoreIndice-A',
+  [TransparencyScore.B]: 'bg-scoreIndice-B',
+  [TransparencyScore.C]: 'bg-scoreIndice-C',
+  [TransparencyScore.D]: 'bg-scoreIndice-D',
+  [TransparencyScore.E]: 'bg-scoreIndice-E',
+  [TransparencyScore.UNKNOWN]: 'bg-muted-light',
+};
 export const SCORE_NON_DISPONIBLE = 'Non disponible';

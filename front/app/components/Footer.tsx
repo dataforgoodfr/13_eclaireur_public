@@ -38,7 +38,7 @@ const FOOTER_DATA = {
       title: 'Comprendre',
       links: [
         { href: '/qui-sommes-nous', label: 'Qui sommes‑nous' },
-        { href: '/project', label: 'Le projet' },
+        { href: '/le-projet', label: 'Le projet' },
         { href: '/interpeller', label: 'Interpeller' },
       ],
     },
@@ -54,7 +54,7 @@ const FOOTER_DATA = {
 };
 
 const btnBase =
-  'flex w-fit items-center gap-4 rounded-full bg-white pl-4 pr-6 py-3 transition-colors hover:bg-gray-200 overflow-hidden';
+  'flex w-fit items-center gap-2.5 rounded-full bg-white px-4 py-2 transition-colors hover:bg-gray-200 overflow-hidden';
 const linkBase =
   'font-semibold text-lg text-primary hover:text-primary hover:underline transition-colors text-link';
 const linkLegalBase =
@@ -81,7 +81,7 @@ const Footer: FC = () => (
             <span className='hidden text-sm font-bold text-secondary-dark md:mt-2 md:block'>
               Suivez‑nous
             </span>
-            <div className='flex gap-2'>
+            <div className='flex gap-4'>
               {FOOTER_DATA.social.map(({ href, label, src, alt }) => (
                 <a
                   key={label}
@@ -117,7 +117,7 @@ const Footer: FC = () => (
             <div className='md:bloc flex gap-1'>
               <div className='flex flex-1 flex-col gap-3'>
                 <div>
-                  <h3 className='mb-1 text-base font-semibold text-gray-500'>
+                  <h3 className='mb-2 text-base font-semibold text-gray-500'>
                     Un projet accompagné par
                   </h3>
                   <div className='flex flex-col'>
@@ -146,7 +146,7 @@ const Footer: FC = () => (
                 </div>
 
                 <div>
-                  <h3 className='mb-1 text-base font-semibold text-gray-500'>
+                  <h3 className='mb-2 text-base font-semibold text-gray-500'>
                     À l&apos;initiative de
                   </h3>
                   <div className='flex flex-col gap-1'>
@@ -195,14 +195,12 @@ const Footer: FC = () => (
           <div className='col-span-2 md:col-span-1'>
             <div className='flex w-full flex-row gap-8 md:flex-col md:gap-0'>
               <div className='flex flex-1 flex-col space-y-2'>
-                <h3 className='mb-2 text-lg font-semibold text-secondary-dark'>
-                  Vous êtes un élu ?
-                </h3>
+                <h3 className='mb-2 text-sm font-bold text-secondary-dark'>Vous êtes un élu ?</h3>
                 <Link
                   href='https://www.eclaireurpublic.fr/aide-aux-elus'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-link font-semibold text-primary underline transition-colors hover:text-primary'
+                  className='font-semibold text-primary underline transition-colors hover:text-primary'
                 >
                   Aide aux élus
                 </Link>
@@ -213,7 +211,7 @@ const Footer: FC = () => (
                   href='https://data.gouv.fr'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-link font-semibold text-primary underline transition-colors hover:text-primary'
+                  className='font-semibold text-primary underline transition-colors hover:text-primary'
                 >
                   Data.gouv.fr
                 </Link>
@@ -221,7 +219,7 @@ const Footer: FC = () => (
                   href='https://publieretalab.studio/fr'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-link font-semibold text-primary underline transition-colors hover:text-primary'
+                  className='font-semibold text-primary underline transition-colors hover:text-primary'
                 >
                   Publier vos données
                 </Link>
@@ -230,7 +228,7 @@ const Footer: FC = () => (
           </div>
         </section>
 
-        <section className='mt-4 flex flex-col gap-6 border-muted-light pt-6 text-sm md:flex-row'>
+        <section className='mt-12 flex flex-col gap-6 border-muted-light text-sm md:flex-row'>
           <p className='text-left text-base text-muted'>
             Copyright © 2025 • Avec engagement contre la corruption 🚀
           </p>
@@ -263,8 +261,8 @@ type FooterNavProps = {
 
 const FooterNav: FC<FooterNavProps> = ({ title, links }) => (
   <div>
-    <h3 className='mb-4 text-sm font-semibold text-secondary-dark'>{title}</h3>
-    <ul className='space-y-2'>
+    <h3 className='mb-4 text-sm font-bold text-secondary-dark'>{title}</h3>
+    <ul className='grid gap-2.5 space-y-2'>
       {links.map(({ href, label, external, isText }) => (
         <li key={label}>
           {isText ? (

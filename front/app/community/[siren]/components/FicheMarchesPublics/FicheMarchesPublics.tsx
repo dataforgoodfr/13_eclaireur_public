@@ -1,8 +1,8 @@
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
 import EmptyState from '#components/EmptyState';
 import {
+  SCORE_INDICE_COLOR,
   SCORE_TO_ADJECTIF,
-  SCORE_TRANSPARENCY_COLOR,
   TransparencyScore,
 } from '#components/TransparencyScore/constants';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
@@ -39,7 +39,7 @@ const MarchesPublicsHeader = ({
           <BadgeCommunity
             text={`Indice de transparence : ${transparencyIndex} - ${SCORE_TO_ADJECTIF[transparencyIndex]}`}
             icon={FileText}
-            className={`${SCORE_TRANSPARENCY_COLOR[transparencyIndex]} text-primary`}
+            className={`${SCORE_INDICE_COLOR[transparencyIndex]} text-primary`}
           />
         </div>
       )}
