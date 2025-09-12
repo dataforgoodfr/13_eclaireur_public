@@ -24,7 +24,7 @@ export default function Stepper({ currentStep, numberOfSteps = 4 }: StepperProps
 
           {isFinalStep(index) ? null : (
             <div
-              className={`relative top-[-7px] h-[1px] w-16 min-w-6 lg:w-[200px] ${activeColor(index + 1)}`}
+              className={`relative top-[-7px] h-[1px] w-[4.5rem] min-w-6 lg:w-[200px] ${activeColor(index + 1)}`}
             ></div>
           )}
         </div>

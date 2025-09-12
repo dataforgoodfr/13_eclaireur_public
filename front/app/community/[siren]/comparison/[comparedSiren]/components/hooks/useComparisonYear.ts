@@ -9,7 +9,7 @@ export function useComparisonYear() {
 
   const [year, setYear] = useQueryState(
     'year',
-    parseAsInteger.withDefault(currentYear).withOptions({
+    parseAsInteger.withDefault(currentYear - 1).withOptions({
       // Synchronise l'état dans l'URL
       shallow: false,
       // Utilise l'historique pour permettre le back/forward

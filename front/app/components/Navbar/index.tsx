@@ -12,6 +12,7 @@ import { Wrench } from 'lucide-react';
 
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
+import { SearchButton } from './SearchButton';
 
 const visualiserMenus = [
   {
@@ -84,7 +85,7 @@ const aProposMenus = [
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
-  <div className='fixed top-20 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm'>
+  <div className='fixed top-12 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm lg:top-20'>
     <Wrench className='inline scale-x-[-1]' size={16} />
     <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines fonctionnalités
     peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
@@ -110,41 +111,33 @@ export default function Navbar() {
     <>
       {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
 
-      <div className='fixed top-0 z-50 flex h-20 w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
+      <div className='fixed top-0 z-50 flex w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
         {/* Mobile Navbar */}
-        <div className='flex w-full items-center justify-between lg:hidden'>
+        <div className='flex h-12 w-full items-center justify-between lg:hidden'>
           {/* Left: Icon logo */}
           <Link href='/'>
             <Image
-              src='/eclaireur/logo-navmenu-mobile-1.png'
+              src='/eclaireur/logo-navmenu-desktop.png'
               alt='Éclaireur Icon'
-              width={28}
-              height={28}
-              className='mb-[9px] h-[28px] w-auto'
+              width={110}
+              height={40}
+              className='mb-[9px] h-[40px] w-auto'
               priority
             />
           </Link>
-
-          {/* Center: Text logo */}
-          <Image
-            src='/eclaireur/logo-navmenu-mobile-2.svg'
-            alt='Éclaireur Public'
-            width={360}
-            height={36}
-            className='mb-[6px] h-[68px] w-auto'
-            priority
-          />
-
-          {/* Right: Burger menu */}
-          <MobileMenu
-            visualiserMenus={visualiserMenus}
-            comprendreMenus={comprendreMenus}
-            aProposMenus={aProposMenus}
-          />
+          <div className='flex items-center space-x-2'>
+            <SearchButton />
+            {/* Right: Burger menu */}
+            <MobileMenu
+              visualiserMenus={visualiserMenus}
+              comprendreMenus={comprendreMenus}
+              aProposMenus={aProposMenus}
+            />
+          </div>
         </div>
 
         {/* Desktop Navbar */}
-        <div className='hidden w-full items-center lg:flex'>
+        <div className='hidden h-20 w-full items-center lg:flex'>
           {/* Desktop Logo */}
           <Link href='/'>
             <Image

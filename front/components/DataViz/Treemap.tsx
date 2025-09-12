@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { type RefObject, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { formatCompactPrice, formatFirstLetterToUppercase } from '#utils/utils';
 import * as d3 from 'd3';
@@ -16,12 +16,12 @@ type GroupMode = 'none' | 'gradient' | 'categorical' | 'value-based';
 
 const COLOR_PALETTES = {
   mp: {
-    colors: ['#ACC66C', '#C2DE7A', '#D7F787'],
+    colors: ['#A2A8CA', '#B6BDE3', '#CAD2FC'],
     textDark: '#303F8D',
-    textLight: '#303F8D',
+    textLight: '#ffffff',
   },
   subventions: {
-    colors: ['#A2A8CA', '#B6BDE3', '#CAD2FC'],
+    colors: ['#ACC66C', '#C2DE7A', '#D7F787'],
     textDark: '#303F8D',
     textLight: '#303F8D',
   },
@@ -282,10 +282,10 @@ function Treemap({
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [containerRef]);
 
   const height = CHART_HEIGHT;
-  const width = containerWidth || 1486;
+  const width = containerWidth;
 
   // Memoize expensive data processing
   const processedData = useMemo(() => {
@@ -303,22 +303,24 @@ function Treemap({
 
   // Memoize D3 treemap layout calculation
   const root = useMemo(() => {
+    if (!width) return null;
     const treeGenerator = d3.treemap<TreeData>().size([width, height]).padding(4);
     return treeGenerator(hierarchy);
   }, [hierarchy, width, height]);
 
   // Memoize color map generation
   const colorMap = useMemo(() => {
+    if (!root) return {};
     return generateHierarchicalColorMap(root, colorPalette, groupMode);
   }, [root, colorPalette, groupMode]);
 
   // Memoize SVG shapes generation
-  const allShapes = useMemo(
-    () =>
-      root.leaves().map((leaf) => (
-        <g key={leaf.data.id} className='group'>
-          <path
-            d={`
+  const allShapes = useMemo(() => {
+    if (!root) return [];
+    return root.leaves().map((leaf) => (
+      <g key={leaf.data.id} className='group'>
+        <path
+          d={`
           M ${leaf.x0 + 8} ${leaf.y0}
           L ${leaf.x1} ${leaf.y0}
           L ${leaf.x1} ${leaf.y1 - 8}
@@ -328,91 +330,95 @@ function Treemap({
           Q ${leaf.x0} ${leaf.y0} ${leaf.x0 + 8} ${leaf.y0}
           Z
         `}
-            stroke='#303F8D'
-            strokeWidth={1}
-            fill={colorMap[leaf.data.name]}
-            className='cursor-pointer transition-all duration-500 ease-in-out hover:opacity-80'
-            onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
-            onMouseMove={(e) => handleOnMouseMove(e)}
-            onMouseLeave={() => handleOnMouseLeave()}
-            onClick={() => handleClick(leaf.data.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleClick(leaf.data.value);
-              }
-            }}
-            tabIndex={0}
-            role='button'
-            aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
-          />
-          {/* Permanent zoom indicator - only show if not already zoomed and element is large enough */}
-          {!isZoomActive && leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 50 && (
-            <g className='pointer-events-none'>
-              <circle
-                cx={leaf.x1 - 16}
-                cy={leaf.y0 + 12}
-                r={8}
-                fill='none'
-                stroke='#303F8D'
-                strokeWidth={1.5}
-              />
-              <path
-                d={`M ${leaf.x1 - 20} ${leaf.y0 + 12} L ${leaf.x1 - 12} ${leaf.y0 + 12} M ${leaf.x1 - 16} ${leaf.y0 + 8} L ${leaf.x1 - 16} ${leaf.y0 + 16}`}
-                stroke='#303F8D'
-                strokeWidth={1.5}
-                strokeLinecap='round'
-              />
-              <path
-                d={`M ${leaf.x1 - 10} ${leaf.y0 + 18} L ${leaf.x1 - 6} ${leaf.y0 + 22}`}
-                stroke='#303F8D'
-                strokeWidth={1.5}
-                strokeLinecap='round'
-              />
-            </g>
-          )}
-          {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
-            <text
-              x={leaf.x0 + 8}
-              y={leaf.y0 + 22}
-              fontSize={16}
-              fontWeight={700}
-              fill={getTextColor(colorMap[leaf.data.name], colorPalette)}
-              className='pointer-events-none'
+          stroke='#303F8D'
+          strokeWidth={1}
+          fill={colorMap[leaf.data.name]}
+          className='cursor-pointer transition-all duration-500 ease-in-out hover:opacity-80'
+          onMouseEnter={(e) => handleOnMouseEnter(e, leaf)}
+          onMouseMove={(e) => handleOnMouseMove(e)}
+          onMouseLeave={() => handleOnMouseLeave()}
+          onClick={() => handleClick(leaf.data.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              handleClick(leaf.data.value);
+            }
+          }}
+          tabIndex={0}
+          role='button'
+          aria-label={`${leaf.data.name}: ${formatCompactPrice(leaf.data.value)}`}
+        />
+        {/* Permanent zoom indicator - only show if not already zoomed and element is large enough */}
+        {!isZoomActive && leaf.x1 - leaf.x0 > 50 && leaf.y1 - leaf.y0 > 50 && (
+          <g className='pointer-events-none'>
+            <circle
+              cx={leaf.x1 - 16}
+              cy={leaf.y0 + 12}
+              r={8}
+              fill='none'
+              stroke='#303F8D'
+              strokeWidth={1.5}
+            />
+            <path
+              d={`M ${leaf.x1 - 20} ${leaf.y0 + 12} L ${leaf.x1 - 12} ${leaf.y0 + 12} M ${leaf.x1 - 16} ${leaf.y0 + 8} L ${leaf.x1 - 16} ${leaf.y0 + 16}`}
+              stroke='#303F8D'
+              strokeWidth={1.5}
+              strokeLinecap='round'
+            />
+            <path
+              d={`M ${leaf.x1 - 10} ${leaf.y0 + 18} L ${leaf.x1 - 6} ${leaf.y0 + 22}`}
+              stroke='#303F8D'
+              strokeWidth={1.5}
+              strokeLinecap='round'
+            />
+          </g>
+        )}
+        {leaf.x1 - leaf.x0 > 70 && leaf.y1 - leaf.y0 > 30 && (
+          <text
+            x={leaf.x0 + 8}
+            y={leaf.y0 + 22}
+            fontSize={16}
+            fontWeight={700}
+            fill={getTextColor(colorMap[leaf.data.name], colorPalette)}
+            className='pointer-events-none'
+          >
+            {formatCompactPrice(leaf.data.value)}
+          </text>
+        )}
+        {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
+          <foreignObject
+            x={leaf.x0 + 8}
+            y={leaf.y0 + 38}
+            width={leaf.x1 - leaf.x0 - 16}
+            height={leaf.y1 - leaf.y0 - 46}
+            className='pointer-events-none'
+          >
+            <div
+              className='pointer-events-none truncate text-sm font-medium leading-tight'
+              style={{
+                color: getTextColor(colorMap[leaf.data.name], colorPalette),
+              }}
             >
-              {formatCompactPrice(leaf.data.value)}
-            </text>
-          )}
-          {leaf.x1 - leaf.x0 > 80 && leaf.y1 - leaf.y0 > 60 && (
-            <foreignObject
-              x={leaf.x0 + 8}
-              y={leaf.y0 + 38}
-              width={leaf.x1 - leaf.x0 - 16}
-              height={leaf.y1 - leaf.y0 - 46}
-              className='pointer-events-none'
-            >
-              <div
-                className='pointer-events-none truncate text-sm font-medium leading-tight'
-                style={{
-                  color: getTextColor(colorMap[leaf.data.name], colorPalette),
-                }}
-              >
-                {formatFirstLetterToUppercase(leaf.data.name)}
-              </div>
-            </foreignObject>
-          )}
-        </g>
-      )),
-    [
-      root,
-      colorMap,
-      colorPalette,
-      isZoomActive,
-      handleOnMouseEnter,
-      handleOnMouseMove,
-      handleOnMouseLeave,
-      handleClick,
-    ],
-  );
+              {formatFirstLetterToUppercase(leaf.data.name)}
+            </div>
+          </foreignObject>
+        )}
+      </g>
+    ));
+  }, [
+    root,
+    colorMap,
+    colorPalette,
+    isZoomActive,
+    handleOnMouseEnter,
+    handleOnMouseMove,
+    handleOnMouseLeave,
+    handleClick,
+  ]);
+
+  // Don't render until we have a valid width to prevent layout shifts
+  if (!width || width === 0 || !root) {
+    return <div className='relative' ref={containerRef} style={{ height }} />;
+  }
 
   return (
     <div className='relative' ref={containerRef} style={{ height }}>

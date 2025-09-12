@@ -1,14 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-
-import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
-import { Extension } from '#utils/downloader/types';
-
-import { GraphSwitch } from '../DataViz/GraphSwitch';
-import DownloadChartDropDown from '../DownloadChartDropDown';
-import { TabHeader } from '../TabHeader';
-import { MarchesPublicsChart } from './MarchesPublicsChart';
+import EvolutionContainer from '#components/DataViz/EvolutionContainer';
+import { useMarchesPublicsYearlyAmounts } from '#utils/hooks/useMarchesPublicsYearlyAmounts';
+import { useMarchesPublicsYearlyCounts } from '#utils/hooks/useMarchesPublicsYearlyCounts';
 
 type EvolutionProps = {
   siren: string;
@@ -16,45 +10,30 @@ type EvolutionProps = {
 };
 
 export default function Evolution({ siren, communityName }: EvolutionProps) {
-  const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
-  const marchesPublicsChartRef = useRef<HTMLDivElement | null>(null);
+  // Fetch data with existing hooks
+  const {
+    data: amountsData,
+    isPending: amountsPending,
+    isError: amountsError,
+  } = useMarchesPublicsYearlyAmounts(siren);
 
-  const handleDownloadClick = async (extension: Extension) => {
-    if (marchesPublicsChartRef.current) {
-      downloadSVGChart(
-        marchesPublicsChartRef.current,
-        {
-          communityName,
-          chartTitle: 'Évolution des marchés publics au cours du temps',
-        },
-        { fileName: `évolution-${communityName.slice(0, 15)}`, extension },
-      );
-    }
-  };
+  const {
+    data: countsData,
+    isPending: countsPending,
+    isError: countsError,
+  } = useMarchesPublicsYearlyCounts(siren);
 
   return (
-    <div className='w-full'>
-      <TabHeader
-        title='Évolution des marchés publics au cours du temps'
-        titleSwitch={
-          <GraphSwitch
-            isActive={isMarchesPublicsCountDisplayed}
-            onChange={setIsMarchesPublicsCountDisplayed}
-            label1='Montants annuels'
-            label2='Nombre de contrats'
-          />
-        }
-        actions={<DownloadChartDropDown onClickDownload={handleDownloadClick} />}
-      />
-
-      {/* Chart Section */}
-      <div className='p-4 md:p-6'>
-        <MarchesPublicsChart
-          ref={marchesPublicsChartRef}
-          siren={siren}
-          displayMode={isMarchesPublicsCountDisplayed ? 'counts' : 'amounts'}
-        />
-      </div>
-    </div>
+    <EvolutionContainer
+      siren={siren}
+      communityName={communityName}
+      dataType='marches-publics'
+      amountsData={amountsData}
+      countsData={countsData}
+      isAmountsPending={amountsPending}
+      isCountsPending={countsPending}
+      isAmountsError={amountsError}
+      isCountsError={countsError}
+    />
   );
 }

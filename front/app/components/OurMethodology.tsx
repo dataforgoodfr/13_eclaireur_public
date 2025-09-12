@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { CRITERIA, SCORES } from '@/utils/constants';
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export default function OurMethodology() {
   const [selectedScore, setSelectedScore] = useState<keyof typeof SCORES>('A');
@@ -34,7 +34,7 @@ export default function OurMethodology() {
             />
             <MethodologyCard
               picto='/eclaireur/three.png'
-              title='Publication de données sur les 13 critères suivants :'
+              title='Publication de données sur les 10 critères suivants :'
               colorClassName='bg-brand-3'
               criteria={CRITERIA}
             />
@@ -63,8 +63,8 @@ export default function OurMethodology() {
                   onClick={() => setSelectedScore(score as keyof typeof SCORES)}
                   className={`w-full py-2 text-2xl font-bold transition-all duration-200 ${
                     selectedScore === score
-                      ? 'border-b-2 border-primary text-primary'
-                      : 'text-primary-light hover:border-b-2 hover:border-primary hover:text-primary'
+                      ? 'border-b-4 border-primary text-primary'
+                      : 'text-primary-light hover:border-b-4 hover:border-primary hover:text-primary'
                   }`}
                 >
                   {score}
@@ -87,7 +87,7 @@ export default function OurMethodology() {
           className='my-10 flex w-full items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2 md:w-80'
         >
           <span className='me-2 font-bold'>Découvrir notre méthodologie</span>
-          <ArrowRight />
+          <ChevronRight />
         </Link>
       </div>
     </article>

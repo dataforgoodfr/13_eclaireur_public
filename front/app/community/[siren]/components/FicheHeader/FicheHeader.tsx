@@ -3,17 +3,20 @@
 import Image from 'next/image';
 
 import { Community } from '#app/models/community';
+import { SimilarCommunity } from '#app/models/comparison';
 
 import GoBack from '../GoBack';
 import { FicheActionButtons } from './FicheActionButtons';
 
 type FicheHeaderProps = {
   community: Community;
+  similarCommunityList: SimilarCommunity[];
 };
 
-const descriptionText = `Visualiser les dernières données de dépenses publiques de votre collectivité locale`;
+const descriptionText =
+  'Visualiser les dernières données de dépenses publiques de votre collectivité locale';
 
-export function FicheHeader({ community }: FicheHeaderProps) {
+export function FicheHeader({ community, similarCommunityList }: FicheHeaderProps) {
   const communityTitle = community.nom;
   const communityType = community.type;
   const location = community.code_postal ? `${community.code_postal}` : '';
@@ -23,7 +26,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
     <div className='relative w-full p-6 lg:px-40 lg:pb-12 lg:pt-4'>
       {/* Background image with high priority */}
       <Image
-        src='/collectivite-header.webp'
+        src='/collectivite-header.jpg'
         alt='En-tête collectivité'
         fill
         className='-z-10 object-cover'
@@ -35,7 +38,7 @@ export function FicheHeader({ community }: FicheHeaderProps) {
         {/* Top bar with GoBack and Action buttons - Mobile only */}
         <div className='flex h-12 items-center justify-between lg:hidden'>
           <GoBack />
-          <FicheActionButtons community={community} />
+          <FicheActionButtons community={community} similarCommunityList={similarCommunityList} />
         </div>
 
         {/* Desktop: GoBack seul avec espacement réduit */}
@@ -66,7 +69,11 @@ export function FicheHeader({ community }: FicheHeaderProps) {
           </div>
 
           {/* Action buttons desktop - alignés avec le titre */}
-          <FicheActionButtons community={community} className='hidden lg:flex lg:self-start' />
+          <FicheActionButtons
+            community={community}
+            similarCommunityList={similarCommunityList}
+            className='hidden lg:flex lg:self-start'
+          />
         </div>
       </div>
     </div>

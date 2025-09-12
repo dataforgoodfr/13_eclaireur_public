@@ -35,7 +35,8 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
   const contacts = await getContacts(siren);
   const emailContacts = contacts.filter((elt) => elt.type_contact === 'MAIL');
   const emailContactsLen = emailContacts.length;
-  // const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
+  const formContact = contacts.filter((elt) => elt.type_contact === 'WEB');
+  const formContactLen = formContact.length;
 
   return (
     <>
@@ -51,7 +52,11 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                 className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
               >
                 <CommunityBasics community={community} />
-                <ButtonBackAndForth linkto={`/interpeller/${siren}/step3`} direction='forth'>
+                <ButtonBackAndForth
+                  linkto={`/interpeller/${siren}/step3`}
+                  direction='forth'
+                  step={2}
+                >
                   Continuer
                 </ButtonBackAndForth>
               </div>
@@ -66,7 +71,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
               )}
             </>
           )}
-          {!emailContactsLen && (
+          {!emailContactsLen && formContactLen > 0 && (
             <>
               <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
                 <Image
@@ -104,8 +109,8 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Link href='#' className='mt-4 flex'>
-                        Voir le site de la collectivité{' '}
+                      <Link href={formContact[0].contact} className='mt-4 flex' target='_blank'>
+                        Voir le site de la collectivité
                         <ChevronRight size={14} className='ml-2 self-center' />
                       </Link>
                     </CardContent>

@@ -50,17 +50,17 @@ export default function HomePageHeader() {
             />
             <div className='m-4 flex flex-col items-center justify-center'>
               <h1 className='text-h1 text-h1-kanit text-center'>
-                Votre collectivité est-elle
+                Votre collectivité <span className='break-keep'>est-elle</span>
                 <br />
                 <span className='bg-gradient-fade px-4 font-kanit-bold'>transparente ?</span>
               </h1>
             </div>
-            <h2 className='mb-6 w-3/4 text-center text-xl font-semibold'>
+            <h2 className='mb-6 w-3/4 text-center text-lg font-normal'>
               Accédez aux données de dépenses publiques de votre commune, département ou région.
             </h2>
-            <div className='mx-auto flex w-full min-w-[400] justify-center'>
+            <div className='mx-auto flex min-w-[400] justify-center'>
               <SearchBar
-                className='relative w-full md:w-96 lg:w-[32rem]'
+                className='relative w-3/4 md:w-96 lg:w-[32rem]'
                 onSelect={({ siren }) => navigateToCommunityPage(siren)}
               />
             </div>

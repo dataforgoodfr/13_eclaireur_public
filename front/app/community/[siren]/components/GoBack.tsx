@@ -5,12 +5,24 @@ import { useRouter } from 'next/navigation';
 import { Button } from '#components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
-export default function GoBack() {
+type GoBackProps = {
+  siren?: string;
+};
+
+export default function GoBack({ siren }: GoBackProps = {}) {
   const router = useRouter();
+
+  const handleClick = () => {
+    if (siren) {
+      router.push(`/community/${siren}`);
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <Button
-      onClick={router.back}
+      onClick={handleClick}
       variant={'link'}
       className='flex h-12 items-center gap-2 text-primary hover:text-primary/80'
     >

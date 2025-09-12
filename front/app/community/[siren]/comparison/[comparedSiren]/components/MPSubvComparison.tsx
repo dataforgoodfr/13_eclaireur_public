@@ -1,5 +1,7 @@
 'use client';
 
+import { memo, useCallback, useMemo } from 'react';
+
 import type { Community } from '#app/models/community';
 import EmptyState from '#components/EmptyState';
 import Loading from '#components/ui/Loading';
@@ -27,12 +29,23 @@ export function MPSubvComparison({
 }: MPSubvComparisonProperties) {
   const { year: selectedYear, setYear: setSelectedYear } = useComparisonYear();
 
+  // Memoize section title to prevent recalculation
+  const sectionTitle = useMemo(() => getSectionTitle(comparisonType), [comparisonType]);
+
+  // Stabilize year selection handler
+  const handleYearSelect = useCallback(
+    (year: number) => {
+      setSelectedYear(year);
+    },
+    [setSelectedYear],
+  );
+
   return (
     <>
       <SectionSeparator
-        sectionTitle={getSectionTitle(comparisonType)}
+        sectionTitle={sectionTitle}
         year={selectedYear}
-        onSelectYear={setSelectedYear}
+        onSelectYear={handleYearSelect}
       />
       {/* Desktop layout */}
       <div className='hidden md:block'>
@@ -53,7 +66,6 @@ export function MPSubvComparison({
               bgColor='bg-primary-light'
             />
           }
-          className='my-10'
         />
       </div>
 
@@ -77,37 +89,37 @@ type ComparingMPSubvProperties = {
   bgColor?: string;
 };
 
-function ComparingMPSubv({ siren, year, comparisonType, bgColor }: ComparingMPSubvProperties) {
-  const { data, isPending, isError } = useMPSubvComparison(siren, year, comparisonType);
+const ComparingMPSubv = memo(
+  ({ siren, year, comparisonType, bgColor }: ComparingMPSubvProperties) => {
+    const { data, isPending, isError } = useMPSubvComparison(siren, year, comparisonType);
 
-  // Show loading state
-  if (isPending) {
-    return <Loading />;
-  }
+    // Show EmptyState for actual errors or missing data
+    if (isError || (!isPending && (!data || data.top5 === undefined))) {
+      return (
+        <EmptyState
+          title={`Aucune donnée de ${getName(comparisonType)} disponible`}
+          description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.`}
+          siren={siren}
+          className='h-full'
+        />
+      );
+    }
 
-  // Show EmptyState for actual errors or missing data
-  if (isError || !data || data.top5 === undefined) {
     return (
-      <EmptyState
-        title={`Aucune donnée de ${getName(comparisonType)} disponible`}
-        description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.`}
-        siren={siren}
-        className='h-full'
+      <TableInfoBlock
+        totalAmount={data?.total_amount || 0}
+        totalNumber={data?.total_number || 0}
+        top5Items={data?.top5 || null}
+        comparisonName={getName(comparisonType)}
+        columnLabel={getColumnLabel(comparisonType)}
+        bgColor={bgColor}
+        isLoadingDetails={isPending}
       />
     );
-  }
+  },
+);
 
-  return (
-    <TableInfoBlock
-      totalAmount={data.total_amount}
-      totalNumber={data.total_number}
-      top5Items={data.top5}
-      comparisonName={getName(comparisonType)}
-      columnLabel={getColumnLabel(comparisonType)}
-      bgColor={bgColor}
-    />
-  );
-}
+ComparingMPSubv.displayName = 'ComparingMPSubv';
 
 function getSectionTitle(comparisonType: ComparisonType) {
   switch (comparisonType) {
@@ -149,7 +161,7 @@ type MobileMPSubvCardProps = {
   comparisonType: ComparisonType;
 };
 
-function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubvCardProps) {
+const MobileMPSubvCard = memo(({ siren1, siren2, year, comparisonType }: MobileMPSubvCardProps) => {
   const {
     data: data1,
     isPending: isPending1,
@@ -161,6 +173,26 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
     isPending: isPending2,
     isError: isError2,
   } = useMPSubvComparison(siren2, year, comparisonType);
+
+  // Memoize comparison name to prevent recalculation
+  const comparisonName = useMemo(() => getName(comparisonType), [comparisonType]);
+
+  const renderInfoBlock = useCallback(
+    (label: string, value1: string, value2: string) => (
+      <>
+        <h4 className='mb-3 text-sm font-semibold text-primary-900'>{label}</h4>
+        <div className='flex justify-between'>
+          <div className='rounded-full bg-brand-3 px-4 py-2'>
+            <span className='text-lg font-bold text-primary-900'>{value1}</span>
+          </div>
+          <div className='rounded-full bg-primary-light px-4 py-2'>
+            <span className='text-lg font-bold text-primary-900'>{value2}</span>
+          </div>
+        </div>
+      </>
+    ),
+    [],
+  );
 
   if (isPending1 || isPending2) {
     return <Loading />;
@@ -176,27 +208,13 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
   ) {
     return (
       <EmptyState
-        title={`Aucune donnée de ${getName(comparisonType)} disponible`}
-        description={`Il n'y a pas de données de ${getName(comparisonType)} disponibles pour cette période.`}
+        title={`Aucune donnée de ${comparisonName} disponible`}
+        description={`Il n'y a pas de données de ${comparisonName} disponibles pour cette période.`}
         siren={siren1}
         className='h-full'
       />
     );
   }
-
-  const renderInfoBlock = (label: string, value1: string, value2: string) => (
-    <>
-      <h4 className='mb-3 text-sm font-semibold text-primary-900'>{label}</h4>
-      <div className='flex justify-between'>
-        <div className='rounded-full bg-brand-3 px-4 py-2'>
-          <span className='text-lg font-bold text-primary-900'>{value1}</span>
-        </div>
-        <div className='rounded-full bg-primary-light px-4 py-2'>
-          <span className='text-lg font-bold text-primary-900'>{value2}</span>
-        </div>
-      </div>
-    </>
-  );
 
   return (
     <Card className='space-y-6 p-4'>
@@ -212,7 +230,7 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
       {/* Comparaison Nombre */}
       <div className='border-b pb-4'>
         {renderInfoBlock(
-          `Nombre de ${getName(comparisonType)}`,
+          `Nombre de ${comparisonName}`,
           data1.total_number.toString(),
           data2.total_number.toString(),
         )}
@@ -224,7 +242,7 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
           totalAmount={data1.total_amount}
           totalNumber={data1.total_number}
           top5Items={data1.top5}
-          comparisonName={getName(comparisonType)}
+          comparisonName={comparisonName}
           columnLabel={getColumnLabel(comparisonType)}
           communityName={formatLocationName(data1?.community_name || 'N/A')}
           bgColor='bg-brand-3'
@@ -234,7 +252,7 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
           totalAmount={data2.total_amount}
           totalNumber={data2.total_number}
           top5Items={data2.top5}
-          comparisonName={getName(comparisonType)}
+          comparisonName={comparisonName}
           columnLabel={getColumnLabel(comparisonType)}
           communityName={formatLocationName(data2?.community_name || 'N/A')}
           bgColor='bg-primary-light'
@@ -242,4 +260,6 @@ function MobileMPSubvCard({ siren1, siren2, year, comparisonType }: MobileMPSubv
       </div>
     </Card>
   );
-}
+});
+
+MobileMPSubvCard.displayName = 'MobileMPSubvCard';

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
 @layer components {
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;

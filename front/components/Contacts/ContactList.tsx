@@ -28,7 +28,7 @@ export default function ContactList({ contacts }: ContactListProps) {
 
   return contacts.map((contact) => {
     // const isLeaderFlag = contact.isLeader; // décommenter lorsque données activées
-    const isLeaderFlag = false;
+    const isLeaderFlag = false; // test de la mise en forme avec contact principal en donnant la valeur true à isLeaderFlag
     const isLeaderBorderClassName = isLeaderFlag ? 'border border-primary rounded-tr-xl' : '';
     const isLeaderPositionClassName = isLeaderFlag ? 'top-[2.5rem]' : 'top-4';
     const isLeaderMarginClassName = isLeaderFlag ? 'mt-10' : 'mt-4';
@@ -50,22 +50,24 @@ export default function ContactList({ contacts }: ContactListProps) {
                   Contact principal
                 </p>
                 <h4 className={`ml-6 capitalize ${isLeaderMarginClassName}`}>
-                  {contact.fonction ? contact.fonction : 'fonction du contact'}
+                  {contact.fonction ? contact.fonction : 'fonction non disponible'}
                 </h4>
               </CardTitle>
             </CardHeader>
           )}
           {!isLeaderFlag && (
             <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
-              <CardTitle className='capitalize'>
+              <CardTitle>
                 <h4 className='mt-4'>
-                  {contact.fonction ? contact.fonction : 'fonction du contact'}
+                  {/* {contact.fonction ? contact.fonction : 'Envoyer un mail à la collectivité'} */}
+                  {contact.fonction ? contact.fonction : contact.nom}
                 </h4>
+                {!contact.fonction && <p className='my-4 text-primary'>{contact.contact}</p>}
               </CardTitle>
             </CardHeader>
           )}
           <CardContent>
-            <p>{contact.nom}</p>
+            {contact.fonction && <p className='text-primary'>{contact.nom}</p>}
           </CardContent>
         </Card>
       </li>

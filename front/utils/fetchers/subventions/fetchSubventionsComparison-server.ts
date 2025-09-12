@@ -1,4 +1,4 @@
-import { SubventionsComparisonData } from '#app/models/comparison';
+import type { SubventionsComparisonData } from '#app/models/comparison';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
@@ -15,58 +15,65 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
   if (normalizedScope === 'régional' || normalizedScope === 'regional') {
     scopeCondition = 'code_insee_region';
   } else if (normalizedScope === 'départemental' || normalizedScope === 'departmental') {
-    scopeCondition = 'code_insee_departement';
+    scopeCondition = 'code_insee_dept';
   } else {
     // For national, we don't filter by region/department
     scopeCondition = null;
   }
 
-  // Simplified query similar to the Python script structure
+  // Generate exactly 8 years of data like marchés publics
   const querySQL = `
-    SELECT 
-      cd.year::TEXT as year,
-      cd.community_amount::BIGINT as community,
-      COALESCE(rd.regional_avg_amount, 0)::BIGINT as regional,
-      ci.nom as community_name,
-      ci.type as community_type
-    FROM (
-      -- Community data
+    WITH years AS (
+      SELECT generate_series(
+        EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER - 7,
+        EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER
+      ) AS year
+    ),
+    community_data AS (
       SELECT 
-        s.annee_subvention as year,
+        s.annee as year,
         SUM(s.montant) as community_amount
       FROM ${TABLE_NAME} s
       WHERE s.id_attribuant = $1
-      AND s.annee_subvention IS NOT NULL
+      AND s.annee IS NOT NULL
       AND s.montant IS NOT NULL
-      AND s.annee_subvention >= 2018
-      GROUP BY s.annee_subvention
-    ) cd
-    LEFT JOIN (
-      -- Regional averages
+      AND s.annee >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
+      GROUP BY s.annee
+    ),
+    regional_data AS (
       SELECT 
         yearly_data.year,
         AVG(yearly_data.total_amount) as regional_avg_amount
       FROM (
         SELECT 
-          s.annee_subvention as year,
+          s.annee as year,
           s.id_attribuant,
           SUM(s.montant) as total_amount
         FROM ${TABLE_NAME} s
         INNER JOIN ${COMMUNITIES_TABLE} c ON s.id_attribuant = c.siren
-        WHERE s.annee_subvention IS NOT NULL
+        WHERE s.annee IS NOT NULL
         AND s.montant IS NOT NULL  
-        AND s.annee_subvention >= 2018
+        AND s.annee >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
         AND c.type = (SELECT type FROM ${COMMUNITIES_TABLE} WHERE siren = $2)
         ${scopeCondition ? `AND c.${scopeCondition} = (SELECT ${scopeCondition} FROM ${COMMUNITIES_TABLE} WHERE siren = $3)` : ''}
         AND c.siren != $1
-        GROUP BY s.annee_subvention, s.id_attribuant
+        GROUP BY s.annee, s.id_attribuant
       ) yearly_data
       GROUP BY yearly_data.year
-    ) rd ON cd.year = rd.year
+    )
+    SELECT 
+      y.year::TEXT as year,
+      cd.community_amount::BIGINT as community,
+      rd.regional_avg_amount::BIGINT as regional,
+      ci.nom as community_name,
+      ci.type as community_type
+    FROM years y
+    LEFT JOIN community_data cd ON y.year = cd.year
+    LEFT JOIN regional_data rd ON y.year = rd.year
     CROSS JOIN (
       SELECT nom, type FROM ${COMMUNITIES_TABLE} WHERE siren = $1
     ) ci
-    ORDER BY cd.year
+    ORDER BY y.year
   `;
 
   // Adjust values array based on whether we need the third parameter
@@ -80,7 +87,7 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
  */
 export async function fetchSubventionsComparison(
   siren: string,
-  scope: string = 'régional',
+  scope = 'régional',
 ): Promise<SubventionsComparisonData[]> {
   try {
     const params = createSQLQueryParams(siren, scope);
@@ -114,10 +121,12 @@ export async function fetchSubventionsComparison(
 
     return rows.map((row) => ({
       year: row.year,
-      community: row.community,
+      community: row.community || 0,
       communityLabel,
-      regional: row.regional,
+      regional: row.regional || 0,
       regionalLabel,
+      communityMissing: row.community === null || row.community === undefined,
+      regionalMissing: row.regional === null || row.regional === undefined,
     }));
   } catch (error) {
     console.error('Error fetching subventions comparison:', error);

@@ -11,8 +11,7 @@ import { useRouter } from 'next/navigation';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '#app/models/communityContact';
-import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
-import { Button, buttonVariants } from '#components/ui/button';
+import { Button } from '#components/ui/button';
 import { Checkbox } from '#components/ui/checkbox';
 import {
   Form,
@@ -33,6 +32,8 @@ import { type FormSchema, InterpellateFormSchema } from './types';
 export type InterpellateFormProps = {
   missingData: unknown;
   communityParam: string;
+  communityType: string;
+  communityName: string;
 };
 function getRecipientName(contacts: CommunityContact[]) {
   if (contacts.length === 0) {
@@ -42,7 +43,12 @@ function getRecipientName(contacts: CommunityContact[]) {
   return contacts[0].nom;
 }
 
-export default function InterpellateForm({ missingData, communityParam }: InterpellateFormProps) {
+export default function InterpellateForm({
+  missingData,
+  communityParam,
+  communityType,
+  communityName,
+}: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const router = useRouter();
@@ -61,8 +67,15 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
   };
 
   const fullName = `${firstName} ${lastName}`;
-  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
-  const formMessage = renderToString(<MessageToContacts from={fullName} to={recipientName} />);
+  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
+  const formMessage = renderToString(
+    <MessageToContacts
+      from={fullName}
+      to={recipientName}
+      communityType={communityType}
+      communityName={communityName}
+    />,
+  );
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -70,11 +83,12 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
       firstname: '',
       lastname: '',
       email: '',
-      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production pour que ça fonctionne !!!
+      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!!
       emails: 'olivier.pretre@gmx.fr', // TODO : commenter à la mise en production
       object:
         'Transparence des données publiques – Publication des investissements et marchés publics',
       message: formMessage,
+      isCC: true,
     },
   });
 
@@ -228,18 +242,33 @@ export default function InterpellateForm({ missingData, communityParam }: Interp
           <div className='simulatedTextArea'>
             <div className='hidden'>Votre message</div>
             <div id='simulatedTextAreaContent' className='cursor-not-allowed text-lg text-primary'>
-              <MessageToContacts from={fullName} to={recipientName} />
+              <MessageToContacts
+                from={fullName}
+                to={recipientName}
+                communityName={communityName}
+                communityType={communityType}
+              />
             </div>
           </div>
         </fieldset>
 
         <div className='flex flex-col gap-4 md:items-end'>
-          <div className='mt-6 flex items-center space-x-2'>
-            <Checkbox id='terms' checked={true} />
-            <label htmlFor='terms' className='text-md text-primary'>
-              Recevoir une copie du message par e-mail
-            </label>
-          </div>
+          <FormField
+            control={form.control}
+            name='isCC'
+            render={({ field }) => (
+              <FormItem className='flex flex-row-reverse gap-2 font-normal'>
+                <FormLabel className='text-md mt-1 font-normal text-primary'>
+                  Recevoir une copie du message par e-mail
+                </FormLabel>
+                <FormControl>
+                  <Checkbox checked={field.value} defaultChecked onCheckedChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             size='lg'
             type='submit'

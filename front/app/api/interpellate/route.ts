@@ -11,9 +11,9 @@ export async function POST(request: Request) {
 
   const result = InterpellateFormSchema.safeParse(body);
   const { success, data } = result;
-  let firstname, lastname, email, emails, object, message;
+  let firstname, lastname, email, emails, object, message, isCC;
   if (success && data) {
-    ({ firstname, lastname, email, emails, object, message } = data);
+    ({ firstname, lastname, email, emails, object, message, isCC } = data);
   }
 
   // check out Zod's .flatten() method for an easier way to process errors
@@ -29,7 +29,8 @@ export async function POST(request: Request) {
   }
 
   const transport = nodemailer.createTransport({
-    host: 'mail.gmx.com',
+    host: 'mail.gmx.com', // TODO commenter lors de mise en prod
+    // host: 'mail.infomaniak.com', // TODO décommenter lors de mise en prod
     port: 465,
     secure: true,
     auth: {
@@ -41,8 +42,8 @@ export async function POST(request: Request) {
   const mailOptions: Mail.Options = {
     from: process.env.MY_EMAIL,
     to: process.env.MY_EMAIL,
-    cc: process.env.CC_EMAIL_MESSAGE,
-    subject: `|| ECLAIREUR PUBLIC || Message de ${firstname} ${lastname} (${email})`,
+    cc: isCC ? email : '',
+    subject: object,
     html: message,
   };
 

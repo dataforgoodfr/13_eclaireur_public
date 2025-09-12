@@ -140,6 +140,10 @@ venv.bak/
 # VS Code
 .vscode
 
+# JetBrains IDEs
+.idea/
+*.iml
+
 # Rope project settings
 .ropeproject
 
@@ -192,3 +196,6 @@ tests-examples/
 
 **/screenshots/**
 front/NOTES_PERSO/**/*
+
+#ide
+.idea/
