@@ -1,8 +1,8 @@
 'use client';
 
-import Loading from '@/components/ui/Loading';
-import { useMarchesPublicsYearlyAmounts } from '@/utils/hooks/useMarchesPublicsYearlyAmounts';
-import { formatCompact } from '@/utils/utils';
+import Loading from '#components/ui/Loading';
+import { useMarchesPublicsYearlyAmounts } from '#utils/hooks/useMarchesPublicsYearlyAmounts';
+import { formatCompact } from '#utils/utils';
 import {
   Bar,
   LabelList,
@@ -43,7 +43,7 @@ export function MarchesPublicsYearlyAmountsChart({ siren }: MarchesPublicsYearly
 }
 
 const LEGEND_LABELS: Record<Exclude<keyof BarChartData[number], 'year'>, string> = {
-  amount: 'Montant des marchés publics publiées (€)',
+  amount: 'Montant des marchés publics publiés (€)',
 };
 
 function getLegendFormatter(value: Exclude<keyof BarChartData[number], 'year'>): string {

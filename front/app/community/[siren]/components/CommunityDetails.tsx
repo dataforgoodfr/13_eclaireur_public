@@ -1,66 +1,90 @@
-import { Community } from '@/app/models/community';
-import { formatNumberInteger, stringifyCommunityType } from '@/utils/utils';
-import { CircleX, FileText, Landmark, Layers, Users } from 'lucide-react';
-
-const collectivitesLabel = 'Collectivités';
-const populationLabel = 'Population';
-const populationUnit = 'habitants';
-const agentsLabel = "Nombre d'agents administratifs";
-const agentsUnit = 'agents';
-// const totalBudgetLabel = 'Budget total';
-const obligationPublicationText = `Soumise à l'obligation de publication`;
-const pasObligationPublicationText = `Non soumise à l'obligation de publication`;
+import type { Community } from '#app/models/community';
+import { SlidingNumber } from '#components/animate-ui/text/sliding-number';
+import { formatNumberInteger } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
+  compare?: boolean;
+  left?: boolean;
+  budgetTotal?: number | null;
 };
 
-export function CommunityDetails({ community }: CommunityDetailsProps) {
+export function CommunityDetails({ community, compare, left, budgetTotal }: CommunityDetailsProps) {
+  const budgetEnMillions =
+    typeof budgetTotal === 'number' ? Math.round(budgetTotal / 1_000_000) : null;
   return (
-    <div className='flex flex-col gap-2'>
-      <TinyCard
-        title={collectivitesLabel}
-        description={stringifyCommunityType(community.type)}
-        icon={<Layers />}
-      />
-      <TinyCard
-        title={populationLabel}
-        description={`${formatNumberInteger(community.population)} ${populationUnit}`}
-        icon={<Users />}
-      />
-      <TinyCard
-        title={agentsLabel}
-        description={`${formatNumberInteger(community.tranche_effectif)}  ${agentsUnit}`}
-        icon={<Landmark />}
-      />
-      {/** TODO - Add back when budget is in community in db */}
-      {/* <TinyCard
-        title={totalBudgetLabel}
-        description={formatCompactPrice(community.budget)}
-        icon={<BadgeEuro />}
-      /> */}
-      {community.should_publish ? (
-        <TinyCard title={obligationPublicationText} icon={<FileText />} />
-      ) : (
-        <TinyCard title={pasObligationPublicationText} icon={<CircleX />} />
-      )}
-    </div>
+    <>
+      {/* Info blocks */}
+      <div className='flex w-full flex-col gap-4'>
+        <InfoBlock
+          label='Population'
+          value={formatNumberInteger(community.population)}
+          unit='habitants'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-yellow-100'}
+        />
+        <InfoBlock
+          label='Budget total'
+          value={budgetEnMillions !== null ? formatNumberInteger(budgetEnMillions) : '—'}
+          unit='M€'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-lime-100'}
+        />
+        <InfoBlock
+          label="Nombre d'agents administratifs"
+          value={formatNumberInteger(community.tranche_effectif)}
+          unit='agents'
+          bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-indigo-100'}
+        />
+      </div>
+    </>
   );
 }
 
-type TinyCard = {
-  title: string;
-  description?: string;
-  icon: React.ReactNode;
+type InfoBlockProps = {
+  label: string;
+  value: string;
+  unit?: string;
+  bgColor?: string;
+  showRealValue?: boolean;
 };
 
-function TinyCard({ title, description, icon }: TinyCard) {
+function InfoBlock({
+  label,
+  value,
+  unit,
+  bgColor = 'bg-gray-100',
+  showRealValue = true,
+}: InfoBlockProps) {
+  // Extract the numeric value from the formatted string
+  const numericValue = Number.parseInt(value.replace(/\s/g, ''), 10) || 0;
+
   return (
-    <div className='flex items-center gap-4'>
-      {icon}
-      <div>
-        <p>{title}</p>
-        {description && <p className='text-sm'>{description}</p>}
+    <div className={`rounded-none rounded-br-2xl rounded-tl-2xl p-3 text-primary ${bgColor}`}>
+      <div className='flex flex-row items-center justify-between gap-2 sm:flex-col sm:items-start sm:justify-start sm:gap-1'>
+        <p className='text-base font-medium'>
+          {label === 'Budget total' && unit === 'M€' ? (
+            <>
+              <span className='sm:hidden'>Budget total (M€)</span>
+              <span className='hidden sm:inline'>{label}</span>
+            </>
+          ) : (
+            label
+          )}
+        </p>
+        <h4 className='text-lg font-bold'>
+          <SlidingNumber
+            number={showRealValue ? numericValue : 0}
+            inView={showRealValue}
+            inViewOnce={true}
+            inViewMargin='-50px'
+            className='tabular-nums'
+            transition={{
+              stiffness: 150,
+              damping: 20,
+              mass: 0.4,
+            }}
+          />
+          {unit && <span className='ml-1 hidden text-base font-normal sm:inline'>{unit}</span>}
+        </h4>
       </div>
     </div>
   );

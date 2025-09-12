@@ -1,7 +1,3 @@
-import advancedSearchImg from '@/public/advancedSearchImg.png';
-import carteImg from '@/public/carteImg.png';
-import interpellateImg from '@/public/interpellateImg.png';
-
 import CtaCard from './CtaCard';
 
 export default function CtaGroup() {
@@ -9,44 +5,46 @@ export default function CtaGroup() {
     {
       title: 'Cartographie',
       caption: 'Explorer la carte pour voir quelles sont les collectivités les plus transparentes.',
-      image: carteImg,
       buttonText: 'Naviguer sur la carte',
+      picto: '/eclaireur/map_icon.png',
       href: '/map',
-      colorClassName: 'bg-card-secondary-foreground-2',
+      colorClassName: 'bg-brand-1',
     },
 
     {
       title: 'Recherche avancée',
       caption: 'Affinez votre recherche de collectivités avec la recherche avancée.',
-      image: advancedSearchImg,
       buttonText: 'Filtrer par collectivité',
+      picto: '/eclaireur/search_icon.png',
       href: '/advanced-search',
-      colorClassName: 'bg-card-secondary-foreground-3',
+      colorClassName: 'bg-brand-2',
     },
 
     {
       title: 'Interpeller',
       caption: 'Interpeller les élus pour améliorer la transparence dans votre collectivité.',
-      image: interpellateImg,
-      buttonText: 'Engagement citoyen',
+      buttonText: 'Interpeller les élus',
+      picto: '/eclaireur/call_icon.png',
       href: '/interpeller',
-      colorClassName: 'bg-card-secondary-foreground-4',
+      colorClassName: 'bg-brand-3',
     },
   ];
 
   return (
-    <div className='mx-auto my-20 flex max-w-screen-lg justify-center space-x-8'>
-      {CtaInfo.map((item) => (
-        <CtaCard
-          key={item.title}
-          title={item.title}
-          caption={item.caption}
-          image={item.image}
-          buttonText={item.buttonText}
-          href={item.href}
-          colorClassName={item.colorClassName}
-        />
-      ))}
+    <div className='global-margin my-20 flex w-full justify-center px-4'>
+      <div className='grid w-full grid-cols-1 gap-8 md:grid-cols-3'>
+        {CtaInfo.map((item) => (
+          <CtaCard
+            key={item.title}
+            title={item.title}
+            caption={item.caption}
+            picto={item.picto}
+            buttonText={item.buttonText}
+            href={item.href}
+            colorClassName={item.colorClassName}
+          />
+        ))}
+      </div>
     </div>
   );
 }

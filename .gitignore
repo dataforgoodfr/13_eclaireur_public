@@ -25,6 +25,7 @@ var/
 wheels/
 share/python-wheels/
 *.egg-info/
+*.serena/
 .installed.cfg
 *.egg
 MANIFEST
@@ -139,6 +140,10 @@ venv.bak/
 # VS Code
 .vscode
 
+# JetBrains IDEs
+.idea/
+*.iml
+
 # Rope project settings
 .ropeproject
 
@@ -178,3 +183,19 @@ loc_env/
 
 psql_env.sh
 .DS_Store
+node_modules/**/*
+bun.lock
+
+# Playwright
+playwright-report/
+test-results/
+tests-examples/
+
+# Container-use
+.container-use/
+
+**/screenshots/**
+front/NOTES_PERSO/**/*
+
+#ide
+.idea/

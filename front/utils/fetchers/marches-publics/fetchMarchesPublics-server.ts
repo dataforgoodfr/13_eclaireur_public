@@ -1,5 +1,5 @@
-import { MarchePublic } from '@/app/models/marchePublic';
-import { getQueryFromPool } from '@/utils/db';
+import { MarchePublic } from '#app/models/marchePublic';
+import { getQueryFromPool } from '#utils/db';
 
 import { MarchesPublicsParams, createSQLQueryParams } from './createSQLQueryParams';
 

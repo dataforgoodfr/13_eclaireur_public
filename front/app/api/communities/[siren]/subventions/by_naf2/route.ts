@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { fetchSubventionsByNaf } from '@/utils/fetchers/subventions/fetchSubventionsByNaf-server';
-import { parseNumber } from '@/utils/utils';
+import { fetchSubventionsByNaf } from '#utils/fetchers/subventions/fetchSubventionsByNaf-server';
+import { parseNumber } from '#utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
       limit,
     };
 
-    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxAmount ?? null);
+    const data = await fetchSubventionsByNaf(siren, year ?? null, pagination, maxAmount);
 
     return NextResponse.json(data);
   } catch (error) {

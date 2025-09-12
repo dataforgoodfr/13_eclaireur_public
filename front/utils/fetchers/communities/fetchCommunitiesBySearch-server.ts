@@ -1,11 +1,11 @@
-import { Community } from '@/app/models/community';
-import { getQueryFromPool } from '@/utils/db';
+import { Community } from '#app/models/community';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 
 const TABLE_NAME = DataTable.Communities;
 
-const ROWS_PER_PAGE = 100;
+const ROWS_PER_PAGE = 30;
 
 /**
  * Create the SQL query to search by query and page
@@ -20,10 +20,9 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
   const values = [exactQuery, partialQuery, limit];
 
   const querySQL = `
-    SELECT nom, code_postal, type, siren,
-           SIMILARITY(LOWER(nom), LOWER($1)) AS similarity_score
+    SELECT nom, code_postal, type, siren, ${communityNameSimilarity()} AS similarity_score
     FROM ${TABLE_NAME}
-    WHERE nom ILIKE $2
+    WHERE ${communityNameSimilarity()} > 0.1
        OR code_postal::text ILIKE $2
     ORDER BY similarity_score DESC
     LIMIT $3;
@@ -31,6 +30,15 @@ export function createSQLQueryParams(query: string, page = 1): [string, (string 
 
   return [querySQL, values];
 }
+
+function communityNameSimilarity() {
+  return `SIMILARITY(${formatCommunityName('nom')},${formatCommunityName('$1')})`;
+}
+
+function formatCommunityName(communityName: string) {
+  return `UNACCENT(LOWER(${communityName}))`;
+}
+
 /**
  * Fetch the communities (SSR) by query search
  * @param query

@@ -1,19 +1,30 @@
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import type { CommunityType } from '#utils/types';
 
+import { useFilterOptions } from '../../hooks/useFilterOptions';
 import { useFiltersParams } from '../../hooks/useFiltersParams';
 import { Selector } from './Selector';
 
 export function SelectMarchesPublicsScore() {
   const {
-    filters: { mp_score },
+    filters: { mp_score, type, population, subventions_score },
     setFilter,
   } = useFiltersParams();
+
+  const { data: filterOptions } = useFilterOptions({
+    type: type as CommunityType | undefined,
+    population,
+    subventions_score,
+  });
 
   function handleChange(value: TransparencyScore | null) {
     setFilter('mp_score', value);
   }
 
-  const options = Object.values(TransparencyScore);
+  const fallbackOptions = Object.values(TransparencyScore).sort();
+  const options = filterOptions?.mpScores.length
+    ? (filterOptions.mpScores as TransparencyScore[]).sort()
+    : fallbackOptions;
 
   return (
     <Selector

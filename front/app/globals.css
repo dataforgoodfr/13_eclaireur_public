@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
 @layer components {
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-kanit-bold text-primary;
   }
 }
 
@@ -77,6 +87,35 @@
   }
 }
 
-#simulatedTextAreaContent p {
-  @apply px-3 py-1;
+/* All titles */
+/* h1 {
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 44px;
+  line-height: 56px;
+  font-weight: 700;
+  color: #303F8D;
 }
+
+h2 {
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 700;
+  color: #303F8D;
+}
+
+h3 {
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #303F8D;
+}
+
+h4 {
+  font-family: var(--font-kanit), 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+  color: #303F8D;
+} */

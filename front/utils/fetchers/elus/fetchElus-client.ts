@@ -1,7 +1,7 @@
-import { Elu } from '@/app/models/elu';
+import type { Elu } from '#app/models/elu';
 
-import { Pagination } from '../types';
-import { ElusOptions } from './createSQLQueryParams';
+import type { Pagination } from '../types';
+import type { ElusOptions } from './createSQLQueryParams';
 
 const API_ROUTE = '/api/selected_communities';
 
@@ -11,13 +11,10 @@ const API_ROUTE = '/api/selected_communities';
  * @returns
  */
 export async function fetchElus(options?: ElusOptions, pagination?: Pagination): Promise<Elu[]> {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
   const limit = options?.limit;
   const siren = options?.filters?.siren;
-  const type = options?.filters?.type;
 
-  const url = new URL(API_ROUTE, baseURL);
+  const url = new URL(API_ROUTE, window.location.origin);
 
   if (siren) url.searchParams.append('siren', siren);
   if (!pagination && limit) url.searchParams.append('limit', limit.toString());
@@ -26,11 +23,11 @@ export async function fetchElus(options?: ElusOptions, pagination?: Pagination):
     url.searchParams.append('limit', pagination.limit.toString());
   }
 
-  const res = await fetch(url.toString(), { method: 'get' });
+  const res = await fetch(url.toString(), { method: 'GET' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch communities');
   }
 
-  return (await res.json()) as Promise<Elu[]>;
+  return await res.json();
 }

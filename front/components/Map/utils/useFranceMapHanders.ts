@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre';
 
-import type { Community } from '@/app/models/community';
+import type { Community } from '#app/models/community';
 
 import type { AdminType, HoverInfo } from '../types';
 import getCommunityDataFromFeature from './getCommunityDataFromFeature';
@@ -20,6 +20,7 @@ interface UseFranceMapHandlersProps {
   choroplethParameter: string;
   territoryFilterCode: string;
   selectedTerritoryData?: { filterCode?: string };
+  isMobile?: boolean;
 }
 
 export function useFranceMapHandlers({
@@ -33,6 +34,7 @@ export function useFranceMapHandlers({
   choroplethParameter,
   territoryFilterCode,
   selectedTerritoryData,
+  isMobile = false,
 }: UseFranceMapHandlersProps) {
   // Handles map move (panning/zooming)
   const handleMove = (event: any) => {
@@ -53,8 +55,9 @@ export function useFranceMapHandlers({
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   };
 
-  // Handles hover on map features
+  // Handles hover on map features (desktop only)
   const onHover = (event: MapLayerMouseEvent) => {
+    if (isMobile) return; // Disable hover on mobile
     event.originalEvent.stopPropagation();
     const { features, point } = event;
     const feature = features?.[0];
@@ -64,13 +67,25 @@ export function useFranceMapHandlers({
       setHoverInfo(null);
     }
   };
+
   // Handles click on map features
   const onClick = (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
-    if (!feature) return;
-    const community = getCommunityDataFromFeature(feature, communityMap);
-    if (community?.siren) {
-      window.open(`/community/${community.siren}`, '_blank');
+    if (!feature) {
+      setHoverInfo(null); // Clear tooltip on empty click
+      return;
+    }
+
+    if (isMobile) {
+      // On mobile, show tooltip on click instead of navigating
+      const { point } = event;
+      setHoverInfo({ x: point.x, y: point.y, feature, type: feature.layer.id as AdminType });
+    } else {
+      // On desktop, navigate to community page
+      const community = getCommunityDataFromFeature(feature, communityMap);
+      if (community?.siren) {
+        window.open(`/community/${community.siren}`, '_blank');
+      }
     }
   };
 

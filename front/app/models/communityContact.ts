@@ -1,4 +1,4 @@
-import { CommunityType } from '@/utils/types';
+import { CommunityType } from '#utils/types';
 
 export type CommunityContact = {
   /** Primary key [char9] */
@@ -12,4 +12,5 @@ export type CommunityContact = {
   /** not in the db yet */
   fonction?: string;
   photoSrc?: string;
+  isLeader?: boolean;
 };

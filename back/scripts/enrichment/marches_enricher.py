@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import polars as pl
 from inflection import underscore as to_snake_case
@@ -8,6 +9,7 @@ from unidecode import unidecode
 
 from back.scripts.datasets.cpv_labels import CPVLabelsWorkflow
 from back.scripts.datasets.marches import MarchesPublicsWorkflow
+from back.scripts.datasets.sirene import SireneWorkflow
 from back.scripts.enrichment.base_enricher import BaseEnricher
 from back.scripts.enrichment.utils.cpv_utils import CPVUtils
 from back.scripts.utils.dataframe_operation import (
@@ -28,21 +30,23 @@ class MarchesPublicsEnricher(BaseEnricher):
         return [
             MarchesPublicsWorkflow.get_output_path(main_config),
             CPVLabelsWorkflow.get_output_path(main_config),
+            SireneWorkflow.get_output_path(main_config),
         ]
 
     @classmethod
     def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         # Data analysts, please add your code here!
-        marches, cpv_labels, *_ = inputs
+        marches, cpv_labels, sirene, *_ = inputs
 
         marches_pd = (
-            marches.to_pandas()
-            .pipe(cls.set_unique_mp_id)
+            marches.pipe(cls.set_unique_mp_id_hash)
             .pipe(cls.set_unique_mp_titulaire_id)
+            .to_pandas()
             .drop(columns=["id", "uid", "uuid"])
             .pipe(cls.keep_last_modifications)
             .apply(cls.appliquer_modifications, axis=1)
             .pipe(cls.correction_types_colonnes_str, ["objet"])
+            .pipe(cls.correction_types_colonnes_float, ["dureeMois", "offresRecues"])
             .drop(columns=["modifications"])
             .pipe(normalize_montant, "montant")
             .pipe(normalize_date, "datePublicationDonnees")
@@ -71,7 +75,31 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(cls.lieu_execution_enrich)
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
+            .pipe(cls.drop_rows_with_null_dates_or_amounts)
+            .pipe(cls.assoc_with_sirene, sirene)
         )
+
+    @staticmethod
+    def assoc_with_sirene(marches: pl.DataFrame, sirene: pl.DataFrame) -> pl.DataFrame:
+        marches = (
+            marches.with_columns(
+                pl.col("titulaire_id")
+                .cast(pl.Utf8)
+                .str.slice(0, 9)
+                .alias("titulaire_id_siren"),
+            )
+            .join(
+                sirene.select("siren", "raison_sociale"),
+                left_on="titulaire_id_siren",
+                right_on="siren",
+                how="left",
+            )
+            .with_columns(
+                pl.col("titulaire_denomination_sociale").fill_null(pl.col("raison_sociale"))
+            )
+            .drop(["titulaire_id_siren", "raison_sociale"])
+        )
+        return marches
 
     @staticmethod
     def forme_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -101,18 +129,28 @@ class MarchesPublicsEnricher(BaseEnricher):
             return
 
     @staticmethod
-    def set_unique_mp_id(marches: pd.DataFrame) -> pd.DataFrame:
+    def set_unique_mp_id_hash(marches: pd.DataFrame) -> pd.DataFrame:
         """
         Les différents champs id, uid et uuid ne permettent pas d'avoir un id unique par MP car ce sont des champs saisis.
 
-        Le but de cette fonction est de créer un id unique par MP, pour ensuite créer un id plus propre par MP.
+        Le but de cette fonction est de créer un id unique par MP.
         """
-        marches["id_mp"] = (
-            marches[["id", "uid", "uuid", "dateNotification", "codeCPV"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
+
+        return marches.with_columns(
+            pl.concat_str(
+                [
+                    pl.col("id").cast(str).fill_null("None"),
+                    pl.col("uid").cast(str).fill_null("None"),
+                    pl.col("uuid").cast(str).fill_null("None"),
+                    pl.col("acheteur_id").cast(str).fill_null("None"),
+                    pl.col("objet").cast(str).fill_null("None"),
+                    pl.col("dateNotification").cast(str).fill_null("None"),
+                    pl.col("codeCPV").cast(str).fill_null("None"),
+                ]
+            )
+            .hash()
+            .alias("id_mp")
         )
-        return marches
 
     @staticmethod
     def set_unique_mp_titulaire_id(marches: pd.DataFrame) -> pd.DataFrame:
@@ -121,12 +159,15 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         Le but de cette fonction est de créer un id unique par MP et titulaire, pour ensuite dédoublonner par ce nouvel id.
         """
-        marches["id_mp_titulaire"] = (
-            marches[["id_mp", "titulaire_id"]]
-            .astype(str)
-            .apply(lambda row: "-".join([val for val in row if val != "nan"]), axis=1)
+        return marches.with_columns(
+            pl.concat_str(
+                [
+                    pl.col("id_mp").cast(str).fill_null("None"),
+                    pl.col("titulaire_id").cast(str).fill_null("None"),
+                ],
+                separator="-",
+            ).alias("id_mp_titulaire")
         )
-        return marches
 
     @staticmethod
     def type_prix_enrich(marches: pl.DataFrame) -> pl.DataFrame:
@@ -478,6 +519,22 @@ class MarchesPublicsEnricher(BaseEnricher):
         return marches
 
     @staticmethod
+    def correction_types_colonnes_float(
+        marches: pd.DataFrame, colonnes_a_convertir_en_float: list | str
+    ) -> pd.DataFrame:
+        # Remplace les NC présents dans les données de type float par des données vides.
+        if False and isinstance(colonnes_a_convertir_en_float, list):
+            for _correction_types_colonnes_float in correction_types_colonnes_float:
+                marches = correction_types_colonnes_float(
+                    marches, _correction_types_colonnes_float
+                )
+        else:
+            marches[colonnes_a_convertir_en_float] = marches[
+                colonnes_a_convertir_en_float
+            ].replace("NC", np.nan)
+        return marches
+
+    @staticmethod
     def keep_last_modifications(marches: pd.DataFrame) -> pd.DataFrame:
         """
         A chaque modification d'un MP, une nouvelle ligne avec les infos initiales du MP est ajoutée au dataset et le champs "modifications" est incrémenté avec les nouvelles modifications.
@@ -505,4 +562,13 @@ class MarchesPublicsEnricher(BaseEnricher):
 
         return marches.join(id_mapping, on="id_mp", how="left").drop(
             ["id_mp", "id_mp_titulaire"]
+        )
+
+    @staticmethod
+    def drop_rows_with_null_dates_or_amounts(marches: pl.DataFrame) -> pl.DataFrame:
+        """
+        Supprime les lignes où 'date_publication_donnees' ou 'montant' sont nulles.
+        """
+        return marches.filter(
+            pl.col("date_publication_donnees").is_not_null() & pl.col("montant").is_not_null()
         )

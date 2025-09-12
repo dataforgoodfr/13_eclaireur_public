@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from back.scripts.communities.loaders.ofgl import OfglLoader
+from back.scripts.adapters.workflow.ofgl import OfglWorkflowFactory
 from back.scripts.datasets.utils import BaseDataset
 from back.scripts.loaders.base_loader import BaseLoader
 from back.scripts.utils.config import project_config
@@ -33,8 +33,9 @@ class CommunitiesSelector(BaseDataset):
     def run(self):
         if self.output_filename.exists():
             return
+        ofgl_workflow = OfglWorkflowFactory.from_config(self.main_config)
         communities = (
-            pd.read_parquet(OfglLoader.get_output_path(self.main_config))
+            pd.read_parquet(ofgl_workflow.get_output_path())
             .drop_duplicates(subset=["siren"], keep="first")
             .drop(columns=["exercice"])
             .fillna({"population": 0})

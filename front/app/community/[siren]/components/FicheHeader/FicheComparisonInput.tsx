@@ -2,14 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 
-import { Community } from '@/app/models/community';
-import SearchBar from '@/components/SearchBar/SearchBar';
+import { Community } from '#app/models/community';
+import { SimilarCommunity } from '#app/models/comparison';
+import SearchBar from '#components/SearchBar/SearchBar';
+import { ActionButton } from '#components/ui/action-button';
 
-type FicheComparisonInput = { community: Community };
+type FicheComparisonInput = {
+  community: Community;
+  similarCommunityList: SimilarCommunity[];
+};
 
-const searchLabel = 'Comparer avec une autre collectivité ?';
-
-export function FicheComparisonInput({ community }: FicheComparisonInput) {
+export function FicheComparisonInput({ community, similarCommunityList }: FicheComparisonInput) {
   const router = useRouter();
 
   function goToComparison(comparedSiren: string) {
@@ -17,9 +20,46 @@ export function FicheComparisonInput({ community }: FicheComparisonInput) {
   }
 
   return (
-    <div className='flex flex-1 flex-col items-center gap-2'>
-      <p>{searchLabel}</p>
-      <SearchBar onSelect={(option) => goToComparison(option.siren)} />
+    <div className='flex flex-col gap-6 p-4'>
+      {/* Titre avec nom de la commune */}
+      <div className='text-center'>
+        <h2 className='text-xl4 mb-2 font-semibold text-primary'>
+          Comparer{' '}
+          <span className='rounded-full bg-brand-3 px-3 py-1 align-middle text-xl text-primary'>
+            {community.nom}
+          </span>{' '}
+          à
+        </h2>
+        <p className='text-lg font-semibold text-primary md:px-20'>
+          Comparer les dernières données de dépenses publiques de vos collectivités locales.
+        </p>
+      </div>
+
+      {/* Barre de recherche */}
+      <div>
+        <SearchBar
+          className='relative block w-full'
+          onSelect={(option) => goToComparison(option.siren)}
+        />
+      </div>
+
+      {/* Communes similaires (cachées pour le moment) */}
+      {similarCommunityList.length > 0 && (
+        <div>
+          <h3 className='mb-3 text-sm font-medium text-muted'>Communes similaires</h3>
+          <div className='flex flex-wrap gap-2'>
+            {similarCommunityList.map((similarCommunity) => (
+              <ActionButton
+                key={similarCommunity.siren}
+                variant='outline'
+                text={similarCommunity.nom}
+                onClick={() => goToComparison(similarCommunity.siren)}
+                className='rounded-full bg-primary-light px-3 py-1 text-base text-sm font-bold text-primary'
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

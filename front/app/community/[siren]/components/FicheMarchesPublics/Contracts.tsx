@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 
-import DownloadButton from '@/app/community/[siren]/components/DownloadDataButton';
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { usePagination } from '@/utils/hooks/usePagination';
+import DownloadButton from '#app/community/[siren]/components/DownloadDataButton';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { downloadMarchesPublicsContratsCSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsContrats';
+import { usePagination } from '#utils/hooks/usePagination';
 
 import { YearOption } from '../../types/interface';
+import { TabHeader } from '../TabHeader';
 import MarchesPublicsTable from './MarchesPublicsTable';
 
 type ContractsProps = {
@@ -24,18 +26,24 @@ export default function Contracts({ siren, availableYears }: ContractsProps) {
     paginationProps.onPageChange(1);
   }
 
+  function handleDownloadData() {
+    if (selectedYear !== 'All') {
+      downloadMarchesPublicsContratsCSV(siren, selectedYear);
+    }
+  }
+
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Classement par tailles de contrats</h3>
-        </div>
-        <div className='flex items-center gap-2'>
-          <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
-          <DownloadButton />
-        </div>
-      </div>
-      <MarchesPublicsTable siren={siren} year={selectedYear} paginationProps={paginationProps} />
+      <TabHeader
+        title='Classement par tailles de contrats'
+        actions={
+          <>
+            <YearSelector defaultValue={defaultYear} onSelect={handleSelectedYear} />
+            <DownloadButton onClick={handleDownloadData} disabled={selectedYear === 'All'} />
+          </>
+        }
+      />
+      <MarchesPublicsTable siren={siren} year={selectedYear} />
     </>
   );
 }

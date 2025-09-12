@@ -81,3 +81,9 @@ export type SubventionSector = Paginated<{
   /** Total of the community for a year */
   grand_total: number;
 }>;
+
+export type PaginatedSubvention = Paginated<
+  Pick<Subvention, 'id_beneficiaire' | 'objet' | 'montant' | 'annee'>
+> & {
+  beneficiaire_names: string[];
+};

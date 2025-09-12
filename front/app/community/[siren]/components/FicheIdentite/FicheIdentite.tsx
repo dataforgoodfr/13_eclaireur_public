@@ -1,29 +1,64 @@
-import { Community } from '@/app/models/community';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
+import type { Community } from '#app/models/community';
+import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
+import { CircleX, FileText } from 'lucide-react';
 
 import { CommunityDetails } from '../CommunityDetails';
 import { FicheCard } from '../FicheCard';
 import NeighboursMap from '../NeighboursMap/NeighboursMap';
-import { TransparencyScoreWithTrend } from '../TransparencyScore/TransparencyScore';
 
-type FicheIdentiteProps = {
-  community: Community;
+const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
+  return (
+    <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
+      <div className='order-2 sm:order-1'>
+        <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>Informations générales</h2>
+      </div>
+      <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
+        {community.should_publish === true ? (
+          <BadgeCommunity
+            text="Soumise à l'obligation Loi République Numérique"
+            icon={FileText}
+            iconSize={12}
+            className='bg-brand-2'
+          />
+        ) : community.should_publish === false ? (
+          <BadgeCommunity
+            text="Non soumise à l'obligation Loi République Numérique"
+            icon={CircleX}
+            iconSize={12}
+            className='bg-red-200'
+          />
+        ) : (
+          <BadgeCommunity
+            text='Information manquante Loi République Numérique'
+            icon={CircleX}
+            iconSize={12}
+            className='bg-gray-200'
+          />
+        )}
+      </div>
+    </div>
+  );
 };
 
-export function FicheIdentite({ community }: FicheIdentiteProps) {
-  // TODO - get and add the last update date
-  // const lastUpdateText = `Derniere mise a jour`;
-  // TODO - retrieve scores
-  const score = TransparencyScore.B;
-  const trend = 1;
-
+export function FicheIdentite({
+  community,
+  className,
+  budgetTotal,
+}: {
+  community: Community;
+  className?: string;
+  budgetTotal?: number | null;
+}) {
   return (
-    <FicheCard>
-      <div className='mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-start'>
-        <CommunityDetails community={community} />
-        <NeighboursMap community={community} />
+    <FicheCard header={<FicheIndentiteEnTete community={community} />} className={className}>
+      <div className='mb-10 flex w-full flex-col gap-6 md:flex-row'>
+        <div className='order-2 w-full md:order-1 md:w-1/3'>
+          <CommunityDetails community={community} budgetTotal={budgetTotal} />
+        </div>
+        <div className='order-1 h-64 w-full rounded-lg md:order-2 md:h-auto md:w-2/3'>
+          <NeighboursMap community={community} />
+        </div>
       </div>
-      <TransparencyScoreWithTrend score={score} trend={trend} />
     </FicheCard>
   );
 }

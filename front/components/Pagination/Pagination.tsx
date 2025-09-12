@@ -1,107 +1,109 @@
+import { Button } from '#components/ui/button';
 import {
   PaginationContent,
-  PaginationEllipsis,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationItem as ShacCNPaginationItem,
   Pagination as ShadCNPagination,
-} from '@/components/ui/pagination';
+  PaginationItem as ShadCNPaginationItem,
+} from '#components/ui/pagination';
+import { cn } from '#utils/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FIRST_PAGE = 1;
-const MAX_PAGE_COUNT_ON_SIDES = 1;
-const MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE = 1;
 
 export type PaginationProps = {
   totalPage: number;
   activePage: number;
   onPageChange: (page: number) => void;
+  maxVisiblePages?: number;
 };
 
 /**
- * Pagination component that follows the pattern:
- * 1 2 3 ... 10
- * 1 ... 3 4 5 ... 10
- * 1 ... 8 9 10
+ * Pagination component with simple page numbers and arrow navigation
  */
-export function Pagination({ totalPage, activePage, onPageChange }: PaginationProps) {
+export function Pagination({
+  totalPage,
+  activePage,
+  onPageChange,
+  maxVisiblePages = 5,
+}: PaginationProps) {
   function handlePreviousPage() {
     if (activePage === FIRST_PAGE) return;
-
     onPageChange(activePage - 1);
   }
 
   function handleNextPage() {
     if (activePage === totalPage) return;
-
     onPageChange(activePage + 1);
   }
 
-  const allPages = [...new Array(totalPage)].map((_, i) => i + FIRST_PAGE);
+  // Calculate visible pages based on maxVisiblePages parameter (including arrows)
+  const showLeftArrow = activePage > FIRST_PAGE;
+  const showRightArrow = activePage < totalPage;
 
-  const isCloseToLeftSide = activePage < MAX_PAGE_COUNT_ON_SIDES + 1;
+  const getVisiblePages = () => {
+    // Calculate available space for page numbers (total - arrows)
+    const arrowCount = (showLeftArrow ? 1 : 0) + (showRightArrow ? 1 : 0);
+    const availableSpaceForPages = maxVisiblePages - arrowCount;
 
-  const firstVisiblePages = allPages.slice(0, MAX_PAGE_COUNT_ON_SIDES);
+    // If we have more space than total pages, show all
+    if (totalPage <= availableSpaceForPages) {
+      return [...new Array(totalPage)].map((_, i) => i + FIRST_PAGE);
+    }
 
-  const middleVisiblePages = allPages.slice(
-    Math.max(
-      isCloseToLeftSide ? activePage : activePage - MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE - 1,
-      MAX_PAGE_COUNT_ON_SIDES,
-    ),
-    Math.min(activePage + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE, totalPage - MAX_PAGE_COUNT_ON_SIDES),
-  );
+    // Center the active page in the available space
+    const half = Math.floor(availableSpaceForPages / 2);
+    let start = Math.max(FIRST_PAGE, activePage - half);
+    const end = Math.min(totalPage, start + availableSpaceForPages - 1);
 
-  const lastVisiblePages = allPages.slice(totalPage - MAX_PAGE_COUNT_ON_SIDES);
+    // Adjust start if we're near the end
+    if (end - start + 1 < availableSpaceForPages) {
+      start = Math.max(FIRST_PAGE, end - availableSpaceForPages + 1);
+    }
+
+    return [...new Array(end - start + 1)].map((_, i) => start + i);
+  };
+
+  const visiblePages = getVisiblePages();
 
   return (
     <ShadCNPagination className={totalPage === 1 ? 'invisible' : ''}>
-      <PaginationContent>
-        <ShacCNPaginationItem>
-          <PaginationPrevious
-            className={`cursor-pointer ${activePage === 1 ? 'invisible' : ''}`}
+      <PaginationContent className='flex items-center gap-2'>
+        {/* Left Arrow */}
+        {showLeftArrow && (
+          <Button
+            variant='default'
+            size='icon'
+            className='min-h-[36px] min-w-[36px] rounded-tl-br'
             onClick={handlePreviousPage}
-          />
-        </ShacCNPaginationItem>
-        {firstVisiblePages.map((page) => (
-          <PaginationItem
-            key={page}
-            page={page}
-            activePage={activePage}
-            onPageChange={onPageChange}
-          />
-        ))}
-        {activePage > MAX_PAGE_COUNT_ON_SIDES + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE + 1 && (
-          <ShacCNPaginationItem>
-            <PaginationEllipsis />
-          </ShacCNPaginationItem>
+            aria-label='Page précédente'
+          >
+            <ChevronLeft className='h-4 w-4' />
+          </Button>
         )}
-        {middleVisiblePages.map((page) => (
-          <PaginationItem
-            key={page}
-            page={page}
-            activePage={activePage}
-            onPageChange={onPageChange}
-          />
-        ))}
-        {activePage < totalPage - (MAX_PAGE_COUNT_ON_SIDES + MAX_PAGE_COUNT_AROUND_ACTIVE_PAGE) && (
-          <ShacCNPaginationItem>
-            <PaginationEllipsis />
-          </ShacCNPaginationItem>
-        )}
-        {lastVisiblePages.map((page) => (
-          <PaginationItem
-            key={page}
-            page={page}
-            activePage={activePage}
-            onPageChange={onPageChange}
-          />
-        ))}
-        <ShacCNPaginationItem>
-          <PaginationNext
-            className={`cursor-pointer ${activePage === totalPage ? 'invisible' : ''}`}
+
+        {/* Page Numbers */}
+        <div className='flex items-center gap-2'>
+          {visiblePages.map((page) => (
+            <PaginationItem
+              key={page}
+              page={page}
+              activePage={activePage}
+              onPageChange={onPageChange}
+            />
+          ))}
+        </div>
+
+        {/* Right Arrow */}
+        {showRightArrow && (
+          <Button
+            variant='default'
+            size='icon'
+            className='min-h-[36px] min-w-[36px] rounded-tl-br'
             onClick={handleNextPage}
-          />
-        </ShacCNPaginationItem>
+            aria-label='Page suivante'
+          >
+            <ChevronRight className='h-4 w-4' />
+          </Button>
+        )}
       </PaginationContent>
     </ShadCNPagination>
   );
@@ -114,9 +116,20 @@ type PaginationItemProps = {
 };
 
 function PaginationItem({ page, activePage, onPageChange }: PaginationItemProps) {
+  const isActive = page === activePage;
+
   return (
-    <ShacCNPaginationItem className='cursor-pointer' onClick={() => onPageChange(page)}>
-      <PaginationLink isActive={page === activePage}>{page}</PaginationLink>
-    </ShacCNPaginationItem>
+    <ShadCNPaginationItem className='cursor-pointer' onClick={() => onPageChange(page)}>
+      <div
+        className={cn(
+          'flex min-h-[36px] min-w-[36px] items-center justify-center rounded-tl-br px-4 text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-primary-light text-primary'
+            : 'border border-gray-200 bg-white text-primary hover:bg-gray-50',
+        )}
+      >
+        {page}
+      </div>
+    </ShadCNPaginationItem>
   );
 }

@@ -85,6 +85,48 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
   return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
 }
 
+export function formatCompactPriceInteger(
+  value: number,
+  options?: Intl.NumberFormatOptions,
+): string {
+  const defaultOptions = {
+    notation: 'compact',
+    currency: 'EUR',
+    style: 'currency',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    ...options,
+  } as const;
+
+  return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
+}
+
+/**
+ * Determine the appropriate unit (M€ or k€) based on max value
+ */
+export function getMonetaryUnit(maxValue: number): 'M€' | 'k€' {
+  return maxValue >= 1000000 ? 'M€' : 'k€';
+}
+
+/**
+ * Get the divisor for the unit (1000000 for M€, 1000 for k€)
+ */
+export function getMonetaryDivisor(unit: 'M€' | 'k€'): number {
+  return unit === 'M€' ? 1000000 : 1000;
+}
+
+/**
+ * Format a value with the appropriate unit, max 1 decimal place
+ */
+export function formatMonetaryValue(value: number, unit: 'M€' | 'k€'): string {
+  const divisor = getMonetaryDivisor(unit);
+  const normalizedValue = value / divisor;
+  return new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  }).format(normalizedValue);
+}
+
 export function formatPrice(value: number, options?: Intl.NumberFormatOptions): string {
   const defaultOptions = {
     style: 'currency',
@@ -120,7 +162,7 @@ export function formatFirstLetterToUppercase(str: string): string {
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
-  if (type === CommunityType.CA) return `Communauté d'agglomeration`;
+  if (type === CommunityType.CA) return `Communauté d'agglomération`;
   if (type === CommunityType.CC) return 'Communauté de communes';
   if (type === CommunityType.CTU) return 'Collectivité territoriale unique';
   if (type === CommunityType.Commune) return 'Commune';
@@ -130,6 +172,14 @@ export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.Region) return 'Région';
 
   throw new Error(`Type ${type} not supported`);
+}
+
+export function getSortedCommunityTypes(types: CommunityType[]): CommunityType[] {
+  return types.sort((a, b) => {
+    const labelA = stringifyCommunityType(a);
+    const labelB = stringifyCommunityType(b);
+    return labelA.localeCompare(labelB, 'fr');
+  });
 }
 
 export function parseDirection(value: string | null): Direction | undefined {

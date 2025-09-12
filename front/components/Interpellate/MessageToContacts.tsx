@@ -1,31 +1,42 @@
+// TODO: Review and remove unused variables. This file ignores unused vars for now.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 type MessageToContactsProps = {
-  from?: string;
-  to?: string;
+  from: string;
+  to: string;
   fonction?: string;
-  communityName?: string;
+  communityName: string;
+  communityType: string;
 };
 export default function MessageToContacts({
   from,
   to,
   fonction,
   communityName,
+  communityType,
 }: MessageToContactsProps) {
+  const communityTitle = communityType === 'Commune' ? 'Maire' : 'Président.e';
   return (
     <>
-      <p>
-        {to && <>À l’attention de {to}</>}
+      <p className='mb-4'>
+        {/* {to && <>À l’attention de {to}</>} */}
+        {communityName && communityTitle && (
+          <>
+            À l’attention de M. ou Mme le ou la {communityTitle} de {communityName}
+          </>
+        )}
         {fonction && (
           <>
             <br />
             {fonction}
           </>
         )}
-        {communityName && (
+        {/* {communityName && (
           <>
             <br />
             {communityName}
           </>
-        )}
+        )} */}
       </p>
       <p>Madame, Monsieur,</p>
       <p>
@@ -38,8 +49,10 @@ export default function MessageToContacts({
         Ces informations sont essentielles pour garantir une gestion claire et accessible des
         finances publiques. Elles permettent aux citoyen·nes de mieux comprendre les choix
         budgétaires, de renforcer la confiance dans les institutions et de s’assurer du bon usage de
-        l’argent public. Pourtant, à ce jour, ces données restent souvent incomplètes ou
-        difficilement accessibles.
+        l’argent public.
+      </p>
+      <p>
+        Pourtant, à ce jour, ces données restent souvent incomplètes ou difficilement accessibles.
       </p>
       <p>
         Je vous encourage donc à publier et mettre à jour ces données conformément aux obligations
@@ -54,7 +67,7 @@ export default function MessageToContacts({
         Dans l’attente de votre réponse, veuillez agréer, Madame, Monsieur, l’expression de mes
         salutations distinguées.
       </p>
-      <p>{from}</p>
+      <p>{from && <>{from}</>}</p>
     </>
   );
 }

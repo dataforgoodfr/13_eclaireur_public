@@ -1,19 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-import DownloadSelector from '@/app/community/[siren]/components/DownloadDropDown';
-import YearSelector from '@/app/community/[siren]/components/YearSelector';
-import { downloadMarchesPublicsByCPV2CSV } from '@/utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
+import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
+import YearSelector from '#app/community/[siren]/components/YearSelector';
+import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
+import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
 import { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
+import { TabHeader } from '../TabHeader';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
 import MarchesPublicsSectorTreemap from './MarchesPublicsSectorTreeMap';
 
-type DistributionProps = { siren: string; availableYears: number[] };
+type DistributionProps = { siren: string; availableYears: number[]; communityName: string };
 
-export default function Distribution({ siren, availableYears }: DistributionProps) {
+export default function Distribution({ siren, availableYears, communityName }: DistributionProps) {
+  const marchesPublicsSectorTreemapRef = useRef<HTMLDivElement | null>(null);
+
   const defaultYear: YearOption = availableYears.length > 0 ? Math.max(...availableYears) : 'All';
   const [selectedYear, setSelectedYear] = useState<YearOption>(defaultYear);
   const [isTableDisplayed, setIsTableDisplayed] = useState(false);
@@ -22,28 +26,52 @@ export default function Distribution({ siren, availableYears }: DistributionProp
     downloadMarchesPublicsByCPV2CSV(siren, selectedYear === 'All' ? null : selectedYear);
   }
 
+  function handleDownloadChart() {
+    if (selectedYear !== 'All' && marchesPublicsSectorTreemapRef.current) {
+      downloadSVGChart(
+        marchesPublicsSectorTreemapRef.current,
+        {
+          communityName,
+          chartTitle: `Répartition par secteur - ${selectedYear}`,
+        },
+        { fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}`, extension: 'png' },
+      );
+    }
+  }
+
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='py-2 text-xl'>Répartition par secteur</h3>
+      <TabHeader
+        title='Répartition par secteur'
+        titleSwitch={
           <GraphSwitch
             isActive={isTableDisplayed}
             onChange={setIsTableDisplayed}
-            label1='graphique'
-            label2='tableau'
+            label1='Graphique'
+            label2='Tableau'
           />
-        </div>
-        <div className='flex items-center gap-2'>
-          <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
-          <DownloadSelector onClickDownloadData={handleDownloadData} />
-        </div>
-      </div>
-      {isTableDisplayed ? (
+        }
+        actions={
+          <>
+            <YearSelector defaultValue={defaultYear} onSelect={setSelectedYear} />
+            <DownloadSelector
+              onClickDownloadData={handleDownloadData}
+              onClickDownloadChart={handleDownloadChart}
+              disabled={selectedYear === 'All'}
+            />
+          </>
+        }
+      />
+      <div style={{ display: isTableDisplayed ? 'block' : 'none' }}>
         <MarchesPublicsSectorTable siren={siren} year={selectedYear} />
-      ) : (
-        <MarchesPublicsSectorTreemap siren={siren} year={selectedYear} />
-      )}
+      </div>
+      <div style={{ display: !isTableDisplayed ? 'block' : 'none' }}>
+        <MarchesPublicsSectorTreemap
+          ref={marchesPublicsSectorTreemapRef}
+          siren={siren}
+          year={selectedYear}
+        />
+      </div>
     </>
   );
 }

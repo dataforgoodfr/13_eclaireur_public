@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '#components/ui/switch';
 
 type GraphSwitchProps = {
   label1: ReactNode;
@@ -10,12 +10,12 @@ type GraphSwitchProps = {
 };
 
 function getCursorClassName(isActive: boolean) {
-  return `cursor-pointer ${isActive ? 'text-neutral-400' : 'text-neutral-800'}`;
+  return `cursor-pointer ${isActive ? 'text-muted' : 'text-primary'} text-xs font-semibold sm:text-sm whitespace-nowrap`;
 }
 
 export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchProps) {
   return (
-    <div className='flex items-baseline gap-2'>
+    <div className='flex items-center gap-1'>
       <div
         onClick={() => {
           onChange(false);
@@ -29,6 +29,7 @@ export function GraphSwitch({ label1, label2, isActive, onChange }: GraphSwitchP
         onCheckedChange={() => {
           onChange(!isActive);
         }}
+        className='data-[state=checked]:bg-primary data-[state=unchecked]:bg-primary'
       />
       <div
         onClick={() => {

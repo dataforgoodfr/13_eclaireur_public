@@ -1,61 +1,70 @@
-import Link from 'next/link';
+// import Link from 'next/link';
+import { Suspense } from 'react';
 
-import BadgeCommunity from '@/components/Communities/BadgeCommunity';
-import BudgetGlobal from '@/components/Communities/BudgetGlobal';
-import MiniFicheCommunity from '@/components/Communities/MiniFicheCommunity';
-import RankingCommunity from '@/components/Communities/RankingCommunity';
-import ButtonBackAndForth from '@/components/Interpellate/ButtonBackAndForth';
-import Stepper from '@/components/Interpellate/Stepper';
-import { TransparencyScoreBar } from '@/components/TransparencyScore/TransparencyScore';
-import { TransparencyScore } from '@/components/TransparencyScore/constants';
-import { MoveRight } from 'lucide-react';
+import { FicheIdentite } from '#app/community/[siren]/components/FicheIdentite/FicheIdentite';
+import { FicheIdentiteSkeleton } from '#app/community/[siren]/components/Skeletons/FicheIdentiteSkeleton';
+import { TransparencySkeleton } from '#app/community/[siren]/components/Skeletons/TransparencySkeleton';
+import { TransparencyScoreWithTrend } from '#app/community/[siren]/components/TransparencyScore/TransparencyScore';
+import CommunityBasics from '#components/Communities/CommunityBasics';
+import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
+import Stepper from '#components/Interpellate/Stepper';
+import { TransparencyScore } from '#components/TransparencyScore/constants';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
+import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
 
-export default async function InterpellateStep1({
-  params,
-}: {
-  params: Promise<{ siren: string }>;
-}) {
+type CommunityPageProps = { params: Promise<{ siren: string }> };
+
+async function getCommunity(siren: string) {
+  const communitiesResults = await fetchCommunities({ filters: { siren } });
+
+  if (communitiesResults.length === 0) {
+    throw new Error(`Community doesnt exist with siren ${siren}`);
+  }
+
+  const { aggregatedScore } = await fetchMostRecentTransparencyScore(siren);
+
+  return {
+    ...communitiesResults[0],
+    transparencyScore: aggregatedScore,
+  };
+}
+export default async function InterpellateStep1({ params }: CommunityPageProps) {
   const { siren } = await params;
-  // TODO - retrieve scores
-  const scores = { subventions: TransparencyScore.E, marchesPublics: TransparencyScore.B };
-  // const trends = { subventions: 1, marchesPublics: 0.01 };
+  const community = await getCommunity(siren);
+
+  const score = community.transparencyScore || TransparencyScore.UNKNOWN;
+  const trend = 1;
 
   return (
-    <section className='my-16'>
-      <Stepper currentStep={1} />
-
-      <h2 className='mb-12 mt-6 text-center text-2xl font-bold'>Collectivité sélectionnée</h2>
-      <article className='px-8 py-12 outline'>
-        <div className='flex justify-between'>
-          <BadgeCommunity isExemplaire={true} />
-          <BudgetGlobal communitySiren={siren} />
-        </div>
-        <div className='mt-10 flex flex-col justify-between md:flex-row'>
-          <MiniFicheCommunity communitySiren={siren} />
-          <div className='min-w-1/4 md:scale-[0.85]'>
-            <h3 className='pl-5 font-bold'>Marchés publics</h3>
-            <TransparencyScoreBar score={scores.marchesPublics} />
-          </div>
-          <div className='min-w-1/4 md:scale-[0.85]'>
-            <h3 className='pl-5 font-bold'>Subventions</h3>
-            <TransparencyScoreBar score={scores.subventions} />
-          </div>
-        </div>
-        <div className='flex justify-between'>
-          <RankingCommunity communityName='Nantes' />
-          <Link className='flex items-end gap-2 hover:underline' href={`/community/${siren}`}>
-            Voir la fiche de la collectivité <MoveRight />
-          </Link>
-        </div>
-      </article>
-      <div className='my-12 flex justify-center gap-4'>
-        <ButtonBackAndForth linkto='/interpeller' direction='back'>
-          Revenir
-        </ButtonBackAndForth>
-        <ButtonBackAndForth linkto={`/interpeller/${siren}/step2`} direction='forth'>
-          Continuer
-        </ButtonBackAndForth>
+    <>
+      <div className='bg-muted-border pb-32'>
+        <Stepper currentStep={1} />
       </div>
-    </section>
+      <section className='global-margin mb-16 mt-[-7rem]'>
+        <article className='mx-4 rounded-3xl border border-primary-light shadow'>
+          <div
+            id='header-article'
+            className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
+          >
+            <CommunityBasics community={community} />
+            <ButtonBackAndForth linkto={`/interpeller/${siren}/step2`} direction='forth'>
+              Continuer
+            </ButtonBackAndForth>
+          </div>
+
+          <Suspense fallback={<FicheIdentiteSkeleton />}>
+            <FicheIdentite community={community} className='border-0 shadow-none' />
+          </Suspense>
+
+          <Suspense fallback={<TransparencySkeleton />}>
+            <TransparencyScoreWithTrend
+              score={score}
+              trend={trend}
+              className='border-b-1 rounded-b-3xl border-0 shadow-none'
+            />
+          </Suspense>
+        </article>
+      </section>
+    </>
   );
 }

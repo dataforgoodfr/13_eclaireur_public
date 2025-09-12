@@ -1,17 +1,25 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast';
-import { ClipboardCopy } from 'lucide-react';
+import { Button, ButtonProps } from '#components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#components/ui/tooltip';
+import { useToast } from '#hooks/use-toast';
+import { Share } from 'lucide-react';
 
 const DEFAULT_LABEL = 'Partager';
 
 type CopyUrlButtonProps = {
   label?: string;
+  variant?: ButtonProps['variant'];
+  size?: ButtonProps['size'];
+  className?: string;
 };
 
-export default function CopyUrlButton({ label = DEFAULT_LABEL }: CopyUrlButtonProps) {
+export default function CopyUrlButton({
+  label = DEFAULT_LABEL,
+  variant = 'outline',
+  size = 'sm',
+  className,
+}: CopyUrlButtonProps) {
   const { toast } = useToast();
 
   async function copyToClipboard() {
@@ -25,8 +33,8 @@ export default function CopyUrlButton({ label = DEFAULT_LABEL }: CopyUrlButtonPr
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant='outline' size='sm' onClick={copyToClipboard} className='ms-3'>
-            <ClipboardCopy />
+          <Button variant={variant} size={size} onClick={copyToClipboard} className={className}>
+            {label ? <Share className='mr-2 h-4 w-4' /> : <Share className='h-4 w-4' />}
             {label}
           </Button>
         </TooltipTrigger>

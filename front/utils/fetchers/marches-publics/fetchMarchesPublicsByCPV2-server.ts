@@ -1,5 +1,5 @@
-import { MarchePublicSector } from '@/app/models/marchePublic';
-import { getQueryFromPool } from '@/utils/db';
+import { MarchePublicSector } from '#app/models/marchePublic';
+import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
 import { Pagination } from '../types';
@@ -13,7 +13,7 @@ export function createSQLQueryParams(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxAmount?: number | null,
+  maxAmount?: number | undefined,
 ): [string, (string | number)[]] {
   const values: (string | number)[] = [siren];
 
@@ -33,7 +33,7 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY cpv_2, cpv_2_label';
-  if (maxAmount !== null) query += ` HAVING SUM(montant) <= ${maxAmount}`;
+  if (maxAmount !== undefined) query += ` HAVING SUM(montant) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';
 
@@ -52,7 +52,7 @@ export async function fetchMarchesPublicsByCPV2(
   siren: string,
   year: number | null,
   pagination: Pagination,
-  maxAmount: number | null,
+  maxAmount: number | undefined,
 ): Promise<MarchePublicSector[]> {
   const params = createSQLQueryParams(siren, year, pagination, maxAmount);
   const rows = (await getQueryFromPool(...params)) as MarchePublicSector[];

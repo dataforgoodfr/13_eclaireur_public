@@ -1,15 +1,17 @@
-import { Suspense } from 'react';
-
 import type { Metadata } from 'next';
 
-import Loading from '@/components/ui/Loading';
-import { fetchCommunities } from '@/utils/fetchers/communities/fetchCommunities-server';
+import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/fetchCommunityBudgetTotal';
+import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 import { ComparisonType } from './components/ComparisonType';
-import { Header } from './components/Header';
 import { HeaderComparison } from './components/HeaderComparison';
 import { MPSubvComparison } from './components/MPSubvComparison';
 import { TransparencyComparison } from './components/TransparencyComparison';
+import { ComparisonHeader } from './components/shared/ComparisonHeader';
+import { ComparisonModificationCard } from './components/shared/ComparisonModificationCard';
+
+// Activer Partial Prerendering pour Next.js 15
+export const experimental_ppr = true;
 
 type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
 
@@ -39,26 +41,42 @@ export default async function Page({ params }: PageProps) {
   const siren = (await params).siren;
   const siren2 = (await params).comparedSiren;
 
-  const community1 = await getCommunity(siren);
-  const community2 = await getCommunity(siren2);
+  // Parallel data fetching pour optimiser les performances
+  const [community1, community2, budgetTotal1, budgetTotal2] = await Promise.all([
+    getCommunity(siren),
+    getCommunity(siren2),
+    fetchCommunityBudgetTotal(siren),
+    fetchCommunityBudgetTotal(siren2),
+  ]);
 
   return (
-    <Suspense key={community1.siren + community2.siren} fallback={<Loading />}>
-      <Header community={community1} community2={community2} />
-      <div className='mx-5 mx-auto my-3 max-w-screen-xl'>
-        <HeaderComparison community1={community1} community2={community2} />
-        <TransparencyComparison siren1={community1.siren} siren2={community2.siren} />
+    <>
+      <ComparisonHeader community1={community1} community2={community2} />
+      <div className='mx-auto mb-6 mt-4 flex max-w-screen-lg flex-col items-stretch justify-center gap-y-6 px-4 lg:mb-16 lg:mt-16 lg:gap-y-16'>
+        <ComparisonModificationCard currentCommunity={community1} comparedWith={community2} />
+
+        <HeaderComparison
+          community1={community1}
+          community2={community2}
+          budgetTotal1={budgetTotal1}
+          budgetTotal2={budgetTotal2}
+        />
+
+        {/* Sections dynamiques avec Suspense pour streaming */}
+        <TransparencyComparison community1={community1} community2={community2} />
+
         <MPSubvComparison
-          siren1={community1.siren}
-          siren2={community2.siren}
+          community1={community1}
+          community2={community2}
           comparisonType={ComparisonType.Marches_Publics}
         />
+
         <MPSubvComparison
-          siren1={community1.siren}
-          siren2={community2.siren}
+          community1={community1}
+          community2={community2}
           comparisonType={ComparisonType.Subventions}
         />
       </div>
-    </Suspense>
+    </>
   );
 }

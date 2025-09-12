@@ -1,47 +1,39 @@
 'use client';
 
-import { useState } from 'react';
-
-import { GraphSwitch } from '../DataViz/GraphSwitch';
-import DownloadButton from '../FicheSubventions/DownloadButton';
-import { MarchesPublicsYearlyAmountsChart } from './MarchesPublicsYearlyAmountsChart';
-import { MarchesPublicsYearlyCountsChart } from './MarchesPublicsYearlyCountsChart';
+import EvolutionContainer from '#components/DataViz/EvolutionContainer';
+import { useMarchesPublicsYearlyAmounts } from '#utils/hooks/useMarchesPublicsYearlyAmounts';
+import { useMarchesPublicsYearlyCounts } from '#utils/hooks/useMarchesPublicsYearlyCounts';
 
 type EvolutionProps = {
   siren: string;
+  communityName: string;
 };
 
-export default function Evolution({ siren }: EvolutionProps) {
-  const [isMarchesPublicsCountDisplayed, setIsMarchesPublicsCountDisplayed] = useState(false);
+export default function Evolution({ siren, communityName }: EvolutionProps) {
+  // Fetch data with existing hooks
+  const {
+    data: amountsData,
+    isPending: amountsPending,
+    isError: amountsError,
+  } = useMarchesPublicsYearlyAmounts(siren);
+
+  const {
+    data: countsData,
+    isPending: countsPending,
+    isError: countsError,
+  } = useMarchesPublicsYearlyCounts(siren);
 
   return (
-    <>
-      <div className='flex items-baseline justify-between'>
-        <div>
-          <h3 className='pb-2 pt-10 text-center text-2xl font-medium'>
-            Évolution des marchés publics au cours du temps
-          </h3>
-          <GraphSwitch
-            isActive={isMarchesPublicsCountDisplayed}
-            onChange={setIsMarchesPublicsCountDisplayed}
-            label1='Montants annuels'
-            label2='Nombre de marchés publics'
-          />
-        </div>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2'>
-            <DownloadButton label='CSV' />
-            <DownloadButton label='PNG' />
-          </div>
-        </div>
-      </div>
-      <div className='p-4'>
-        {isMarchesPublicsCountDisplayed ? (
-          <MarchesPublicsYearlyCountsChart siren={siren} />
-        ) : (
-          <MarchesPublicsYearlyAmountsChart siren={siren} />
-        )}
-      </div>
-    </>
+    <EvolutionContainer
+      siren={siren}
+      communityName={communityName}
+      dataType='marches-publics'
+      amountsData={amountsData}
+      countsData={countsData}
+      isAmountsPending={amountsPending}
+      isCountsPending={countsPending}
+      isAmountsError={amountsError}
+      isCountsError={countsError}
+    />
   );
 }
