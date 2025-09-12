@@ -41,9 +41,7 @@ class DataGouvSearcher(BaseDataset):
         """
         description_pattern = re.compile("|".join(self.config.get("description_filter") or []))
         flagged_by_description = (
-            self.catalog["dataset_description"]
-            .str.lower()
-            .str.contains(description_pattern, na=False)
+            self.catalog["description"].str.lower().str.contains(description_pattern, na=False)
         )
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
