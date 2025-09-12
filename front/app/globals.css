@@ -10,7 +10,7 @@ input[type='search']::-webkit-search-cancel-button {
   .global-margin {
     @apply container mx-auto max-w-[1200px] overflow-x-hidden sm:overflow-x-visible;
   }
-  .doc-margin {
+  .section-format {
     @apply mx-4 my-4 max-w-full rounded-3xl border border-primary-light p-4 md:mx-8 md:my-8 md:p-8 xl:mx-auto xl:my-16 xl:max-w-[1128px];
   }
   h1,
