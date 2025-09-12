@@ -6,7 +6,6 @@ export enum TransparencyScore {
   E = 'E',
   UNKNOWN = 'UNKNOWN',
 }
-
 export const SCORE_TO_ADJECTIF = {
   [TransparencyScore.A]: 'Exemplaire',
   [TransparencyScore.B]: 'Transparent',
@@ -15,7 +14,6 @@ export const SCORE_TO_ADJECTIF = {
   [TransparencyScore.E]: 'Très insuffisant',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
-
 export const SCORE_DESCRIPTION = {
   [TransparencyScore.A]:
     'La structure est très transparente et expose de manière exhaustive ses données.',
@@ -26,7 +24,6 @@ export const SCORE_DESCRIPTION = {
   [TransparencyScore.E]: 'La structure est opaque et ne rend pas ses données publiques.',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
-
 export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {
   [TransparencyScore.A]: 'bg-score-A',
   [TransparencyScore.B]: 'bg-score-B',

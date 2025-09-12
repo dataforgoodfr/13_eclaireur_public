@@ -68,13 +68,13 @@ export default function SearchBar({
 
   return (
     <div className={className}>
-      <div className='relative m-2' ref={searchBarRef}>
+      <div className='relative' ref={searchBarRef}>
         <div className='flex items-center'>
           <Input
             ref={inputRef}
             type='search'
             placeholder={placeholder}
-            className='h-14 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-6 text-primary placeholder:text-ellipsis placeholder:text-lg placeholder:font-semibold placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0'
+            className='h-14 rounded-none rounded-br-xl rounded-tl-xl border pl-4 pr-6 text-primary placeholder:text-ellipsis placeholder:text-base placeholder:font-semibold placeholder:text-primary focus:m-0 focus:border-primary focus:ring-primary focus-visible:ring-offset-0 lg:placeholder:text-lg'
             onChange={handleInputChange}
             onFocus={handleOnFocus}
             onBlur={(e) => {
