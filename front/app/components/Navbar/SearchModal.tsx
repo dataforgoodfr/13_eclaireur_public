@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import { useRouter } from 'next/navigation';
 
 import SearchBar from '#components/SearchBar/SearchBar';
@@ -12,21 +10,6 @@ interface SearchModalProps {
 
 export default function SearchModal({ onClose }: SearchModalProps) {
   const router = useRouter();
-  const [placeholder, setPlaceholder] = useState('Code postal...');
-
-  useEffect(() => {
-    const updatePlaceholder = () => {
-      setPlaceholder(
-        window.innerWidth <= 375
-          ? 'Code postal, commune...'
-          : 'Code postal, commune, département...',
-      );
-    };
-
-    updatePlaceholder();
-    window.addEventListener('resize', updatePlaceholder);
-    return () => window.removeEventListener('resize', updatePlaceholder);
-  }, []);
 
   function navigateToCommunityPage({ siren }: { siren: string }) {
     if (siren) {
@@ -42,10 +25,20 @@ export default function SearchModal({ onClose }: SearchModalProps) {
         Accédez aux données de dépenses publiques de votre commune, département ou région.
       </p>
       <SearchBar
-        className='relative mx-2 mb-6'
+        className='relative mx-2 mb-6 block min-[425px]:hidden'
         onSelect={navigateToCommunityPage}
-        placeholder={placeholder}
-      />{' '}
+        placeholder='Code postal, commune, ...'
+      />
+      <SearchBar
+        className='relative mx-2 mb-6 block max-[424px]:hidden sm:hidden'
+        onSelect={navigateToCommunityPage}
+        placeholder='Code postal, commune, département, région'
+      />
+      <SearchBar
+        className='relative mx-2 mb-6 hidden sm:block'
+        onSelect={navigateToCommunityPage}
+        placeholder='Code postal, commune, département, région'
+      />
     </div>
   );
 }
