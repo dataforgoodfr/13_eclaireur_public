@@ -53,7 +53,81 @@ L'intégralité du contenu du dossier `./back/` concerne la partie backend du pr
  - `.gitignore`: fichier contenant les références ignorées par git
 - `README.md`: ce fichier
 
+---
 
+# 🗂️ Pipeline de Traitement des Données
+
+##  Objectif
+
+Le pipeline a pour but de :
+
+- Collecter, nettoyer, uniformiser et enrichir des jeux de données publics, notamment sur les **subventions territoriales**.
+- Rendre ces données exploitables via une **interface web** destinée aux citoyens, journalistes, chercheurs ou associations et les marchés publics.
+
+---
+
+##  Architecture Générale
+
+Le pipeline de traitement des données s’articule en **trois étapes**, allant de la récupération brute des données jusqu’à leur standardisation finale dans un format exploitable: 
+
+1. **Constitution des bases principales**
+2. **Enrichissements via des plateformes OpenData**
+3. **Structuration finale et validation**
+
+
+
+🔗 **Schéma complet du pipeline** (POC Anticor) :  
+ [Lien Excalidraw](https://excalidraw.com/#room=f3a228d37457f02aa822,PmpHg9tvB0P0Zs4KuLExIA)
+
+---
+
+## Sources de données utilisées
+
+Les données sont agrégées à partir de sources publiques, fiables et actualisées, notamment :
+
+| Source            | Description                                                                 | Exemple d’usage                        |
+|------------------|------------------------------------------------------------------------------|----------------------------------------|
+| **INSEE (Sirene)**        | Données légales sur les entreprises, structures publiques et collectivités (codes SIREN/SIRET, formes juridiques, NAF, etc.) | Identification et typage des entités   |
+| **ODF (Observatoire des Finances)** | Données financières consolidées des collectivités locales         | Budgets, typologies budgétaires         |
+| **DataGouv API**         | Métacatalogue et ressources ouvertes, sans hébergement direct        | Recherche de fichiers Opendata annexes |
+| **Data INSEE (Codes géographiques)** | Codes géographiques, démographie, codes région/département      | Appariement géographique                |
+
+> **Note** : Bien que `data.gouv.fr` soit la plateforme de centralisation, les données y sont généralement référencées mais pas hébergées. Les appels se font donc majoritairement directement auprès de l’INSEE ou des sources finales (OFGL, DGFIP, etc.).
+
+---
+
+## Traitements appliqués
+
+Le pipeline `communities` applique les étapes suivantes :
+
+1. **Chargement des données INSEE (Sirene)**
+   - Données SIREN/SIRET + formes juridiques + NAF
+   - Normalisation des entités juridiques
+   - Nettoyage des doublons
+
+2. **Récupération des données ODF**
+   - Données financières locales, typologie des collectivités
+   - Mappage avec les identifiants INSEE/SIREN
+   - Calcul de métriques de référence : population, dépenses, etc.
+
+3. **Enrichissement via DataGouv API**
+   - Appel de l’API pour extraire des ressources annexes (métriques, subventions, etc.)
+   - Appariement via des correspondances (code commune, code postal, etc.)
+
+4. **Fusion, consolidation et création du fichier `communities.parquet`**
+   - Regroupement des données par SIREN
+   - Ajout des métadonnées utiles (catégorie, statut, région, EPCI, etc.)
+   - Validation finale de structure
+
+---
+
+##  Spécificités techniques et bonnes pratiques
+
+- Le pipeline repose sur une architecture modulaire orchestrée par un gestionnaire de workflows (`workflow_manager.py`)
+- Tous les fichiers sources sont convertis au format **Parquet** pour une meilleure performance en lecture/écriture.
+- La logique de fusion des sources repose principalement sur les **codes SIREN/SIRET** et les **codes géographiques INSEE**.
+
+---
 
 ## Flux de Données
 
