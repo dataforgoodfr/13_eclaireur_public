@@ -28,7 +28,7 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
         <article className='mx-4 rounded-3xl border border-primary-light shadow'>
           <div
             id='header-article'
-            className='align-center flex flex-col justify-between gap-8 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-bottom px-8 py-12 md:flex-row md:gap-0'
+            className='align-center flex flex-col justify-between gap-4 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-cover px-4 py-4 md:flex-row md:gap-0 md:px-8 md:py-12'
           >
             <CommunityBasics community={community} />
           </div>

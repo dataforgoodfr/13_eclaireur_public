@@ -44,3 +44,12 @@ export const SCORE_INDICE_COLOR: Record<TransparencyScore, string> = {
   [TransparencyScore.UNKNOWN]: 'bg-muted-light',
 };
 export const SCORE_NON_DISPONIBLE = 'Non disponible';
+
+export const SCORE_TO_RANGE = {
+  [TransparencyScore.A]: '100% (+/- 5%) ',
+  [TransparencyScore.B]: 'De 75% à 95%',
+  [TransparencyScore.C]: 'De 50% à 75%',
+  [TransparencyScore.D]: 'De 25% à 50% ',
+  [TransparencyScore.E]: 'Moins de 40% ou données inexploitables',
+  [TransparencyScore.UNKNOWN]: 'Non disponible',
+};
