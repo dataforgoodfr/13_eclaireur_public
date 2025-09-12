@@ -10,7 +10,7 @@ type ButtonBackAndForth = {
   linkto: string;
   direction: 'back' | 'forth';
   children: React.ReactNode;
-  siren?: string;
+  className?: string;
   step?: number;
 };
 let linkHref: string;
@@ -18,6 +18,7 @@ export default function ButtonBackAndForth({
   linkto,
   direction,
   children,
+  className,
   step,
 }: ButtonBackAndForth) {
   const selectedContactsContext = useSelectedContactsContext();
@@ -41,7 +42,7 @@ export default function ButtonBackAndForth({
       href={linkHref}
       className={buttonVariants({
         variant: 'outline',
-        className: `self-start rounded-none rounded-br-xl rounded-tl-xl bg-primary px-2 py-5 font-kanit-bold font-normal text-white ${disableLinkCSSClassName}`,
+        className: `self-start rounded-none rounded-br-xl rounded-tl-xl bg-primary px-2 py-5 font-kanit-bold font-normal text-white ${disableLinkCSSClassName} ${className}`,
       })}
       title={!isSelectedContacts ? 'sélectionner au moins un contact' : ''}
     >
