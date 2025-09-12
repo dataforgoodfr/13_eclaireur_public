@@ -101,7 +101,7 @@ export default function OurMethodologyExtended() {
         <div className='text-lg'>
           <div>
             L'indice de transparence des <strong>subventions</strong>, pour une année N, d'une
-            collectivité se calcule comme suit :
+            collectivité se calcule comme suit&nbsp;:
           </div>
           <div className='gap-16 py-6 md:flex'>
             <div>
