@@ -10,6 +10,38 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const EvolutionCadreLegalList = [
+    {
+      object:
+        "Seuil de publication d'un marché public (la commande peut se faire de gré-à-gré en-déçà)",
+      since2019Text: '40 000 €HT',
+      before2019Text: '25 000 €HT',
+    },
+    {
+      object: 'Obligation de publication de données en Open Data',
+      since2019Text:
+        'Marchés publics > 40 000 €HT\nInformation sans obligation de détail pour les marchés de 25 à 40 000 € HT',
+      before2019Text: 'Marchés publics > 25 000 €HT',
+    },
+    {
+      object: 'Contrats de concession',
+      since2019Text:
+        'Assimilés à des marchés publics: règles identiques (mais sans condition de seuil)',
+      before2019Text: 'Règles spécifiques',
+    },
+    {
+      object: 'Digitalisation de la commande publique',
+      since2019Text:
+        "Obligation de l'utilisation d'une plateforme numérique pour la publication des appels d'offres",
+      before2019Text: 'Néant',
+    },
+    {
+      object: 'Publication obligatoire des données sur la plateforme nationale',
+      since2019Text: 'Uniquement depuis 2024: publication sur data.gouv.fr',
+      before2019Text: 'Néant (aucune obligation de plateforme)',
+    },
+  ];
+
   return (
     <main
       className='mx-auto mb-12 flex w-full flex-col items-center justify-center'
@@ -290,57 +322,38 @@ export default function Page() {
             </li>
           </ul>
           <h3>Synthèse des évolutions du cadre légal</h3>
-          <table className=''>
+          <table className='max-sm:hidden'>
             <caption className='mb-2 text-left font-bold'>Évolutions du cadre légal</caption>
             <thead className='text-left text-base font-medium text-muted'>
-              <tr className=''>
-                <th className=''>Sujet</th>
-                <th className=''>Depuis 2019</th>
-                <th className=''>Avant 2019</th>
+              <tr>
+                <th>Sujet</th>
+                <th>Depuis 2019</th>
+                <th>Avant 2019</th>
               </tr>
             </thead>
             <tbody className='text-lg leading-6'>
-              <tr className='border-y-2 p-2'>
-                <td className='py-4'>
-                  Seuil de publication d'un marché public (la commande peut se faire de gré-à-gré
-                  en-déçà)
-                </td>
-                <td className='py-4'>40 000 €HT</td>
-                <td className='py-4'>25 000 €HT</td>
-              </tr>
-              <tr className='border-y-2'>
-                <td className='py-4'>Obligation de publication de données en Open Data</td>
-                <td className='py-4'>
-                  Marchés publics &gt; 40 000 €HT
-                  <br />
-                  Information sans obligation de détail pour les marchés de 25 à 40 000 € HT
-                </td>
-                <td className='py-4'>Marchés publics &gt; 25 000 €HT</td>
-              </tr>
-              <tr className='border-y-2'>
-                <td className='py-4'>Contrats de concession</td>
-                <td className='py-4'>
-                  Assimilés à des marchés publics: règles identiques (mais sans condition de seuil)
-                </td>
-                <td className='py-4'>Règles spécifiques</td>
-              </tr>
-              <tr className='border-y-2'>
-                <td className='py-4'>Digitalisation de la commande publique</td>
-                <td className='py-4'>
-                  Obligation de l'utilisation d'une plateforme numérique pour la publication des
-                  appels d'offres
-                </td>
-                <td className='py-4'>Néant</td>
-              </tr>
-              <tr className='border-t-2'>
-                <td className='py-4'>
-                  Publication obligatoire des données sur la plateforme nationale
-                </td>
-                <td className='py-4'>Uniquement depuis 2024: publication sur data.gouv.fr</td>
-                <td className='py-4'>Néant (aucune obligation de plateforme)</td>
-              </tr>
+              {EvolutionCadreLegalList.map((item) => (
+                <tr key={item.object + 'table'} className='border-y-2 p-2'>
+                  <td className='py-4'>{item.object}</td>
+                  <td className='whitespace-pre-line py-4'>{item.since2019Text}</td>
+                  <td className='py-4'>{item.before2019Text} </td>
+                </tr>
+              ))}
             </tbody>
           </table>
+
+          <div className='flex flex-col gap-5 sm:hidden'>
+            {EvolutionCadreLegalList.map((item) => (
+              <div key={item.object + 'card'} className='rounded-2xl bg-muted-border p-3'>
+                <p className='text-base text-muted'>Objet</p>
+                <p className='mb-2 border-b pb-2'>{item.object}</p>
+                <p className='text-base text-muted'>Depuis 2019</p>
+                <p className='mb-2 whitespace-pre-line border-b pb-2'>{item.since2019Text}</p>
+                <p className='text-base text-muted'>Avant 2019</p>
+                <p className=''>{item.before2019Text} </p>
+              </div>
+            ))}
+          </div>
 
           <h3>Les guides officiels publiés pour aider les collectivités</h3>
           <ul className='list-inside list-disc'>
