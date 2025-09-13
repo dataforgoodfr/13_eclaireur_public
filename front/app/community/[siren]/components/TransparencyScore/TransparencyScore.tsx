@@ -1,36 +1,46 @@
-import React from 'react';
+import type React from 'react';
 
 import BadgeCommunity from '#components/Communities/BadgeCommunityPage';
 import { TransparencyScoreBar } from '#components/TransparencyScore/TransparencyScoreBar';
 import type { TransparencyScore } from '#components/TransparencyScore/constants';
 import { SCORE_DESCRIPTION, SCORE_TO_ADJECTIF } from '#components/TransparencyScore/constants';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { Equal, TrendingDown, TrendingUp } from 'lucide-react';
 
 import { FicheCard } from '../FicheCard';
 
 const mainTitle = 'Score de transparence agrégé';
 
-function trendToText(trend: number, margin = 0.01) {
-  if (trend <= margin && trend >= -margin) return { text: '= Transparence inchangée', icon: null };
-  if (trend < margin)
-    return { text: 'Transparence en baisse', icon: <TrendingDown className='h-4 w-4' /> };
-  return { text: 'Transparence en hausse', icon: <TrendingUp className='h-4 w-4' /> };
-}
+const trendToText: Record<
+  string,
+  {
+    text: string;
+    icon:
+      | React.ComponentType<{
+          size?: number;
+          color?: string;
+          className?: string;
+        }>
+      | undefined;
+    color: string;
+  }
+> = {
+  Stable: { text: 'Transparence stable', icon: Equal, color: 'bg-muted-light' },
+  'En baisse': { text: 'Transparence en baisse', icon: TrendingDown, color: 'bg-red-200' },
+  'En hausse': { text: 'Transparence en hausse', icon: TrendingUp, color: 'bg-brand-2' },
+};
 
 type TransparencyScoreProps = {
   score: TransparencyScore;
-  trend: number;
+  trend: string;
   className?: string;
 };
 
-const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
-  const { text: trendText, icon: TrendIcon } = trendToText(trend);
-  const trendColor =
-    trendText === 'Transparence en hausse'
-      ? 'bg-brand-2'
-      : trendText === 'Transparence en baisse'
-        ? 'bg-red-200'
-        : 'bg-muted-light';
+const TransparencyScoreWithTrendHeader = ({ trend }: { trend: string }) => {
+  const {
+    text: trendText,
+    icon: TrendIcon,
+    color: trendColor,
+  } = trendToText[trend] || trendToText.Stable;
 
   return (
     <div className='flex flex-col items-start justify-between sm:flex-row sm:items-center'>
@@ -38,20 +48,12 @@ const TransparencyScoreWithTrendHeader = ({ trend }: { trend: number }) => {
         <h2 className='text-3xl font-extrabold text-primary md:text-4xl'>{mainTitle}</h2>
       </div>
       <div className='order-1 mb-2 sm:order-2 sm:mb-0 md:mb-4'>
-        <BadgeCommunity
-          text={trendText}
-          icon={
-            TrendIcon
-              ? (props: React.SVGProps<SVGSVGElement>) =>
-                  React.cloneElement(TrendIcon, { ...props, className: 'h-4 w-4' })
-              : undefined
-          }
-          className={trendColor}
-        />
+        <BadgeCommunity text={trendText} icon={TrendIcon} className={trendColor} />
       </div>
     </div>
   );
 };
+
 export function TransparencyScoreWithTrend({ score, trend, className }: TransparencyScoreProps) {
   return (
     <div>

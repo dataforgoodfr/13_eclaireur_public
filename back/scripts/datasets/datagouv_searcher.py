@@ -39,20 +39,18 @@ class DataGouvSearcher(BaseDataset):
         Identify datasets of interest from the catalog by looking for keywords in
         title and description.
         """
-        description_pattern = re.compile("|".join(self.config.get("description_filter") or []))
-        flagged_by_description = (
-            self.catalog["dataset_description"]
-            .str.lower()
-            .str.contains(description_pattern, na=False)
+        description_pattern = re.compile(
+            "|".join(self.config.get("description_filter") or []), flags=re.IGNORECASE
+        )
+        flagged_by_description = self.catalog["description"].str.contains(
+            description_pattern, na=False
         )
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de description : {flagged_by_description.sum()}"
         )
 
-        title_pattern = re.compile("|".join(self.config["title_filter"]))
-        flagged_by_title = (
-            self.catalog["dataset_title"].str.lower().str.contains(title_pattern, na=False)
-        )
+        title_pattern = re.compile("|".join(self.config["title_filter"]), flags=re.IGNORECASE)
+        flagged_by_title = self.catalog["dataset_title"].str.contains(title_pattern, na=False)
         LOGGER.info(
             f"Nombre de datasets correspondant au filtre de titre : {flagged_by_title.sum()}"
         )

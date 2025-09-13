@@ -76,13 +76,18 @@ export async function fetchTransparencyScore(siren: string, year: number): Promi
  */
 export async function fetchMostRecentTransparencyScore(
   siren: string,
-): Promise<{ bareme: Bareme | null; aggregatedScore: TransparencyScore | null }> {
+): Promise<{
+  bareme: Bareme | null;
+  aggregatedScore: TransparencyScore | null;
+  evolutionGlobalScore: string | null;
+}> {
   const querySQL = `
     SELECT 
       c.siren,
       b.annee, 
       b.subventions_score,
-      b.mp_score
+      b.mp_score,
+      b.evolution_global_score
     FROM ${COMMUNITIES_TABLE_NAME} c
     LEFT JOIN ${BAREME_TABLE_NAME} b on b.siren = c.siren
     WHERE c.siren = $1 
@@ -97,5 +102,5 @@ export async function fetchMostRecentTransparencyScore(
     ? calculateAggregatedScore(bareme.subventions_score, bareme.mp_score)
     : null;
 
-  return { bareme, aggregatedScore };
+  return { bareme, aggregatedScore, evolutionGlobalScore: bareme?.evolution_global_score || null };
 }
