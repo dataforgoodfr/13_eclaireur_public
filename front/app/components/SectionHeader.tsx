@@ -11,7 +11,7 @@ export function SectionHeader({ sectionTitle }: SectionHeaderProps) {
     <div className='relative flex h-[160px] w-full items-center p-20 lg:h-[305px]'>
       <Image
         src='/collectivite-header.jpg'
-        alt='En-tête collectivité'
+        alt=''
         fill
         className='-z-10 object-cover'
         priority

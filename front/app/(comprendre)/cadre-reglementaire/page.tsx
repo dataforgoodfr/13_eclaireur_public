@@ -33,15 +33,17 @@ export default function Page() {
             de publier en ligne leurs données publiques.
           </p>
           <h2>Quelles données doivent être publiées ?</h2>
-          Les collectivités doivent mettre en ligne :
-          <ul className='list-disc space-y-1 pl-5'>
-            <li>Les documents qu'elles communiquent suite à des demandes d'accès</li>
-            <li>Les principales bases de données qu'elles produisent ou reçoivent</li>
-            <li>
-              Les données dont la publication présente un intérêt économique, social ou
-              environnemental
-            </li>
-          </ul>
+          <div>
+            <p className='mb-0'>Les collectivités doivent mettre en ligne :</p>
+            <ul className='list-disc space-y-1 pl-5'>
+              <li>Les documents qu'elles communiquent suite à des demandes d'accès</li>
+              <li>Les principales bases de données qu'elles produisent ou reçoivent</li>
+              <li>
+                Les données dont la publication présente un intérêt économique, social ou
+                environnemental
+              </li>
+            </ul>
+          </div>
           <p>
             Par exemple : budgets, subventions, marchés publics, délibérations du conseil municipal,
             etc.
@@ -60,15 +62,17 @@ export default function Page() {
             loi.
           </p>
           <h2>Quels sont les bénéfices pour les citoyens ?</h2>
-          L'open data a plusieurs objectifs :
-          <ul className='list-disc space-y-1 pl-5'>
-            <li>Une meilleure transparence de l'action publique</li>
-            <li>
-              Une possibilité de réexploitation des données pour différents usages, notamment
-              scientifiques et citoyens
-            </li>
-            <li>Un regard et une participation citoyens accrus aux décisions locales</li>
-          </ul>
+          <div>
+            <p>L'open data a plusieurs objectifs :</p>
+            <ul className='list-disc space-y-1 pl-5'>
+              <li>Une meilleure transparence de l'action publique</li>
+              <li>
+                Une possibilité de réexploitation des données pour différents usages, notamment
+                scientifiques et citoyens
+              </li>
+              <li>Un regard et une participation citoyens accrus aux décisions locales</li>
+            </ul>
+          </div>
           <h2>Comment les données sont-elles publiées ?</h2>
           <p>
             Les données doivent être publiées dans un format ouvert, facilement réutilisable par des
