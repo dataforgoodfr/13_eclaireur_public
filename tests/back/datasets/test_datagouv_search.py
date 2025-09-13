@@ -101,7 +101,7 @@ class TestDataGouvSearch:
         catalog = pd.DataFrame(
             {
                 "dataset_title": ["Subventions de Marseille", "2002", "Whatever"],
-                "dataset_description": ["", "Dons aux associations de 2022", "Unrelated"],
+                "description": ["", "Dons aux associations de 2022", "Unrelated"],
                 "dataset.organization_id": ["1", "2", "3"],
                 "id": ["3", "4", "5"],
                 "siren": ["111", "222", "333"],
@@ -120,7 +120,7 @@ class TestDataGouvSearch:
         expected = pd.DataFrame(
             {
                 "dataset_title": ["Subventions de Marseille", "2002"],
-                "dataset_description": ["", "Dons aux associations de 2022"],
+                "description": ["", "Dons aux associations de 2022"],
                 "dataset.organization_id": ["1", "2"],
                 "id": ["3", "4"],
                 "siren": ["111", "222"],

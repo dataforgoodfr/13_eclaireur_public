@@ -21,11 +21,12 @@ async function getCommunity(siren: string) {
     throw new Error(`Community doesnt exist with siren ${siren}`);
   }
 
-  const { aggregatedScore } = await fetchMostRecentTransparencyScore(siren);
+  const { aggregatedScore, evolutionGlobalScore } = await fetchMostRecentTransparencyScore(siren);
 
   return {
     ...communitiesResults[0],
     transparencyScore: aggregatedScore,
+    evolutionGlobalScore,
   };
 }
 export default async function InterpellateStep1({ params }: CommunityPageProps) {
@@ -33,7 +34,7 @@ export default async function InterpellateStep1({ params }: CommunityPageProps) 
   const community = await getCommunity(siren);
 
   const score = community.transparencyScore || TransparencyScore.UNKNOWN;
-  const trend = 1;
+  const trend = community.evolutionGlobalScore || 'Stable';
 
   return (
     <>
