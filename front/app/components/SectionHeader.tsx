@@ -1,24 +1,11 @@
-'use client';
-
-import Image from 'next/image';
-
 type SectionHeaderProps = {
-  sectionTitle: string;
+  sectionTitle: string | React.ReactNode;
 };
 
 export function SectionHeader({ sectionTitle }: SectionHeaderProps) {
   return (
-    <div className='relative flex h-[160px] w-full items-center p-20 lg:h-[305px]'>
-      <Image
-        src='/collectivite-header.jpg'
-        alt='En-tête collectivité'
-        fill
-        className='-z-10 object-cover'
-        priority
-        fetchPriority='high'
-        sizes='100vw'
-      />
-      <h1 className='relative z-10 text-center'>{sectionTitle}</h1>
+    <div className="flex h-[200px] flex-col justify-center bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat lg:h-[300px]">
+      <h1 className='mx-auto w-full p-4 md:p-8 xl:max-w-[1128px] xl:p-0'>{sectionTitle}</h1>
     </div>
   );
 }
