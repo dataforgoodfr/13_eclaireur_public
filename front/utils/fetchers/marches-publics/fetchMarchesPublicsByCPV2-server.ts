@@ -1,8 +1,8 @@
-import { MarchePublicSector } from '#app/models/marchePublic';
+import type { MarchePublicSector } from '#app/models/marchePublic';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
-import { Pagination } from '../types';
+import type { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.MarchesPublics;
 
@@ -20,7 +20,8 @@ export function createSQLQueryParams(
   let query = `
     SELECT 
       cpv_2, 
-      cpv_2_label, 
+      cpv_2_label,
+      objet,
       SUM(montant) AS montant,
       SUM(SUM(montant)) OVER () AS grand_total,
       count(*) OVER()::integer AS total_row_count
@@ -32,7 +33,7 @@ export function createSQLQueryParams(
     values.push(year);
   }
 
-  query += ' GROUP BY cpv_2, cpv_2_label';
+  query += ' GROUP BY cpv_2, cpv_2_label, objet';
   if (maxAmount !== undefined) query += ` HAVING SUM(montant) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';

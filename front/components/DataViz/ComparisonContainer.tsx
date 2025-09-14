@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import DownloadSelector from '#app/community/[siren]/components/DownloadDropDown';
 import EmptyState from '#components/EmptyState';
-import { ActionButton } from '#components/ui/action-button';
 import { Button } from '#components/ui/button';
 import {
   DropdownMenu,
@@ -12,12 +12,13 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { type Scope, useComparisonScope } from '#hooks/useTabState';
+import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
 import { hasRealComparisonData } from '#utils/placeholderDataGenerators';
 import type { CommunityType } from '#utils/types';
 import { getMonetaryUnit } from '#utils/utils';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, Download } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 import { TabHeader } from '../../app/community/[siren]/components/TabHeader';
 import LoadingOverlay from '../ui/LoadingOverlay';
@@ -76,16 +77,26 @@ const ScopeDropdown = ({
   </DropdownMenu>
 );
 
-const ComparisonEmptyState = ({ siren }: { siren: string }) => (
-  <EmptyState
-    title="Oups, il n'y a pas de données pour comparer !"
-    description='Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques.'
-    actionText='Interpeller'
-    actionHref='/interpeller'
-    className='h-[450px] w-full'
-    siren={siren}
-  />
-);
+const ComparisonEmptyState = ({ siren, dataType }: { siren: string; dataType: string }) => {
+  const description =
+    dataType === 'marches-publics'
+      ? "Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+      : "Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.";
+
+  const title =
+    dataType === 'marches-publics'
+      ? 'Aucune donnée de marchés publics disponible pour la comparaison'
+      : 'Aucune donnée de subventions disponible pour la comparaison';
+
+  return (
+    <EmptyState
+      title={title}
+      description={description}
+      className='h-[450px] w-full'
+      siren={siren}
+    />
+  );
+};
 
 const ErrorState = ({
   error,
@@ -133,6 +144,7 @@ const ChartWithLegend = ({
   theme,
   isMobile,
   hasRealData,
+  chartRef,
 }: {
   data: ComparisonData[];
   isLoading: boolean;
@@ -140,6 +152,7 @@ const ChartWithLegend = ({
   theme: ComparisonTheme;
   isMobile: boolean;
   hasRealData: boolean;
+  chartRef?: React.RefObject<HTMLDivElement | null>;
 }) => {
   // For mobile, use the mobile-optimized chart (includes legend)
   if (isMobile) {
@@ -160,7 +173,7 @@ const ChartWithLegend = ({
   const unit = getMonetaryUnit(maxValue);
 
   return (
-    <>
+    <div ref={chartRef}>
       <ComparisonChart
         data={data}
         dataLoading={isLoading}
@@ -208,12 +221,10 @@ const ChartWithLegend = ({
               <span className='text-sm'>{data[0]?.regionalLabel || 'Moyenne régionale'}</span>
             </div>
           </div>
-          <div className='text-xs font-medium' style={{ color: theme.primaryColor }}>
-            Montants exprimés en {unit}
-          </div>
+          <div className='text-xs font-medium text-primary'>Montants exprimés en {unit}</div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -227,6 +238,7 @@ export default function ComparisonContainer({
   const defaultScope = communityType ? getDefaultComparisonScope(communityType) : 'Départemental';
   const [selectedScope, setSelectedScope] = useComparisonScope(defaultScope);
   const [isMobile, setIsMobile] = useState(false);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   // Mobile detection
   useEffect(() => {
@@ -256,9 +268,74 @@ export default function ComparisonContainer({
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const handleDownload = () => {
-    // TODO: Implement download logic
-    console.log('Downloading comparison data...', data);
+  const handleDownloadData = () => {
+    if (!data || data.length === 0) {
+      console.warn('No data available for download');
+      return;
+    }
+
+    // Convert data to CSV format
+    const headers = [
+      'Année',
+      'Collectivité',
+      'Montant Collectivité',
+      'Moyenne Régionale',
+      'Montant Moyenne Régionale',
+    ];
+    const csvRows = [headers.join(',')];
+
+    for (const row of data) {
+      const csvRow = [
+        row.year,
+        `"${row.communityLabel}"`,
+        row.communityMissing ? 'N/A' : row.community,
+        `"${row.regionalLabel}"`,
+        row.regionalMissing ? 'N/A' : row.regional,
+      ];
+      csvRows.push(csvRow.join(','));
+    }
+
+    const csvContent = csvRows.join('\n');
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    const fileName = `comparaison_${dataType}_${selectedScope.toLowerCase()}_${siren}_${new Date().toISOString().split('T')[0]}.csv`;
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadChart = () => {
+    if (!chartContainerRef.current || !data || data.length === 0) {
+      console.warn('No chart available for download');
+      return;
+    }
+
+    const communityName = data[0]?.communityLabel || 'Collectivité';
+    const chartTitle = `Comparaison avec la moyenne ${selectedScope.toLowerCase()}e - ${dataType === 'marches-publics' ? 'Marchés publics' : 'Subventions'}`;
+
+    downloadSVGChart(
+      chartContainerRef.current,
+      {
+        communityName,
+        chartTitle,
+      },
+      {
+        fileName: `comparaison-${dataType}-${selectedScope.toLowerCase()}-${siren}`,
+        extension: 'png',
+      },
+    );
   };
 
   const handleScopeChange = (scope: Scope) => {
@@ -284,10 +361,10 @@ export default function ComparisonContainer({
               onScopeChange={handleScopeChange}
               disabled={isFetching}
             />
-            <ActionButton
-              onClick={handleDownload}
-              icon={<Download className='h-4 w-4' />}
-              variant='default'
+            <DownloadSelector
+              onClickDownloadData={handleDownloadData}
+              onClickDownloadChart={handleDownloadChart}
+              disabled={!data || data.length === 0}
             />
           </>
         }
@@ -302,7 +379,7 @@ export default function ComparisonContainer({
             isRetrying={isFetching}
           />
         ) : data.length === 0 && !isLoading ? (
-          <ComparisonEmptyState siren={siren} />
+          <ComparisonEmptyState siren={siren} dataType={dataType} />
         ) : (
           <ChartWithLegend
             data={data}
@@ -311,6 +388,7 @@ export default function ComparisonContainer({
             theme={theme}
             isMobile={isMobile}
             hasRealData={dataHasRealValues}
+            chartRef={!isMobile ? chartContainerRef : undefined}
           />
         )}
 

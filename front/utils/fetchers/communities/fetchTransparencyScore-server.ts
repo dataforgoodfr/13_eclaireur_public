@@ -74,9 +74,7 @@ export async function fetchTransparencyScore(siren: string, year: number): Promi
 /**
  * Fetch the most recent transparency score for a community with aggregated score
  */
-export async function fetchMostRecentTransparencyScore(
-  siren: string,
-): Promise<{
+export async function fetchMostRecentTransparencyScore(siren: string): Promise<{
   bareme: Bareme | null;
   aggregatedScore: TransparencyScore | null;
   evolutionGlobalScore: string | null;
