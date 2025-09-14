@@ -59,6 +59,7 @@ export default function Distribution({ siren, availableYears, communityName }: D
             onClickDownloadData={handleClickDownloadData}
             onClickDownloadChart={handleDownloadChart}
             disabled={selectedYear === 'All'}
+            disableChartDownload={isTableDisplayed}
           />
         </div>
       </div>

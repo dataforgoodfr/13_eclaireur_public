@@ -77,16 +77,26 @@ const ScopeDropdown = ({
   </DropdownMenu>
 );
 
-const ComparisonEmptyState = ({ siren }: { siren: string }) => (
-  <EmptyState
-    title="Oups, il n'y a pas de données pour comparer !"
-    description='Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés, et les inciter à mettre à jour les données sur les subventions publiques.'
-    actionText='Interpeller'
-    actionHref='/interpeller'
-    className='h-[450px] w-full'
-    siren={siren}
-  />
-);
+const ComparisonEmptyState = ({ siren, dataType }: { siren: string; dataType: string }) => {
+  const description =
+    dataType === 'marches-publics'
+      ? "Il n'y a pas de données de marchés publics disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés."
+      : "Il n'y a pas de données de subventions disponibles pour cette période. Tu peux utiliser la plateforme pour interpeller directement les élus ou les services concernés.";
+
+  const title =
+    dataType === 'marches-publics'
+      ? 'Aucune donnée de marchés publics disponible pour la comparaison'
+      : 'Aucune donnée de subventions disponible pour la comparaison';
+
+  return (
+    <EmptyState
+      title={title}
+      description={description}
+      className='h-[450px] w-full'
+      siren={siren}
+    />
+  );
+};
 
 const ErrorState = ({
   error,
@@ -211,9 +221,7 @@ const ChartWithLegend = ({
               <span className='text-sm'>{data[0]?.regionalLabel || 'Moyenne régionale'}</span>
             </div>
           </div>
-          <div className='text-xs font-medium' style={{ color: theme.primaryColor }}>
-            Montants exprimés en {unit}
-          </div>
+          <div className='text-xs font-medium text-primary'>Montants exprimés en {unit}</div>
         </div>
       </div>
     </div>
@@ -371,7 +379,7 @@ export default function ComparisonContainer({
             isRetrying={isFetching}
           />
         ) : data.length === 0 && !isLoading ? (
-          <ComparisonEmptyState siren={siren} />
+          <ComparisonEmptyState siren={siren} dataType={dataType} />
         ) : (
           <ChartWithLegend
             data={data}

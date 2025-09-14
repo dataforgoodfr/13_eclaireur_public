@@ -175,12 +175,12 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
       if (value <= 80) return 'bg-primary-600';
       return 'bg-primary-700';
     }
-    // Subventions - using primary variations for better visibility
-    if (value <= 20) return 'bg-primary-300';
-    if (value <= 40) return 'bg-primary-400';
-    if (value <= 60) return 'bg-primary-500';
-    if (value <= 80) return 'bg-primary-600';
-    return 'bg-primary-700';
+    // Subventions - using brand-3 variations
+    // if (value <= 20) return 'bg-brand-3/20';
+    // if (value <= 40) return 'bg-brand-3/40';
+    // if (value <= 60) return 'bg-brand-3/60';
+    // if (value <= 80) return 'bg-brand-3/80';
+    return 'bg-brand-3';
   };
 
   // Create skeleton data for loading state
