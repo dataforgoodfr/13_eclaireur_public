@@ -7,7 +7,7 @@ import YearSelector from '#app/community/[siren]/components/YearSelector';
 import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { downloadSubventionsByNafCSV } from '#utils/fetchers/subventions/download/downloadSubventionsByNaf';
 
-import { YearOption } from '../../types/interface';
+import type { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
 import SubventionsSectorTable from './SubventionsSectorTable';
 import SubventionsSectorTreemap from './SubventionsSectorTreemap';
@@ -33,7 +33,10 @@ export default function Distribution({ siren, availableYears, communityName }: D
           communityName,
           chartTitle: `Répartition par secteur - ${selectedYear}`,
         },
-        { fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}` },
+        {
+          fileName: `répartition-${communityName.slice(0, 15)}-${selectedYear}`,
+          extension: 'png',
+        },
       );
     }
   }

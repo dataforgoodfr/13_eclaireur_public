@@ -50,7 +50,7 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
             return <div className='h-5 w-[160px] animate-pulse rounded bg-gray-200' />;
           }
           const sectorRow = row.original;
-          const textColorClass = sectorRow.type === 'subventions' ? 'text-brand-3' : 'text-primary';
+          const textColorClass = 'text-primary';
 
           return (
             <div className={`font-medium ${textColorClass}`}>
@@ -80,7 +80,7 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
             return <div className='h-5 w-[200px] animate-pulse rounded bg-gray-200' />;
           }
           const sectorRow = row.original;
-          const textColorClass = sectorRow.type === 'subventions' ? 'text-brand-3' : 'text-primary';
+          const textColorClass = 'text-primary';
 
           return (
             <div className={`font-medium ${textColorClass}`}>
@@ -129,9 +129,7 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
                     style={{ width: `${sectorRow.percentage * 100}%` }}
                   />
                 </div>
-                <span
-                  className={`w-[40px] text-right font-semibold ${sectorRow.type === 'subventions' ? 'text-brand-3' : 'text-primary'}`}
-                >
+                <span className='w-[40px] text-right font-semibold text-primary'>
                   {Math.round(sectorRow.percentage * 100)}
                 </span>
               </div>
@@ -151,7 +149,7 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
             return <div className='ml-auto h-5 w-24 animate-pulse rounded bg-gray-200' />;
           }
           const sectorRow = row.original;
-          const textColorClass = sectorRow.type === 'subventions' ? 'text-brand-3' : 'text-primary';
+          const textColorClass = 'text-primary';
 
           return (
             <div className={`text-right font-semibold ${textColorClass}`}>
@@ -177,12 +175,12 @@ export default function SectorTable({ data, isLoading = false }: SectorTableProp
       if (value <= 80) return 'bg-primary-600';
       return 'bg-primary-700';
     }
-    // Subventions - using brand-3 variations
-    if (value <= 20) return 'bg-brand-3/20';
-    if (value <= 40) return 'bg-brand-3/40';
-    if (value <= 60) return 'bg-brand-3/60';
-    if (value <= 80) return 'bg-brand-3/80';
-    return 'bg-brand-3';
+    // Subventions - using primary variations for better visibility
+    if (value <= 20) return 'bg-primary-300';
+    if (value <= 40) return 'bg-primary-400';
+    if (value <= 60) return 'bg-primary-500';
+    if (value <= 80) return 'bg-primary-600';
+    return 'bg-primary-700';
   };
 
   // Create skeleton data for loading state
