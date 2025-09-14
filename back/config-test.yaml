@@ -28,6 +28,14 @@ cpv_labels:
   combined_filename:  back/data/cpv_labels/cpv_labels.parquet
   url: ./back/data/cpv_labels/cpv_2008.xls # https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/oeap/recensement/cpv_2008_fr.xls
 
+nuts_departements:
+  combined_filename:  back/data/nuts_departements/nuts_departements.parquet
+  url: ./back/data/nuts_departements/NUTS2021-NUTS2024.xlsx
+
+communes:
+  combined_filename:  back/data/communes/communes.parquet
+  url: ./back/data/communes/correspondance-code-insee-code-postal.xlsx
+  
 search:
   subventions:
     schema:

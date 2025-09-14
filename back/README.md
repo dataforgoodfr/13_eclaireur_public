@@ -172,9 +172,19 @@ Le diagramme suivant illustre le flux de traitement des données orchestré par 
     *   **Entrées**: Un fichier CSV local (`ofgl.urls_csv`) contenant les URLs à télécharger.
     *   **Sortie**: `data/ofgl.parquet`
 
+7.  **`NutsDepartementsWorkflow`**:
+    *   **Rôle**: Charge la table de correspondance entre les codes NUTS et les codes Insee des départements.
+    *   **Entrées**: Un fichier distant spécifié par `nuts_departements.url` dans la configuration.
+    *   **Sortie**: `data/nuts_departements.parquet`
+
+8.  **`CommunesWorkflow`**:
+    *   **Rôle**: Charge la table de correspondance entre les noms de communes, codes insee, codes postaux, départements, régions.
+    *   **Entrées**: Un fichier distant spécifié par `communes.url` dans la configuration.
+    *   **Sortie**: `data/communes.parquet`
+
 #### Workflows Dépendants
 
-7.  **`CommunitiesSelector`**:
+9.  **`CommunitiesSelector`**:
     *   **Rôle**: Crée une liste organisée de collectivités françaises.
     *   **Entrées**:
         *   `data/ofgl.parquet`
@@ -184,26 +194,26 @@ Le diagramme suivant illustre le flux de traitement des données orchestré par 
         *   Récupère les métriques géographiques depuis l'API DataGouv pour le jeu de données spécifié dans `communities.geo_metrics_dataset_id`.
     *   **Sortie**: `data/communities.parquet`
 
-8.  **`DataGouvCatalog`**:
+10.  **`DataGouvCatalog`**:
     *   **Rôle**: Récupère et traite l'intégralité du catalogue DataGouv.
     *   **Entrées**:
         *   `data/communities.parquet`
         *   Récupère le catalogue depuis l'API DataGouv (jeu de données `5d13a8b6634f41070a43dff3`) ou une URL directe depuis `datagouv_catalog.catalog_url`.
     *   **Sortie**: `data/datagouv_catalog.parquet`
 
-9.  **`MarchesPublicsWorkflow`**:
+11. **`MarchesPublicsWorkflow`**:
     *   **Rôle**: Agrège les données des marchés publics.
     *   **Entrées**:
         *   `data/datagouv_catalog.parquet` (pour trouver les ressources du jeu de données `5cd57bf68b4c4179299eb0e9`).
         *   Un schéma JSON distant depuis `marches_publics.schema`.
     *   **Sortie**: `data/marches_publics.parquet`
 
-10. **`DataGouvSearcher`**:
+12. **`DataGouvSearcher`**:
     *   **Rôle**: Recherche dans le catalogue DataGouv les jeux de données relatifs aux subventions.
     *   **Entrées**: `data/datagouv_catalog.parquet`.
     *   **Sortie**: `data/datagouv_search.parquet`
 
-11. **`CommunitiesContact`**:
+13. **`CommunitiesContact`**:
     *   **Rôle**: Récupère les informations de contact des administrations françaises.
     *   **Entrées**:
         *   `data/datagouv_catalog.parquet` (pour trouver la ressource du jeu de données `53699fe4a3a729239d206227`).
@@ -222,44 +232,46 @@ graph TD
         D[ElectedOfficialsWorkflow] -- reads from DataGouv API --> D_OUT((data/elected_officials.parquet))
         DI[DeclaInteretWorkflow] -- reads from config --> DI_OUT((data/declarations_interet.parquet))
         E[OfglLoader] -- reads from config --> E_OUT((data/ofgl.parquet))
+        F[NutsDepartementsWorkflow] -- reads from config --> F_OUT((data/nuts_departements.parquet))
+        G[CommunesWorkflow] -- reads from config --> G_OUT((data/communes.parquet))
 
-        F[CommunitiesSelector]
-        G[DataGouvCatalog]
-        H[MarchesPublicsWorkflow]
-        I[DataGouvSearcher]
-        J[CommunitiesContact]
+        H[CommunitiesSelector]
+        I[DataGouvCatalog]
+        J[MarchesPublicsWorkflow]
+        K[DataGouvSearcher]
+        L[CommunitiesContact]
 
-        E_OUT --> F
-        B_OUT --> F
-        F --> F_OUT((data/communities.parquet))
+        E_OUT --> H
+        B_OUT --> H
+        H --> H_OUT((data/communities.parquet))
 
-        F_OUT --> G
-        G -- reads from DataGouv API --> G
-        G --> G_OUT((data/datagouv_catalog.parquet))
+        H_OUT --> I
+        I -- reads from DataGouv API --> I
+        I --> I_OUT((data/datagouv_catalog.parquet))
 
-        G_OUT --> H
-        H --> H_OUT((data/marches_publics.parquet))
+        I_OUT --> J
+        J --> J_OUT((data/marches_publics.parquet))
 
-        G_OUT --> I
-        I --> I_OUT((data/datagouv_search.parquet))
+        I_OUT --> K
+        K --> K_OUT((data/datagouv_search.parquet))
 
-        G_OUT --> J
-        J --> J_OUT((data/communities_contacts.parquet))
+        I_OUT --> L
+        L --> L_OUT((data/communities_contacts.parquet))
     end
 
     subgraph "Étape 2: Traitement des Subventions"
-        K[process_subvention]
-        L[SingleUrlsBuilder]
-        M[TopicAggregator]
-        N((Données de subvention<br>agrégées en sortie))
+        M[process_subvention]
+        N[SingleUrlsBuilder]
+        O[TopicAggregator]
+        P((Données de subvention<br>agrégées en sortie))
     end
 
-    I_OUT -- Fichier Parquet --> K
-    L -- URLs --> K
-    K -- Données combinées --> M
-    M --> N
+    K_OUT -- Fichier Parquet --> M
+    N -- URLs --> M
+    M -- Données combinées --> O
+    O --> P
 
-    J_OUT -.-> K
+    L_OUT -.-> M
 ```
 
 ## Contribuer
