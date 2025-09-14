@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchMarchesPublicsByCPV2 } from '../fetchers/marches-publics/fetchMarchesPublicsByCPV2-client';
-import { Pagination } from '../fetchers/types';
+import type { Pagination } from '../fetchers/types';
 
 const DEFAULT_PAGINATION: Pagination = {
   page: 1,
@@ -14,7 +14,16 @@ export function useMarchesPublicsByCPV2(
   pagination = DEFAULT_PAGINATION,
   maxAmount?: number | null,
 ) {
-  const queryKey = ['communities', siren, 'marches-publics', 'cpv_2', year, pagination, maxAmount];
+  // Use the entire pagination object in queryKey to ensure proper reactivity
+  const queryKey = [
+    'communities',
+    siren,
+    'marches-publics',
+    'cpv_2',
+    year,
+    pagination,
+    maxAmount ?? null,
+  ];
 
   const query = useQuery({
     queryKey,

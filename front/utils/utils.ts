@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { GRAPH_START_YEAR } from './constants';
-import { Direction } from './fetchers/types';
+import type { Direction } from './fetchers/types';
 import { CommunityType } from './types';
 
 export function cn(...inputs: ClassValue[]) {
@@ -159,6 +159,19 @@ export function formatFirstLetterToUppercase(str: string): string {
   if (!str?.trim()) return '';
   if (str.length === 1) return str.toUpperCase();
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+export function formatSentenceCase(str: string): string {
+  if (!str?.trim()) return '';
+
+  // Split by sentence delimiters and format each sentence
+  return str
+    .toLowerCase()
+    .replace(
+      /(^|\. |\? |! )([a-z])/g,
+      (match, separator, letter) => separator + letter.toUpperCase(),
+    )
+    .replace(/^./, (match) => match.toUpperCase());
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
