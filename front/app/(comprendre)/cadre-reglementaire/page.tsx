@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import Card from '#app/components/SectionCard';
 import { SectionHeader } from '#app/components/SectionHeader';
 
 export const metadata: Metadata = {
@@ -43,15 +42,13 @@ export default function Page() {
   ];
 
   return (
-    <main
-      className='mx-auto mb-12 flex w-full flex-col items-center justify-center'
-      id='cadre-reglementaire'
-    >
+    <>
       <SectionHeader sectionTitle='Le cadre règlementaire' />
       {/* Main div */}
-      <div className='flex-col items-center justify-center p-6 md:max-w-screen-lg' id='main-div'>
+      <main id='main-div'>
         {/* Open data */}
-        <Card title="L'open data des collectivités locales : un enjeu de transparence et de démocratie">
+        <div className='section-format space-y-8'>
+          <h2>L'open data des collectivités locales : un enjeu de transparence et de démocratie</h2>
           <p>
             Depuis 2016, la loi pour une République numérique a instauré de nouvelles obligations
             pour les collectivités locales en matière d'ouverture des données publiques, aussi
@@ -64,9 +61,9 @@ export default function Page() {
             l’exclusion des collectivités territoriales de moins de 3 500 habitants ont l'obligation
             de publier en ligne leurs données publiques.
           </p>
-          <h2>Quelles données doivent être publiées ?</h2>
+          <h2>Quelles données doivent être publiées&nbsp;?</h2>
           <div>
-            <p className='mb-0'>Les collectivités doivent mettre en ligne :</p>
+            <p className='mb-0'>Les collectivités doivent mettre en ligne&nbsp;:</p>
             <ul className='list-disc space-y-1 pl-5'>
               <li>Les documents qu'elles communiquent suite à des demandes d'accès</li>
               <li>Les principales bases de données qu'elles produisent ou reçoivent</li>
@@ -93,7 +90,7 @@ export default function Page() {
             être soumis à cette obligation de transparence sans être spécifiquement désignés par la
             loi.
           </p>
-          <h2>Quels sont les bénéfices pour les citoyens ?</h2>
+          <h2>Quels sont les bénéfices pour les citoyens&nbsp;?</h2>
           <div>
             <p>L'open data a plusieurs objectifs :</p>
             <ul className='list-disc space-y-1 pl-5'>
@@ -105,14 +102,14 @@ export default function Page() {
               <li>Un regard et une participation citoyens accrus aux décisions locales</li>
             </ul>
           </div>
-          <h2>Comment les données sont-elles publiées ?</h2>
+          <h2>Comment les données sont-elles publiées&nbsp;?</h2>
           <p>
             Les données doivent être publiées dans un format ouvert, facilement réutilisable par des
             machines. Elles doivent être régulièrement mises à jour. Des recommandation de schémas
             de données sont émises par data.gouv.fr dans le but d’augmenter la qualité des données
             publiées.
           </p>
-          <h2>Et si ma collectivité ne respecte pas ces obligations ?</h2>
+          <h2>Et si ma collectivité ne respecte pas ces obligations&nbsp;?</h2>
           <p>
             Vous pouvez contacter votre collectivité pour l'inciter à publier ses données. En cas de
             refus, il est possible de saisir la{' '}
@@ -127,9 +124,10 @@ export default function Page() {
             les accompagner dans cette démarche d'ouverture. N'hésitez pas à consulter nos données
             pour voir où en est votre collectivité !
           </p>
-        </Card>
+        </div>
 
-        <Card title='Aller plus loin'>
+        <div className='section-format space-y-8'>
+          <h2>Aller plus loin</h2>
           <h3>Cadre légal général</h3>
           <ul className='list-disc space-y-1 pl-5'>
             <li>
@@ -395,8 +393,8 @@ export default function Page() {
             "open data". Cette démarche vise à rendre accessibles à tous les citoyens les
             informations détenues par les administrations.
           </p>
-        </Card>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }
