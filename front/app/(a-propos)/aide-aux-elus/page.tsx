@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
+import { SectionHeader } from '#app/components/SectionHeader';
 import {
   Accordion,
   AccordionContent,
@@ -15,85 +15,46 @@ export const metadata: Metadata = {
 };
 export default function Page() {
   return (
-    <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
-      <h1 className='text-3xl font-bold'>Aide aux élus</h1>
-      <p className='my-6 text-lg'>Eclaireur Public a élaboré trois barèmes de transparence :</p>
-      <ul className='list-inside list-disc'>
-        <li className='my-6 text-lg'>un barème sur la transparence des subventions</li>
-        <li className='my-6 text-lg'>un deuxième barème sur la transparence des marchés publics</li>
-        <li className='my-6 text-lg'>
-          et un troisième barème de transparence global qui est une moyenne des deux barèmes
-          ci-dessus
-        </li>
-      </ul>
-
-      <p className='my-6 text-lg'>
-        Ces barèmes mesurent la transparence des données publiques (subventions et marchés publics)
-        suivant, pour résumer, le taux de publication de l'ensemble des données attendue sur les
-        subventions et sur les marchés publics.
-        <br />
-        Le détail précis de la notation adopté pour ces barèmes de transparence est consultable sur
-        la&nbsp;
-        <Link href='/methodologie' className='border-b-2 border-black'>
-          page "Comprendre - Méthodologie" dans la section calcul de l'indice de transparence
-        </Link>
-        .
-      </p>
-      <h2 className='my-12 text-xl font-bold'>Que dit la loi ?</h2>
-      <p className='my-6 text-lg'>
-        C'est la loi pour une République Numérique de 2016 qui vise à rendre accessible à tous les
-        citoyens les informations essentielles concernant l'action des pouvoirs publics. <br />
-        Sont concernées les collectivités suivantes :
-      </p>
-      <ul className='list-inside list-disc'>
-        <li className='my-6 text-lg'>de plus de 3500 habitants</li>
-        <li className='my-6 text-lg'>employant plus de 50 personnes en équivalents temps plein</li>
-      </ul>
-      <h2 className='my-12 text-xl font-bold'>Comment concrètement ouvrir ses données ?</h2>
-      <p className='my-6 text-lg'>
-        Les données doivent être publiées sur la plateforme gouvernementale prévue à cet effet&nbsp;
-        <Link href='https://data.gouv.fr' className='border-b-2 border-black'>
-          data.gouv.fr
-        </Link>
-        .
-      </p>
-      <p className='my-6 text-lg'>
-        Le guide&nbsp;
-        <Link
-          href='https://www.data.gouv.fr/fr/pages/onboarding/producteurs/'
-          className='border-b-2 border-black'
-        >
-          "Pourquoi et comment ouvrir vos données ?"
-        </Link>
-        a été mis à disposition par le gouvernement pour faciliter la démarche de publication.
-      </p>
-      <p>
-        Le&nbsp;
-        <Link href='https://guides.data.gouv.fr/' className='border-b-2 border-black'>
-          minisite guides et documentation data.gouv.fr
-        </Link>
-        permet d'aller plus loin pour accompagner les collectivités dans leur démarche d'ouverture
-        des données.
-      </p>
-      <p>
-        Ainsi, pour les données sur les subventions, les collectivités sont appelées à se conformer
-        au schéma défini sur cette &nbsp;
-        <Link
-          href='https://schema.data.gouv.fr/scdl/subventions/'
-          className='border-b-2 border-black'
-        >
-          page consacrée aux subventions
-        </Link>
-        .<br />
-        Pour les marchés publics, les collectivités sont appelées à se conformer aux &nbsp;
-        <Link
-          href='https://schema.data.gouv.fr/139bercy/format-commande-publique/'
-          className='border-b-2 border-black'
-        >
-          schémas des données essentielles de la commande publique
-        </Link>
-        .
-      </p>
+    <main>
+      <SectionHeader sectionTitle='Aide aux élus' />
+      <article className='section-format space-y-8'>
+        <h2>Eclaireur Public a élaboré trois barèmes de transparence</h2>
+        <div>
+          <p className='mb-2'>Eclaireur Public a élaboré trois barèmes de transparence :</p>
+          <ul className='mb-4 list-disc pl-5'>
+            <li>un barème sur la transparence des subventions</li>
+            <li>un deuxième barème sur la transparence des marchés publics</li>
+            <li>
+              un troisième barème de transparence global qui est une moyenne des deux barèmes
+              ci-dessus
+            </li>
+          </ul>
+          <p>
+            Ces barèmes mesurent la transparence des données publiques (subventions et marchés
+            publics) suivant, pour résumer, le taux de publication de l'ensemble des données
+            attendue sur les subventions et sur les marchés publics.
+          </p>
+          <p>
+            Le détail précis de la notation adopté pour ces barèmes de transparence est consultable
+            sur la page "Comprendre - Méthodologie" dans la section calcul de l'indice de
+            transparence.
+          </p>
+        </div>
+        <h2>Que dit la loi ?</h2>
+        <div>
+          <p>
+            C'est la loi pour une République Numérique de 2016 qui vise à rendre accessible à tous
+            les citoyens les informations essentielles concernant l'action des pouvoirs
+            publics.{' '}
+          </p>
+          <p>Sont concernées les collectivités suivantes :</p>
+          <ul className='mb-4 list-disc pl-5'>
+            <li>de plus de 3500 habitants,</li>
+            <li>employant plus de 50 personnes en équivalents temps plein.</li>
+          </ul>
+        </div>
+        <h2>Comment concrètement ouvrir ses données ?</h2>
+      </article>
       <h2 className='my-12 text-xl font-bold'>Questions fréquentes</h2>
       <Accordion type='single' collapsible className='my-6'>
         <AccordionItem value='item-1'>
