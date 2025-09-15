@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Card } from '#components/ui/card';
+
 export const metadata: Metadata = {
   title: 'Qui sommes-nous ?',
   description:
@@ -29,7 +31,7 @@ export default function Page() {
                 alt='Logo de Transparency International France'
               />
             </div>
-            <Card colorClassName='bg-brand-1 flex-1'>
+            <WhoWeAreCard colorClassName='bg-brand-1 flex-1'>
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>
                 Transparency International France
               </h2>
@@ -47,13 +49,13 @@ export default function Page() {
                   visiter le site de Transparency International France
                 </Link>
               </p>
-            </Card>
+            </WhoWeAreCard>
           </div>
           <div className='flex h-full w-full flex-col'>
             <div className='relative mb-4 h-[90px]'>
               <Image src='/anticor.png' fill objectFit='contain' alt="Logo d'ANTICOR" />
             </div>
-            <Card colorClassName='bg-indigo-100 flex-1'>
+            <WhoWeAreCard colorClassName='bg-indigo-100 flex-1'>
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>ANTICOR</h2>
               <p className='my-3 text-lg'>
                 ANTICOR est une association transpartisane qui vise à lutter contre la corruption
@@ -70,13 +72,13 @@ export default function Page() {
                   visiter le site d’ANTICOR
                 </Link>
               </p>
-            </Card>
+            </WhoWeAreCard>
           </div>
           <div className='flex h-full w-full flex-col'>
             <div className='relative mb-4 h-[90px]'>
               <Image src='/dataforgood.webp' fill objectFit='contain' alt='Logo de Data for Good' />
             </div>
-            <Card colorClassName='bg-brand-3 flex-1'>
+            <WhoWeAreCard colorClassName='bg-brand-3 flex-1'>
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>Data for Good</h2>
               <p className='my-3 text-lg'>
                 Data for Good est un collectif réunissant des professionnels et des porteurs de
@@ -93,7 +95,7 @@ export default function Page() {
                   visiter le site de Data for Good
                 </Link>
               </p>
-            </Card>
+            </WhoWeAreCard>
           </div>
         </div>
         <div className='mt-10 text-center'>
@@ -115,16 +117,12 @@ export default function Page() {
   );
 }
 
-const Card = ({
+const WhoWeAreCard = ({
   children,
   colorClassName,
 }: {
   children: React.ReactNode;
   colorClassName: string;
 }) => (
-  <div
-    className={`box-border flex w-full flex-col justify-between rounded-br-xl rounded-tl-xl p-4 shadow-md ${colorClassName}`}
-  >
-    {children}
-  </div>
+  <Card className={`flex w-full flex-col justify-between p-4 ${colorClassName}`}>{children}</Card>
 );
