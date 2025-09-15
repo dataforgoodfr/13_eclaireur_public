@@ -1,6 +1,6 @@
-import { CommunityType } from '#utils/types';
+import type { CommunityType } from '#utils/types';
 
-import { Paginated } from './pagination';
+import type { Paginated } from './pagination';
 
 // TODO - add all keys
 export type MarchePublic = {
@@ -54,6 +54,8 @@ export type MarchePublicV0 = {
 
 export type MarchePublicSector = Paginated<
   Pick<MarchePublic, 'cpv_2' | 'cpv_2_label'> & {
+    /** Aggregated objects for this sector */
+    objet?: string;
     /** Total of the community of the sector for a year */
     montant: number;
     /** Total of the community for a year */

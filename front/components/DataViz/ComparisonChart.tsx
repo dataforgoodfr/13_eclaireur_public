@@ -75,7 +75,7 @@ const CommunityBar = (props: unknown, theme: ComparisonTheme) => {
 
 // Custom shape for striped bars (rayé)
 const StripedBar = (props: unknown, theme: ComparisonTheme) => {
-  const { fill, x, y, width, height, payload } = props as {
+  const { x, y, width, height } = props as {
     fill: string;
     x: number;
     y: number;
@@ -84,9 +84,9 @@ const StripedBar = (props: unknown, theme: ComparisonTheme) => {
     payload?: { regionalMissing?: boolean };
   };
 
-  // Use yellow if data is missing
-  const actualFill = payload?.regionalMissing ? '#F4D93E' : fill;
-  const strokeColor = payload?.regionalMissing ? '#E5C72E' : theme.strokeColor;
+  // Use secondary color (primary blue) even if data is missing
+  const actualFill = theme.secondaryColor;
+  const strokeColor = theme.secondaryColor;
 
   const patternId = `stripes-${x}`;
 

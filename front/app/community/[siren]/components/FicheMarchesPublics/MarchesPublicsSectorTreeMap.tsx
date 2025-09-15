@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, memo, useCallback, useEffect, useState } from 'react';
+import { type RefObject, memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useMarchesPublicsByCPV2 } from '#utils/hooks/useMarchesPublicsByCPV2';
@@ -72,13 +72,15 @@ function MarchesPublicsSectorTreemap({ siren, year, ref }: MarchesPublicsSectorT
     );
   }
 
-  const treeLeaves: TreeLeaf[] = data.map(({ cpv_2, cpv_2_label, montant, grand_total }) => ({
-    type: 'leaf',
-    id: cpv_2,
-    name: cpv_2_label,
-    value: montant,
-    part: montant / grand_total,
-  }));
+  const treeLeaves: TreeLeaf[] = data.map(
+    ({ cpv_2, cpv_2_label, montant, grand_total }, index) => ({
+      type: 'leaf',
+      id: `${cpv_2}_${index}_${montant}`, // Make ID unique by adding index and amount
+      name: cpv_2_label,
+      value: montant,
+      part: montant / grand_total,
+    }),
+  );
 
   const treeData: TreeData = {
     type: 'node',

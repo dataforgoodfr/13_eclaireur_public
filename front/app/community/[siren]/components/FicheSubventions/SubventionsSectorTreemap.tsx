@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, memo, useCallback, useEffect, useState } from 'react';
+import { type RefObject, memo, useCallback, useEffect, useState } from 'react';
 
 import EmptyState from '#components/EmptyState';
 import { useSubventionsByNaf } from '#utils/hooks/useSubventionsByNaf';
@@ -72,9 +72,9 @@ function SubventionsSectorTreemap({ siren, year, ref }: SubventionsSectorTreemap
     );
   }
 
-  const treeLeaves: TreeLeaf[] = data.map(({ naf2, label, montant, grand_total }) => ({
+  const treeLeaves: TreeLeaf[] = data.map(({ naf2, label, montant, grand_total }, index) => ({
     type: 'leaf',
-    id: naf2,
+    id: `${naf2}_${index}_${montant}`, // Make ID unique by adding index and amount
     name: label,
     value: montant,
     part: montant / grand_total,
