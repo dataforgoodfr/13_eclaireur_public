@@ -85,8 +85,7 @@ export default function InterpellateForm({
       email: '',
       // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!!
       emails: 'olivier.pretre@gmx.fr', // TODO : commenter à la mise en production
-      object:
-        'Transparence des données publiques – Publication des investissements et marchés publics',
+      object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
       message: formMessage,
       isCC: true,
     },
