@@ -3,6 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import ArticleBox from '#app/components/ArticleBox';
 import CommunityBasics from '#components/Communities/CommunityBasics';
 import ContactList from '#components/Contacts/ContactList';
 import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
@@ -10,7 +11,8 @@ import Stepper from '#components/Interpellate/Stepper';
 import { Card, CardContent, CardHeader, CardTitle } from '#components/ui/card';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '#utils/fetchers/contacts/fetchContacts-server';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CircleAlert } from 'lucide-react';
+import { Button } from '#components/ui/button';
 
 async function getContacts(siren: string) {
   return await fetchContacts({ filters: { siren } });
@@ -183,32 +185,46 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
           )}
         </article>
 
-        {emailContactsLen > 0 && <InterpellateOtherLink />}
+        {emailContactsLen > 0 &&  <InterpellateOtherLink />}
+
+         <article className='mx-4 mt-8'>
+          <ArticleBox
+            headerText={'Appel à contribution, nous avons besoin de vous !'}
+            HeaderIcon={CircleAlert}
+          >
+            <div className='text-center'>
+              <Image
+                src='/eclaireur/mascotte_search.svg'
+                alt='Interpeller'
+                width={150}
+                height={129}
+                className='mx-auto block'
+              />
+              <h3 className='mb-4 mt-6 px-8 text-center'>
+                Aidez-nous à compléter l’annuaire des collectivités
+              </h3>
+              <p className='text-lg'>
+                En tant que citoyen·ne, je peux partager un contact pertinent d’une collectivité
+                pour accélérer l’interpellation.
+              </p>
+              <Button
+                size='lg'
+                className='mx-auto mt-8 block rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90'
+              >
+                <Link href='/contact'>Proposez-nous un contact !</Link>
+              </Button>
+            </div>
+          </ArticleBox>
+        </article>
       </section>
     </>
   );
 }
+        
+        
+        
+      
 
-const ContactCard = ({
-  cardTitleText,
-  children,
-  cardClassName,
-}: {
-  cardTitleText: string;
-  children?: React.ReactNode;
-  cardClassName?: string;
-}) => (
-  <Card
-    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: min-h-[160] rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3 ${cardClassName}`}
-  >
-    <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
-      <CardTitle>
-        <h4 className='mt-4 pr-4'>{cardTitleText}</h4>
-      </CardTitle>
-    </CardHeader>
-    <CardContent>{children}</CardContent>
-  </Card>
-);
 
 const InterpellateOtherLink = () => (
   <Link
