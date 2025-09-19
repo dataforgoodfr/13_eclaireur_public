@@ -225,6 +225,8 @@ class CommunitiesEnricher(BaseEnricher):
         regex_reg = re.compile(f"^({region_pattern})")
 
         def nettoyer_nom(nom: str, type_: str) -> str:
+            if nom is None:
+                return ""
             nom = nom.upper().strip()
 
             prefixes = {
