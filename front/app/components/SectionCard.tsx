@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { ArrowRight } from 'lucide-react';
@@ -37,23 +36,6 @@ export function BulletList({ items }: { items: string[] }) {
         <li key={i}>{item}</li>
       ))}
     </ul>
-  );
-}
-
-export function InfoBox({ title, children }: { title?: string; children: React.ReactNode }) {
-  return (
-    <div className='mb-6 rounded-2xl border border-score-transparence-3'>
-      <div className='mb-4 rounded-t-2xl bg-primary px-4'>
-        <div className='flex h-[52px] items-center gap-2'>
-          <Image src='/contexte/bulb.svg' alt='Bon à savoir' width={28} height={28} />
-          <p className='font-bold text-white'>Bon à savoir</p>
-        </div>
-      </div>
-      <div className='p-6'>
-        {title && <h2 className='mb-4 text-xl font-bold text-primary'>{title}</h2>}
-        <div className='space-y-4 text-primary'>{children}</div>
-      </div>
-    </div>
   );
 }
 
