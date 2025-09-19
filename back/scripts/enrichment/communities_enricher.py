@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -201,8 +202,6 @@ class CommunitiesEnricher(BaseEnricher):
 
     @classmethod
     def uniformiser_noms(cls, communities: pl.DataFrame) -> pl.DataFrame:
-        import re
-
         """
         Uniformise les noms des collectivités selon leur type :
         - COM -> "COMMUNE X"
@@ -210,7 +209,11 @@ class CommunitiesEnricher(BaseEnricher):
         - REG -> "REGION X"
         """
 
-        # Préparer le pattern pour les régions
+        # Regex Communes et Départements
+        regex_com = re.compile(r"^VILLE\s+DE\s+")
+        regex_dep = re.compile(r"^DEPARTEMENT\s+(DE\s+LA\s+|DE\s+L['’]?\s*|DES\s+|DU\s+|DE\s+)")
+
+        # Pattern pour les régions
         region_prefixes = [
             r"CONSEIL\s+REGIONAL\s+DE\s+LA",
             r"COLLECTIVITE\s+TERRITORIALE\s+DE",
@@ -219,37 +222,25 @@ class CommunitiesEnricher(BaseEnricher):
             r"REGION\s+DES",
         ]
         region_pattern = "|".join(region_prefixes)
+        regex_reg = re.compile(f"^({region_pattern})")
 
         def nettoyer_nom(nom: str, type_: str) -> str:
-            if nom is None:
-                return None
-            nom = str(nom).upper().strip()
+            nom = nom.upper().strip()
 
-            if type_ == "COM":
-                nom = re.sub(r"^VILLE\s+DE\s+", "", nom).strip()
-                if not nom.startswith("COMMUNE "):
-                    return f"COMMUNE {nom}"
+            prefixes = {
+                "COM": ("COMMUNE ", regex_com),
+                "DEP": ("DEPARTEMENT ", regex_dep),
+                "REG": ("REGION ", regex_reg),
+            }
+
+            if type_ not in prefixes:
                 return nom
 
-            elif type_ == "DEP":
-                nom = re.sub(
-                    r"^DEPARTEMENT\s+(DE\s+LA\s+|DE\s+L['’]?\s*|DES\s+|DU\s+|DE\s+)",
-                    "",
-                    nom,
-                    flags=re.IGNORECASE,
-                ).strip()
-                if not nom.startswith("DEPARTEMENT "):
-                    return f"DEPARTEMENT {nom}"
-                return nom
-
-            elif type_ == "REG":
-                nom = re.sub(f"^({region_pattern})", "", nom).strip()
-                if not nom.startswith("REGION "):
-                    return f"REGION {nom}"
-                return nom
-
-            else:
-                return nom
+            prefix, regex = prefixes[type_]
+            nom = regex.sub("", nom).strip()
+            if not nom.startswith(prefix):
+                return f"{prefix}{nom}"
+            return nom
 
         communities = communities.with_columns(
             pl.struct(["nom", "type"])
