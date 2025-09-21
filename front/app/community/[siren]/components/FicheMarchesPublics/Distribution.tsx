@@ -7,7 +7,7 @@ import YearSelector from '#app/community/[siren]/components/YearSelector';
 import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { downloadMarchesPublicsByCPV2CSV } from '#utils/fetchers/marches-publics/download/downloadMarchesPublicsByCPV2';
 
-import { YearOption } from '../../types/interface';
+import type { YearOption } from '../../types/interface';
 import { GraphSwitch } from '../DataViz/GraphSwitch';
 import { TabHeader } from '../TabHeader';
 import MarchesPublicsSectorTable from './MarchesPublicsSectorTable';
@@ -58,6 +58,7 @@ export default function Distribution({ siren, availableYears, communityName }: D
               onClickDownloadData={handleDownloadData}
               onClickDownloadChart={handleDownloadChart}
               disabled={selectedYear === 'All'}
+              disableChartDownload={isTableDisplayed}
             />
           </>
         }
