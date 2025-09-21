@@ -35,11 +35,12 @@ async function getCommunity(siren: string) {
     throw new Error(`Community doesnt exist with siren ${siren}`);
   }
 
-  const { aggregatedScore } = await fetchMostRecentTransparencyScore(siren);
+  const { aggregatedScore, evolutionGlobalScore } = await fetchMostRecentTransparencyScore(siren);
 
   return {
     ...communitiesResults[0],
     transparencyScore: aggregatedScore,
+    evolutionGlobalScore,
   };
 }
 
@@ -53,7 +54,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   // TODO - get and add the last update date
   // const lastUpdateText = `Derniere mise a jour`;
   const score = community.transparencyScore || TransparencyScore.UNKNOWN;
-  const trend = 1;
+  const trend = community.evolutionGlobalScore || 'Stable';
 
   return (
     <>

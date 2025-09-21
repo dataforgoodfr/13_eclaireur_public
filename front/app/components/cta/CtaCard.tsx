@@ -31,10 +31,10 @@ export default function CtaCard({
     >
       <div className='p-5'>
         <div className='flex flex-col'>
-        {/* Mobile */}
+          {/* Mobile */}
           <Image src={picto} alt={title} className='pb-2 md:hidden' width={40} height={40} />
-        {/* Desktop */}
-        <Image src={picto} alt={title} className='pb-2 max-md:hidden' width={48} height={48} />
+          {/* Desktop */}
+          <Image src={picto} alt={title} className='pb-2 max-md:hidden' width={48} height={48} />
           <h3 className={`${isCardBig ? 'mb-4' : ''}`}>{title}</h3>
           <p className={isCardBig ? 'mb-4 font-bold' : ''}>{caption}</p>
           {children}

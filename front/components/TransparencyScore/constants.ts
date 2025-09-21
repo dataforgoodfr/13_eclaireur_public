@@ -16,12 +16,15 @@ export const SCORE_TO_ADJECTIF = {
 };
 export const SCORE_DESCRIPTION = {
   [TransparencyScore.A]:
-    'La structure est très transparente et expose de manière exhaustive ses données.',
-  [TransparencyScore.B]: 'La structure est transparente et expose la plupart de ses données.',
+    "Publication complète et claire. Pour une grande collectivité, cela traduit une transparence aboutie et structurée. Pour une petite commune, c'est un effort remarquable compte tenu de moyens limités.",
+  [TransparencyScore.B]:
+    'La plupart des données sont accessibles, avec quelques manques ou erreurs. Pour une grande collectivité, il reste une marge de progression. Pour une petite collectivité, cela montre déjà une démarche volontariste.',
   [TransparencyScore.C]:
-    'La structure a une transparence moyenne et expose certaines de ses données.',
-  [TransparencyScore.D]: 'La structure manque de transparence et expose peu de ses données.',
-  [TransparencyScore.E]: 'La structure est opaque et ne rend pas ses données publiques.',
+    'Des données existent, mais elles sont partielles, irrégulières ou difficiles à exploiter. Niveau acceptable pour une petite commune débutant dans la publication. Plus problématique pour une collectivité importante qui devrait être plus respectueuse de ses obligations.',
+  [TransparencyScore.D]:
+    'Très peu de données sont disponibles. Entendable temporairement pour une petite collectivité manquant de ressources, mais peu tolérable pour une grande collectivité ayant des obligations légales de publication.',
+  [TransparencyScore.E]:
+    'Absence quasi totale voir totale de données publiées. Peut refléter un manque de moyens pour une petite commune, mais constitue un défaut grave de transparence pour une grande collectivité.',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
 export const SCORE_TRANSPARENCY_COLOR: Record<TransparencyScore, string> = {

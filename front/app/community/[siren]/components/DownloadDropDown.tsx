@@ -11,12 +11,14 @@ type DownloadDropDownProps = {
   onClickDownloadData?: () => void;
   onClickDownloadChart?: () => void;
   disabled?: boolean;
+  disableChartDownload?: boolean;
 };
 
 export default function DownloadDropDown({
   onClickDownloadData,
   onClickDownloadChart,
   disabled,
+  disableChartDownload,
 }: DownloadDropDownProps) {
   return (
     <DropdownMenu>
@@ -34,7 +36,7 @@ export default function DownloadDropDown({
           <ArrowDownToLine />
           Télécharger les données
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onClickDownloadChart}>
+        <DropdownMenuItem onClick={onClickDownloadChart} disabled={disableChartDownload}>
           <ArrowDownToLine />
           Télécharger le graphique
         </DropdownMenuItem>

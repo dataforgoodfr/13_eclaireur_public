@@ -1,8 +1,8 @@
-import { SubventionSector } from '#app/models/subvention';
+import type { SubventionSector } from '#app/models/subvention';
 import { getQueryFromPool } from '#utils/db';
 
 import { DataTable } from '../constants';
-import { Pagination } from '../types';
+import type { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.Subventions;
 
@@ -22,6 +22,7 @@ export function createSQLQueryParams(
     SELECT 
       "Libellé_naf_n2_beneficiaire" AS label, 
       LEFT(naf8_beneficiaire, 2) AS naf2,
+      objet,
       montant,
       annee
     FROM ${TABLE_NAME}
@@ -30,6 +31,7 @@ export function createSQLQueryParams(
   SELECT 
     naf2, 
     label,
+    objet,
     SUM(montant) AS montant,
     SUM(SUM(montant)) OVER () AS grand_total,
     count(*) OVER()::integer AS total_row_count
@@ -41,7 +43,7 @@ export function createSQLQueryParams(
     values.push(year);
   }
 
-  query += ' GROUP BY naf2, label';
+  query += ' GROUP BY naf2, label, objet';
   if (maxAmount !== undefined) query += ` HAVING SUM(montant) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';
