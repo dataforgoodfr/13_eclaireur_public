@@ -9,7 +9,7 @@ import {
 } from '#components/ui/accordion';
 import { ArrowRight } from 'lucide-react';
 
-export default function FrequentlyAskQuestion() {
+export default function FrequentlyAskedQuestions() {
   return (
     <div className='mx-auto mb-20 w-full max-w-screen-lg p-6'>
       <div className='hidden grid-cols-2 md:grid'>

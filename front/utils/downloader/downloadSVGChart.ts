@@ -47,8 +47,8 @@ export async function downloadSVGChart(
   } = options ?? DEFAULT_OPTIONS;
 
   const clonedChartContainer = chartContainer.cloneNode(true) as HTMLElement;
-  clonedChartContainer.setAttribute('width', `${size.width}`);
-  clonedChartContainer.setAttribute('height', `${size.height}`);
+  // Remove invalid attributes - div elements don't have width/height attributes
+  // The size is handled properly in the SVG creation
   const svgToDownload = await createSvg(clonedChartContainer, header, size);
 
   if (extension === 'png') {
@@ -83,6 +83,11 @@ async function createSvg(chartContainer: HTMLElement, header: Header, size: Size
   });
 
   const chartSvg = chartContainer.getElementsByTagName('svg')[0];
+  if (!chartSvg) {
+    throw new Error(
+      'No SVG element found in the chart container. Make sure the component renders an SVG element.',
+    );
+  }
   chartSvg.setAttribute('x', `${margin / 2}`);
   chartSvg.setAttribute('y', `${headerHeight}`);
   addLegendToChart(chartContainer, height, chartSvg);
@@ -124,11 +129,12 @@ function createHeaderText(text: string, styleAttributes: { fontSize: string; y: 
 }
 
 function addLegendToChart(chartContainer: HTMLElement, height: number, chartSvg: SVGSVGElement) {
-  const legend = chartContainer.getElementsByClassName('recharts-legend-wrapper')[0];
-  if (legend) {
-    document.body.appendChild(legend);
-    applyStyleToAllChildren(legend);
-    document.body.removeChild(legend);
+  // Look for Recharts legend first (for chart components that use Recharts)
+  const rechartsLegend = chartContainer.getElementsByClassName('recharts-legend-wrapper')[0];
+  if (rechartsLegend && rechartsLegend.children.length > 0) {
+    document.body.appendChild(rechartsLegend);
+    applyStyleToAllChildren(rechartsLegend);
+    document.body.removeChild(rechartsLegend);
 
     const svgLegendContainer = document.createElementNS(
       'http://www.w3.org/2000/svg',
@@ -137,9 +143,14 @@ function addLegendToChart(chartContainer: HTMLElement, height: number, chartSvg:
     svgLegendContainer.setAttribute('width', '100%');
     svgLegendContainer.setAttribute('height', '64');
     svgLegendContainer.setAttribute('y', `${height - 70}`);
-    svgLegendContainer.appendChild(legend.children[0]);
+    svgLegendContainer.appendChild(rechartsLegend.children[0]);
     chartSvg.appendChild(svgLegendContainer);
+    return;
   }
+
+  // For D3-based components like Treemap, there typically isn't a separate legend
+  // The color coding is inherent in the visualization itself
+  // This is normal and expected behavior
 }
 
 async function createLogoSvg(

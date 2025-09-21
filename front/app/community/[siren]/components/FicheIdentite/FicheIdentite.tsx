@@ -25,7 +25,7 @@ const FicheIndentiteEnTete = ({ community }: { community: Community }) => {
             text="Non soumise à l'obligation Loi République Numérique"
             icon={CircleX}
             iconSize={12}
-            className='bg-red-200'
+            className='bg-secondary'
           />
         ) : (
           <BadgeCommunity
