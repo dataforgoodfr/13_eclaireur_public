@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -27,6 +28,9 @@ class CommunitiesEnricher(BaseEnricher):
     @classmethod
     def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         communities, bareme, subventions, marches_publics = inputs
+
+        # Uniformise les noms des collectivités selon leur type
+        communities = cls.uniformiser_noms(communities)
 
         current_year = datetime.now().year
         target_year = current_year - 2
@@ -197,6 +201,60 @@ class CommunitiesEnricher(BaseEnricher):
                     .alias(f"moyenne_reg_dpt_{suffix}"),
                 ]
             )
+        )
+
+        return communities
+
+    @classmethod
+    def uniformiser_noms(cls, communities: pl.DataFrame) -> pl.DataFrame:
+        """
+        Uniformise les noms des collectivités selon leur type :
+        - COM -> "COMMUNE X"
+        - DEP -> "DEPARTEMENT X"
+        - REG -> "REGION X"
+        """
+
+        # Regex Communes et Départements
+        regex_com = re.compile(r"^VILLE\s+DE\s+")
+        regex_dep = re.compile(r"^DEPARTEMENT\s+(DE\s+LA\s+|DE\s+L['’]?\s*|DES\s+|DU\s+|DE\s+)")
+
+        # Pattern pour les régions
+        region_prefixes = [
+            r"CONSEIL\s+REGIONAL\s+DE\s+LA",
+            r"COLLECTIVITE\s+TERRITORIALE\s+DE",
+            r"COLLECTIVITE\s+EUROPEENNE\s+DE",
+            r"COLLECTIVITE\s+DE",
+            r"REGION\s+DES",
+        ]
+        region_pattern = "|".join(region_prefixes)
+        regex_reg = re.compile(f"^({region_pattern})")
+
+        def nettoyer_nom(nom: str, type_: str) -> str:
+            if nom is None:
+                return ""
+            nom = nom.upper().strip()
+
+            prefixes = {
+                "COM": ("COMMUNE ", regex_com),
+                "DEP": ("DEPARTEMENT ", regex_dep),
+                "REG": ("REGION ", regex_reg),
+            }
+
+            if type_ not in prefixes:
+                return nom
+
+            prefix, regex = prefixes[type_]
+            nom = regex.sub("", nom).strip()
+            if not nom.startswith(prefix):
+                return f"{prefix}{nom}"
+            return nom
+
+        communities = communities.with_columns(
+            pl.struct(["nom", "type"])
+            .map_elements(
+                lambda row: nettoyer_nom(row["nom"], row["type"]), return_dtype=pl.String
+            )
+            .alias("nom")
         )
 
         return communities
