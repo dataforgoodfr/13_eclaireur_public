@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -5,7 +7,6 @@ import CommunityBasics from '#components/Communities/CommunityBasics';
 import ContactList from '#components/Contacts/ContactList';
 import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
 import Stepper from '#components/Interpellate/Stepper';
-import { Button } from '#components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#components/ui/card';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '#utils/fetchers/contacts/fetchContacts-server';
@@ -45,6 +46,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
       </div>
       <section className='global-margin mb-16 mt-[-7rem]'>
         <article className='mx-4 rounded-3xl border border-primary-light shadow'>
+          {/* CAS : présence de contact mail générique */}
           {emailContactsLen > 0 && (
             <>
               <div
@@ -67,7 +69,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
               </h3>
               {emailContacts && (
                 <>
-                  <ul className='flex flex-wrap justify-between gap-4 px-4 pb-8 md:px-8'>
+                  <ul className='flex flex-wrap justify-start gap-5 px-4 pb-8 md:px-8'>
                     <ContactList contacts={emailContacts} />
                   </ul>
                   <div className='mb-4 block text-center md:hidden'>
@@ -83,6 +85,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
               )}
             </>
           )}
+          {/* CAS : pas de contact mail mais présence de l'url de la collectivité ou de son formulaire de contact */}
           {!emailContactsLen && formContactLen > 0 && (
             <>
               <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
@@ -112,63 +115,113 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                 </h3>
 
                 <ul className='flex flex-wrap justify-between gap-4 px-8 pb-8'>
-                  <Card
-                    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: min-h-[160] rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3`}
-                  >
-                    <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
-                      <CardTitle>
-                        <h4 className='mt-4 pr-4'>Visiter le site de la collectivité</h4>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <li className='group relative basis-[100%] md:basis-[32%]'>
+                    <ContactCard cardTitleText='Visiter le site de la collectivité'>
                       <Link href={formContact[0].contact} className='mt-4 flex' target='_blank'>
                         Voir le site de la collectivité
                         <ChevronRight size={14} className='ml-2 self-center' />
                       </Link>
-                    </CardContent>
-                  </Card>
+                    </ContactCard>
+                  </li>
                 </ul>
+                <InterpellateOtherLink />
+              </div>
+            </>
+          )}
+          {/* CAS : ni contact mail générique, ni url de la collectivité */}
+          {emailContactsLen < 1 && formContactLen < 1 && (
+            <>
+              <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
+                <Image
+                  src='/eclaireur/error_icon.png'
+                  alt='Interpeller'
+                  width={24}
+                  height={24}
+                  className='mr-2 inline-block'
+                />
+                Nous n’avons pas de contact direct avec les élus pour {communityName}
+              </p>
+              <div className='bg-white py-16'>
+                <Image
+                  src='/eclaireur/mascotte_call.svg'
+                  alt='Interpeller'
+                  width={150}
+                  height={129}
+                  className='mx-auto block'
+                />
+                <h3 className='mb-12 mt-6 px-8 text-center'>
+                  Vous pouvez toujours agir
+                  <br />
+                  <span className='text-lg font-normal'>
+                    pour faire valoir la transparence des données publiques !
+                  </span>
+                </h3>
 
-                <Button
-                  size='lg'
-                  className='mx-auto mt-8 block rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90'
-                >
-                  <Link href='/interpeller' className=''>
-                    <Image
-                      src='/eclaireur/interpeller.svg'
-                      alt='Interpeller'
-                      width={20}
-                      height={20}
-                      className='mr-2 inline-block'
-                    />
-                    Interpeller une autre collectivité
-                  </Link>
-                </Button>
+                <ul className='flex flex-wrap justify-between gap-4 px-8 pb-8'>
+                  <li className='group relative basis-[100%] md:basis-[32%]'>
+                    <ContactCard cardTitleText='Envoyer un mail à la collectivité'>
+                      Information non disponible
+                    </ContactCard>
+                  </li>
+                  <li className='group relative basis-[100%] md:basis-[32%]'>
+                    <ContactCard cardTitleText='Visiter le site de la collectivité'>
+                      Information non disponible
+                    </ContactCard>
+                  </li>
+                  <li className='group relative basis-[100%] md:basis-[32%]'>
+                    <ContactCard cardTitleText='Envoyer un courrier à la collectivité'>
+                      <Link href='#' download className='mt-4 flex' target='_blank'>
+                        Télécharger un courrier type
+                        <ChevronRight size={14} className='ml-2 self-center' />
+                      </Link>
+                    </ContactCard>
+                  </li>
+                </ul>
+                <InterpellateOtherLink />
               </div>
             </>
           )}
         </article>
 
-        {emailContactsLen > 0 && (
-          <>
-            <Button
-              size='lg'
-              className='mx-auto mt-8 block rounded-none rounded-br-lg rounded-tl-lg bg-primary hover:bg-primary/90'
-            >
-              <Link href='/interpeller' className=''>
-                <Image
-                  src='/eclaireur/interpeller.svg'
-                  alt='Interpeller'
-                  width={20}
-                  height={20}
-                  className='mr-2 inline-block'
-                />
-                Interpeller une autre collectivité
-              </Link>
-            </Button>
-          </>
-        )}
+        {emailContactsLen > 0 && <InterpellateOtherLink />}
       </section>
     </>
   );
 }
+
+const ContactCard = ({
+  cardTitleText,
+  children,
+  cardClassName,
+}: {
+  cardTitleText: string;
+  children?: React.ReactNode;
+  cardClassName?: string;
+}) => (
+  <Card
+    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: min-h-[160] rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3 ${cardClassName}`}
+  >
+    <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
+      <CardTitle>
+        <h4 className='mt-4 pr-4'>{cardTitleText}</h4>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>{children}</CardContent>
+  </Card>
+);
+
+const InterpellateOtherLink = () => (
+  <Link
+    href='/interpeller'
+    className='mx-auto mt-8 block max-w-80 rounded-none rounded-br-xl rounded-tl-xl bg-primary px-4 py-3 font-kanit-bold font-normal text-white'
+  >
+    <Image
+      src='/eclaireur/interpeller.svg'
+      alt='Interpeller'
+      width={20}
+      height={20}
+      className='mr-2 inline-block'
+    />
+    Interpeller une autre collectivité
+  </Link>
+);
