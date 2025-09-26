@@ -124,7 +124,7 @@ export default function OurMethodologyExtended() {
                 return (
                   <div key={score} className='flex flex-row items-center justify-between'>
                     <div
-                      className={`flex h-[60] w-[80] items-center justify-center rounded-tl-br-xl md:w-[113] ${SCORE_TRANSPARENCY_COLOR[score as TransparencyScore]}`}
+                      className={`flex h-[60px] w-[80px] items-center justify-center rounded-tl-br-xl md:w-[113px] ${SCORE_TRANSPARENCY_COLOR[score as TransparencyScore]}`}
                       title={score}
                     >
                       <span className={`font-kanit-bold text-[24px] font-bold leading-[24px]`}>
