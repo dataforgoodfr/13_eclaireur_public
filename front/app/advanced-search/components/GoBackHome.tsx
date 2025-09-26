@@ -12,8 +12,12 @@ export default function GoBackHome() {
   }
 
   return (
-    <Button variant='link' onClick={goHome} className='flex w-fit items-center justify-start gap-4'>
-      <ArrowLeft /> Retour
+    <Button
+      variant='link'
+      onClick={goHome}
+      className='flex w-fit items-center justify-start gap-4 pl-0 text-lg font-medium'
+    >
+      <ArrowLeft /> <span className='max-md:hidden'>Retour</span>
     </Button>
   );
 }
