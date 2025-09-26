@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import Link from 'next/link';
 
+import { SCORE_INDICE_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
@@ -12,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDataTable } from '@/hooks/use-data-table';
 import { CommunityType } from '@/utils/types';
-import { formatCompact, stringifyCommunityType } from '@/utils/utils';
+import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Award, Building2, Euro, Users } from 'lucide-react';
 
@@ -169,11 +170,17 @@ export function AdvancedSearchDataTable({
           }
           const score = row.getValue('mp_score') as string | null;
           if (!score) return <div className='text-right text-muted-foreground'>-</div>;
-
+          const scoreBgClass = SCORE_INDICE_COLOR[score as TransparencyScore];
           return (
-            <div className='text-right'>
-              <Badge variant='outline' className='font-medium'>
-                <Award className='mr-1 h-3 w-3' />
+            <div className='pr-5 text-right'>
+              <Badge
+                variant='outline'
+                className={cn(
+                  'rounded-full px-3 py-2 text-base font-medium font-semibold',
+                  scoreBgClass,
+                )}
+              >
+                <Award className='mr-1 h-4 w-4' />
                 {score}
               </Badge>
             </div>
@@ -195,10 +202,17 @@ export function AdvancedSearchDataTable({
           }
           const score = row.getValue('subventions_score') as string | null;
           if (!score) return <div className='text-right text-muted-foreground'>-</div>;
+          const scoreBgClass = SCORE_INDICE_COLOR[score as TransparencyScore];
 
           return (
-            <div className='text-right'>
-              <Badge variant='outline' className='font-medium'>
+            <div className='pr-5 text-right'>
+              <Badge
+                variant='outline'
+                className={cn(
+                  'rounded-full px-3 py-2 text-base font-medium font-semibold',
+                  scoreBgClass,
+                )}
+              >
                 <Award className='mr-1 h-3 w-3' />
                 {score}
               </Badge>
