@@ -93,6 +93,9 @@ export default {
           DEFAULT: '#F59E42', // Orange, or use Brand 02 if more suitable
           foreground: '#000',
         },
+        danger: {
+          DEFAULT: '#FB735F', // Red
+        },
         info: {
           DEFAULT: '#AEB8E6', // Bleu clair (optional)
           foreground: '#2E4488',
