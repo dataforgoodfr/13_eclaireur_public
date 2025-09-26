@@ -7,6 +7,7 @@ import { useFilterOptions } from '#app/advanced-search/hooks/useFilterOptions';
 import { useFiltersParams } from '#app/advanced-search/hooks/useFiltersParams';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { ActionButton } from '#components/ui/action-button';
+import { Button } from '#components/ui/button';
 import { CommunityType } from '#utils/types';
 import { cn, getSortedCommunityTypes, stringifyCommunityType } from '#utils/utils';
 import { Award } from 'lucide-react';
@@ -90,6 +91,17 @@ export default function FilterModal({
         onChange={SetCommunityType}
         isScore={false}
       />
+      <div className='flex justify-between'>
+        <span className='text-muted'>Population inférieur à</span>
+        <Button
+          variant='link'
+          size='sm'
+          className='ml-auto text-base font-medium text-danger'
+          onClick={() => SetPopulation(null)}
+        >
+          Effacer
+        </Button>
+      </div>
 
       <PopulationSlider
         currentValue={population}
