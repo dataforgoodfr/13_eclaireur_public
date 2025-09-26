@@ -20,7 +20,7 @@ export default function Page() {
   return (
     <main>
       <SectionHeader sectionTitle={title} sectionSubTitle={description} displayGoBack={true} />
-      <div className='global-margin my-20 flex flex-col gap-x-10 gap-y-5'>
+      <div className='global-margin my-3 flex flex-col gap-x-10 gap-y-5 lg:my-20'>
         <Suspense fallback={<Loading />}>
           <AdvancedSearchPageContent />
         </Suspense>
