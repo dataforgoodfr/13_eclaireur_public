@@ -8,11 +8,11 @@ import CommunityBasics from '#components/Communities/CommunityBasics';
 import ContactList from '#components/Contacts/ContactList';
 import ButtonBackAndForth from '#components/Interpellate/ButtonBackAndForth';
 import Stepper from '#components/Interpellate/Stepper';
+import { Button } from '#components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#components/ui/card';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchContacts } from '#utils/fetchers/contacts/fetchContacts-server';
 import { ChevronRight, CircleAlert } from 'lucide-react';
-import { Button } from '#components/ui/button';
 
 async function getContacts(siren: string) {
   return await fetchContacts({ filters: { siren } });
@@ -185,9 +185,9 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
           )}
         </article>
 
-        {emailContactsLen > 0 &&  <InterpellateOtherLink />}
+        {emailContactsLen > 0 && <InterpellateOtherLink />}
 
-         <article className='mx-4 mt-8'>
+        <article className='mx-4 mt-8'>
           <ArticleBox
             headerText={'Appel à contribution, nous avons besoin de vous !'}
             HeaderIcon={CircleAlert}
@@ -220,11 +220,27 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
     </>
   );
 }
-        
-        
-        
-      
 
+const ContactCard = ({
+  cardTitleText,
+  children,
+  cardClassName,
+}: {
+  cardTitleText: string;
+  children?: React.ReactNode;
+  cardClassName?: string;
+}) => (
+  <Card
+    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: min-h-[160] rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3 ${cardClassName}`}
+  >
+    <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
+      <CardTitle>
+        <h4 className='mt-4 pr-4'>{cardTitleText}</h4>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>{children}</CardContent>
+  </Card>
+);
 
 const InterpellateOtherLink = () => (
   <Link
