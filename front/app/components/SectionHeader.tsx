@@ -15,7 +15,7 @@ export function SectionHeader({
     <div className="flex h-[200px] bg-[url('/eclaireur/project_background.webp')] bg-cover bg-center bg-no-repeat lg:h-[300px]">
       <div className='mx-auto my-auto flex w-full flex-col content-center justify-center p-4 md:p-8 xl:max-w-[1128px] xl:p-0'>
         {displayGoBack && (
-          <div className='mb-8'>
+          <div className='mb-4 md:mb-8'>
             {' '}
             <GoBackHome />{' '}
           </div>
