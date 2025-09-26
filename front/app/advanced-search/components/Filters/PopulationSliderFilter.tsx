@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 
+import { PopulationSlider } from '#app/advanced-search/components/Filters/PopulationSlider';
 import { Button } from '#components/ui/button';
 import { Label } from '#components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '#components/ui/popover';
 import { Separator } from '#components/ui/separator';
-import { Slider } from '#components/ui/slider';
 import type { CommunityType } from '#utils/types';
 import { formatNumberInteger } from '#utils/utils';
 import { PlusCircle, XCircle } from 'lucide-react';
@@ -31,10 +31,7 @@ export function PopulationSliderFilter() {
   });
 
   const options = filterOptions?.populations.length ? filterOptions.populations : fallbackOptions;
-
   const currentValue = population ?? null;
-  const maxValue = Math.max(...options);
-  const minValue = Math.min(...options);
 
   function handleSliderChange(value: number[]) {
     const newValue = value[0];
@@ -85,23 +82,12 @@ export function PopulationSliderFilter() {
         <PopoverContent align='start' className='w-80 p-4'>
           <div className='space-y-4'>
             <div>
-              <p className='mb-3 text-sm font-medium'>Population inférieur à</p>
-
               {/* Slider */}
-              <div className='mb-4 px-2'>
-                <Slider
-                  value={[currentValue || maxValue]}
-                  onValueChange={handleSliderChange}
-                  min={minValue}
-                  max={maxValue}
-                  step={1000}
-                  className='w-full'
-                />
-                <div className='mt-1 flex justify-between text-xs text-muted-foreground'>
-                  <span>{formatNumberInteger(minValue)}</span>
-                  <span>{formatNumberInteger(maxValue)}</span>
-                </div>
-              </div>
+              <PopulationSlider
+                currentValue={currentValue}
+                handleSliderChange={handleSliderChange}
+                options={options}
+              />
             </div>
 
             <Separator />
