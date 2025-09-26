@@ -81,17 +81,15 @@ export function PopulationSliderFilter() {
         </PopoverTrigger>
         <PopoverContent align='start' className='w-80 p-4'>
           <div className='space-y-4'>
-            <div>
-              {/* Slider */}
-              <PopulationSlider
-                currentValue={currentValue}
-                handleSliderChange={handleSliderChange}
-                options={options}
-              />
-            </div>
+            {/* Slider */}
+            <p className='mb-3 text-sm font-medium'>Population inférieur à</p>
 
+            <PopulationSlider
+              currentValue={currentValue}
+              handleSliderChange={handleSliderChange}
+              options={options}
+            />
             <Separator />
-
             <Button variant='outline' size='sm' onClick={handleClear} className='w-full'>
               Effacer
             </Button>
