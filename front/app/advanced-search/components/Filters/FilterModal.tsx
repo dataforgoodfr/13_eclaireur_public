@@ -143,7 +143,8 @@ function FilterButtonGroup({
           )}
           onClick={() => onChange(option.id)}
         >
-          {isScore && <Award className='mr-1 h-4 w-4' />}
+          {/* Pas d'icône pour "Tout" */}
+          {isScore && option.id !== '' && <Award className='mr-1 h-4 w-4' />}
           {option.label}
         </button>
       ))}
