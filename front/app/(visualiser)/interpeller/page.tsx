@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import FrequentlyAskedQuestions from '#app/components/FrequentlyAskedQuestions';
-import OurMethodology from '#app/components/OurMethodology';
+import OurMethodologyExtended from '#app/components/OurMethodologyExtended';
 import WhyChallenge from '#app/components/WhyChallenge';
 import Stepper from '#components/Interpellate/Stepper';
 import SearchBar from '#components/SearchBar/SearchBar';
@@ -39,7 +39,7 @@ export default function Page() {
         </article>
 
         <WhyChallenge />
-        <OurMethodology />
+        <OurMethodologyExtended />
         <FrequentlyAskedQuestions />
       </section>
     </>
