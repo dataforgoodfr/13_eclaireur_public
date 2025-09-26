@@ -20,6 +20,8 @@ export function FilterButton({ className }: FilterButtonProps) {
     setFilterModalOpen(false);
   }
 
+  const [clearAllFiltersSignal, setClearAllFiltersSignal] = useState(0);
+
   return (
     <div className={`flex gap-2 ${className}`}>
       <Dialog open={isFilterModalOpen} onOpenChange={setFilterModalOpen}>
@@ -33,13 +35,14 @@ export function FilterButton({ className }: FilterButtonProps) {
               <Button
                 variant='link'
                 size='sm'
-                className='ml-auto text-base text-xs font-medium text-danger'
+                className='ml-auto text-base font-medium text-danger'
+                onClick={() => setClearAllFiltersSignal((prev) => prev + 1)} //increment to signal a reset
               >
                 Effacer tout
               </Button>
             </div>
           </DialogTitle>
-          <FilterModal closeModal={closeModal} />
+          <FilterModal closeModal={closeModal} clearAllFiltersSignal={clearAllFiltersSignal} />
         </DialogContent>
       </Dialog>
     </div>

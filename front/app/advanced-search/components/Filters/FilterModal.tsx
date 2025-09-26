@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { PopulationSlider } from '#app/advanced-search/components/Filters/PopulationSlider';
 import { useFilterOptions } from '#app/advanced-search/hooks/useFilterOptions';
@@ -13,20 +13,31 @@ import { Award } from 'lucide-react';
 
 interface FilterModalProps {
   closeModal: () => void;
+  clearAllFiltersSignal: number;
 }
 
-export default function FilterModal({ closeModal: closeModal }: FilterModalProps) {
+export default function FilterModal({
+  closeModal: closeModal,
+  clearAllFiltersSignal: clearAllFiltersSignal,
+}: FilterModalProps) {
   const {
     filters: {},
     setFilter,
   } = useFiltersParams();
-
   const { data: filterOptions } = useFilterOptions({});
 
   const [communityType, SetCommunityType] = useState<string>('');
   const [population, SetPopulation] = useState<number | null>(null);
   const [mp_score, SetMpScore] = useState<string>('');
   const [subventions_score, SetSubventionsScore] = useState<string>('');
+
+  // Whenever clearAllFiltersSignal changes, reset state
+  useEffect(() => {
+    SetCommunityType('');
+    SetPopulation(null);
+    SetMpScore('');
+    SetSubventionsScore('');
+  }, [clearAllFiltersSignal]);
 
   const allOption: ButtonOption = { id: '', label: 'Tout' };
 
