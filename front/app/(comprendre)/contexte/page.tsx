@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
-import Card, { BulletList, InfoBox, Paragraph } from '#app/components/SectionCard';
+import ArticleBox from '#app/components/ArticleBox';
+import Card, { BulletList, Paragraph } from '#app/components/SectionCard';
 import { SectionHeader } from '#app/components/SectionHeader';
 import CtaCard from '#app/components/cta/CtaCard';
 
@@ -107,7 +108,11 @@ export default function Page() {
                 />
               </CtaCard>
             </div>
-            <InfoBox title='Transparence des collectivités : adapter les exigences à la taille et aux moyens'>
+            <ArticleBox
+              headerText={'Bon à savoir'}
+              headerImagePath={'/contexte/bulb.svg'}
+              title='Transparence des collectivités : adapter les exigences à la taille et aux moyens'
+            >
               <Paragraph>
                 Toutes les collectivités au-dessus d'un certain seuil sont soumises aux mêmes
                 obligations légales de transparence. Mais dans la pratique, la situation varie
@@ -124,7 +129,7 @@ export default function Page() {
                 de renforcer la transparence et la confiance citoyenne, sans attendre d'elles le
                 même niveau de structuration que les plus grandes collectivités.
               </Paragraph>
-            </InfoBox>
+            </ArticleBox>
           </Card>
 
           {/* Enjeux */}
