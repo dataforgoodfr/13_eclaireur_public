@@ -56,6 +56,7 @@ export default function FranceMap({
   showLegend,
   setShowLegend,
 }: MapProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapRef>(null);
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
@@ -100,6 +101,9 @@ export default function FranceMap({
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   }, [communityMap, choroplethParameter, territoryFilterCode]);
 
+  const mapBounding = mapContainerRef.current?.getBoundingClientRect();
+  console.log('mapBounding: ', mapBounding);
+
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
@@ -117,7 +121,7 @@ export default function FranceMap({
     isMobile,
   });
   return (
-    <div className='relative h-full w-full cursor-grab bg-white'>
+    <div ref={mapContainerRef} className='relative h-full w-full cursor-grab bg-white'>
       {/* Show legend button for mobile when legend is hidden */}
       {!showLegend && (
         <button
@@ -175,6 +179,7 @@ export default function FranceMap({
           hoverInfo={hoverInfo}
           communityMap={communityMap}
           isMobile={isMobile}
+          mapLimit={mapBounding ? { x: mapBounding.right, y: mapBounding.height } : undefined}
           onClose={() => setHoverInfo(null)}
         />
         <Source

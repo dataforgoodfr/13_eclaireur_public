@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import type { Community } from '#app/models/community';
 import {
   SCORE_TO_ADJECTIF,
@@ -11,6 +13,7 @@ import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
 interface MapTooltipProps {
   hoverInfo: HoverInfo | null;
   communityMap: Record<string, Community>;
+  mapLimit?: { x: number; y: number };
   isMobile?: boolean;
   onClose?: () => void;
 }
@@ -18,14 +21,22 @@ interface MapTooltipProps {
 export default function MapTooltip({
   hoverInfo,
   communityMap,
+  mapLimit,
   isMobile = false,
   onClose,
 }: MapTooltipProps) {
+  const tooltipRef = useRef<HTMLDivElement>(null);
   if (!hoverInfo) return null;
 
   const { feature, type, x, y } = hoverInfo;
   const data = getCommunityDataFromFeature(feature, communityMap);
-
+  const minWidth = 300;
+  const tooltipBoundingRect = tooltipRef.current?.getBoundingClientRect();
+  const isOutsideMapX = mapLimit && tooltipBoundingRect && x > mapLimit.x - minWidth;
+  const left = isOutsideMapX ? x - tooltipBoundingRect.width - 10 : x + 10;
+  const isOutsideMapY =
+    mapLimit && tooltipBoundingRect && y > mapLimit.y - tooltipBoundingRect.height;
+  const top = isOutsideMapY ? y - tooltipBoundingRect.height - 10 : y + 10;
   // Mobile positioning - bottom of screen
   const tooltipStyle = isMobile
     ? {
@@ -35,13 +46,14 @@ export default function MapTooltip({
         maxHeight: '60vh',
         overflow: 'auto',
       }
-    : { left: x + 10, top: y + 10 };
+    : { left, top, minWidth };
 
   return (
     <div
       className={`absolute z-50 rounded-tl-br-xl border border-primary bg-white p-4 text-primary ${
         isMobile ? 'pointer-events-auto' : 'pointer-events-none'
       }`}
+      ref={tooltipRef}
       style={tooltipStyle}
     >
       {data ? (
