@@ -164,7 +164,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         Nettoie le dataset brut de marché public
         """
         local_decla = copy.copy(declaration)
-        
+
         cleaned_row = {}
         for k, v in local_decla.items():
             # acheteur is sometimes just a dictionnary with a single "id" key
@@ -176,11 +176,10 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             elif k == "montant":
                 cleaned_row["montant"] = v
             elif k == "titulaires":
-
                 # formats exemples
                 # "titulaires": [ {"titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" }, "titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" } } ]
                 # "titulaires": [  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  },  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  }  ]
-                
+
                 minimal_titulaire = [{"id": None}]
                 titulaires = v or minimal_titulaire
                 if isinstance(titulaires, dict):
@@ -194,7 +193,15 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                     titulaires = [titu["titulaire"] for titu in titulaires]
 
                 # titulaires id is sometimes an integer, we cast it to str
-                titulaires = [{**titu, "id": str(titu["id"]) if isinstance(titu.get("id"), int) else titu.get("id")} for titu in titulaires]
+                titulaires = [
+                    {
+                        **titu,
+                        "id": str(titu["id"])
+                        if isinstance(titu.get("id"), int)
+                        else titu.get("id"),
+                    }
+                    for titu in titulaires
+                ]
 
                 # Tri des titulaires par id (utilisé dans l'enricher des MP)
                 titulaires = sorted(titulaires, key=lambda x: x["id"])
