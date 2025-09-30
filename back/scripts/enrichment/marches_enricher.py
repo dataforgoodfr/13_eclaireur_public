@@ -58,6 +58,7 @@ class MarchesPublicsEnricher(BaseEnricher):
                     "titulaire_contact.nom",
                     "titulaire_contact.prenom",
                     "titulaire_contact.email",
+                    "codeCPV",
                 ],
             )
             .pipe(cls.correction_types_colonnes_float, ["dureeMois", "offresRecues"])
@@ -537,9 +538,13 @@ class MarchesPublicsEnricher(BaseEnricher):
     def correction_types_colonnes_str(
         marches: pd.DataFrame, colonnes_a_convertir_en_str: list
     ) -> pd.DataFrame:
+        colonnes_existantes = [
+            col for col in colonnes_a_convertir_en_str if col in marches.columns
+        ]
+
         # Corrige les types des colonnes avant la conversion en polars
-        marches[colonnes_a_convertir_en_str] = (
-            marches[colonnes_a_convertir_en_str].astype(str).replace("nan", "")
+        marches[colonnes_existantes] = (
+            marches[colonnes_existantes].astype(str).replace("nan", "")
         )
         return marches
 
