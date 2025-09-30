@@ -40,9 +40,7 @@ def test_marches_public_dataframes():
     assert "a_02" in direct_df["acheteur_id"].tolist()
     assert "titulaires" in direct_df.columns
     assert "[{'typeIdentifiant': 'SIRET', 'id': 'id_1'}]" in direct_df["titulaires"].to_list()
-    pdtesting.assert_series_equal(
-        direct_df["montant"], pd.Series([500, 40], name="montant")
-    )
+    pdtesting.assert_series_equal(direct_df["montant"], pd.Series([500, 40], name="montant"))
     pdtesting.assert_series_equal(
         direct_df["countTitulaires"], pd.Series([1, 2], name="countTitulaires")
     )
@@ -58,9 +56,7 @@ def test_marches_public_dataframes():
     assert "a_02" in nested_df["acheteur_id"].tolist()
     assert "titulaires" in nested_df.columns
     assert "[{'typeIdentifiant': 'SIRET', 'id': 'id_1'}]" in nested_df["titulaires"].to_list()
-    pdtesting.assert_series_equal(
-        nested_df["montant"], pd.Series([200, 20], name="montant")
-    )
+    pdtesting.assert_series_equal(nested_df["montant"], pd.Series([200, 20], name="montant"))
     pdtesting.assert_series_equal(
         nested_df["countTitulaires"], pd.Series([1, 2], name="countTitulaires")
     )
