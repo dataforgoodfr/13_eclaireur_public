@@ -3,18 +3,43 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { SectionHeader } from '#app/components/SectionHeader';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '#components/ui/accordion';
+import type { FaqItem } from '#components/FaqWithSchema';
+import { FaqWithSchema } from '#components/FaqWithSchema';
 
 export const metadata: Metadata = {
   title: 'Aide aux élus',
   description:
     'Ma collectivité a une mauvaise note de transparence, pas de panique ! Éclaireur Public vous aide à améliorer la transparence des collectivités',
 };
+
+const faqItems: FaqItem[] = [
+  {
+    id: 'item-1',
+    question: 'Pourquoi ma collectivité a une mauvaise note de transparence\u00A0?',
+    answer:
+      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Recusandae, hic quaerat culpa sint sapiente, veritatis minima nam veniam quasi eius maiores velit soluta possimus sit deserunt ut dicta dolores dolore iste totam doloremque corrupti. Doloremque beatae ducimus, perspiciatis quas id animi reprehenderit minus asperiores dolor consequuntur, facilis incidunt omnis obcaecati.',
+  },
+  {
+    id: 'item-2',
+    question: 'Que puis-je faire pour améliorer la transparence de ma collectivité\u00A0?',
+    answer:
+      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam accusantium illum amet magnam, expedita in autem incidunt deserunt, dolor laborum aperiam odit repellat rem facilis aspernatur totam! Eaque illo eum cumque ipsum nemo recusandae assumenda.',
+  },
+  {
+    id: 'item-3',
+    question: "Combien ça coûte d'ouvrir les données au grand public\u00A0?",
+    answer:
+      'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint impedit doloremque laudantium vel iure quos corrupti, quaerat voluptatem aliquid aut quod rerum commodi voluptate amet dignissimos qui autem sunt! Accusantium esse nisi praesentium delectus totam voluptatem distinctio laboriosam cumque modi!',
+  },
+  {
+    id: 'item-4',
+    question:
+      'Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment les faire corriger\u00A0?',
+    answer:
+      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sed dolorem eius quo cumque voluptatem. Voluptas labore ex ducimus eius veritatis quae? Consectetur enim dicta nam ipsum. Fugiat molestiae assumenda explicabo.',
+  },
+];
+
 export default function Page() {
   return (
     <main>
@@ -38,7 +63,7 @@ export default function Page() {
           </p>
           <p>
             Le détail précis de la notation adopté pour ces barèmes de transparence est consultable
-            sur la page "Comprendre - Méthodologie" dans la section calcul de l'indice de
+            sur la page "Comprendre - Méthodologie" dans la section calcul de l'indice de
             transparence.
           </p>
         </div>
@@ -68,7 +93,7 @@ export default function Page() {
             </Link>
           </p>
           <p>
-            Le guide {' '}
+            Le guide{' '}
             <Link
               href='https://www.data.gouv.fr/pages/onboarding/producteurs/'
               target='_blank'
@@ -131,105 +156,13 @@ export default function Page() {
             />
           </div>
           <div>
-            <Accordion type='multiple'>
-              <AccordionItem value='item-1'>
-                <AccordionTrigger>
-                  Pourquoi ma collectivité a une mauvaise note de transparence&nbsp;?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Recusandae, hic quaerat
-                  culpa sint sapiente, veritatis minima nam veniam quasi eius maiores velit soluta
-                  possimus sit deserunt ut dicta dolores dolore iste totam doloremque corrupti.
-                  Doloremque beatae ducimus, perspiciatis quas id animi reprehenderit minus
-                  asperiores dolor consequuntur, facilis incidunt omnis obcaecati.{' '}
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value='item-2'>
-                <AccordionTrigger>
-                  Que puis-je faire pour améliorer la transparence de ma collectivité&nbsp;?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam accusantium
-                  illum amet magnam, expedita in autem incidunt deserunt, dolor laborum aperiam odit
-                  repellat rem facilis aspernatur totam! Eaque illo eum cumque ipsum nemo recusandae
-                  assumenda.{' '}
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value='item-3'>
-                <AccordionTrigger>
-                  Combien ça coûte d'ouvrir les données au grand public&nbsp;?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint impedit doloremque
-                  laudantium vel iure quos corrupti, quaerat voluptatem aliquid aut quod rerum
-                  commodi voluptate amet dignissimos qui autem sunt! Accusantium esse nisi
-                  praesentium delectus totam voluptatem distinctio laboriosam cumque modi!
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value='item-4'>
-                <AccordionTrigger>
-                  Les données publiées par Eclaireur Public sur ma collectivité sont erronées,
-                  comment les faire corriger&nbsp;?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sed dolorem eius quo
-                  cumque voluptatem. Voluptas labore ex ducimus eius veritatis quae? Consectetur
-                  enim dicta nam ipsum. Fugiat molestiae assumenda explicabo.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <FaqWithSchema items={faqItems} type='multiple' pageTitle='Aide aux élus' />
           </div>
         </div>
 
         <div className='md:hidden'>
           <h1 className='mb-4 text-3xl font-bold'>Questions fréquentes</h1>
-          <Accordion type='single' collapsible>
-            <AccordionItem value='item-1'>
-              <AccordionTrigger>
-                Pourquoi ma collectivité a une mauvaise note de transparence&nbsp;?
-              </AccordionTrigger>
-              <AccordionContent>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Recusandae, hic quaerat
-                culpa sint sapiente, veritatis minima nam veniam quasi eius maiores velit soluta
-                possimus sit deserunt ut dicta dolores dolore iste totam doloremque corrupti.
-                Doloremque beatae ducimus, perspiciatis quas id animi reprehenderit minus asperiores
-                dolor consequuntur, facilis incidunt omnis obcaecati.{' '}
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-2'>
-              <AccordionTrigger>
-                Que puis-je faire pour améliorer la transparence de ma collectivité&nbsp;?
-              </AccordionTrigger>
-              <AccordionContent>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam accusantium illum
-                amet magnam, expedita in autem incidunt deserunt, dolor laborum aperiam odit
-                repellat rem facilis aspernatur totam! Eaque illo eum cumque ipsum nemo recusandae
-                assumenda.{' '}
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-3'>
-              <AccordionTrigger>
-                Combien ça coûte d'ouvrir les données au grand public&nbsp;?
-              </AccordionTrigger>
-              <AccordionContent>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint impedit doloremque
-                laudantium vel iure quos corrupti, quaerat voluptatem aliquid aut quod rerum commodi
-                voluptate amet dignissimos qui autem sunt! Accusantium esse nisi praesentium
-                delectus totam voluptatem distinctio laboriosam cumque modi!
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-4'>
-              <AccordionTrigger>
-                Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment
-                les faire corriger&nbsp;?
-              </AccordionTrigger>
-              <AccordionContent>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sed dolorem eius quo
-                cumque voluptatem. Voluptas labore ex ducimus eius veritatis quae? Consectetur enim
-                dicta nam ipsum. Fugiat molestiae assumenda explicabo.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <FaqWithSchema items={faqItems} type='single' collapsible pageTitle='Aide aux élus' />
         </div>
       </div>
     </main>
