@@ -16,27 +16,75 @@ const faqItems: FaqItem[] = [
   {
     id: 'item-1',
     question: 'Pourquoi ma collectivité a une mauvaise note de transparence\u00A0?',
-    answer:
-      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Recusandae, hic quaerat culpa sint sapiente, veritatis minima nam veniam quasi eius maiores velit soluta possimus sit deserunt ut dicta dolores dolore iste totam doloremque corrupti. Doloremque beatae ducimus, perspiciatis quas id animi reprehenderit minus asperiores dolor consequuntur, facilis incidunt omnis obcaecati.',
+    answer: (
+      <>
+        Une mauvaise note de transparence signifie que votre collectivité ne publie pas l'ensemble
+        des données obligatoires sur les subventions et/ou les marchés publics ou que ces données
+        sont incomplètes. Cela peut être dû à l'absence de publication sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>
+        , à des données non conformes aux schémas requis ou à un manque de mise à jour régulière.
+        Consultez votre fiche collectivité sur Éclaireur Public pour identifier précisément les
+        données manquantes.
+      </>
+    ),
   },
   {
     id: 'item-2',
     question: 'Que puis-je faire pour améliorer la transparence de ma collectivité\u00A0?',
-    answer:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam accusantium illum amet magnam, expedita in autem incidunt deserunt, dolor laborum aperiam odit repellat rem facilis aspernatur totam! Eaque illo eum cumque ipsum nemo recusandae assumenda.',
+    answer: (
+      <>
+        Pour améliorer votre note de transparence vous devez publier l'ensemble de vos données sur
+        les subventions et marchés publics sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        en respectant les schémas officiels. Utilisez les guides disponibles sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        pour vous accompagner dans cette démarche. Assurez-vous également de mettre à jour
+        régulièrement vos données et de vérifier leur conformité. Éclaireur Public vous indiquera
+        ensuite les améliorations constatées lors de la prochaine mise à jour. Vous pourrez ensuite
+        voir l'évolution de votre note lors de la prochaine mise à jour.
+      </>
+    ),
   },
   {
     id: 'item-3',
     question: "Combien ça coûte d'ouvrir les données au grand public\u00A0?",
-    answer:
-      'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint impedit doloremque laudantium vel iure quos corrupti, quaerat voluptatem aliquid aut quod rerum commodi voluptate amet dignissimos qui autem sunt! Accusantium esse nisi praesentium delectus totam voluptatem distinctio laboriosam cumque modi!',
+    answer: (
+      <>
+        L'ouverture des données publiques représente un coût modéré essentiellement lié au temps de
+        travail des agents pour préparer et publier les données. La plateforme{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        est gratuite. De nombreuses collectivités utilisent leurs logiciels de gestion existants
+        (comptabilité marchés publics) qui peuvent souvent exporter automatiquement les données aux
+        formats requis. Le coût initial de mise en conformité est rapidement amorti par la
+        simplification des démarches ultérieures.
+      </>
+    ),
   },
   {
     id: 'item-4',
     question:
       'Les données publiées par Eclaireur Public sur ma collectivité sont erronées, comment les faire corriger\u00A0?',
-    answer:
-      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sed dolorem eius quo cumque voluptatem. Voluptas labore ex ducimus eius veritatis quae? Consectetur enim dicta nam ipsum. Fugiat molestiae assumenda explicabo.',
+    answer: (
+      <>
+        Éclaireur Public collecte et affiche les données publiées par les collectivités sur les
+        plateformes open data officielles. Si vous constatez des erreurs cela signifie que les
+        données sources doivent être corrigées sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        ou sur votre plateforme de publication. Une fois vos données corrigées à la source,
+        Éclaireur Public les récupérera automatiquement lors de la prochaine mise à jour. Pour toute
+        question vous pouvez contacter l'équipe via le formulaire de contact du site.
+      </>
+    ),
   },
 ];
 

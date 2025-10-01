@@ -35,8 +35,18 @@ const faqItems: FaqItem[] = [
     id: 'item-4',
     question:
       "Ma collectivité a publié ses données mais elles n'apparaissent pas sur Éclaireur Public, pourquoi\u00A0?",
-    answer:
-      "Il se peut que l'outil n'ait pas pu récupérer les données depuis les plateformes de publication des collectivités. Encouragez votre collectivité à publier ses données sur data.gouv.fr.",
+    answer: (
+      <>
+        Les données d'Éclaireur Public sont mises à jour régulièrement en fonction de la
+        disponibilité des nouvelles publications sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        et les autres plateformes open data. Les données de marchés publics et de subventions sont
+        généralement actualisées mensuellement. Si vous constatez un retard important n'hésitez pas
+        à nous contacter via le formulaire.
+      </>
+    ),
   },
   {
     id: 'item-5',
@@ -63,13 +73,35 @@ const faqItems: FaqItem[] = [
     id: 'item-8',
     question: "J'ai déjà alerté un ou des élus, rien ne se passe, quels sont mes recours\u00A0?",
     answer:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde optio maxime blanditiis excepturi odio quidem. Cumque eius quisquam quasi officiis inventore obcaecati temporibus atque!',
+      "Si après avoir interpellé les élus de votre collectivité aucune réponse n'est apportée dans un délai de 2 mois vous pouvez saisir la Commission d'Accès aux Documents Administratifs (CADA) via le site MaDada.fr. La CADA pourra enjoindre la collectivité à publier les informations demandées. Vous pouvez également contacter Anticor ou Transparency International pour être accompagné dans vos démarches.",
   },
   {
     id: 'item-9',
     question: "Pourquoi l'Éclaireur Public\u00A0?",
     answer:
       'Éclaireur Public est un projet visant à améliorer la transparence des collectivités locales, en rendant accessibles leurs données financières et les informations publiques relatives à leur gestion des fonds publics.',
+  },
+  {
+    id: 'item-9-bis',
+    question:
+      'Comment Éclaireur Public collecte-t-il et affiche-t-il les données publiées par les collectivités\u00A0?',
+    answer: (
+      <>
+        Éclaireur Public collecte et affiche les données publiées par les collectivités sur les
+        plateformes open data officielles{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>
+        . Si vous constatez des erreurs cela signifie que les données sources doivent être corrigées
+        sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        ou sur votre plateforme de publication. Une fois vos données corrigées à la source,
+        Éclaireur Public les récupérera automatiquement lors de la prochaine mise à jour. Pour toute
+        question vous pouvez contacter l'équipe via le formulaire de contact du site.
+      </>
+    ),
   },
   {
     id: 'item-10',
@@ -144,14 +176,24 @@ const faqItems: FaqItem[] = [
     question:
       "Ma collectivité ne diffuse aucune information d'intérêt général, comment cela se fait-il\u00A0?",
     answer:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. A incidunt voluptatum recusandae officia earum itaque inventore minima, cupiditate delectus, accusantium ex iusto exercitationem ullam et!',
+      'Le délai légal de réponse pour une collectivité est de 2 mois maximum. Passé ce délai sans réponse ou sans publication des données vous pouvez saisir la CADA. Dans la pratique certaines collectivités peuvent publier leurs données plus rapidement si elles disposent déjà des systèmes nécessaires.',
   },
   {
     id: 'item-19',
     question:
       "Ma collectivité a publié ses données mais elles n'apparaissent pas sur Eclaireur public, pourquoi\u00A0?",
-    answer:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint quisquam rerum odit placeat dolorum eos consectetur animi harum quibusdam corrupti, quam, dignissimos tenetur eaque numquam.',
+    answer: (
+      <>
+        Les données d'Éclaireur Public sont mises à jour régulièrement en fonction de la
+        disponibilité des nouvelles publications sur{' '}
+        <Link href='https://data.gouv.fr' target='_blank' className='font-medium hover:underline'>
+          data.gouv.fr
+        </Link>{' '}
+        et les autres plateformes open data. Les données de marchés publics et de subventions sont
+        généralement actualisées mensuellement. Si vous constatez un retard important n'hésitez pas
+        à nous contacter via le formulaire.
+      </>
+    ),
   },
 ];
 
