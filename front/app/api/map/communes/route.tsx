@@ -6,25 +6,27 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const codes = searchParams.getAll('codes');
+    const year = searchParams.get('year') || '2024';
 
     if (!codes || codes.length === 0) {
       return NextResponse.json({ error: 'No commune codes provided' }, { status: 400 });
     }
 
+    const values = [...codes, year];
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT 
+      SELECT
         c.*,
         b.subventions_score,
         b.mp_score
       FROM collectivites c
       LEFT JOIN bareme b
-        ON c.siren = b.siren AND b.annee = 2024
+        ON c.siren = b.siren AND b.annee = $${values.length}
       WHERE c.code_insee IN (${placeholders})
         AND c.type = 'COM'
     `;
 
-    const communes = await getQueryFromPool(query, codes);
+    const communes = await getQueryFromPool(query, values);
 
     return NextResponse.json({ communes });
   } catch (error) {
@@ -37,7 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { codes } = body;
+    const { codes, year = 2024 } = body;
 
     if (!codes || !Array.isArray(codes) || codes.length === 0) {
       return NextResponse.json(
@@ -48,20 +50,21 @@ export async function POST(request: NextRequest) {
 
     console.log(`Received POST request for ${codes.length} communes`);
 
+    const values = [...codes, year];
     const placeholders = codes.map((_, index) => `$${index + 1}`).join(',');
     const query = `
-      SELECT 
+      SELECT
         c.*,
         b.subventions_score,
         b.mp_score
       FROM collectivites c
       LEFT JOIN bareme b
-        ON c.siren = b.siren AND b.annee = 2024
+        ON c.siren = b.siren AND b.annee = $${values.length}
       WHERE c.code_insee IN (${placeholders})
         AND c.type = 'COM'
     `;
 
-    const communes = await getQueryFromPool(query, codes);
+    const communes = await getQueryFromPool(query, values);
 
     return NextResponse.json({ communes });
   } catch (error) {

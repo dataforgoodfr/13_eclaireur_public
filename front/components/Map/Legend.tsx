@@ -33,8 +33,10 @@ export default function ChoroplethLegend({
         </button>
       )}
       <h4 className='mb-1'>Légende</h4>
-      <div className='flex flex-col gap-2 lg:flex-row lg:gap-x-4'>
-        <p className='font-kanit-bold text-[14px] font-bold text-primary'>Indice de transparence</p>
+      <div className='flex flex-col gap-2'>
+        <p className='font-kanit-bold text-[14px] font-bold text-primary lg:text-base'>
+          Indice de transparence
+        </p>
         <div className='flex flex-col items-center gap-2'>
           <div className='flex flex-row items-center gap-1 lg:gap-2'>
             {grades.map((score, idx) => {
@@ -54,7 +56,7 @@ export default function ChoroplethLegend({
               );
             })}
           </div>
-          <div className='flex w-full items-center justify-between text-xs lg:text-base'>
+          <div className='flex w-full items-center justify-between text-xs lg:text-sm'>
             <span className='font-kanit-bold text-primary'>Exemplaire</span>
             <span className='font-kanit-bold text-primary'>Très insuffisant</span>
           </div>
