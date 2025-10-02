@@ -41,7 +41,7 @@ export default function MobileEvolutionChart({
   });
 
   // Use shared chart data logic for formatting - always call hooks
-  const chartData = useChartData({ data: streamingState.data, chartType: dataType });
+  const chartData = useChartData({ data: streamingState.data, chartType: dataType, displayMode });
   const { unit, formatValue } = chartData;
 
   // Show error state only if there's an actual error

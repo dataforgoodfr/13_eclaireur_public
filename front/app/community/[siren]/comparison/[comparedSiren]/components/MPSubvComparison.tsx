@@ -198,14 +198,12 @@ const MobileMPSubvCard = memo(({ siren1, siren2, year, comparisonType }: MobileM
     return <Loading />;
   }
 
-  if (
-    isError1 ||
-    isError2 ||
-    !data1 ||
-    !data2 ||
-    data1.top5 === undefined ||
-    data2.top5 === undefined
-  ) {
+  // Check if both communities have no data
+  const hasData1 = !isError1 && data1 && data1.top5 !== undefined;
+  const hasData2 = !isError2 && data2 && data2.top5 !== undefined;
+
+  // Only show empty state if BOTH communities have no data
+  if (!hasData1 && !hasData2) {
     return (
       <EmptyState
         title={`Aucune donnée de ${comparisonName} disponible`}
@@ -218,45 +216,67 @@ const MobileMPSubvCard = memo(({ siren1, siren2, year, comparisonType }: MobileM
 
   return (
     <Card className='space-y-6 p-4'>
-      {/* Comparaison Montant Total */}
-      <div className='border-b pb-4'>
-        {renderInfoBlock(
-          'Montant total',
-          formatCompactPrice(data1.total_amount),
-          formatCompactPrice(data2.total_amount),
-        )}
-      </div>
+      {/* Comparaison Montant Total - Only show if both have data */}
+      {hasData1 && hasData2 && (
+        <div className='border-b pb-4'>
+          {renderInfoBlock(
+            'Montant total',
+            formatCompactPrice(data1.total_amount),
+            formatCompactPrice(data2.total_amount),
+          )}
+        </div>
+      )}
 
-      {/* Comparaison Nombre */}
-      <div className='border-b pb-4'>
-        {renderInfoBlock(
-          `Nombre de ${comparisonName}`,
-          data1.total_number.toString(),
-          data2.total_number.toString(),
-        )}
-      </div>
+      {/* Comparaison Nombre - Only show if both have data */}
+      {hasData1 && hasData2 && (
+        <div className='border-b pb-4'>
+          {renderInfoBlock(
+            `Nombre de ${comparisonName}`,
+            data1.total_number.toString(),
+            data2.total_number.toString(),
+          )}
+        </div>
+      )}
 
       {/* Tableaux détaillés */}
       <div className='space-y-6'>
-        <TableInfoBlock
-          totalAmount={data1.total_amount}
-          totalNumber={data1.total_number}
-          top5Items={data1.top5}
-          comparisonName={comparisonName}
-          columnLabel={getColumnLabel(comparisonType)}
-          communityName={formatLocationName(data1?.community_name || 'N/A')}
-          bgColor='bg-brand-3'
-        />
+        {hasData1 ? (
+          <TableInfoBlock
+            totalAmount={data1.total_amount}
+            totalNumber={data1.total_number}
+            top5Items={data1.top5}
+            comparisonName={comparisonName}
+            columnLabel={getColumnLabel(comparisonType)}
+            communityName={formatLocationName(data1?.community_name || 'N/A')}
+            bgColor='bg-brand-3'
+          />
+        ) : (
+          <EmptyState
+            title={`Aucune donnée de ${comparisonName} disponible`}
+            description={`Il n'y a pas de données de ${comparisonName} disponibles pour cette période pour ${formatLocationName(data1?.community_name || 'cette collectivité')}.`}
+            siren={siren1}
+            className='h-full'
+          />
+        )}
 
-        <TableInfoBlock
-          totalAmount={data2.total_amount}
-          totalNumber={data2.total_number}
-          top5Items={data2.top5}
-          comparisonName={comparisonName}
-          columnLabel={getColumnLabel(comparisonType)}
-          communityName={formatLocationName(data2?.community_name || 'N/A')}
-          bgColor='bg-primary-light'
-        />
+        {hasData2 ? (
+          <TableInfoBlock
+            totalAmount={data2.total_amount}
+            totalNumber={data2.total_number}
+            top5Items={data2.top5}
+            comparisonName={comparisonName}
+            columnLabel={getColumnLabel(comparisonType)}
+            communityName={formatLocationName(data2?.community_name || 'N/A')}
+            bgColor='bg-primary-light'
+          />
+        ) : (
+          <EmptyState
+            title={`Aucune donnée de ${comparisonName} disponible`}
+            description={`Il n'y a pas de données de ${comparisonName} disponibles pour cette période pour ${formatLocationName(data2?.community_name || 'cette collectivité')}.`}
+            siren={siren2}
+            className='h-full'
+          />
+        )}
       </div>
     </Card>
   );

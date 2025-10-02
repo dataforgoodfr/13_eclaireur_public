@@ -270,6 +270,7 @@ export default function ComparisonChart({
             axisLine={{ stroke: '#e5e7eb' }}
             tickFormatter={(value) => formatValue(value)}
             domain={[0, yAxisMax]}
+            hide
           />
           <Tooltip content={<CustomTooltip theme={theme} />} />
 
