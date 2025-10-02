@@ -66,8 +66,8 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   }, []);
 
   // Feature flag: Keep perspective functions available but unused
-  const _perspectiveFeature = { setSelectedRangeOption, handleRangeChange };
-  if (false) console.log(_perspectiveFeature); // Prevent unused variable warning
+  void setSelectedRangeOption;
+  void handleRangeChange;
 
   // Update viewState when selectedTerritory changes
   useEffect(() => {
