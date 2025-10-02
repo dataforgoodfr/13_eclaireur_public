@@ -6,4 +6,5 @@ export type Bareme = {
   mp_score: TransparencyScore | null;
   subventions_score: TransparencyScore | null;
   evolution_global_score: string | null;
+  global_score: string | null;
 };
