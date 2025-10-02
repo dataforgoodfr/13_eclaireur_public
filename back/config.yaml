@@ -1,4 +1,6 @@
 workflow:
+  download_all: False
+  normalize_all: False
   save_to_db: False
   replace_tables: False
 
