@@ -63,8 +63,6 @@ export async function FicheMarchesPublics({
   const { bareme } = await fetchMostRecentTransparencyScore(siren);
   const transparencyIndex = bareme?.mp_score || null;
 
-  console.log(bareme);
-
   return (
     <FicheCard header={<MarchesPublicsHeader transparencyIndex={transparencyIndex} />}>
       {marchesPublics.length > 0 ? (
