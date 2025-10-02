@@ -6,7 +6,7 @@ import type { ViewState } from 'react-map-gl/maplibre';
 import AdminLevelSlider from './AdminLevelSlider';
 import FranceMap from './FranceMap';
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
-import PerspectiveSelector from './PerspectiveSelector';
+// import PerspectiveSelector from './PerspectiveSelector'; // Feature flag: currently hidden
 import TransparencyScoreControls from './TransparencyScoreControls';
 import YearSelector from './YearSelector';
 import { choroplethDataSource, territories } from './constants';
@@ -23,7 +23,7 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
   const [selectedYear, setSelectedYear] = useState<number>(2024);
-  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population');
+  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population'); // Feature flag: perspective
   const [selectedAdminLevel, setSelectedAdminLevel] = useState<
     'regions' | 'departements' | 'communes' | null
   >(null);
@@ -64,6 +64,10 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
       [optionId]: value,
     }));
   }, []);
+
+  // Feature flag: Keep perspective functions available but unused
+  void setSelectedRangeOption;
+  void handleRangeChange;
 
   // Update viewState when selectedTerritory changes
   useEffect(() => {
@@ -124,14 +128,15 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
               selectedTerritory={selectedTerritory}
               onSelectTerritory={setSelectedTerritory}
             />
-            <PerspectiveSelector
+            {/* Feature flag: Mettez en perspective - currently hidden */}
+            {/* <PerspectiveSelector
               minMaxValues={minMaxValues}
               currentAdminLevel={currentAdminLevel}
               selectedOption={selectedRangeOption}
               onSelectedOptionChange={setSelectedRangeOption}
               ranges={ranges}
               onRangeChange={handleRangeChange}
-            />
+            /> */}
           </div>
         </div>
       )}
@@ -171,14 +176,15 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           selectedTerritory={selectedTerritory}
           onSelectTerritory={setSelectedTerritory}
         />
-        <PerspectiveSelector
+        {/* Feature flag: Mettez en perspective - currently hidden */}
+        {/* <PerspectiveSelector
           minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}
           selectedOption={selectedRangeOption}
           onSelectedOptionChange={setSelectedRangeOption}
           ranges={ranges}
           onRangeChange={handleRangeChange}
-        />
+        /> */}
       </div>
     </div>
   );

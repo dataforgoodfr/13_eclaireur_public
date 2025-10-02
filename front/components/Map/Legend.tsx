@@ -5,7 +5,9 @@ import {
 import { X } from 'lucide-react';
 
 export default function ChoroplethLegend({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   populationMinMax,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedRangeOption,
   onClose,
 }: {
@@ -62,7 +64,8 @@ export default function ChoroplethLegend({
           </div>
         </div>
       </div>
-      <div>
+      {/* Feature flag: Mettez en perspective - currently hidden */}
+      {/* <div>
         <div className='mb-1 font-kanit-bold text-[14px] font-bold capitalize text-primary'>
           {selectedRangeOption}
         </div>
@@ -75,7 +78,7 @@ export default function ChoroplethLegend({
             Max: {(Math.round(populationMinMax.max / 100) * 100).toLocaleString('fr-FR')}
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

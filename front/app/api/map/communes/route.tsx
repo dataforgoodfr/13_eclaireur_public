@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const codes = searchParams.getAll('codes');
-    const year = searchParams.get('year') || '2024';
+    const year = searchParams.get('year') || '2023';
 
     if (!codes || codes.length === 0) {
       return NextResponse.json({ error: 'No commune codes provided' }, { status: 400 });
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { codes, year = 2024 } = body;
+    const { codes, year = 2023 } = body;
 
     if (!codes || !Array.isArray(codes) || codes.length === 0) {
       return NextResponse.json(
