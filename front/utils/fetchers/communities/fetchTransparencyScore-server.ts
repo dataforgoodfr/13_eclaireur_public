@@ -40,19 +40,20 @@ export async function fetchMostRecentTransparencyScore(siren: string): Promise<{
   bareme: Bareme | null;
   evolutionGlobalScore: string | null;
 }> {
+  /**
+   * TODO - Fetch the only from the COMMUNITIES_TABLE_NAME
+   */
   const querySQL = `
-    SELECT 
+    SELECT
       c.siren,
-      b.annee, 
-      b.subventions_score,
-      b.mp_score,
-      b.evolution_global_score,
-      b.global_score
+      c.subventions_score,
+      c.mp_score,
+      c.global_score,
+      b.annee,
+      b.evolution_global_score
     FROM ${COMMUNITIES_TABLE_NAME} c
-    LEFT JOIN ${BAREME_TABLE_NAME} b on b.siren = c.siren
-    WHERE c.siren = $1 
-    ORDER BY b.annee DESC
-    LIMIT 1
+    LEFT JOIN ${BAREME_TABLE_NAME} b ON b.siren = c.siren AND b.annee = 2023
+    WHERE c.siren = $1
   `;
 
   const rows = (await getQueryFromPool(querySQL, [siren])) as Bareme[];

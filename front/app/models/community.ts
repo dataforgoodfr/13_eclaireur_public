@@ -19,6 +19,7 @@ export type Community = {
   longitude: number | null;
   mp_score: TransparencyScore | null;
   subventions_score: TransparencyScore | null;
+  global_score: TransparencyScore | null;
   siren_epci: string;
   naf8: string;
   tranche_effectif: number;
