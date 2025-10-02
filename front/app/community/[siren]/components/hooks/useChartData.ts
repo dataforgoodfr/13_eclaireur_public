@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
-import { formatMonetaryValue, getMonetaryUnit } from '#utils/utils';
+import { formatMonetaryValue, formatNumberInteger, getMonetaryUnit } from '#utils/utils';
 
 export type ChartDataType = 'marches-publics' | 'subventions';
+export type DisplayMode = 'amounts' | 'counts';
 
 type ChartDataItem = {
   year: number;
@@ -12,17 +13,28 @@ type ChartDataItem = {
 type UseChartDataProps = {
   data: ChartDataItem[];
   chartType: ChartDataType;
+  displayMode?: DisplayMode;
 };
 
-export const useChartData = ({ data, chartType }: UseChartDataProps) => {
+export const useChartData = ({ data, chartType, displayMode = 'amounts' }: UseChartDataProps) => {
   // Calculate values
   const allValues = useMemo(() => data.flatMap((d) => [d.value]), [data]);
   const maxValue = useMemo(() => (allValues.length > 0 ? Math.max(...allValues) : 0), [allValues]);
   const avgValue = useMemo(() => maxValue / 2, [maxValue]);
 
-  // Determine unit and format function
-  const unit = useMemo(() => getMonetaryUnit(maxValue), [maxValue]);
-  const formatValue = useMemo(() => (value: number) => formatMonetaryValue(value, unit), [unit]);
+  // Determine unit and format function based on display mode
+  const unit = useMemo(
+    () => (displayMode === 'amounts' ? getMonetaryUnit(maxValue) : undefined),
+    [displayMode, maxValue],
+  );
+
+  const formatValue = useMemo(
+    () =>
+      displayMode === 'counts'
+        ? (value: number) => formatNumberInteger(value)
+        : (value: number) => formatMonetaryValue(value, unit!),
+    [displayMode, unit],
+  );
 
   // Chart colors based on type
   const { barColor, borderColor } = useMemo(() => {

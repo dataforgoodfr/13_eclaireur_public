@@ -47,7 +47,7 @@ export default function EvolutionChart({
   }));
 
   // Use shared chart data logic for formatting - always call hooks
-  const chartData = useChartData({ data: basicChartData, chartType: dataType });
+  const chartData = useChartData({ data: basicChartData, chartType: dataType, displayMode });
   const { unit, formatValue, avgValue, chartDataForDisplay } = chartData;
 
   // Show error state only if there's an actual error

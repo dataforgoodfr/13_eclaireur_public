@@ -125,12 +125,13 @@ export function mergeWithRealData(
   }
 
   return placeholderData.map((placeholder) => {
-    const realItem = realData.find((item) => item.year === placeholder.year);
+    // Ensure year comparison works for both number and string types
+    const realItem = realData.find((item) => Number(item.year) === Number(placeholder.year));
     if (realItem) {
       const value = displayMode === 'amounts' ? realItem.amount : realItem.count;
       return {
         year: placeholder.year,
-        value: value || 0,
+        value: value !== undefined && value !== null ? Number(value) : 0,
       };
     }
     return {
