@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject } from 'react';
+import type { RefObject } from 'react';
 
 import {
   Bar,
@@ -151,7 +151,7 @@ export default function DesktopEvolutionChart({
             )}
           </Bar>
           <XAxis dataKey='year' axisLine tickLine />
-          <YAxis tickFormatter={hasRealData ? (value) => formatValue(value) : () => ''} />
+          <YAxis tickFormatter={hasRealData ? (value) => formatValue(value) : () => ''} hide />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>
