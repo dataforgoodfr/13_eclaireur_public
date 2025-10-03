@@ -1,4 +1,4 @@
-import { Community } from '../../../app/models/community';
+import type { Community } from '../../../app/models/community';
 
 const API_ROUTES = {
   REGIONS: '/api/map/regions',
@@ -9,11 +9,15 @@ const API_ROUTES = {
 /**
  * Fetches region data by region codes
  */
-export async function fetchRegionsByCode(regionCodes: string[]): Promise<Community[]> {
+export async function fetchRegionsByCode(
+  regionCodes: string[],
+  year: number,
+): Promise<Community[]> {
   if (!regionCodes.length) return [];
 
   const url = new URL(API_ROUTES.REGIONS, window.location.origin);
   regionCodes.forEach((code) => url.searchParams.append('codes', code));
+  url.searchParams.append('year', year.toString());
 
   const res = await fetch(url.toString(), { method: 'GET' });
 
@@ -28,11 +32,15 @@ export async function fetchRegionsByCode(regionCodes: string[]): Promise<Communi
 /**
  * Fetches departement data by departement codes
  */
-export async function fetchDepartementsByCode(departementCodes: string[]): Promise<Community[]> {
+export async function fetchDepartementsByCode(
+  departementCodes: string[],
+  year: number,
+): Promise<Community[]> {
   if (!departementCodes.length) return [];
 
   const url = new URL(API_ROUTES.DEPARTEMENTS, window.location.origin);
   departementCodes.forEach((code) => url.searchParams.append('codes', code));
+  url.searchParams.append('year', year.toString());
 
   const res = await fetch(url.toString(), { method: 'GET' });
 
@@ -47,7 +55,10 @@ export async function fetchDepartementsByCode(departementCodes: string[]): Promi
 /**
  * Fetches commune data by commune codes
  */
-export async function fetchCommunesByCode(communeCodes: string[]): Promise<Community[]> {
+export async function fetchCommunesByCode(
+  communeCodes: string[],
+  year: number,
+): Promise<Community[]> {
   if (!communeCodes.length) return [];
 
   const url = new URL(API_ROUTES.COMMUNES, window.location.origin);
@@ -57,7 +68,7 @@ export async function fetchCommunesByCode(communeCodes: string[]): Promise<Commu
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ codes: communeCodes }),
+    body: JSON.stringify({ codes: communeCodes, year }),
   });
 
   if (!res.ok) {

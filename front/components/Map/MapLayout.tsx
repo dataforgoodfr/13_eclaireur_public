@@ -1,15 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
+import AdminLevelSlider from './AdminLevelSlider';
 import FranceMap from './FranceMap';
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
-import PerspectiveSelector from './PerspectiveSelector';
+// import PerspectiveSelector from './PerspectiveSelector'; // Feature flag: currently hidden
 import TransparencyScoreControls from './TransparencyScoreControls';
+import YearSelector from './YearSelector';
 import { choroplethDataSource, territories } from './constants';
 import type { CollectiviteMinMax } from './types';
 import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
+import { getAvailableLevels, getDefaultLevelForZoom } from './utils/getAvailableLevels';
 import { createInitialRanges, getMinMaxForAdminLevel } from './utils/perspectiveFunctions';
 
 type MapLayoutProps = {
@@ -19,7 +22,11 @@ type MapLayoutProps = {
 export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
-  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population');
+  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population'); // Feature flag: perspective
+  const [selectedAdminLevel, setSelectedAdminLevel] = useState<
+    'regions' | 'departements' | 'communes' | null
+  >(null);
   const [showLegend, setShowLegend] = useState<boolean>(true);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
@@ -33,6 +40,14 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
     viewState.zoom || 5,
     selectedTerritory || 'metropole',
   );
+
+  // Calculate available levels based on current zoom
+  const availableLevels = useMemo((): ('regions' | 'departements' | 'communes')[] => {
+    if (selectedTerritoryData) {
+      return getAvailableLevels(viewState.zoom || 5, selectedTerritoryData);
+    }
+    return ['regions', 'departements', 'communes'];
+  }, [selectedTerritoryData, viewState.zoom]);
 
   // Use the external function
   const populationMinMax = getMinMaxForAdminLevel(minMaxValues, currentAdminLevel);
@@ -50,6 +65,10 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
     }));
   }, []);
 
+  // Feature flag: Keep perspective functions available but unused
+  void setSelectedRangeOption;
+  void handleRangeChange;
+
   // Update viewState when selectedTerritory changes
   useEffect(() => {
     if (selectedTerritory && territories[selectedTerritory]) {
@@ -64,6 +83,20 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
       population: [populationMinMax.min, populationMinMax.max],
     }));
   }, [populationMinMax.min, populationMinMax.max]);
+
+  // Auto-adjust selected admin level if it becomes unavailable
+  useEffect(() => {
+    if (selectedAdminLevel && !availableLevels.includes(selectedAdminLevel)) {
+      // Find the closest available level
+      const defaultLevel =
+        selectedTerritoryData && getDefaultLevelForZoom(viewState.zoom || 5, selectedTerritoryData);
+      if (defaultLevel && availableLevels.includes(defaultLevel)) {
+        setSelectedAdminLevel(defaultLevel);
+      } else if (availableLevels.length > 0) {
+        setSelectedAdminLevel(availableLevels[0] as 'regions' | 'departements' | 'communes');
+      }
+    }
+  }, [availableLevels, selectedAdminLevel, selectedTerritoryData, viewState.zoom]);
 
   return (
     <div className='flex min-h-[calc(100vh-80px)] w-full flex-col overflow-y-auto lg:flex-row lg:overflow-visible'>
@@ -89,25 +122,32 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
               selectedScore={selectedScore}
               setSelectedScore={setSelectedScore}
             />
+            <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
             <FrenchTerritoriesSelect
               territories={territories}
               selectedTerritory={selectedTerritory}
               onSelectTerritory={setSelectedTerritory}
             />
-            <PerspectiveSelector
+            {/* Feature flag: Mettez en perspective - currently hidden */}
+            {/* <PerspectiveSelector
               minMaxValues={minMaxValues}
               currentAdminLevel={currentAdminLevel}
               selectedOption={selectedRangeOption}
               onSelectedOptionChange={setSelectedRangeOption}
               ranges={ranges}
               onRangeChange={handleRangeChange}
-            />
+            /> */}
           </div>
         </div>
       )}
 
       {/* Map container */}
-      <div className='order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
+      <div className='relative order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
+        <AdminLevelSlider
+          selectedLevel={selectedAdminLevel || 'regions'}
+          onLevelChange={setSelectedAdminLevel}
+          availableLevels={availableLevels}
+        />
         <FranceMap
           selectedTerritoryData={selectedTerritoryData}
           selectedChoroplethData={selectedChoroplethData}
@@ -119,6 +159,8 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           populationMinMax={populationMinMax}
           showLegend={showLegend}
           setShowLegend={setShowLegend}
+          selectedYear={selectedYear}
+          manualAdminLevel={selectedAdminLevel}
         />
       </div>
 
@@ -128,19 +170,21 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           selectedScore={selectedScore}
           setSelectedScore={setSelectedScore}
         />
+        <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
         <FrenchTerritoriesSelect
           territories={territories}
           selectedTerritory={selectedTerritory}
           onSelectTerritory={setSelectedTerritory}
         />
-        <PerspectiveSelector
+        {/* Feature flag: Mettez en perspective - currently hidden */}
+        {/* <PerspectiveSelector
           minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}
           selectedOption={selectedRangeOption}
           onSelectedOptionChange={setSelectedRangeOption}
           ranges={ranges}
           onRangeChange={handleRangeChange}
-        />
+        /> */}
       </div>
     </div>
   );

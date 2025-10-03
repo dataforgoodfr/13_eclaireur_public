@@ -8,11 +8,15 @@ export interface TransparencyScoreControlsProps {
 const options = [
   {
     value: 'mp_score',
-    label: 'Transparence des Marchés Publics',
+    label: 'Transparence Marchés Publics',
   },
   {
     value: 'subventions_score',
-    label: 'Transparence des Subventions',
+    label: 'Transparence Subventions',
+  },
+  {
+    value: 'aggregated_score',
+    label: 'Score Agrégé',
   },
 ];
 
@@ -39,7 +43,7 @@ export default function TransparencyScoreControls({
               type='button'
               onClick={() => setSelectedScore(opt.value)}
               className={`rounded-tl-br-lg border border-black px-3 px-4 py-1 py-2 font-kanit-bold text-sm font-medium text-[16x] transition lg:px-4 lg:py-2 lg:text-[16px] ${
-                selected ? 'bg-[#062aad] text-white' : 'bg-white text-[#062aad]'
+                selected ? 'bg-primary text-white' : 'bg-white text-primary'
               } `}
               style={{ minWidth: 'auto' }}
             >

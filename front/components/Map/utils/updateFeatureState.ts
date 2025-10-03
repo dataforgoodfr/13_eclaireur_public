@@ -1,6 +1,27 @@
-import { Community } from '#app/models/community';
+import type { Community } from '#app/models/community';
 
 import scoreLetterToNumber from './scoreToNumber';
+
+/**
+ * Calculate the aggregated score based on subventions and marchés publics scores
+ * Uses the average of the two scores (E=5, D=4, C=3, B=2, A=1)
+ */
+function calculateAggregatedScore(
+  subventionsScore: string | null | undefined,
+  mpScore: string | null | undefined,
+): number | undefined {
+  if (!subventionsScore && !mpScore) return undefined;
+
+  const subventionsValue = subventionsScore ? scoreLetterToNumber(subventionsScore) : undefined;
+  const mpValue = mpScore ? scoreLetterToNumber(mpScore) : undefined;
+
+  if (!subventionsValue && !mpValue) return undefined;
+  if (!subventionsValue) return mpValue;
+  if (!mpValue) return subventionsValue;
+
+  // Calculate average and round
+  return Math.round((subventionsValue + mpValue) / 2);
+}
 
 export default function updateFeatureStates(
   mapInstance: maplibregl.Map,
@@ -34,9 +55,22 @@ export default function updateFeatureStates(
       if (!code) return;
       const key = `${adminType}-${code}`;
       const community = communityMap[key];
-      const value = community
-        ? scoreLetterToNumber(community[choroplethParameter as keyof Community] as string)
-        : undefined;
+
+      let value: number | undefined;
+      if (choroplethParameter === 'aggregated_score') {
+        // Calculate aggregated score from both mp_score and subventions_score
+        value = community
+          ? calculateAggregatedScore(
+              community.subventions_score as string | null | undefined,
+              community.mp_score as string | null | undefined,
+            )
+          : undefined;
+      } else {
+        value = community
+          ? scoreLetterToNumber(community[choroplethParameter as keyof Community] as string)
+          : undefined;
+      }
+
       mapInstance.setFeatureState(
         {
           source: 'statesData',

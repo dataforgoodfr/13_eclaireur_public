@@ -1,4 +1,4 @@
-import { TerritoryData } from './types';
+import type { TerritoryData } from './types';
 import type { ChoroplethDataSource } from './types';
 
 export const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
@@ -99,5 +99,9 @@ export const choroplethDataSource: Record<string, ChoroplethDataSource> = {
   mp_score: {
     name: 'Marches Public Score',
     dataName: 'mp_score',
+  },
+  aggregated_score: {
+    name: 'Score Agrégé',
+    dataName: 'aggregated_score',
   },
 };
