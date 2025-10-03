@@ -7,7 +7,7 @@ import { SelectSubventionsScore } from './SelectSubventionsScore';
 
 export function Filters() {
   return (
-    <div className='flex items-end gap-4'>
+    <div className='flex items-end gap-4 max-md:hidden'>
       <SelectCommunityType />
       <PopulationSliderFilter />
       <SelectMarchesPublicsScore />
