@@ -16,17 +16,13 @@ export default function AdvancedFilterPageContent() {
   const [table, setTable] = useState<Table<AdvancedSearchCommunity> | null>(null);
   return (
     <TableProvider table={table} setTable={setTable}>
-      {/* Desktop */}
-      <div className='flex items-end justify-between max-lg:hidden'>
-        <Filters />
-        <div className='flex items-end gap-2'>
-          <ViewOptionsButton table={table} />
+      <div className='flex flex-wrap justify-between'>
+        <Filters /> {/* Desktop */}
+        <div className='mt-2 flex gap-2 max-md:w-full max-md:justify-end'>
+          <ViewOptionsButton table={table} /> {/* Desktop */}
           <DownloadingButton />
+          <FilterButton className='md:hidden' /> {/* Mobile */}
         </div>
-      </div>
-      {/* Mobile */}
-      <div className='flex justify-end pr-3 lg:hidden'>
-        <FilterButton />
       </div>
       <CommunitiesTableWithLoader />
     </TableProvider>

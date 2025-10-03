@@ -31,7 +31,7 @@ export function ViewOptionsButton<TData>({ table }: ViewOptionsButtonProps<TData
 
   if (!table) {
     return (
-      <Button variant='outline' size='sm' className='h-8 min-w-[120px]' disabled>
+      <Button variant='outline' size='sm' className='h-8 min-w-[120px] max-md:hidden' disabled>
         <Settings2 className='mr-2 h-3 w-3' />
         Affichage
         <ChevronsUpDown className='ml-auto h-3 w-3 opacity-50' />
@@ -47,7 +47,7 @@ export function ViewOptionsButton<TData>({ table }: ViewOptionsButtonProps<TData
           role='combobox'
           variant='outline'
           size='sm'
-          className='h-8 min-w-[120px]'
+          className='h-8 min-w-[120px] max-md:hidden'
         >
           <Settings2 className='mr-2 h-3 w-3' />
           Affichage
