@@ -45,6 +45,12 @@ const franceMetropoleBounds: [[number, number], [number, number]] = [
   [20, 55],
 ];
 
+const ignorePinchZoom = (e: WheelEvent) => {
+  if (e.ctrlKey) {
+    e.preventDefault(); // Prevent browser zoom
+  }
+};
+
 export default function FranceMap({
   selectedTerritoryData,
   selectedChoroplethData,
@@ -56,6 +62,7 @@ export default function FranceMap({
   showLegend,
   setShowLegend,
 }: MapProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapRef>(null);
   const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
@@ -93,12 +100,23 @@ export default function FranceMap({
     return map;
   }, [regions, departements, communes]);
 
+  const isLoading = useMemo(() => {
+    if (communesLoading || departementsLoading || regionsLoading) {
+      mapContainerRef.current?.addEventListener('wheel', ignorePinchZoom, { passive: false });
+      return true;
+    } else {
+      mapContainerRef.current?.removeEventListener('wheel', ignorePinchZoom);
+    }
+  }, [communesLoading, departementsLoading, regionsLoading]);
+
   useEffect(() => {
     const mapInstance = mapRef.current?.getMap();
     if (!mapInstance) return;
 
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   }, [communityMap, choroplethParameter, territoryFilterCode]);
+
+  const mapBounding = mapContainerRef.current?.getBoundingClientRect();
 
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -116,8 +134,9 @@ export default function FranceMap({
     selectedTerritoryData,
     isMobile,
   });
+
   return (
-    <div className='relative h-full w-full cursor-grab bg-white'>
+    <div ref={mapContainerRef} className='relative h-full w-full cursor-grab bg-white'>
       {/* Show legend button for mobile when legend is hidden */}
       {!showLegend && (
         <button
@@ -128,7 +147,7 @@ export default function FranceMap({
         </button>
       )}
 
-      {(communesLoading || departementsLoading || regionsLoading) && (
+      {isLoading && (
         <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
         </div>
@@ -175,6 +194,7 @@ export default function FranceMap({
           hoverInfo={hoverInfo}
           communityMap={communityMap}
           isMobile={isMobile}
+          mapLimit={mapBounding ? { x: mapBounding.right, y: mapBounding.height } : undefined}
           onClose={() => setHoverInfo(null)}
         />
         <Source
