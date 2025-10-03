@@ -5,6 +5,8 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import { SCORE_INDICE_COLOR, TransparencyScore } from '#components/TransparencyScore/constants';
+import { DataTablePagination } from '#components/data-table/data-table-pagination';
+import { Separator } from '#components/ui/separator';
 import { AdvancedSearchCommunity } from '@/app/models/community';
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
@@ -13,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDataTable } from '@/hooks/use-data-table';
 import { CommunityType } from '@/utils/types';
-import { cn, formatCompact, stringifyCommunityType } from '@/utils/utils';
+import { cn, formatCompact, formatNomsPropres, stringifyCommunityType } from '@/utils/utils';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Award, Building2, Euro, Users } from 'lucide-react';
 
@@ -33,6 +35,20 @@ export function AdvancedSearchDataTable({
 }: AdvancedSearchDataTableProps) {
   const tableContext = useTableContext();
   const { setTable } = tableContext || {};
+
+  const getBadgeScore = function (score: string | null) {
+    if (!score) return <div className='text-right text-muted-foreground'>-</div>;
+    const scoreBgClass = SCORE_INDICE_COLOR[score as TransparencyScore];
+    return (
+      <Badge
+        variant='outline'
+        className={cn('rounded-full px-3 py-1 text-base font-medium font-semibold', scoreBgClass)}
+      >
+        <Award className='mr-1 h-4 w-4' />
+        {score}
+      </Badge>
+    );
+  };
 
   const columns = React.useMemo<ColumnDef<AdvancedSearchCommunity>[]>(
     () => [
@@ -72,25 +88,7 @@ export function AdvancedSearchDataTable({
           const community = row.original;
           return (
             <Link href={`/community/${community.siren}`} className='font-medium hover:underline'>
-              {community.nom.toLowerCase().replace(/\b\w/g, (l, index, str) => {
-                const word = str.slice(index).split(/\s/)[0];
-                const lowerCaseWords = [
-                  'de',
-                  'du',
-                  'des',
-                  'le',
-                  'la',
-                  'les',
-                  'et',
-                  'en',
-                  'au',
-                  'aux',
-                ];
-                if (index > 0 && lowerCaseWords.includes(word.toLowerCase())) {
-                  return l.toLowerCase();
-                }
-                return l.toUpperCase();
-              })}
+              {formatNomsPropres(community.nom)}
             </Link>
           );
         },
@@ -169,22 +167,7 @@ export function AdvancedSearchDataTable({
             return <Skeleton className='h-4 w-full' />;
           }
           const score = row.getValue('mp_score') as string | null;
-          if (!score) return <div className='text-right text-muted-foreground'>-</div>;
-          const scoreBgClass = SCORE_INDICE_COLOR[score as TransparencyScore];
-          return (
-            <div className='pr-5 text-right'>
-              <Badge
-                variant='outline'
-                className={cn(
-                  'rounded-full px-3 py-2 text-base font-medium font-semibold',
-                  scoreBgClass,
-                )}
-              >
-                <Award className='mr-1 h-4 w-4' />
-                {score}
-              </Badge>
-            </div>
-          );
+          return <div className='pr-5 text-right'>{getBadgeScore(score)}</div>;
         },
         meta: {
           label: 'Score Marchés Publics',
@@ -201,23 +184,7 @@ export function AdvancedSearchDataTable({
             return <Skeleton className='h-4 w-full' />;
           }
           const score = row.getValue('subventions_score') as string | null;
-          if (!score) return <div className='text-right text-muted-foreground'>-</div>;
-          const scoreBgClass = SCORE_INDICE_COLOR[score as TransparencyScore];
-
-          return (
-            <div className='pr-5 text-right'>
-              <Badge
-                variant='outline'
-                className={cn(
-                  'rounded-full px-3 py-2 text-base font-medium font-semibold',
-                  scoreBgClass,
-                )}
-              >
-                <Award className='mr-1 h-3 w-3' />
-                {score}
-              </Badge>
-            </div>
-          );
+          return <div className='pr-5 text-right'>{getBadgeScore(score)}</div>;
         },
         meta: {
           label: 'Score Subventions',
@@ -260,7 +227,7 @@ export function AdvancedSearchDataTable({
         subventions_score: true,
       },
     },
-    getRowId: (row) => `${row.siren}-${row.type}`,
+    getRowId: (row) => getItemId(row.siren, row.type),
     enableSorting: true,
     enableRowSelection: true,
   });
@@ -273,11 +240,75 @@ export function AdvancedSearchDataTable({
     }
   }, [table, setTable]);
 
+  const getItemId = (siren: string, type: string) => {
+    return `${siren}-${type}`;
+  };
+
   return (
     <div className='w-full space-y-2.5'>
-      <DataTable table={table}>
+      <DataTable table={table} className='max-md:hidden'>
         <CustomDataTableToolbar table={table} />
       </DataTable>
+      {/* Mobile Cards */}
+      <div className='block space-y-3 px-5 md:hidden'>
+        {communities.map(
+          ({ siren, type, nom, population, subventions_budget, mp_score, subventions_score }) => (
+            <div key={getItemId(siren, type)}>
+              <div className='w-full space-y-3 rounded-lg bg-muted-border p-4'>
+                {/* Nom de la collectivité */}
+                <Badge className='rounded-full bg-brand-2 text-sm font-medium text-primary hover:bg-brand-2/80'>
+                  {formatNomsPropres(nom)}
+                </Badge>
+
+                {/* Type de collectivité */}
+                <h3 className='text-base font-bold leading-tight text-primary'>
+                  {stringifyCommunityType(type as CommunityType)}
+                </h3>
+
+                <Separator className='bg-muted' />
+
+                {/* Population */}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium text-muted'>Population</span>
+                  <span className='text-base text-muted'>{formatCompact(population)}</span>
+                </div>
+
+                <Separator className='bg-muted' />
+
+                {/* Budget subventions */}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium text-muted'>Budget subventions</span>
+                  <div className='flex text-base font-bold text-primary'>
+                    {formatCompact(subventions_budget)}
+                    <Euro className='my-auto ms-1 h-4 w-4' strokeWidth={3} />
+                  </div>
+                </div>
+
+                <Separator className='bg-muted' />
+
+                {/* Score Marchés Publics */}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium text-muted'>Score Marchés Publics</span>
+                  <span className='font-medium text-primary'>{getBadgeScore(mp_score)}</span>
+                </div>
+
+                <Separator className='bg-muted' />
+
+                {/* Score Subventions */}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium text-muted'>Score Subventions</span>
+                  <span className='font-medium text-primary'>
+                    {getBadgeScore(subventions_score)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+      <div className='flex flex-col gap-2.5 max-md:px-4'>
+        <DataTablePagination table={table} />
+      </div>
     </div>
   );
 }
