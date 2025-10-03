@@ -35,11 +35,11 @@ async function getCommunity(siren: string) {
     throw new Error(`Community doesnt exist with siren ${siren}`);
   }
 
-  const { aggregatedScore, evolutionGlobalScore } = await fetchMostRecentTransparencyScore(siren);
+  const { bareme, evolutionGlobalScore } = await fetchMostRecentTransparencyScore(siren);
 
   return {
     ...communitiesResults[0],
-    transparencyScore: aggregatedScore,
+    transparencyScore: bareme?.global_score || null,
     evolutionGlobalScore,
   };
 }
@@ -53,7 +53,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
   // TODO - get and add the last update date
   // const lastUpdateText = `Derniere mise a jour`;
-  const score = community.transparencyScore || TransparencyScore.UNKNOWN;
+  const score = (community.transparencyScore as TransparencyScore) || TransparencyScore.UNKNOWN;
   const trend = community.evolutionGlobalScore || 'Stable';
 
   return (
