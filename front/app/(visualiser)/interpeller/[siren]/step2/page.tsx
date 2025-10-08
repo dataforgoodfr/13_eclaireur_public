@@ -53,7 +53,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
             <>
               <div
                 id='header-article'
-                className='align-center flex flex-col justify-between gap-4 rounded-t-3xl bg-[url(/eclaireur/project_background.webp)] bg-cover px-4 py-4 md:flex-row md:gap-0 md:px-8 md:py-12'
+                className='align-center flex flex-col justify-between gap-4 rounded-t-3xl border-primary-light bg-[url(/eclaireur/project_background.webp)] bg-cover px-4 py-4 md:flex-row md:gap-0 md:px-8 md:py-12'
               >
                 <CommunityBasics community={community} />
                 <ButtonBackAndForth
@@ -100,7 +100,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                 />
                 Nous n’avons pas de contact direct avec les élus pour {communityName}
               </p>
-              <div className='bg-white py-16'>
+              <div className='rounded-b-3xl bg-white py-16'>
                 <Image
                   src='/eclaireur/mascotte_call.svg'
                   alt='Interpeller'
@@ -143,7 +143,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                 />
                 Nous n’avons pas de contact direct avec les élus pour {communityName}
               </p>
-              <div className='bg-white py-16'>
+              <div className='rounded-b-3xl bg-white py-16'>
                 <Image
                   src='/eclaireur/mascotte_call.svg'
                   alt='Interpeller'
@@ -231,11 +231,11 @@ const ContactCard = ({
   cardClassName?: string;
 }) => (
   <Card
-    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: min-h-[160] rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3 ${cardClassName}`}
+    className={`group-[&:nth-of-type(3n+3)]ng-brand-3: flex min-h-[160] flex-col justify-between rounded-none rounded-br-xl rounded-tl-xl border-0 bg-primary-light group-[&:nth-of-type(3n+1)]:bg-brand-1 group-[&:nth-of-type(3n+2)]:bg-brand-3 ${cardClassName}`}
   >
-    <CardHeader className='flex space-y-0 p-0 pl-6 pt-6'>
+    <CardHeader className='pl-6 pt-4'>
       <CardTitle>
-        <h4 className='mt-4 pr-4'>{cardTitleText}</h4>
+        <h4 className='pr-4'>{cardTitleText}</h4>
       </CardTitle>
     </CardHeader>
     <CardContent>{children}</CardContent>

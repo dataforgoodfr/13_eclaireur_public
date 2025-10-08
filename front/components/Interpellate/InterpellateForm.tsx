@@ -83,8 +83,8 @@ export default function InterpellateForm({
       firstname: '',
       lastname: '',
       email: '',
-      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!!
-      emails: 'olivier.pretre@gmx.fr', // TODO : commenter à la mise en production
+      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
+      emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
       object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
       message: formMessage,
       isCC: true,
