@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     });
 
     const transport = nodemailer.createTransport({
-      host: 'mail.gmx.com', // TODO commenter lors de mise en prod
-      // host: 'mail.infomaniak.com', // TODO décommenter lors de mise en prod
+      // host: 'mail.gmx.com', // TODO effacer lors de mise en prod
+      host: 'mail.infomaniak.com', // config mail infomaniak
       port: 465,
       secure: true,
       auth: {
