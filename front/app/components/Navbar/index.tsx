@@ -82,6 +82,11 @@ const aProposMenus = [
     href: '/contact',
     description: '',
   },
+  {
+    title: 'Bénévoles',
+    href: '/benevoles',
+    description: 'Remerciements aux bénévoles',
+  },
 ];
 
 const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
