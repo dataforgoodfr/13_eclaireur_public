@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Map, {
   Layer,
   type MapRef,
@@ -21,7 +21,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import ChoroplethLayer from './ChoroplethLayer';
 import DotsLayer from './DotsLayer';
 import ChoroplethLegend from './Legend';
-import MapTooltip from './MapTooltip';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
 import type { ChoroplethDataSource, HoverInfo, TerritoryData } from './types';
 import { createMapPointFeatures } from './utils/createMapPointFeatures';
@@ -42,6 +41,14 @@ interface MapProps {
   setShowLegend: (show: boolean) => void;
   selectedYear: number;
   manualAdminLevel: 'regions' | 'departements' | 'communes' | null;
+  setHoverInfo: (info: HoverInfo | null) => void;
+  communityMap: Record<string, Community>;
+  visibleRegionCodes: string[];
+  visibleDepartementCodes: string[];
+  visibleCommuneCodes: string[];
+  setVisibleRegionCodes: (codes: string[]) => void;
+  setVisibleDepartementCodes: (codes: string[]) => void;
+  setVisibleCommuneCodes: (codes: string[]) => void;
 }
 const franceMetropoleBounds: [[number, number], [number, number]] = [
   [-15, 35],
@@ -60,12 +67,16 @@ export default function FranceMap({
   setShowLegend,
   selectedYear,
   manualAdminLevel,
+  setHoverInfo,
+  communityMap,
+  visibleRegionCodes,
+  visibleDepartementCodes,
+  visibleCommuneCodes,
+  setVisibleRegionCodes,
+  setVisibleDepartementCodes,
+  setVisibleCommuneCodes,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-  const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
-  const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
-  const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
-  const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
 
   const regionsMaxZoomThreshold = selectedTerritoryData?.regionsMaxZoom || 6;
   const departementsMaxZoomThreshold = selectedTerritoryData?.departementsMaxZoom || 8;
@@ -138,23 +149,6 @@ export default function FranceMap({
   const regionDots = createMapPointFeatures(regions as Community[]);
   const departementDots = createMapPointFeatures(departements as Community[]);
   const communeDots = createMapPointFeatures(communes as Community[]);
-
-  const communityMap = useMemo(() => {
-    const map: Record<string, Community> = {};
-    (regions ?? []).forEach((c) => {
-      const regionCode = c.code_insee_region;
-      if (regionCode) map[`region-${regionCode}`] = c;
-    });
-    (departements ?? []).forEach((c) => {
-      const deptCode = c.code_insee;
-      if (deptCode) map[`departement-${deptCode}`] = c;
-    });
-    (communes ?? []).forEach((c) => {
-      const communeCode = c.code_insee;
-      if (communeCode) map[`commune-${communeCode}`] = c;
-    });
-    return map;
-  }, [regions, departements, communes]);
 
   useEffect(() => {
     const mapInstance = mapRef.current?.getMap();
@@ -252,12 +246,6 @@ export default function FranceMap({
             onClose={() => setShowLegend(false)}
           />
         )}
-        <MapTooltip
-          hoverInfo={hoverInfo}
-          communityMap={communityMap}
-          isMobile={isMobile}
-          onClose={() => setHoverInfo(null)}
-        />
         <Source
           id='statesData'
           type='vector'

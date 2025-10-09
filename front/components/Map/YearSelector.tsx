@@ -17,12 +17,12 @@ const AVAILABLE_YEARS = [2020, 2021, 2022, 2023, 2024];
 
 export default function YearSelector({ selectedYear, onSelectYear }: YearSelectorProps) {
   return (
-    <div className='mb-4 mb-8 lg:mb-8'>
-      <div className='mb-2 mb-4 flex items-center lg:mb-4'>
+    <div className='mb-4 lg:mb-8'>
+      <div className='mb-2 flex items-center lg:mb-4'>
         <span className='mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary font-kanit-bold text-sm font-bold text-white'>
           2
         </span>
-        <h4 className='text-sm text-primary lg:text-base'>Choisissez une année</h4>
+        <h4 className='text-sm text-primary lg:text-base'>... une année</h4>
       </div>
       <Select
         value={selectedYear.toString()}

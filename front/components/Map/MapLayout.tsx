@@ -3,14 +3,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
+import type { Community } from '#app/models/community';
+import { useCommunes } from '#utils/hooks/map/useCommunes';
+import { useDepartements } from '#utils/hooks/map/useDepartements';
+import { useRegions } from '#utils/hooks/map/useRegions';
+
 import AdminLevelSlider from './AdminLevelSlider';
 import FranceMap from './FranceMap';
 import FrenchTerritoriesSelect from './FrenchTerritorySelect';
+import MapTooltip from './MapTooltip';
 // import PerspectiveSelector from './PerspectiveSelector'; // Feature flag: currently hidden
 import TransparencyScoreControls from './TransparencyScoreControls';
 import YearSelector from './YearSelector';
 import { choroplethDataSource, territories } from './constants';
-import type { CollectiviteMinMax } from './types';
+import type { CollectiviteMinMax, HoverInfo } from './types';
 import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
 import { getAvailableLevels, getDefaultLevelForZoom } from './utils/getAvailableLevels';
 import { createInitialRanges, getMinMaxForAdminLevel } from './utils/perspectiveFunctions';
@@ -29,6 +35,11 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   >(null);
   const [showLegend, setShowLegend] = useState<boolean>(true);
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showSidebar, setShowSidebar] = useState<boolean>(true);
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo>(null);
+  const [visibleRegionCodes, setVisibleRegionCodes] = useState<string[]>([]);
+  const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
+  const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
 
   const [viewState, setViewState] = useState<Partial<ViewState>>(
     territories['metropole'].viewState,
@@ -56,6 +67,32 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [ranges, setRanges] = useState<Record<string, [number, number]>>(() =>
     createInitialRanges(populationMinMax.min, populationMinMax.max),
   );
+
+  // Fetch community data
+  const { data: communes } = useCommunes(visibleCommuneCodes, selectedYear);
+  const { data: departements } = useDepartements(visibleDepartementCodes, selectedYear);
+  const { data: regions } = useRegions(visibleRegionCodes, selectedYear);
+
+  // Build community map
+  const communityMap = useMemo(() => {
+    const map: Record<string, Community> = {};
+    (regions ?? []).forEach((c) => {
+      const regionCode = c.code_insee_region;
+      if (regionCode) map[`region-${regionCode}`] = c;
+    });
+    (departements ?? []).forEach((c) => {
+      const deptCode = c.code_insee;
+      if (deptCode) map[`departement-${deptCode}`] = c;
+    });
+    (communes ?? []).forEach((c) => {
+      const communeCode = c.code_insee;
+      if (communeCode) map[`commune-${communeCode}`] = c;
+    });
+    return map;
+  }, [regions, departements, communes]);
+
+  // Detect mobile device
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
   // Move handleRangeChange to useCallback for better performance
   const handleRangeChange = useCallback((optionId: string, value: [number, number]) => {
@@ -99,7 +136,14 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   }, [availableLevels, selectedAdminLevel, selectedTerritoryData, viewState.zoom]);
 
   return (
-    <div className='flex min-h-[calc(100vh-80px)] w-full flex-col overflow-y-auto lg:flex-row lg:overflow-visible'>
+    <div className='relative flex min-h-[calc(100vh-80px)] w-full flex-col overflow-y-auto lg:flex-row lg:overflow-visible'>
+      {/* Tooltip at highest level to avoid any clipping */}
+      <MapTooltip
+        hoverInfo={hoverInfo}
+        communityMap={communityMap}
+        isMobile={isMobile}
+        onClose={() => setHoverInfo(null)}
+      />
       {/* Mobile: Controls at top */}
       <div className='order-1 flex w-full flex-shrink-0 flex-col bg-white lg:order-2 lg:hidden'>
         {/* Mobile Filters Toggle Button */}
@@ -142,7 +186,7 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
       )}
 
       {/* Map container */}
-      <div className='relative order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
+      <div className='relative order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center overflow-visible bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
         <AdminLevelSlider
           selectedLevel={selectedAdminLevel || 'regions'}
           onLevelChange={setSelectedAdminLevel}
@@ -161,23 +205,71 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           setShowLegend={setShowLegend}
           selectedYear={selectedYear}
           manualAdminLevel={selectedAdminLevel}
+          setHoverInfo={setHoverInfo}
+          communityMap={communityMap}
+          visibleRegionCodes={visibleRegionCodes}
+          visibleDepartementCodes={visibleDepartementCodes}
+          visibleCommuneCodes={visibleCommuneCodes}
+          setVisibleRegionCodes={setVisibleRegionCodes}
+          setVisibleDepartementCodes={setVisibleDepartementCodes}
+          setVisibleCommuneCodes={setVisibleCommuneCodes}
         />
       </div>
 
       {/* Desktop: Controls on the right */}
-      <div className='order-3 hidden w-1/3 flex-col gap-12 bg-white px-8 py-8 lg:flex'>
-        <TransparencyScoreControls
-          selectedScore={selectedScore}
-          setSelectedScore={setSelectedScore}
-        />
-        <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
-        <FrenchTerritoriesSelect
-          territories={territories}
-          selectedTerritory={selectedTerritory}
-          onSelectTerritory={setSelectedTerritory}
-        />
-        {/* Feature flag: Mettez en perspective - currently hidden */}
-        {/* <PerspectiveSelector
+      <div
+        className={`relative order-3 hidden flex-col gap-12 overflow-visible bg-white transition-all duration-300 lg:flex ${
+          showSidebar ? 'w-1/3 px-8 py-8' : 'w-0 px-0 py-8'
+        }`}
+      >
+        {/* Toggle Button - Always visible */}
+        <button
+          onClick={() => setShowSidebar(!showSidebar)}
+          className={`absolute top-1/2 z-50 min-w-[20px] -translate-y-1/2 rounded-sm border border-gray-300 bg-white p-2 shadow-md transition-all hover:bg-gray-50 ${
+            showSidebar ? '-left-3' : '-left-7'
+          }`}
+          aria-label={showSidebar ? 'Masquer les filtres' : 'Afficher les filtres'}
+        >
+          {showSidebar ? (
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={2.5}
+              stroke='currentColor'
+              className='h-3 w-3'
+            >
+              <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+            </svg>
+          ) : (
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={2.5}
+              stroke='currentColor'
+              className='h-3 w-3'
+            >
+              <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
+            </svg>
+          )}
+        </button>
+
+        {/* Sidebar Content */}
+        {showSidebar && (
+          <>
+            <TransparencyScoreControls
+              selectedScore={selectedScore}
+              setSelectedScore={setSelectedScore}
+            />
+            <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
+            <FrenchTerritoriesSelect
+              territories={territories}
+              selectedTerritory={selectedTerritory}
+              onSelectTerritory={setSelectedTerritory}
+            />
+            {/* Feature flag: Mettez en perspective - currently hidden */}
+            {/* <PerspectiveSelector
           minMaxValues={minMaxValues}
           currentAdminLevel={currentAdminLevel}
           selectedOption={selectedRangeOption}
@@ -185,6 +277,8 @@ export default function MapLayout({ minMaxValues }: MapLayoutProps) {
           ranges={ranges}
           onRangeChange={handleRangeChange}
         /> */}
+          </>
+        )}
       </div>
     </div>
   );
