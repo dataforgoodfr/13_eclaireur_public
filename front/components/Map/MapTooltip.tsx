@@ -50,7 +50,7 @@ export default function MapTooltip({
 
   return (
     <div
-      className={`absolute z-50 rounded-tl-br-xl border border-primary bg-white p-4 text-primary ${
+      className={`fixed z-[100] rounded-tl-br-xl border border-primary bg-white p-4 text-primary ${
         isMobile ? 'pointer-events-auto' : 'pointer-events-none'
       }`}
       ref={tooltipRef}
