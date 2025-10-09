@@ -1,5 +1,4 @@
-import type { TerritoryData } from './types';
-import type { ChoroplethDataSource } from './types';
+import type { ChoroplethDataSource, TerritoryData } from './types';
 
 export const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILES_API_KEY;
 

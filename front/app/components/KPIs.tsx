@@ -1,9 +1,10 @@
-import { HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 
+import { KPI_REFERENCE_YEAR } from '#utils/constants/years';
 import { fetchKPIs } from '#utils/fetchers/kpis/fetchKPIs';
 import { cn, formatCompactPrice, formatNumberInteger } from '#utils/utils';
 
-const KPIS_YEAR = 2023;
+const KPIS_YEAR = KPI_REFERENCE_YEAR;
 
 export default async function KPIs() {
   const kpis = await fetchKPIs(KPIS_YEAR);

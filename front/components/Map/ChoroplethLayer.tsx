@@ -41,7 +41,9 @@ export default function ChoroplethLayer({
           'fill-color': [
             'interpolate',
             ['linear'],
-            ['coalesce', ['feature-state', choroplethParameter], 5],
+            ['coalesce', ['feature-state', choroplethParameter], 0],
+            0,
+            '#E5E7EB', // UNKNOWN - gray for no data
             1,
             '#79B381', // A - strong blue
             2,

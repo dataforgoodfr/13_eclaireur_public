@@ -7,13 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#components/ui/select';
+import { AVAILABLE_YEARS } from '#utils/constants/years';
 
 interface YearSelectorProps {
   selectedYear: number;
   onSelectYear: (year: number) => void;
 }
-
-const AVAILABLE_YEARS = [2020, 2021, 2022, 2023, 2024];
 
 export default function YearSelector({ selectedYear, onSelectYear }: YearSelectorProps) {
   return (

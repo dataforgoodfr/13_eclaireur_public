@@ -68,6 +68,7 @@ export default function FranceMap({
   setViewState,
   ranges,
   selectedRangeOption,
+  currentAdminLevel,
   populationMinMax,
   showLegend,
   setShowLegend,
@@ -173,6 +174,21 @@ export default function FranceMap({
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
   }, [communityMap, choroplethParameter, territoryFilterCode]);
 
+  // Update visible codes when territory changes
+  useEffect(() => {
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    updateVisibleCodes(
+      mapInstance,
+      territoryFilterCode,
+      setVisibleRegionCodes,
+      setVisibleDepartementCodes,
+      setVisibleCommuneCodes,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [territoryFilterCode]);
+
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
@@ -262,6 +278,9 @@ export default function FranceMap({
             populationMinMax={populationMinMax}
             selectedRangeOption={selectedRangeOption}
             onClose={() => setShowLegend(false)}
+            selectedScore={choroplethParameter}
+            selectedYear={selectedYear}
+            adminLevel={manualAdminLevel || currentAdminLevel}
           />
         )}
         <Source

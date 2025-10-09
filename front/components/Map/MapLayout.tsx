@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ViewState } from 'react-map-gl/maplibre';
 
 import type { Community } from '#app/models/community';
+import { DEFAULT_MAP_YEAR } from '#utils/constants/years';
 import { useCommunes } from '#utils/hooks/map/useCommunes';
 import { useDepartements } from '#utils/hooks/map/useDepartements';
 import { useRegions } from '#utils/hooks/map/useRegions';
@@ -28,7 +29,7 @@ type MapLayoutProps = {
 export default function MapLayout({ minMaxValues }: MapLayoutProps) {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
   const [selectedScore, setSelectedScore] = useState<string>('mp_score');
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedYear, setSelectedYear] = useState<number>(DEFAULT_MAP_YEAR);
   const [selectedRangeOption, setSelectedRangeOption] = useState<string>('population'); // Feature flag: perspective
   const [selectedAdminLevel, setSelectedAdminLevel] = useState<
     'regions' | 'departements' | 'communes' | null

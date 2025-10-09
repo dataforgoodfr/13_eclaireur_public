@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { getQueryFromPool } from '#utils/db';
 import { DataTable } from '#utils/fetchers/constants';
-import { CommunityType } from '#utils/types';
+import type { CommunityType } from '#utils/types';
 
 const COMMUNITIES = DataTable.Communities;
 const BAREME = DataTable.Bareme;
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const type = searchParams.get('type') as CommunityType | null;
   const population = searchParams.get('population')
-    ? parseInt(searchParams.get('population')!)
+    ? Number.parseInt(searchParams.get('population')!)
     : null;
   const mp_score = searchParams.get('mp_score');
   const subventions_score = searchParams.get('subventions_score');

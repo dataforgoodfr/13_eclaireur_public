@@ -1,12 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { DEFAULT_API_YEAR } from '#utils/constants/years';
 import { getQueryFromPool } from '#utils/db';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const codes = searchParams.getAll('codes');
-    const year = searchParams.get('year') || '2023';
+    const year = searchParams.get('year') || String(DEFAULT_API_YEAR);
 
     if (!codes || codes.length === 0) {
       return NextResponse.json({ error: 'No region codes provided' }, { status: 400 });
