@@ -14,8 +14,9 @@ export default function Remerciement() {
     <div>
       <SectionHeader sectionTitle='Remerciements' />
       <div className='section-format'>
-        <h2 className='mb-8 flex'>
-          Un immense à notre dream team <Sparkles className='ml-2 text-secondary-400' />
+        <h2 className='mb-8'>
+          Un immense à notre dream team{' '}
+          <Sparkles className='align-text-center ml-1 inline text-secondary-400 md:align-text-top' />
         </h2>
         <p>Éclaireur Public, c’est avant tout une aventure humaine 💜</p>
         <p>
@@ -27,9 +28,9 @@ export default function Remerciement() {
           📊 ou juste apporté un coup de main ponctuel ✋ → vous faites partie de cette belle
           histoire.
         </p>
-        <div className='my-8 h-screen rounded-br-[40px] rounded-tl-[40px] bg-secondary-200'>
-          <div className='grid grid-cols-1 gap-8 px-8 py-8 md:grid-cols-2'>
-            <div>
+        <div className='mt-8 rounded-br-[30px] rounded-tl-[30px] bg-secondary-200'>
+          <div className='my-4 grid grid-cols-1 gap-8 px-4 py-4 md:grid-cols-2 md:px-8 md:py-8'>
+            <div className='space-y-8'>
               <h3>Notre équipe cœur de projet</h3>
               <div>
                 <p>Arnaud Leleu</p>
@@ -61,7 +62,7 @@ export default function Remerciement() {
                 <p>Samuel Boissaye</p>
               </div>
             </div>
-            <div>
+            <div className='space-y-8'>
               <h3>Contributeurs & coups de main</h3>
               <div>
                 <p>Adrien Delannoy</p>
