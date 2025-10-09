@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { codes, year = 2024 } = body;
+    const { codes, year = 2023 } = body;
 
     if (!codes || !Array.isArray(codes) || codes.length === 0) {
       return NextResponse.json(
