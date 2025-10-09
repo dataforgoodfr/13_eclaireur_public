@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const codes = searchParams.getAll('codes');
-    const year = searchParams.get('year') || '2024';
+    const year = searchParams.get('year') || '2023';
 
     if (!codes || codes.length === 0) {
       return NextResponse.json({ error: 'No region codes provided' }, { status: 400 });
