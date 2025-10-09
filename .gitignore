@@ -199,3 +199,8 @@ front/NOTES_PERSO/**/*
 
 #ide
 .idea/
+# Temporary files
+AGENTS.md
+CLAUDE.md
+openspec/
+scripts/
