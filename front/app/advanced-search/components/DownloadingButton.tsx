@@ -25,7 +25,7 @@ export default function DownloadingButton() {
       <DropdownMenuTrigger asChild>
         <Button
           variant='default'
-          className='rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none bg-primary hover:bg-primary/90 max-md:h-12 max-md:w-14 md:bg-secondary'
+          className='rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none bg-primary hover:bg-primary/90 max-md:h-12 max-md:w-14'
         >
           <ArrowDownToLine className='md:hidden' />
           <span className='max-md:sr-only'>Télécharger</span>
