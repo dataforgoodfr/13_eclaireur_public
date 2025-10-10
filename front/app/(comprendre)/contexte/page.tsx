@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 import ArticleBox from '#app/components/ArticleBox';
-import Card, { BulletList, Paragraph } from '#app/components/SectionCard';
+import Card, { BulletList } from '#app/components/SectionCard';
 import { SectionHeader } from '#app/components/SectionHeader';
 import CtaCard from '#app/components/cta/CtaCard';
 
@@ -28,27 +28,27 @@ export default function Page() {
             publiques. La défiance toujours plus grandissante des citoyens envers l'impôt démontre
             l'incompréhension de la dépense publique à tous les échelons."
           >
-            <Paragraph>
+            <p>
               Les services publics comme l'éducation, la santé, ainsi que ceux au niveau local tels
               que le ramassage des ordures, l'entretien de la voirie, les services municipaux etc...
               demeurent des concepts plus ou moins abstraits.
-            </Paragraph>
-            <Paragraph>
+            </p>
+            <p>
               Qu'une meilleure transparence rendrait de facto plus palpables et concrets. Alors
               quels services publics, quelles compétences relèvent de quelles collectivités ? Revue
               de détail.
-            </Paragraph>
+            </p>
           </Card>
 
           {/* Échelons */}
           <Card title='Les échelons des collectivités territoriales'>
-            <Paragraph>
+            <p>
               En France, l'État a réparti ses responsabilités entre différents niveaux de
               collectivités territoriales, c'est ce qu'on appelle la décentralisation. L'idée est de
               gérer chaque domaine public au niveau le plus adapté. Ainsi, les communes, les
               départements et les régions ont chacun des rôles bien définis.
-            </Paragraph>
-            <div className='grid w-full grid-cols-1 gap-8 md:grid-cols-3'>
+            </p>
+            <div className='grid w-full grid-cols-1 gap-6 md:grid-cols-3'>
               <CtaCard
                 title='La commune'
                 caption="La commune est l'échelon le plus proche des citoyens. Ses principales responsabilités incluent :"
@@ -113,22 +113,22 @@ export default function Page() {
               headerImagePath={'/contexte/bulb.svg'}
               title='Transparence des collectivités : adapter les exigences à la taille et aux moyens'
             >
-              <Paragraph>
+              <p>
                 Toutes les collectivités au-dessus d'un certain seuil sont soumises aux mêmes
                 obligations légales de transparence. Mais dans la pratique, la situation varie
                 beaucoup.
-              </Paragraph>
-              <Paragraph>
+              </p>
+              <p>
                 Une petite commune qui vient de dépasser 3 500 habitant·es n'a pas les mêmes moyens
                 humains ou organisationnels qu'une grande métropole ou une région. Elle doit souvent
                 gérer de front de nombreux dossiers locaux urgents, avec des équipes limitées.
-              </Paragraph>
-              <Paragraph>
+              </p>
+              <p>
                 Il est donc important d'aborder la question avec souplesse et bienveillance :
                 encourager ces communes à publier leurs données, même progressivement, permet déjà
                 de renforcer la transparence et la confiance citoyenne, sans attendre d'elles le
                 même niveau de structuration que les plus grandes collectivités.
-              </Paragraph>
+              </p>
             </ArticleBox>
           </Card>
 
@@ -138,7 +138,7 @@ export default function Page() {
             subtitle="Rendre visible l'utilisation des fonds pour renforcer la confiance citoyenne"
             columns={2}
           >
-            <Paragraph>
+            <p>
               Chaque niveau de collectivité territoriale gère un budget propre, destiné à financer
               ses compétences spécifiques : écoles et services de proximité pour les communes,
               action sociale et infrastructures pour les départements, développement économique et
@@ -150,15 +150,15 @@ export default function Page() {
               comment l'argent collecté via les impôts et les taxes locales est employé. Pour les
               collectivités, c'est une manière de justifier leurs choix, de démontrer leur bonne
               gestion et d'éviter les soupçons de mauvaise utilisation.
-            </Paragraph>
-            <Paragraph>
+            </p>
+            <p>
               Mais la transparence ne se limite pas à un exercice de conformité légale : elle
               contribue aussi à instaurer un climat de confiance et de dialogue. En expliquant
               clairement leurs priorités budgétaires, les collectivités valorisent leurs actions et
               donnent aux habitant·es les moyens de mieux comprendre et d'interpeller, si
               nécessaire, leurs représentants. Cette ouverture participe ainsi à une gouvernance
               plus responsable, où les citoyen·nes deviennent acteurs de la vie publique.
-            </Paragraph>
+            </p>
           </Card>
 
           {/* Enjeux */}
@@ -168,7 +168,7 @@ export default function Page() {
             columns={2}
             knowMore='/cadre-reglementaire'
           >
-            <Paragraph>
+            <p>
               Depuis 2016, la Loi pour une République numérique impose aux collectivités un cadre
               clair en matière de transparence. Selon leur taille et leurs moyens, elles doivent
               publier en ligne un certain nombre de données dites publiques : budgets, subventions,
@@ -179,15 +179,15 @@ export default function Page() {
               Cette obligation vise à rendre l'action publique plus accessible, à renforcer le
               contrôle citoyen et à encourager la réutilisation de ces données par la société
               civile, les chercheurs ou encore les journalistes.
-            </Paragraph>
-            <Paragraph>
+            </p>
+            <p>
               Toutes les collectivités ne sont cependant pas soumises aux mêmes exigences. Les
               communes de plus de 3 500 habitant·es et disposant d'un budget supérieur à 5 millions
               d'euros sont tenues de publier leurs données essentielles. Pour les départements et
               les régions, la transparence est une obligation générale compte tenu de l'importance
               de leurs budgets. Les petites communes, elles, restent encouragées à s'inscrire
               volontairement dans cette démarche, notamment grâce à des outils mutualisés.
-            </Paragraph>
+            </p>
           </Card>
         </div>
       </main>
