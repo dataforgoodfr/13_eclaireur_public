@@ -1,4 +1,4 @@
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchOrder } from '#app/api/advanced_search/advancedSearchUtils';
 import { downloadURL } from '#utils/downloader/downloadURL';
 
 import { CommunitiesAdvancedSearchFilters } from '../fetchCommunitiesAdvancedSearch-server';
@@ -26,7 +26,6 @@ export function createAdvancedSearchDownloadingURL(
 
   url.searchParams.append('by', order.by);
   url.searchParams.append('direction', order.direction);
-
   return url;
 }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { DEFAULT_ORDER } from '#app/api/advanced_search/advancedSearchUtils';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
 import { fetchCommunitiesAdvancedSearch } from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
 import { CommunityType } from '#utils/types';
@@ -13,11 +13,6 @@ import {
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
-
-const DEFAULT_ORDER: AdvancedSearchOrder = {
-  by: 'type',
-  direction: 'ASC',
-};
 
 const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(DEFAULT_PAGE),
