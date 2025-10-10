@@ -8,5 +8,6 @@ export function useCommunes(communeCodes: string[], year: number) {
     queryFn: () => fetchCommunesByCode(communeCodes, year),
     enabled: communeCodes.length > 0,
     staleTime: 1000 * 60 * 10,
+    placeholderData: (previousData) => previousData,
   });
 }

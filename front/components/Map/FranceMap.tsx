@@ -172,8 +172,6 @@ export default function FranceMap({
     setVisibleCommuneCodes,
     setHoverInfo,
     communityMap,
-    choroplethParameter,
-    territoryFilterCode,
     selectedTerritoryData,
     isMobile,
   });
