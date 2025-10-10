@@ -92,7 +92,7 @@ export default function FilterModal({
         isScore={false}
       />
       <div className='flex justify-between'>
-        <span className='text-muted'>Population inférieur à</span>
+        <span className='text-muted'>Population inférieure à</span>
         <Button
           variant='link'
           size='sm'

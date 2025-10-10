@@ -48,7 +48,7 @@ export function PopulationSliderFilter() {
 
   return (
     <div className='flex flex-col'>
-      <Label className='mb-2'>Population inférieur à</Label>
+      <Label className='mb-2'>Population inférieure à</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant='outline' size='sm' className='w-[180px] justify-start border-dashed'>
@@ -82,7 +82,7 @@ export function PopulationSliderFilter() {
         <PopoverContent align='start' className='w-80 p-4'>
           <div className='space-y-4'>
             {/* Slider */}
-            <p className='mb-3 text-sm font-medium'>Population inférieur à</p>
+            <p className='mb-3 text-sm font-medium'>Population inférieure à</p>
 
             <PopulationSlider
               currentValue={currentValue}

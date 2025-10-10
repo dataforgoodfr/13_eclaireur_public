@@ -21,9 +21,6 @@ export default function DownloadingButton() {
   const downloadingURL = createAdvancedSearchDownloadingURL(filters, order);
 
   return (
-    // <Link href={downloadingURL} download={true} target='_blank'>
-    //   <Button variant='secondary'>Télécharger</Button>
-    // </Link>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
