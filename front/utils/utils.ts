@@ -174,6 +174,17 @@ export function formatSentenceCase(str: string): string {
     .replace(/^./, (match) => match.toUpperCase());
 }
 
+export function formatNomsPropres(str: string): string {
+  return str.toLowerCase().replace(/\b\w/g, (l, index, str) => {
+    const word = str.slice(index).split(/\s/)[0];
+    const lowerCaseWords = ['de', 'du', 'des', 'le', 'la', 'les', 'et', 'en', 'au', 'aux'];
+    if (index > 0 && lowerCaseWords.includes(word.toLowerCase())) {
+      return l.toLowerCase();
+    }
+    return l.toUpperCase();
+  });
+}
+
 export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.CA) return `Communauté d'agglomération`;
   if (type === CommunityType.CC) return 'Communauté de communes';
@@ -181,7 +192,7 @@ export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.Commune) return 'Commune';
   if (type === CommunityType.Departement) return 'Département';
   if (type === CommunityType.EPT) return 'Établissement public territorial';
-  if (type === CommunityType.Metropole) return 'Métropole';
+  if (type === CommunityType.Metropole) return 'Groupement';
   if (type === CommunityType.Region) return 'Région';
 
   throw new Error(`Type ${type} not supported`);
