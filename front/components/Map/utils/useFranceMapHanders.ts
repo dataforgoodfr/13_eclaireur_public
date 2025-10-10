@@ -1,6 +1,5 @@
 // TODO: Replace all `any` types with proper interfaces/types for better type safety.
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef } from 'react';
 import type { MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre';
 
 import type { Community } from '#app/models/community';
@@ -32,34 +31,24 @@ export function useFranceMapHandlers({
   selectedTerritoryData,
   isMobile = false,
 }: UseFranceMapHandlersProps) {
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-
   // Handles map move (panning/zooming)
   const handleMove = (event: any) => {
     setViewState(event.viewState);
   };
 
-  // Handles map move end (after pan/zoom) with debouncing
+  // Handles map move end (after pan/zoom)
   const handleMoveEnd = () => {
-    // Clear any existing timer
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    // Set new debounced timer
-    debounceTimerRef.current = setTimeout(() => {
-      const mapInstance = mapRef.current?.getMap();
-      if (!mapInstance) return;
-      updateVisibleCodes(
-        mapInstance,
-        selectedTerritoryData?.filterCode || 'FR',
-        setVisibleRegionCodes,
-        setVisibleDepartementCodes,
-        setVisibleCommuneCodes,
-      );
-      // Note: updateFeatureStates is now handled by useEffect in FranceMap.tsx
-      // This prevents premature updates before data is fetched
-    }, 150); // 150ms debounce delay
+    const mapInstance = mapRef.current?.getMap();
+    if (!mapInstance) return;
+    updateVisibleCodes(
+      mapInstance,
+      selectedTerritoryData?.filterCode || 'FR',
+      setVisibleRegionCodes,
+      setVisibleDepartementCodes,
+      setVisibleCommuneCodes,
+    );
+    // Note: updateFeatureStates is now handled by useEffect in FranceMap.tsx
+    // This prevents premature updates before data is fetched
   };
 
   // Handles hover on map features (desktop only)
