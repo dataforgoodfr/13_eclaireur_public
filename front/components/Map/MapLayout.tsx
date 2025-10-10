@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import type { ViewState } from 'react-map-gl/maplibre';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { Community } from '#app/models/community';
-import { DEFAULT_MAP_YEAR } from '#utils/constants/years';
 import { useCommunes } from '#utils/hooks/map/useCommunes';
 import { useDepartements } from '#utils/hooks/map/useDepartements';
 import { useRegions } from '#utils/hooks/map/useRegions';
@@ -17,18 +15,16 @@ import MapTooltip from './MapTooltip';
 // import PerspectiveSelector from './PerspectiveSelector'; // Feature flag: currently hidden
 import TransparencyScoreControls from './TransparencyScoreControls';
 import YearSelector from './YearSelector';
-import { choroplethDataSource, territories } from './constants';
+import { territories } from './constants';
+import { useMapUrlState } from './hooks/useMapUrlState';
 import type { HoverInfo } from './types';
-import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
-import { getAvailableLevels, getDefaultLevelForZoom } from './utils/getAvailableLevels';
+import { getAvailableLevels } from './utils/getAvailableLevels';
 
 export default function MapLayout() {
-  const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
-  const [selectedScore, setSelectedScore] = useState<string>('mp_score');
-  const [selectedYear, setSelectedYear] = useState<number>(DEFAULT_MAP_YEAR);
-  const [selectedAdminLevel, setSelectedAdminLevel] = useState<
-    'regions' | 'departements' | 'communes' | null
-  >(null);
+  // URL state management
+  const [urlState, setUrlState] = useMapUrlState();
+
+  // Local UI state (not in URL)
   const [showLegend, setShowLegend] = useState<boolean>(true);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showSidebar, setShowSidebar] = useState<boolean>(true);
@@ -37,27 +33,35 @@ export default function MapLayout() {
   const [visibleDepartementCodes, setVisibleDepartementCodes] = useState<string[]>([]);
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
 
-  const [viewState, setViewState] = useState<Partial<ViewState>>(territories.metropole.viewState);
+  // Derive current territory from URL coordinates
+  const currentTerritory = useMemo(() => {
+    const lat = urlState.lat;
+    const lng = urlState.lng;
+    if (!lat || !lng) return 'metropole';
 
-  const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
-  const selectedChoroplethData = choroplethDataSource[selectedScore];
-  const currentAdminLevel = getAdminTypeFromZoom(
-    viewState.zoom || 5,
-    selectedTerritory || 'metropole',
-  );
+    // Check each territory's rough bounds
+    if (lat >= -22 && lat <= -20 && lng >= 54 && lng <= 57) return 'reunion';
+    if (lat >= 2 && lat <= 6 && lng >= -55 && lng <= -51) return 'guyane';
+    if (lat >= -13.5 && lat <= -12 && lng >= 44.5 && lng <= 46) return 'mayotte';
+    if (lat >= 15.5 && lat <= 17 && lng >= -62 && lng <= -61) return 'guadeloupe';
+    if (lat >= 14 && lat <= 15 && lng >= -61.5 && lng <= -60.5) return 'martinique';
+
+    return 'metropole';
+  }, [urlState.lat, urlState.lng]);
 
   // Calculate available levels based on current zoom
   const availableLevels = useMemo((): ('regions' | 'departements' | 'communes')[] => {
+    const selectedTerritoryData = territories[currentTerritory];
     if (selectedTerritoryData) {
-      return getAvailableLevels(viewState.zoom || 5, selectedTerritoryData);
+      return getAvailableLevels(urlState.zoom, selectedTerritoryData);
     }
     return ['regions', 'departements', 'communes'];
-  }, [selectedTerritoryData, viewState.zoom]);
+  }, [currentTerritory, urlState.zoom]);
 
   // Fetch community data
-  const { data: communes } = useCommunes(visibleCommuneCodes, selectedYear);
-  const { data: departements } = useDepartements(visibleDepartementCodes, selectedYear);
-  const { data: regions } = useRegions(visibleRegionCodes, selectedYear);
+  const { data: communes } = useCommunes(visibleCommuneCodes, urlState.year);
+  const { data: departements } = useDepartements(visibleDepartementCodes, urlState.year);
+  const { data: regions } = useRegions(visibleRegionCodes, urlState.year);
 
   // Build community map
   const communityMap = useMemo(() => {
@@ -80,26 +84,14 @@ export default function MapLayout() {
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  // Update viewState when selectedTerritory changes
-  useEffect(() => {
-    if (selectedTerritory && territories[selectedTerritory]) {
-      setViewState(territories[selectedTerritory].viewState);
-    }
-  }, [selectedTerritory]);
-
-  // Auto-adjust selected admin level if it becomes unavailable
-  useEffect(() => {
-    if (selectedAdminLevel && !availableLevels.includes(selectedAdminLevel)) {
-      // Find the closest available level
-      const defaultLevel =
-        selectedTerritoryData && getDefaultLevelForZoom(viewState.zoom || 5, selectedTerritoryData);
-      if (defaultLevel && availableLevels.includes(defaultLevel)) {
-        setSelectedAdminLevel(defaultLevel);
-      } else if (availableLevels.length > 0) {
-        setSelectedAdminLevel(availableLevels[0] as 'regions' | 'departements' | 'communes');
-      }
-    }
-  }, [availableLevels, selectedAdminLevel, selectedTerritoryData, viewState.zoom]);
+  // Handle level changes from UI interactions
+  // This only updates the URL level without adjusting zoom
+  const handleLevelChange = useCallback(
+    (newLevel: 'regions' | 'departements' | 'communes') => {
+      setUrlState({ level: newLevel });
+    },
+    [setUrlState],
+  );
 
   return (
     <div className='relative flex min-h-[calc(100vh-80px)] w-full flex-col overflow-y-auto lg:flex-row lg:overflow-visible'>
@@ -130,14 +122,24 @@ export default function MapLayout() {
         <div className='order-1 flex w-full flex-shrink-0 flex-col border-b border-gray-200 bg-white lg:hidden'>
           <div className='flex flex-col gap-4 p-4'>
             <TransparencyScoreControls
-              selectedScore={selectedScore}
-              setSelectedScore={setSelectedScore}
+              selectedScore={urlState.score}
+              setSelectedScore={(score) => setUrlState({ score })}
             />
-            <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
+            <YearSelector
+              selectedYear={urlState.year}
+              onSelectYear={(year) => setUrlState({ year })}
+            />
             <FrenchTerritoriesSelect
               territories={territories}
-              selectedTerritory={selectedTerritory}
-              onSelectTerritory={setSelectedTerritory}
+              selectedTerritory={currentTerritory}
+              onSelectTerritory={(territory) => {
+                const territoryData = territories[territory];
+                setUrlState({
+                  lat: territoryData.viewState.latitude,
+                  lng: territoryData.viewState.longitude,
+                  zoom: territoryData.viewState.zoom,
+                });
+              }}
             />
             {/* Feature flag: Mettez en perspective - currently hidden */}
             {/* <PerspectiveSelector
@@ -156,24 +158,17 @@ export default function MapLayout() {
       <div className='relative order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center overflow-visible bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
         {/* Search bar - positioned at top left */}
         <div className='absolute left-4 top-4 z-40 w-auto max-w-[calc(100vw-32px)] lg:w-[282px] lg:max-w-none'>
-          <MapSearch setViewState={setViewState} />
+          <MapSearch />
         </div>
         <AdminLevelSlider
-          selectedLevel={selectedAdminLevel || 'regions'}
-          onLevelChange={setSelectedAdminLevel}
+          selectedLevel={urlState.level === 'auto' ? 'regions' : urlState.level}
+          onLevelChange={handleLevelChange}
           availableLevels={availableLevels}
         />
 
         <FranceMap
-          selectedTerritoryData={selectedTerritoryData}
-          selectedChoroplethData={selectedChoroplethData}
-          viewState={viewState}
-          setViewState={setViewState}
-          currentAdminLevel={currentAdminLevel}
           showLegend={showLegend}
           setShowLegend={setShowLegend}
-          selectedYear={selectedYear}
-          manualAdminLevel={selectedAdminLevel}
           setHoverInfo={setHoverInfo}
           communityMap={communityMap}
           visibleRegionCodes={visibleRegionCodes}
@@ -231,14 +226,24 @@ export default function MapLayout() {
         {showSidebar && (
           <>
             <TransparencyScoreControls
-              selectedScore={selectedScore}
-              setSelectedScore={setSelectedScore}
+              selectedScore={urlState.score}
+              setSelectedScore={(score) => setUrlState({ score })}
             />
-            <YearSelector selectedYear={selectedYear} onSelectYear={setSelectedYear} />
+            <YearSelector
+              selectedYear={urlState.year}
+              onSelectYear={(year) => setUrlState({ year })}
+            />
             <FrenchTerritoriesSelect
               territories={territories}
-              selectedTerritory={selectedTerritory}
-              onSelectTerritory={setSelectedTerritory}
+              selectedTerritory={currentTerritory}
+              onSelectTerritory={(territory) => {
+                const territoryData = territories[territory];
+                setUrlState({
+                  lat: territoryData.viewState.latitude,
+                  lng: territoryData.viewState.longitude,
+                  zoom: territoryData.viewState.zoom,
+                });
+              }}
             />
             {/* Feature flag: Mettez en perspective - currently hidden */}
             {/* <PerspectiveSelector

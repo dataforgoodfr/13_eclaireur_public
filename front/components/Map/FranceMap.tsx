@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Map, {
   Layer,
   type MapRef,
   NavigationControl,
   Source,
   type StyleSpecification,
-  type ViewState,
 } from 'react-map-gl/maplibre';
 
 import type { Community } from '#app/models/community';
@@ -16,22 +15,17 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
 import ChoroplethLegend from './Legend';
-import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
-import type { ChoroplethDataSource, HoverInfo, TerritoryData } from './types';
+import { BASE_MAP_STYLE, MAPTILER_API_KEY, choroplethDataSource, territories } from './constants';
+import { useMapUrlState } from './hooks/useMapUrlState';
+import type { HoverInfo } from './types';
+import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
 
 interface MapProps {
-  selectedTerritoryData: TerritoryData | undefined;
-  selectedChoroplethData: ChoroplethDataSource;
-  viewState: Partial<ViewState>;
-  setViewState: (vs: Partial<ViewState>) => void;
-  currentAdminLevel: string;
   showLegend: boolean;
   setShowLegend: (show: boolean) => void;
-  selectedYear: number;
-  manualAdminLevel: 'regions' | 'departements' | 'communes' | null;
   setHoverInfo: (info: HoverInfo | null) => void;
   communityMap: Record<string, Community>;
   visibleRegionCodes: string[];
@@ -49,17 +43,10 @@ const franceMetropoleBounds: [[number, number], [number, number]] = [
 ];
 
 export default function FranceMap({
-  selectedTerritoryData,
-  selectedChoroplethData,
-  viewState,
-  setViewState,
   ranges,
   selectedRangeOption,
-  currentAdminLevel,
   showLegend,
   setShowLegend,
-  selectedYear,
-  manualAdminLevel,
   setHoverInfo,
   communityMap,
   visibleRegionCodes,
@@ -69,7 +56,37 @@ export default function FranceMap({
   setVisibleDepartementCodes,
   setVisibleCommuneCodes,
 }: MapProps) {
-  const mapRef = useRef<MapRef>(null);
+  const internalMapRef = useRef<MapRef>(null);
+
+  // Get URL state from nuqs hook
+  const [urlState, setUrlState] = useMapUrlState();
+
+  // Derive values from URL state
+  const latitude = urlState.lat ?? 46.5;
+  const longitude = urlState.lng ?? 2.5;
+  const zoom = urlState.zoom;
+
+  // Derive territory from coordinates
+  const currentTerritory = useMemo(() => {
+    if (!urlState.lat || !urlState.lng) return 'metropole';
+
+    const lat = urlState.lat;
+    const lng = urlState.lng;
+
+    if (lat >= -22 && lat <= -20 && lng >= 54 && lng <= 57) return 'reunion';
+    if (lat >= 2 && lat <= 6 && lng >= -55 && lng <= -51) return 'guyane';
+    if (lat >= -13.5 && lat <= -12 && lng >= 44.5 && lng <= 46) return 'mayotte';
+    if (lat >= 15.5 && lat <= 17 && lng >= -62 && lng <= -61) return 'guadeloupe';
+    if (lat >= 14 && lat <= 15 && lng >= -61.5 && lng <= -60.5) return 'martinique';
+
+    return 'metropole';
+  }, [urlState.lat, urlState.lng]);
+
+  const selectedTerritoryData = territories[currentTerritory];
+  const selectedChoroplethData = choroplethDataSource[urlState.score];
+  const currentAdminLevel = getAdminTypeFromZoom(urlState.zoom, currentTerritory);
+  const manualAdminLevel = urlState.level === 'auto' ? null : urlState.level;
+  const selectedYear = urlState.year;
 
   const regionsMaxZoomThreshold = selectedTerritoryData?.regionsMaxZoom || 6;
   const departementsMaxZoomThreshold = selectedTerritoryData?.departementsMaxZoom || 8;
@@ -131,7 +148,7 @@ export default function FranceMap({
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
 
   useEffect(() => {
-    const mapInstance = mapRef.current?.getMap();
+    const mapInstance = internalMapRef.current?.getMap();
     if (!mapInstance) return;
 
     updateFeatureStates(mapInstance, communityMap, choroplethParameter, territoryFilterCode);
@@ -139,7 +156,7 @@ export default function FranceMap({
 
   // Update visible codes when territory changes
   useEffect(() => {
-    const mapInstance = mapRef.current?.getMap();
+    const mapInstance = internalMapRef.current?.getMap();
     if (!mapInstance) return;
 
     updateVisibleCodes(
@@ -152,12 +169,36 @@ export default function FranceMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [territoryFilterCode]);
 
+  // Sync URL changes to map (for search, territory changes)
+  useEffect(() => {
+    const mapInstance = internalMapRef.current?.getMap();
+    if (!mapInstance) return;
+
+    // Get current map position
+    const currentCenter = mapInstance.getCenter();
+    const currentZoom = mapInstance.getZoom();
+
+    // Check if URL position is significantly different from map position
+    const latDiff = Math.abs(currentCenter.lat - latitude);
+    const lngDiff = Math.abs(currentCenter.lng - longitude);
+    const zoomDiff = Math.abs(currentZoom - zoom);
+
+    // Only update if there's a meaningful difference (avoid infinite loops)
+    if (latDiff > 0.0001 || lngDiff > 0.0001 || zoomDiff > 0.1) {
+      mapInstance.flyTo({
+        center: [longitude, latitude],
+        zoom,
+        duration: 1000,
+      });
+    }
+  }, [latitude, longitude, zoom]);
+
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  const { handleMove, handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
-    mapRef,
-    setViewState,
+  const { handleMoveEnd, onHover, onClick } = useFranceMapHandlers({
+    mapRef: internalMapRef,
+    setUrlState,
     setVisibleRegionCodes,
     setVisibleDepartementCodes,
     setVisibleCommuneCodes,
@@ -189,11 +230,14 @@ export default function FranceMap({
       )}
 
       <Map
-        ref={mapRef}
+        ref={internalMapRef}
         mapLib={maplibregl}
         mapStyle={BASE_MAP_STYLE as StyleSpecification}
-        {...viewState}
-        onMove={handleMove}
+        initialViewState={{
+          latitude,
+          longitude,
+          zoom,
+        }}
         onMoveEnd={handleMoveEnd}
         maxZoom={14}
         interactiveLayerIds={['regions', 'departements', 'communes']}
@@ -205,7 +249,7 @@ export default function FranceMap({
         touchPitch={false}
         maxBounds={territoryFilterCode === 'FR' ? franceMetropoleBounds : undefined}
         onLoad={() => {
-          const mapInstance = mapRef.current?.getMap();
+          const mapInstance = internalMapRef.current?.getMap();
           if (mapInstance) {
             updateVisibleCodes(
               mapInstance,
