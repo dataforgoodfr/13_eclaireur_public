@@ -131,8 +131,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 for i, declaration in enumerate(raw_loaded):
                     if i:
                         interim.write(",\n")
-                    unnested = [json.dumps(x) for x in self.unnest_marche(declaration)]
-                    interim.write(",\n".join(unnested))
+                    cleaned_row = json.dumps(self.clean_row(declaration))
+                    interim.write(cleaned_row)
 
                 interim.write("]\n")
 
@@ -159,41 +159,62 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         return "unknown"
 
     @staticmethod
-    def unnest_marche(declaration: dict):
+    def clean_row(declaration: dict):
         """
-        Create one declaration line per titulaire.
+        Nettoie le dataset brut de marché public
         """
         local_decla = copy.copy(declaration)
-        minimal_titulaire = [{"id": None}]
-        titulaires = local_decla.pop("titulaires", minimal_titulaire) or minimal_titulaire
-        if isinstance(titulaires, dict):
-            titulaires = [titulaires]
 
-        # Remove None
-        titulaires = [t for t in titulaires if t]
-
-        # titulaire is sometines nested
-        if "titulaire" in titulaires[0].keys():
-            titulaires = [titu["titulaire"] for titu in titulaires]
-
-        # acheteur is sometimes just a dictionnary with a single "id" key
-        unnested = {}
+        cleaned_row = {}
         for k, v in local_decla.items():
+            # acheteur is sometimes just a dictionnary with a single "id" key
             if k == "acheteur":
                 try:
-                    unnested["acheteur.id"] = str(v["id"])
+                    cleaned_row["acheteur.id"] = str(v["id"])
                 except TypeError:
-                    unnested["acheteur.id"] = ""
+                    cleaned_row["acheteur.id"] = ""
             elif k == "montant":
-                unnested["montant"] = v
-                unnested["countTitulaires"] = len(titulaires)
+                cleaned_row["montant"] = v
+            elif k == "titulaires":
+                # formats exemples
+                # "titulaires": [ {"titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" }, "titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" } } ]
+                # "titulaires": [  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  },  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  }  ]
+
+                minimal_titulaire = [{"id": None}]
+                titulaires = v or minimal_titulaire
+                if isinstance(titulaires, dict):
+                    titulaires = [titulaires]
+
+                # Remove None
+                titulaires = [t for t in titulaires if t]
+
+                # titulaire is sometimes nested
+                if "titulaire" in titulaires[0].keys():
+                    titulaires = [titu["titulaire"] for titu in titulaires]
+
+                # titulaires id is sometimes an integer, we cast it to str
+                titulaires = [
+                    {
+                        **titu,
+                        "id": str(titu["id"])
+                        if isinstance(titu.get("id"), int)
+                        else titu.get("id"),
+                    }
+                    for titu in titulaires
+                ]
+
+                # Tri des titulaires par id (utilisé dans l'enricher des MP)
+                titulaires = sorted(titulaires, key=lambda x: x["id"])
+
+                cleaned_row["titulaires"] = titulaires
+                cleaned_row["countTitulaires"] = len(titulaires)
             else:
                 if isinstance(v, (list, dict)):
                     v = json.dumps(v)
                 elif isinstance(v, decimal.Decimal):
                     v = float(v)
-                unnested[k] = v
-        return [{f"titulaire_{k}": v for k, v in t.items()} | unnested for t in titulaires if t]
+                cleaned_row[k] = v
+        return cleaned_row
 
 
 class MarchesPublicsSchemaLoader:
