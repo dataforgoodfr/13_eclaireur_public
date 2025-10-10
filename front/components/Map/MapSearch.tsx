@@ -40,10 +40,9 @@ interface FrenchGovResponse {
 
 interface MapSearchProps {
   setViewState: (vs: Partial<ViewState>) => void;
-  onSearchComplete?: () => void;
 }
 
-export default function MapSearch({ setViewState, onSearchComplete }: MapSearchProps) {
+export default function MapSearch({ setViewState }: MapSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GeocodingFeature[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -184,14 +183,7 @@ export default function MapSearch({ setViewState, onSearchComplete }: MapSearchP
     setQuery('');
     setResults([]);
     setShowResults(false);
-
-    // Trigger callback to update visible codes after viewState change
-    // Use setTimeout to ensure the map has finished transitioning
-    if (onSearchComplete) {
-      setTimeout(() => {
-        onSearchComplete();
-      }, 500);
-    }
+    // Note: Map's onMoveEnd will automatically trigger updateVisibleCodes when transition completes
   };
 
   const handleClear = () => {

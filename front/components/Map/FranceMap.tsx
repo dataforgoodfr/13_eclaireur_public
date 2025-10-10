@@ -40,7 +40,6 @@ interface MapProps {
   setVisibleRegionCodes: (codes: string[]) => void;
   setVisibleDepartementCodes: (codes: string[]) => void;
   setVisibleCommuneCodes: (codes: string[]) => void;
-  mapRefCallback?: (ref: React.RefObject<MapRef | null>) => void;
   ranges?: unknown;
   selectedRangeOption?: unknown;
 }
@@ -69,7 +68,6 @@ export default function FranceMap({
   setVisibleRegionCodes,
   setVisibleDepartementCodes,
   setVisibleCommuneCodes,
-  mapRefCallback,
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
 
@@ -153,13 +151,6 @@ export default function FranceMap({
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [territoryFilterCode]);
-
-  // Expose map ref to parent via callback
-  useEffect(() => {
-    if (mapRefCallback && mapRef.current) {
-      mapRefCallback(mapRef);
-    }
-  }, [mapRefCallback]);
 
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;

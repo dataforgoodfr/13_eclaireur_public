@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MapRef, ViewState } from 'react-map-gl/maplibre';
+import { useEffect, useMemo, useState } from 'react';
+import type { ViewState } from 'react-map-gl/maplibre';
 
 import type { Community } from '#app/models/community';
 import { DEFAULT_MAP_YEAR } from '#utils/constants/years';
@@ -21,7 +21,6 @@ import { choroplethDataSource, territories } from './constants';
 import type { HoverInfo } from './types';
 import getAdminTypeFromZoom from './utils/getAdminTypeFromZoom';
 import { getAvailableLevels, getDefaultLevelForZoom } from './utils/getAvailableLevels';
-import { updateVisibleCodes } from './utils/updateVisibleCodes';
 
 export default function MapLayout() {
   const [selectedTerritory, setSelectedTerritory] = useState<string | undefined>('metropole');
@@ -39,9 +38,6 @@ export default function MapLayout() {
   const [visibleCommuneCodes, setVisibleCommuneCodes] = useState<string[]>([]);
 
   const [viewState, setViewState] = useState<Partial<ViewState>>(territories.metropole.viewState);
-
-  // Store mapRef from FranceMap to trigger visible codes update after search
-  const mapRefFromChild = useRef<React.RefObject<MapRef | null> | null>(null);
 
   const selectedTerritoryData = selectedTerritory ? territories[selectedTerritory] : undefined;
   const selectedChoroplethData = choroplethDataSource[selectedScore];
@@ -83,25 +79,6 @@ export default function MapLayout() {
 
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-
-  // Callback to receive mapRef from FranceMap
-  const handleMapRefCallback = useCallback((ref: React.RefObject<MapRef | null>) => {
-    mapRefFromChild.current = ref;
-  }, []);
-
-  // Callback to trigger visible codes update after search
-  const handleSearchComplete = useCallback(() => {
-    const mapInstance = mapRefFromChild.current?.current?.getMap();
-    if (!mapInstance) return;
-
-    updateVisibleCodes(
-      mapInstance,
-      selectedTerritoryData?.filterCode || 'FR',
-      setVisibleRegionCodes,
-      setVisibleDepartementCodes,
-      setVisibleCommuneCodes,
-    );
-  }, [selectedTerritoryData]);
 
   // Update viewState when selectedTerritory changes
   useEffect(() => {
@@ -179,7 +156,7 @@ export default function MapLayout() {
       <div className='relative order-2 flex h-[calc(100vh-80px)] w-full items-center justify-center overflow-visible bg-white lg:order-1 lg:h-full lg:w-2/3 lg:flex-1'>
         {/* Search bar - positioned at top left */}
         <div className='absolute left-4 top-4 z-40 w-auto max-w-[calc(100vw-32px)] lg:w-[282px] lg:max-w-none'>
-          <MapSearch setViewState={setViewState} onSearchComplete={handleSearchComplete} />
+          <MapSearch setViewState={setViewState} />
         </div>
         <AdminLevelSlider
           selectedLevel={selectedAdminLevel || 'regions'}
@@ -205,7 +182,6 @@ export default function MapLayout() {
           setVisibleRegionCodes={setVisibleRegionCodes}
           setVisibleDepartementCodes={setVisibleDepartementCodes}
           setVisibleCommuneCodes={setVisibleCommuneCodes}
-          mapRefCallback={handleMapRefCallback}
         />
       </div>
 
