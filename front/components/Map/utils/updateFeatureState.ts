@@ -33,56 +33,58 @@ export default function updateFeatureStates(
     sourceLayer: 'administrative',
     filter: ['==', ['get', 'iso_a2'], territoryFilterCode],
   });
-  features
-    .filter((feature) => feature.properties?.level && feature.properties.level > 0)
-    .forEach((feature) => {
-      const mapFeature = feature as maplibregl.MapGeoJSONFeature;
-      const level = mapFeature.properties.level;
-      let adminType: 'region' | 'departement' | 'commune' | undefined;
-      if (level === 1) adminType = 'region';
-      else if (level === 2) adminType = 'departement';
-      else if (level === 3) adminType = 'commune';
-      else return;
 
-      let code: string | undefined;
-      if (adminType === 'region') {
-        if (!mapFeature.id) return;
-        code = mapFeature.id.toString().slice(-2);
-      } else {
-        code =
-          mapFeature.properties.code?.toString() || mapFeature.properties.code_insee?.toString();
-      }
-      if (!code) return;
-      const key = `${adminType}-${code}`;
-      const community = communityMap[key];
+  const filteredFeatures = features.filter(
+    (feature) => feature.properties?.level && feature.properties.level > 0,
+  );
 
-      let value: number | undefined;
-      if (choroplethParameter === 'aggregated_score') {
-        // Calculate aggregated score from both mp_score and subventions_score
-        value = community
-          ? calculateAggregatedScore(
-              community.subventions_score as string | null | undefined,
-              community.mp_score as string | null | undefined,
-            )
-          : undefined;
-      } else {
-        value = community
-          ? scoreLetterToNumber(community[choroplethParameter as keyof Community] as string)
-          : undefined;
-      }
+  filteredFeatures.forEach((feature) => {
+    const mapFeature = feature as maplibregl.MapGeoJSONFeature;
+    const level = mapFeature.properties.level;
+    let adminType: 'region' | 'departement' | 'commune' | undefined;
+    if (level === 1) adminType = 'region';
+    else if (level === 2) adminType = 'departement';
+    else if (level === 3) adminType = 'commune';
+    else return;
 
-      mapInstance.setFeatureState(
-        {
-          source: 'statesData',
-          sourceLayer: 'administrative',
-          id: mapFeature.id,
-        },
-        {
-          [choroplethParameter]: value,
-          latitude: community?.latitude,
-          longitude: community?.longitude,
-          population: community?.population,
-        },
-      );
-    });
+    let code: string | undefined;
+    if (adminType === 'region') {
+      if (!mapFeature.id) return;
+      code = mapFeature.id.toString().slice(-2);
+    } else {
+      code = mapFeature.properties.code?.toString() || mapFeature.properties.code_insee?.toString();
+    }
+    if (!code) return;
+    const key = `${adminType}-${code}`;
+    const community = communityMap[key];
+
+    let value: number | undefined;
+    if (choroplethParameter === 'aggregated_score') {
+      // Calculate aggregated score from both mp_score and subventions_score
+      value = community
+        ? calculateAggregatedScore(
+            community.subventions_score as string | null | undefined,
+            community.mp_score as string | null | undefined,
+          )
+        : undefined;
+    } else {
+      value = community
+        ? scoreLetterToNumber(community[choroplethParameter as keyof Community] as string)
+        : undefined;
+    }
+
+    mapInstance.setFeatureState(
+      {
+        source: 'statesData',
+        sourceLayer: 'administrative',
+        id: mapFeature.id,
+      },
+      {
+        [choroplethParameter]: value,
+        latitude: community?.latitude,
+        longitude: community?.longitude,
+        population: community?.population,
+      },
+    );
+  });
 }

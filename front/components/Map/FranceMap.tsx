@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Map, {
   Layer,
   type MapRef,
@@ -11,19 +11,13 @@ import Map, {
 } from 'react-map-gl/maplibre';
 
 import type { Community } from '#app/models/community';
-import { useCommunes } from '#utils/hooks/map/useCommunes';
-import { useDepartements } from '#utils/hooks/map/useDepartements';
-import { useRegions } from '#utils/hooks/map/useRegions';
-import { Loader2 } from 'lucide-react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import ChoroplethLayer from './ChoroplethLayer';
-import DotsLayer from './DotsLayer';
 import ChoroplethLegend from './Legend';
 import { BASE_MAP_STYLE, MAPTILER_API_KEY } from './constants';
 import type { ChoroplethDataSource, HoverInfo, TerritoryData } from './types';
-import { createMapPointFeatures } from './utils/createMapPointFeatures';
 import updateFeatureStates from './utils/updateFeatureState';
 import { updateVisibleCodes } from './utils/updateVisibleCodes';
 import { useFranceMapHandlers } from './utils/useFranceMapHanders';
@@ -33,10 +27,7 @@ interface MapProps {
   selectedChoroplethData: ChoroplethDataSource;
   viewState: Partial<ViewState>;
   setViewState: (vs: Partial<ViewState>) => void;
-  ranges: Record<string, [number, number]>;
-  selectedRangeOption: string;
   currentAdminLevel: string;
-  populationMinMax: { min: number; max: number };
   showLegend: boolean;
   setShowLegend: (show: boolean) => void;
   selectedYear: number;
@@ -49,17 +40,14 @@ interface MapProps {
   setVisibleRegionCodes: (codes: string[]) => void;
   setVisibleDepartementCodes: (codes: string[]) => void;
   setVisibleCommuneCodes: (codes: string[]) => void;
+  mapRefCallback?: (ref: React.RefObject<MapRef | null>) => void;
+  ranges?: unknown;
+  selectedRangeOption?: unknown;
 }
 const franceMetropoleBounds: [[number, number], [number, number]] = [
   [-15, 35],
   [20, 55],
 ];
-
-const ignorePinchZoom = (e: WheelEvent) => {
-  if (e.ctrlKey) {
-    e.preventDefault(); // Prevent browser zoom
-  }
-};
 
 export default function FranceMap({
   selectedTerritoryData,
@@ -69,7 +57,6 @@ export default function FranceMap({
   ranges,
   selectedRangeOption,
   currentAdminLevel,
-  populationMinMax,
   showLegend,
   setShowLegend,
   selectedYear,
@@ -82,8 +69,8 @@ export default function FranceMap({
   setVisibleRegionCodes,
   setVisibleDepartementCodes,
   setVisibleCommuneCodes,
+  mapRefCallback,
 }: MapProps) {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapRef>(null);
 
   const regionsMaxZoomThreshold = selectedTerritoryData?.regionsMaxZoom || 6;
@@ -144,28 +131,6 @@ export default function FranceMap({
 
   const territoryFilterCode = selectedTerritoryData?.filterCode || 'FR';
   const choroplethParameter = selectedChoroplethData.dataName || 'subventions_score';
-  const { data: communes, isLoading: communesLoading } = useCommunes(
-    visibleCommuneCodes,
-    selectedYear,
-  );
-  const { data: departements, isLoading: departementsLoading } = useDepartements(
-    visibleDepartementCodes,
-    selectedYear,
-  );
-  const { data: regions, isLoading: regionsLoading } = useRegions(visibleRegionCodes, selectedYear);
-
-  const regionDots = createMapPointFeatures(regions as Community[]);
-  const departementDots = createMapPointFeatures(departements as Community[]);
-  const communeDots = createMapPointFeatures(communes as Community[]);
-
-  const isLoading = useMemo(() => {
-    if (communesLoading || departementsLoading || regionsLoading) {
-      mapContainerRef.current?.addEventListener('wheel', ignorePinchZoom, { passive: false });
-      return true;
-    }
-    mapContainerRef.current?.removeEventListener('wheel', ignorePinchZoom);
-    return false;
-  }, [communesLoading, departementsLoading, regionsLoading]);
 
   useEffect(() => {
     const mapInstance = mapRef.current?.getMap();
@@ -189,6 +154,13 @@ export default function FranceMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [territoryFilterCode]);
 
+  // Expose map ref to parent via callback
+  useEffect(() => {
+    if (mapRefCallback && mapRef.current) {
+      mapRefCallback(mapRef);
+    }
+  }, [mapRefCallback]);
+
   // Detect mobile device
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
@@ -206,8 +178,16 @@ export default function FranceMap({
     isMobile,
   });
 
+  // Feature flag: Keep perspective functions available but unused
+  void selectedRangeOption;
+  void ranges;
+  // Unused visible codes params (used by parent component)
+  void visibleRegionCodes;
+  void visibleDepartementCodes;
+  void visibleCommuneCodes;
+
   return (
-    <div ref={mapContainerRef} className='relative h-full w-full cursor-grab bg-white'>
+    <div className='relative h-full w-full cursor-grab bg-white'>
       {/* Show legend button for mobile when legend is hidden */}
       {!showLegend && (
         <button
@@ -219,11 +199,6 @@ export default function FranceMap({
         </button>
       )}
 
-      {isLoading && (
-        <div className='absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-70'>
-          <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
-        </div>
-      )}
       <Map
         ref={mapRef}
         mapLib={maplibregl}
@@ -275,8 +250,6 @@ export default function FranceMap({
         {/* Legend - always show on desktop, conditional on mobile */}
         {(showLegend || !isMobile) && (
           <ChoroplethLegend
-            populationMinMax={populationMinMax}
-            selectedRangeOption={selectedRangeOption}
             onClose={() => setShowLegend(false)}
             selectedScore={choroplethParameter}
             selectedYear={selectedYear}
@@ -299,7 +272,7 @@ export default function FranceMap({
             filter={['all', ['==', 'level', 0], ['!=', 'level_0', territoryFilterCode || 'FR']]}
             paint={{
               'fill-color': '#e5e7eb',
-              'fill-opacity': 0.4,
+              'fill-opacity': 0.2,
             }}
           />
           <ChoroplethLayer
@@ -350,39 +323,79 @@ export default function FranceMap({
             choroplethParameter={choroplethParameter}
           />
         </Source>
-        {regionDots?.features?.length > 0 && (
-          <DotsLayer
-            id='regions'
-            data={regionDots}
-            minzoom={regionsMinZoom}
-            maxzoom={regionsMaxZoom}
-            minPopulationForRadius={populationMinMax.min}
-            maxPopulationForRadius={populationMinMax.max}
-            populationRange={ranges.population}
+        {/* Place labels source */}
+        <Source
+          id='placesData'
+          type='vector'
+          url={`https://api.maptiler.com/tiles/v3/tiles.json?key=${MAPTILER_API_KEY}`}
+        >
+          {/* Major cities - visible from zoom 5 */}
+          <Layer
+            id='place-city'
+            source='placesData'
+            source-layer='place'
+            type='symbol'
+            minzoom={5}
+            maxzoom={22}
+            filter={['==', 'class', 'city']}
+            layout={{
+              'text-field': ['coalesce', ['get', 'name:fr'], ['get', 'name']],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 5, 14, 10, 18],
+              'text-anchor': 'center',
+              'text-offset': [0, 0.5],
+            }}
+            paint={{
+              'text-color': '#303F8D',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 1.5,
+            }}
           />
-        )}
-        {departementDots?.features?.length > 0 && (
-          <DotsLayer
-            id='departements'
-            data={departementDots}
-            minzoom={departementsMinZoom}
-            maxzoom={departementsMaxZoom}
-            minPopulationForRadius={populationMinMax.min}
-            maxPopulationForRadius={populationMinMax.max}
-            populationRange={ranges.population}
+          {/* Towns - visible from zoom 8 */}
+          <Layer
+            id='place-town'
+            source='placesData'
+            source-layer='place'
+            type='symbol'
+            minzoom={8}
+            maxzoom={22}
+            filter={['==', 'class', 'town']}
+            layout={{
+              'text-field': ['coalesce', ['get', 'name:fr'], ['get', 'name']],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 8, 12, 12, 16],
+              'text-anchor': 'center',
+              'text-offset': [0, 0.5],
+            }}
+            paint={{
+              'text-color': '#303F8D',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 1.5,
+            }}
           />
-        )}
-        {communeDots?.features?.length > 0 && (
-          <DotsLayer
-            id='communes'
-            data={communeDots}
-            minzoom={communesMinZoom}
-            maxzoom={communesMaxZoom}
-            minPopulationForRadius={populationMinMax.min}
-            maxPopulationForRadius={populationMinMax.max}
-            populationRange={ranges.population}
+          {/* Villages - visible from zoom 11 */}
+          <Layer
+            id='place-village'
+            source='placesData'
+            source-layer='place'
+            type='symbol'
+            minzoom={11}
+            maxzoom={22}
+            filter={['==', 'class', 'village']}
+            layout={{
+              'text-field': ['coalesce', ['get', 'name:fr'], ['get', 'name']],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 11, 11, 14, 14],
+              'text-anchor': 'center',
+              'text-offset': [0, 0.5],
+            }}
+            paint={{
+              'text-color': '#303F8D',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 1.5,
+            }}
           />
-        )}
+        </Source>
       </Map>
     </div>
   );
