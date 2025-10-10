@@ -1,5 +1,6 @@
 'use client';
 
+import { COLUMN_IDS, getOrderFromSortingState } from '#app/api/advanced_search/advancedSearchUtils';
 import { useAdvancedSearch } from '#utils/hooks/useAdvancedSearch';
 import { getSortingStateParser } from '#utils/parsers';
 import type { AdvancedSearchCommunity } from '@/app/models/community';
@@ -21,14 +22,8 @@ export default function CommunitiesTableWithLoader() {
   };
 
   // Get sorting from DataTable URL params
-  const columnIds = new Set([
-    'nom',
-    'type',
-    'population',
-    'subventions_budget',
-    'mp_score',
-    'subventions_score',
-  ]);
+  const columnIds = new Set(COLUMN_IDS);
+
   const [sorting] = useQueryState(
     'sort',
     getSortingStateParser<AdvancedSearchCommunity>(columnIds).withDefault([
@@ -36,17 +31,7 @@ export default function CommunitiesTableWithLoader() {
     ]),
   );
 
-  // Convert to API format
-  const order = {
-    by: (sorting[0]?.id || 'nom') as
-      | 'nom'
-      | 'type'
-      | 'population'
-      | 'subventions_budget'
-      | 'mp_score'
-      | 'subventions_score',
-    direction: (sorting[0]?.desc ? 'DESC' : 'ASC') as 'ASC' | 'DESC',
-  };
+  const order = getOrderFromSortingState(sorting[0]);
 
   const { data, isLoading } = useAdvancedSearch(filters, pagination, order);
 

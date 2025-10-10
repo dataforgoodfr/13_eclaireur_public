@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { COLUMN_IDS, getOrderFromSortingState } from '#app/api/advanced_search/advancedSearchUtils';
+import { AdvancedSearchCommunity } from '#app/models/community';
 import { Button } from '#components/ui/button';
 import {
   DropdownMenu,
@@ -10,14 +12,25 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { createAdvancedSearchDownloadingURL } from '#utils/fetchers/advanced-search/download/downloadAdvancedSearch-client';
+import { getSortingStateParser } from '#utils/parsers';
 import { ArrowDownToLine } from 'lucide-react';
+import { useQueryState } from 'nuqs';
 
 import { useFiltersParams } from '../hooks/useFiltersParams';
-import { useOrderParams } from '../hooks/useOrderParams';
 
 export default function DownloadingButton() {
   const { filters } = useFiltersParams();
-  const { order } = useOrderParams();
+  // Get sorting from DataTable URL params
+  const columnIds = new Set(COLUMN_IDS);
+  const [sorting] = useQueryState(
+    'sort',
+    getSortingStateParser<AdvancedSearchCommunity>(columnIds).withDefault([
+      { id: 'nom', desc: false },
+    ]),
+  );
+
+  // Convert to API format
+  const order = getOrderFromSortingState(sorting[0]);
   const downloadingURL = createAdvancedSearchDownloadingURL(filters, order);
 
   return (

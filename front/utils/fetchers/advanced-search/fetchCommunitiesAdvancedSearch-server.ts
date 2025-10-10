@@ -1,4 +1,4 @@
-import type { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchOrder } from '#app/api/advanced_search/advancedSearchUtils';
 import type { AdvancedSearchCommunity, Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
 import type { CommunityType } from '#utils/types';
