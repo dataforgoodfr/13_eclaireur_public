@@ -2,7 +2,11 @@
 
 import Link from 'next/link';
 
-import { COLUMN_IDS, getOrderFromSortingState } from '#app/api/advanced_search/advancedSearchUtils';
+import {
+  COLUMN_IDS,
+  ExportType,
+  getOrderFromSortingState,
+} from '#app/api/advanced_search/advancedSearchUtils';
 import { AdvancedSearchCommunity } from '#app/models/community';
 import { Button } from '#components/ui/button';
 import {
@@ -31,7 +35,6 @@ export default function DownloadingButton() {
 
   // Convert to API format
   const order = getOrderFromSortingState(sorting[0]);
-  const downloadingURL = createAdvancedSearchDownloadingURL(filters, order);
 
   return (
     <DropdownMenu>
@@ -48,7 +51,7 @@ export default function DownloadingButton() {
         <DropdownMenuItem>
           <Link
             className='flex w-full items-center hover:underline'
-            href={downloadingURL}
+            href={createAdvancedSearchDownloadingURL(filters, order, ExportType.Csv)}
             download={true}
             target='_blank'
           >
@@ -59,7 +62,7 @@ export default function DownloadingButton() {
         <DropdownMenuItem>
           <Link
             className='flex w-full items-center hover:underline'
-            href={downloadingURL}
+            href={createAdvancedSearchDownloadingURL(filters, order, ExportType.Excel)}
             download={true}
             target='_blank'
           >

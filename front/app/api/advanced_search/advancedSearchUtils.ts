@@ -35,3 +35,8 @@ export function getOrderFromSortingState(
     direction: (sortingColumn?.desc ? 'DESC' : 'ASC') as 'ASC' | 'DESC',
   };
 }
+
+export enum ExportType {
+  Csv = 'csv',
+  Excel = 'xlsx',
+}

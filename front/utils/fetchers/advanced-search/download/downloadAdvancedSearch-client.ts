@@ -1,4 +1,4 @@
-import { AdvancedSearchOrder } from '#app/api/advanced_search/advancedSearchUtils';
+import { AdvancedSearchOrder, ExportType } from '#app/api/advanced_search/advancedSearchUtils';
 import { downloadURL } from '#utils/downloader/downloadURL';
 
 import { CommunitiesAdvancedSearchFilters } from '../fetchCommunitiesAdvancedSearch-server';
@@ -14,6 +14,7 @@ const API_ROUTE = '/api/advanced_search/download';
 export function createAdvancedSearchDownloadingURL(
   filters: CommunitiesAdvancedSearchFilters,
   order: AdvancedSearchOrder,
+  exportType: ExportType,
 ): URL {
   const { type, population, mp_score, subventions_score } = filters;
 
@@ -26,14 +27,16 @@ export function createAdvancedSearchDownloadingURL(
 
   url.searchParams.append('by', order.by);
   url.searchParams.append('direction', order.direction);
+  url.searchParams.append('exportType', exportType);
   return url;
 }
 
 export function downloadAdvancedSearchCSV(
   filters: CommunitiesAdvancedSearchFilters,
   order: AdvancedSearchOrder,
+  exportType: ExportType,
 ) {
-  const url = createAdvancedSearchDownloadingURL(filters, order);
+  const url = createAdvancedSearchDownloadingURL(filters, order, exportType);
 
   downloadURL(url);
 }
