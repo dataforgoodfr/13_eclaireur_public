@@ -14,7 +14,7 @@ export default function HomePageHeader() {
 
   return (
     <main className='global-border'>
-      <div className='minh-[460px] relative bg-none object-cover'>
+      <div className='minh-[460px] relative bg-none object-cover px-4 md:px-0'>
         <Image
           src='/eclaireur/eyes_left.svg'
           alt='Yeux'
@@ -58,9 +58,9 @@ export default function HomePageHeader() {
             <h2 className='mb-6 w-3/4 text-center text-lg font-normal'>
               Accédez aux données de dépenses publiques de votre commune, département ou région.
             </h2>
-            <div className='mx-auto flex min-w-[400] justify-center'>
+            <div className='mx-auto flex w-full justify-center md:min-w-[400]'>
               <SearchBar
-                className='relative w-3/4 md:w-96 lg:w-[32rem]'
+                className='relative w-full md:w-96 lg:w-[32rem]'
                 onSelect={({ siren }) => navigateToCommunityPage(siren)}
               />
             </div>
