@@ -235,10 +235,7 @@ function SlidingNumber({
     () =>
       intPlaces.map((place) => (
         // This component does not handle spaces as thousand separator so margins are manually added to compensate
-        <div
-          key={`int-${place}`}
-          className={Math.log10(place) % 3 === 0 ? 'me-1' : Math.log10(place).toString()}
-        >
+        <div key={`int-${place}`} className={Math.log10(place) % 3 === 0 ? 'me-1' : ''}>
           <SlidingNumberRoller
             key={`int-${place}`}
             prevValue={parsedPrevInt}
