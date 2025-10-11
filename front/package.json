@@ -83,6 +83,7 @@
     "tailwindcss-animate": "^1.0.7",
     "topojson": "^3.0.2",
     "topojson-client": "^3.1.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.24.2"
   },
   "devDependencies": {

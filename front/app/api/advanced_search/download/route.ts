@@ -1,49 +1,72 @@
 import { NextResponse } from 'next/server';
 
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { DEFAULT_ORDER, ExportType } from '#app/api/advanced_search/advancedSearchUtils';
 import { TransparencyScore } from '#components/TransparencyScore/constants';
-import {
-  CommunitiesAdvancedSearchFilters,
-  createSQLQueryParams,
-} from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
-import { Pagination } from '#utils/fetchers/types';
+import { fetchCommunitiesAdvancedSearch } from '#utils/fetchers/advanced-search/fetchCommunitiesAdvancedSearch-server';
 import { CommunityType } from '#utils/types';
-import { parseDirection, parseNumber } from '#utils/utils';
+import { formatNomsPropres, stringifyCommunityType } from '#utils/utils';
+import {
+  createSearchParamsCache,
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+} from 'nuqs/server';
+import * as XLSX from 'xlsx';
 
-import { getCopyStream } from '../../csv-stream/utils';
-
-const DEFAULT_FILE_NAME = 'advanced_search_communities.csv';
+const DEFAULT_FILE_NAME = 'RechercheAvancee';
 const MAX_NUMBER_ROWS = 1_000_000;
 
-const DEFAULT_ORDER: AdvancedSearchOrder = {
-  by: 'type',
-  direction: 'ASC',
-};
+const HEADERS = [
+  'Siren',
+  'Collectivite',
+  'Type',
+  'Population',
+  'Budget Subventions (€)',
+  'Score Marchés Publics',
+  'Score Subventions',
+];
+const CSV_SEPARATOR = ';';
 
-/**
- * Get streamed copy of table from db
- * @param params
- * @returns
- */
-async function getStream(
-  filters: CommunitiesAdvancedSearchFilters,
-  pagination: Pagination,
-  order: AdvancedSearchOrder,
-) {
-  const queryParams = createSQLQueryParams(filters, pagination, order);
+const searchParamsCache = createSearchParamsCache({
+  by: parseAsStringEnum([
+    'nom',
+    'type',
+    'population',
+    'mp_score',
+    'subventions_score',
+    'subventions_budget',
+  ] as const).withDefault(DEFAULT_ORDER.by),
+  direction: parseAsStringEnum(['ASC', 'DESC'] as const).withDefault(DEFAULT_ORDER.direction),
+  type: parseAsString,
+  population: parseAsInteger,
+  mp_score: parseAsString,
+  subventions_score: parseAsString,
+  exportType: parseAsStringEnum(Object.values(ExportType)).withDefault(ExportType.Csv),
+});
 
-  return await getCopyStream(...queryParams);
+function getFormatedCurrentDate() {
+  const date = new Date();
+  const yyyy = date.getFullYear();
+  const MM = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+
+  return `${yyyy}${MM}${dd}_${hh}${mm}`;
 }
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const params = searchParamsCache.parse(
+      searchParams as unknown as Record<string, string | string[] | undefined>,
+    );
 
     const filters = {
-      type: (searchParams.get('type') as CommunityType) ?? undefined,
-      population: parseNumber(searchParams.get('population')) ?? undefined,
-      mp_score: (searchParams.get('mp_score') as TransparencyScore) ?? undefined,
-      subventions_score: (searchParams.get('subventions_score') as TransparencyScore) ?? undefined,
+      type: (params.type as CommunityType) ?? undefined,
+      population: params.population ?? undefined,
+      mp_score: (params.mp_score as TransparencyScore) ?? undefined,
+      subventions_score: (params.subventions_score as TransparencyScore) ?? undefined,
     };
 
     const pagination = {
@@ -52,18 +75,52 @@ export async function GET(request: Request) {
     };
 
     const order = {
-      by: (searchParams.get('by') as AdvancedSearchOrder['by']) ?? DEFAULT_ORDER.by,
-      direction: parseDirection(searchParams.get('direction')) ?? DEFAULT_ORDER.direction,
+      by: params.by,
+      direction: params.direction,
     };
 
-    const stream = await getStream(filters, pagination, order);
-
-    const headers = new Headers({
-      'Content-Disposition': `attachment; filename=${DEFAULT_FILE_NAME}`,
-      'Content-Type': 'text/csv; charset=utf-8',
+    const data = await fetchCommunitiesAdvancedSearch(filters, pagination, order);
+    const formattedData = data.map((row) => {
+      return [
+        row.siren,
+        formatNomsPropres(row.nom),
+        stringifyCommunityType(row.type as CommunityType),
+        row.population?.toString() ?? '',
+        row.subventions_budget?.toString() ?? '',
+        row.mp_score?.toString() ?? '',
+        row.subventions_score?.toString() ?? '',
+      ];
     });
 
-    return new NextResponse(stream, {
+    let response: string;
+    let headers: Headers;
+
+    if (params.exportType == ExportType.Csv) {
+      response = HEADERS.join(CSV_SEPARATOR) + '\n';
+      response = response + formattedData.map((row) => row.join(CSV_SEPARATOR)).join('\n');
+
+      headers = new Headers({
+        'Content-Disposition': `attachment; filename=${DEFAULT_FILE_NAME}_${getFormatedCurrentDate()}.csv`,
+        'Content-Type': 'text/csv; charset=utf-8',
+      });
+    } else {
+      // Create a new XLSX workbook:
+      const workbook = XLSX.utils.book_new();
+      // Create a new worksheet:
+      const worksheet = XLSX.utils.json_to_sheet([HEADERS].concat(formattedData), {
+        skipHeader: true,
+      });
+      // Append the worksheet to the workbook:
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'MySheet');
+      // Create data buffer
+      response = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      headers = new Headers({
+        'Content-Disposition': `attachment; filename=${DEFAULT_FILE_NAME}_${getFormatedCurrentDate()}.xlsx`,
+        'Content-Type': 'application/vnd.ms-excel',
+      });
+    }
+
+    return new NextResponse(response, {
       status: 200,
       headers,
     });

@@ -2,6 +2,12 @@
 
 import Link from 'next/link';
 
+import {
+  COLUMN_IDS,
+  ExportType,
+  getOrderFromSortingState,
+} from '#app/api/advanced_search/advancedSearchUtils';
+import { AdvancedSearchCommunity } from '#app/models/community';
 import { Button } from '#components/ui/button';
 import {
   DropdownMenu,
@@ -10,22 +16,32 @@ import {
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
 import { createAdvancedSearchDownloadingURL } from '#utils/fetchers/advanced-search/download/downloadAdvancedSearch-client';
+import { getSortingStateParser } from '#utils/parsers';
 import { ArrowDownToLine } from 'lucide-react';
+import { useQueryState } from 'nuqs';
 
 import { useFiltersParams } from '../hooks/useFiltersParams';
-import { useOrderParams } from '../hooks/useOrderParams';
 
 export default function DownloadingButton() {
   const { filters } = useFiltersParams();
-  const { order } = useOrderParams();
-  const downloadingURL = createAdvancedSearchDownloadingURL(filters, order);
+  // Get sorting from DataTable URL params
+  const columnIds = new Set(COLUMN_IDS);
+  const [sorting] = useQueryState(
+    'sort',
+    getSortingStateParser<AdvancedSearchCommunity>(columnIds).withDefault([
+      { id: 'nom', desc: false },
+    ]),
+  );
+
+  // Convert to API format
+  const order = getOrderFromSortingState(sorting[0]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant='default'
-          className='rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none bg-primary hover:bg-primary/90 max-md:h-12 max-md:w-14 md:bg-secondary'
+          className='rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none bg-primary hover:bg-primary/90 max-md:h-12 max-md:w-14'
         >
           <ArrowDownToLine className='md:hidden' />
           <span className='max-md:sr-only'>Télécharger</span>
@@ -35,7 +51,7 @@ export default function DownloadingButton() {
         <DropdownMenuItem>
           <Link
             className='flex w-full items-center hover:underline'
-            href={downloadingURL}
+            href={createAdvancedSearchDownloadingURL(filters, order, ExportType.Csv)}
             download={true}
             target='_blank'
           >
@@ -46,7 +62,7 @@ export default function DownloadingButton() {
         <DropdownMenuItem>
           <Link
             className='flex w-full items-center hover:underline'
-            href={downloadingURL}
+            href={createAdvancedSearchDownloadingURL(filters, order, ExportType.Excel)}
             download={true}
             target='_blank'
           >
