@@ -25,10 +25,6 @@ export default function Card({
   );
 }
 
-export function Paragraph({ children }: { children: React.ReactNode }) {
-  return <p>{children}</p>;
-}
-
 export function BulletList({ items }: { items: string[] }) {
   return (
     <ul className='list-disc space-y-1 pl-5'>
