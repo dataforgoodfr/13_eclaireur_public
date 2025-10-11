@@ -234,13 +234,16 @@ function SlidingNumber({
   const integerRollers = React.useMemo(
     () =>
       intPlaces.map((place) => (
-        <SlidingNumberRoller
-          key={`int-${place}`}
-          prevValue={parsedPrevInt}
-          value={parsedNewInt}
-          place={place}
-          transition={transition}
-        />
+        // This component does not handle spaces as thousand separator so margins are manually added to compensate
+        <div key={`int-${place}`} className={Math.log10(place) % 3 === 0 ? 'me-1' : ''}>
+          <SlidingNumberRoller
+            key={`int-${place}`}
+            prevValue={parsedPrevInt}
+            value={parsedNewInt}
+            place={place}
+            transition={transition}
+          />
+        </div>
       )),
     [intPlaces, parsedPrevInt, parsedNewInt, transition],
   );
