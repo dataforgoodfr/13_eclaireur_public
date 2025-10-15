@@ -1,0 +1,1304 @@
+{
+  "marches": {
+    "marche": [
+      {
+        "id": "0074-MOE",
+        "uid": "test",
+        "uuid":"test",
+        "acheteur": {
+          "id": "79695003800011"
+        },
+        "nature": "Marché",
+        "objet": "Rénovation énergétique de l'immeuble de 10 logements \"le portal\" à la canourgue (48500)",
+        "codeCPV": "85312500",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "48500",
+          "typeCode": "Code departement"
+        },
+        "dureeMois": 12,
+        "dateNotification": "2024-12-18",
+        "datePublicationDonnees": "2024-12-19",
+        "montant": 43188.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": false,
+        "offresRecues": "test",
+        "marcheInnovant": false,
+        "ccag": "Maitrise d'œuvre",
+        "sousTraitanceDeclaree": false,
+        "typeGroupementOperateurs": "Conjoint",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "79154952000017",
+              "denominationSociale":"test",
+              "contact.id":"test",
+              "contact.nom":"test",
+              "contact.prenom":"test",
+              "contact.email":"test"
+            }
+          },
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "92047908600018"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Tranches"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typePrix": "Définitif révisable",
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "01MAP2023",
+        "acheteur": {
+          "id": "24830054300217"
+        },
+        "nature": "Marché",
+        "objet": "22PM17 - MAITRISE D'OEUVRE POUR LA REHABILITATION DU RDC DE LA MAISON DE COURBEBAISSE",
+        "codeCPV": "71240000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "83220",
+          "typeCode": "Code region"
+        },
+        "dureeMois": 29,
+        "dateNotification": "2023-01-23",
+        "datePublicationDonnees": "test",
+        "montant": 28500.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "75047012200060"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "TypePrix": "Définitif révisable",
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "0258-MOE",
+        "acheteur": {
+          "id": "79695003800011"
+        },
+        "nature": "Marché",
+        "objet": "Marché de maîtrise d'oeuvre pour la construction de 6 pavillons sociaux - lotissement les prats à saint etienne vallee francaise (48330)",
+        "codeCPV": "71221000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "48330",
+          "typeCode": "Code arrondissement"
+        },
+        "dureeMois": 18,
+        "dateNotification": "2024-04-23",
+        "datePublicationDonnees": "2024-12-05",
+        "montant": 55250.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": false,
+        "offresRecues": "test",
+        "marcheInnovant": false,
+        "ccag": "Maitrise d'œuvre",
+        "sousTraitanceDeclaree": false,
+        "typeGroupementOperateurs": "Conjoint",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "33795319400038"
+            }
+          },
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "41255646600024"
+            }
+          },
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "91971762900019"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif ferme"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "026-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "Mise en place d'ÉlÉments connectÉs sur 4 ensembles de b'timents",
+        "codeCPV": "45310000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 3,
+        "dateNotification": "2024-09-02",
+        "datePublicationDonnees": "test",
+        "montant": 45083.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Travaux",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "36480088800034"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif ferme"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "033-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 2 : Isolation Thermique Extérieure - Peinture",
+        "codeCPV": "45321000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code commune"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 196170.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "94827809800017"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "034-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 3 : Couverture - Zinguerie",
+        "codeCPV": "45261210",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 128263.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "53147538200028"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "035-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 4 : Menuiseries Extérieures PVC",
+        "codeCPV": "45421000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 98146.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "52747685700034"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "036-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 5 : Menuiseries Intérieures",
+        "codeCPV": "45421000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 34922.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "65728045900022"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "037-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 6 : Serrurerie",
+        "codeCPV": "44316500",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 33770.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "81306093600016"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "038-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 7 : Chauffage - Sanitaire - Ventillation",
+        "codeCPV": "45331000-4",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 410060.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "49820595400023"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "039-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 8 : Electricité",
+        "codeCPV": "45000000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 69932.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "93415709000010"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "040-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 9 : Peintures Intérieures - Sols Souples",
+        "codeCPV": "44810000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 28523.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "82756069900023"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "041-2024",
+        "acheteur": {
+          "id": "89420645700018"
+        },
+        "nature": "Marché",
+        "objet": "RÉhabilitation thermique 18 logements 2-4 rue du champs de mars 66-68 rue foch - sarreguemines: Lot 10 : VRD",
+        "codeCPV": "45223300",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "57200",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 8,
+        "dateNotification": "2024-11-20",
+        "datePublicationDonnees": "test",
+        "montant": 193129.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "32585735700264"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "1018747",
+        "acheteur": {
+          "id": "28741020300015"
+        },
+        "nature": "Marché",
+        "objet": "Acquisition de défibrillateurs semi-automatiques et accessoires",
+        "codeCPV": "33182100",
+        "procedure": "Appel d'offres ouvert",
+        "lieuExecution": {
+          "code": "74966",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 41,
+        "dateNotification": "2024-08-05",
+        "datePublicationDonnees": "test",
+        "montant": 400000.0,
+        "formePrix": "Unitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Fournitures courantes et services",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "54722013700012"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Bons de commande"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Accord-cadre"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif révisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "idAccordCadre": "2024-116",
+        "origineUE": 1.0,
+        "origineFrance": 1.0
+      },
+      {
+        "id": "13033460-1",
+        "acheteur": {
+          "id": "21130033000019"
+        },
+        "nature": "Marché",
+        "objet": "Entretien des espaces verts publics de la commune d'Ensuès la Redonne : Le lot 1 concerne l'entretien des espaces verts",
+        "codeCPV": "77310000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "13820",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 24,
+        "dateNotification": "2024-07-26",
+        "datePublicationDonnees": "test",
+        "montant": 126000.0,
+        "formePrix": "Mixte",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Fournitures courantes et services",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "44386671000017"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif révisable"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "13033460-2",
+        "acheteur": {
+          "id": "21130033000019"
+        },
+        "nature": "Marché",
+        "objet": "Entretien des espaces verts publics de la commune d'Ensuès la Redonne : Le lot 2 concerne la plantation d'arbres et le fleurissement.",
+        "codeCPV": "77310000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "13820",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 24,
+        "dateNotification": "2024-07-26",
+        "datePublicationDonnees": "test",
+        "montant": 30000.0,
+        "formePrix": "Unitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Fournitures courantes et services",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "48342595500034"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif ferme"
+          ]
+        },
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "16-26710",
+        "acheteur": {
+          "id": "32791063400069"
+        },
+        "nature": "Marché",
+        "objet": "Marché de maitrise d'oeuvre pour l'aménagement du secteur des hirondelles à bully les mines pour la réalisation de 200 logements",
+        "codeCPV": "71222000",
+        "procedure": "Appel d'offres ouvert",
+        "lieuExecution": {
+          "code": "62160",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 144,
+        "dateNotification": "2016-04-05",
+        "datePublicationDonnees": "test",
+        "montant": 92800.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Maitrise d'œuvre",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "48962613500292"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif ferme"
+          ]
+        },
+        "modifications": [
+          {
+            "modification": {
+              "id": 1,
+              "montant": 118000,
+              "dateNotificationModification": "2024-03-07",
+              "datePublicationDonneesModification": "2024-10-04"
+            }
+          }
+        ],
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "18-234",
+        "acheteur": {
+          "id": "45220075100025"
+        },
+        "nature": "Marché",
+        "objet": "Mission de maîtrise d'oeuvre pour la construction de 23 logements locatifs sociaux et 3 logements en accession aidée à GEVEZE - ZAC La Croix du Vivier - Ilot F",
+        "codeCPV": "71000000",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "35850",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 36,
+        "dateNotification": "2018-09-13",
+        "datePublicationDonnees": "test",
+        "montant": 151336.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "49907234600020"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Provisoire"
+          ]
+        },
+        "modifications": [
+          {
+            "modification": {
+              "id": 1,
+              "montant": 181736,
+              "dateNotificationModification": "2024-08-02",
+              "datePublicationDonneesModification": "2024-08-02"
+            }
+          }
+        ],
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "18-303",
+        "acheteur": {
+          "id": "45220075100025"
+        },
+        "nature": "Marché",
+        "objet": "Marché de maîtrise d'oeuvre pour la réhabilitation de 144 logements collectifs locatifs sociaux à RENNES - 47 à 53 rue Champion de Cicé \"Le Grand Bleu\"",
+        "codeCPV": "71000000",
+        "procedure": "Procédure avec négociation",
+        "lieuExecution": {
+          "code": "35000",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 58,
+        "dateNotification": "2018-12-20",
+        "datePublicationDonnees": "test",
+        "montant": 286608.0,
+        "formePrix": "Forfaitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "48077430600025"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Sans objet"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Provisoire"
+          ]
+        },
+        "modifications": [
+          {
+            "modification": {
+              "id": 1,
+              "montant": 462824,
+              "dateNotificationModification": "2024-11-19",
+              "datePublicationDonneesModification": "2024-11-19"
+            }
+          }
+        ],
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      },
+      {
+        "id": "19-34626",
+        "acheteur": {
+          "id": "32791063400069"
+        },
+        "nature": "Marché",
+        "objet": "Travaux de voiries, assainissement, réseaux divers et espaces verts de la ZAC Multisites à Saint Martin Boulogne - Secteur Marlborough Nord - LOT 2 - RESEAUX DIVERS",
+        "codeCPV": "45231112",
+        "procedure": "Procédure adaptée",
+        "lieuExecution": {
+          "code": "62280",
+          "typeCode": "Code postal"
+        },
+        "dureeMois": 91,
+        "dateNotification": "2019-04-18",
+        "datePublicationDonnees": "test",
+        "montant": 374603.0,
+        "formePrix": "Unitaire",
+        "attributionAvance": "test",
+        "offresRecues": "test",
+        "marcheInnovant": "test",
+        "ccag": "Pas de CCAG",
+        "sousTraitanceDeclaree": "test",
+        "typeGroupementOperateurs": "Pas de groupement",
+        "titulaires": [
+          {
+            "titulaire": {
+              "typeIdentifiant": "SIRET",
+              "id": "42166441800066"
+            }
+          }
+        ],
+        "considerationsSociales": {
+          "considerationSociale": [
+            "Pas de considération sociale"
+          ]
+        },
+        "considerationsEnvironnementales": {
+          "considerationEnvironnementale": [
+            "Pas de considération environnementale"
+          ]
+        },
+        "modalitesExecution": {
+          "modaliteExecution": [
+            "Tranches"
+          ]
+        },
+        "techniques": {
+          "technique": [
+            "Sans objet"
+          ]
+        },
+        "typesPrix": {
+          "typePrix": [
+            "Définitif actualisable"
+          ]
+        },
+        "modifications": [
+          {
+            "modification": {
+              "dateNotificationModification": "2024-08-19",
+              "montant": 428824,
+              "id": 1,
+              "datePublicationDonneesModification": "2024-10-07"
+            }
+          }
+        ],
+        "source": "e-marchespublics",
+        "tauxAvance": 0.0,
+        "origineUE": 0.0,
+        "origineFrance": 0.0
+      }
+    ]
+  }
+}
