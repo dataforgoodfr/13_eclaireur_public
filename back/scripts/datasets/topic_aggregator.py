@@ -2,6 +2,7 @@ import copy
 import logging
 import re
 import ssl
+from datetime import datetime, timezone
 from collections import Counter
 from pathlib import Path
 
@@ -105,6 +106,7 @@ class TopicAggregator(DatasetAggregator):
                 "title": "Role de la subventio (investissement / fonctionnement)",
             }
         ]
+
         self.official_topic_schema = pd.concat(
             [schema_df, pd.DataFrame(extra_concepts)], ignore_index=True
         ).assign(lower_name=lambda df: df["name"].str.lower())
@@ -166,7 +168,7 @@ class TopicAggregator(DatasetAggregator):
         self._flag_inversion_siret(df, file_metadata)
         self._flag_extra_columns(df, file_metadata)
         return (
-            df.pipe(self._select_official_columns)
+            df.pipe(self._select_official_columns)  
             .pipe(self._add_metadata, file_metadata)
             .pipe(self._clean_missing_values, file_metadata)
             .rename(columns=to_snake_case)
@@ -185,10 +187,14 @@ class TopicAggregator(DatasetAggregator):
 
         if "dateConvention" in df.columns:
             optional_features["annee"] = df["dateConvention"].dt.year
+
+        current_date = datetime.now(timezone.utc).date().isoformat()
+
         return df.assign(
             topic=self.topic,
             url=file_metadata.url,
             coll_type=file_metadata.type,
+            date_mise_a_jour=current_date,
             **optional_features,
         )
 
@@ -236,6 +242,7 @@ class TopicAggregator(DatasetAggregator):
         """
         columns = [x for x in self.official_topic_schema["name"] if x in frame.columns]
         return frame[columns]
+
 
     @staticmethod
     def _flag_inversion_siret(df: pd.DataFrame, file_metadata: PandasRow) -> None:

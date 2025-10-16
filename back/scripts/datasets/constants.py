@@ -76,6 +76,8 @@ TOPIC_IGNORE_EXTRA_COLUMNS = [
     "cscollnom",
     "cscollsiret",
     "csmodificationdate",
+    "date de mise a jour du fichier",
+    "date_mise_a_jour",
     "datasetid",
     "date 8",
     "date 9",
