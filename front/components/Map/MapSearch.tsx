@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { ViewState } from 'react-map-gl/maplibre';
 
 import { Loader2, Search, X } from 'lucide-react';
 
 import { MAPTILER_API_KEY } from './constants';
+import { useMapUrlState } from './hooks/useMapUrlState';
 
 interface GeocodingFeature {
   id: string;
@@ -38,12 +38,8 @@ interface FrenchGovResponse {
   features: FrenchGovFeature[];
 }
 
-interface MapSearchProps {
-  setViewState: (vs: Partial<ViewState>) => void;
-  onSearchComplete?: () => void;
-}
-
-export default function MapSearch({ setViewState, onSearchComplete }: MapSearchProps) {
+export default function MapSearch() {
+  const [, setUrlState] = useMapUrlState();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GeocodingFeature[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -176,22 +172,17 @@ export default function MapSearch({ setViewState, onSearchComplete }: MapSearchP
 
   const handleResultClick = (feature: GeocodingFeature) => {
     const [longitude, latitude] = feature.center;
-    setViewState({
-      longitude,
-      latitude,
-      zoom: 11,
+
+    // Update URL state directly (map will react via useEffect in FranceMap)
+    setUrlState({
+      lat: Math.round(latitude * 10000) / 10000,
+      lng: Math.round(longitude * 10000) / 10000,
+      level: 'communes',
     });
+
     setQuery('');
     setResults([]);
     setShowResults(false);
-
-    // Trigger callback to update visible codes after viewState change
-    // Use setTimeout to ensure the map has finished transitioning
-    if (onSearchComplete) {
-      setTimeout(() => {
-        onSearchComplete();
-      }, 500);
-    }
   };
 
   const handleClear = () => {

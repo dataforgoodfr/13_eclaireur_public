@@ -1,3 +1,3 @@
 type;url;format
-regions;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-regions-fichier-global/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
-departements;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-departements-et-des-collectivites-territoriales-uniques0/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+regions;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-regions-fichier-global-2021-2024/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+departements;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-departements-et-des-collectivites-territoriales-uniques-fichier-global-2021-2022/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet

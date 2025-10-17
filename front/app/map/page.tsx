@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import type { Metadata } from 'next';
 
 import MapLayout from '#components/Map/MapLayout';
@@ -11,7 +13,13 @@ export const metadata: Metadata = {
 export default async function MapPage() {
   return (
     <div className='flex w-full flex-row'>
-      <MapLayout />
+      <Suspense
+        fallback={
+          <div className='flex h-screen w-full items-center justify-center'>Chargement...</div>
+        }
+      >
+        <MapLayout />
+      </Suspense>
     </div>
   );
 }

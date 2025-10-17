@@ -8,5 +8,6 @@ export function useRegions(regionCodes: string[], year: number) {
     queryFn: () => fetchRegionsByCode(regionCodes, year),
     enabled: regionCodes.length > 0,
     staleTime: 1000 * 60 * 10,
+    placeholderData: (previousData) => previousData,
   });
 }

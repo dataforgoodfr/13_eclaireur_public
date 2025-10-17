@@ -1,4 +1,4 @@
-import type { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchOrder } from '#app/api/advanced_search/advancedSearchUtils';
 import type { AdvancedSearchCommunity, Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
 import type { CommunityType } from '#utils/types';
@@ -57,20 +57,9 @@ export function createSQLQueryParams(
   // Use the most recent year available in the bareme table (2024)
   const recentYear = 2024;
 
-  let query = `
-    SELECT ${selectorsStringified},
-      b.mp_score,
-      b.subventions_score,
-      b.annee, 
-      NULL as subventions_budget,
-      count(*) OVER()::real AS total_row_count
-    FROM ${COMMUNITIES} c
-    LEFT JOIN ${BAREME} b ON c.siren = b.siren AND b.annee = $${values.length + 1}
-    WHERE c.nom IS NOT NULL
-    `;
-
   values.push(recentYear);
 
+  let whereCondition = ' WHERE c.nom IS NOT NULL';
   const additionalConditions = [];
 
   if (type) {
@@ -91,8 +80,20 @@ export function createSQLQueryParams(
   }
 
   if (additionalConditions.length > 0) {
-    query += ` AND ${additionalConditions.join(' AND ')}`;
+    whereCondition += ` AND ${additionalConditions.join(' AND ')}`;
   }
+
+  let query = `
+    SELECT ${selectorsStringified},
+      b.mp_score,
+      b.subventions_score,
+      b.annee, 
+      NULL as subventions_budget,
+      (SELECT COUNT(*) FROM ${COMMUNITIES} c ${whereCondition}) AS total_row_count
+    FROM ${COMMUNITIES} c
+    LEFT JOIN ${BAREME} b ON c.siren = b.siren AND b.annee = $1
+    ${whereCondition}
+    `;
 
   // Map order by fields to correct aliases
   const orderByMapping: Record<string, string> = {

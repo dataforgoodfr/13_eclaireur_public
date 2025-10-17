@@ -1,4 +1,4 @@
-import { AdvancedSearchOrder } from '#app/advanced-search/hooks/useOrderParams';
+import { AdvancedSearchOrder } from '#app/api/advanced_search/advancedSearchUtils';
 import { AdvancedSearchCommunity } from '#app/models/community';
 
 import { Pagination } from '../types';

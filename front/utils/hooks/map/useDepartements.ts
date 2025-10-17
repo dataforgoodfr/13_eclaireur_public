@@ -8,5 +8,6 @@ export function useDepartements(departementCodes: string[], year: number) {
     queryFn: () => fetchDepartementsByCode(departementCodes, year),
     enabled: departementCodes.length > 0,
     staleTime: 1000 * 60 * 10,
+    placeholderData: (previousData) => previousData,
   });
 }

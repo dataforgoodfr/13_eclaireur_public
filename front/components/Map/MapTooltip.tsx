@@ -4,11 +4,36 @@ import type { Community } from '#app/models/community';
 import {
   SCORE_TO_ADJECTIF,
   SCORE_TRANSPARENCY_COLOR,
+  type TransparencyScore,
 } from 'components/TransparencyScore/constants';
 import { X } from 'lucide-react';
 
 import type { HoverInfo } from './types';
 import getCommunityDataFromFeature from './utils/getCommunityDataFromFeature';
+
+interface ScoreDisplayProps {
+  label: string;
+  score: TransparencyScore | null | undefined;
+}
+
+function ScoreDisplay({ label, score }: ScoreDisplayProps) {
+  const displayScore = score || 'UNKNOWN';
+  return (
+    <div className='flex flex-col gap-1'>
+      <p className='font-kanit-bold text-sm text-primary'>{label}</p>
+      <div className='flex flex-row items-center gap-2'>
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-tl-br ${SCORE_TRANSPARENCY_COLOR[displayScore]}`}
+        >
+          <span className='font-kanit-bold text-[24px] font-bold leading-[24px]'>
+            {score || '?'}
+          </span>
+        </div>
+        <p className='font-kanit-bold text-sm text-primary'>{SCORE_TO_ADJECTIF[displayScore]}</p>
+      </div>
+    </div>
+  );
+}
 
 interface MapTooltipProps {
   hoverInfo: HoverInfo | null;
@@ -16,6 +41,15 @@ interface MapTooltipProps {
   mapLimit?: { x: number; y: number };
   isMobile?: boolean;
   onClose?: () => void;
+}
+
+// Helper function to convert text to title case
+function toTitleCase(text: string): string {
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 export default function MapTooltip({
@@ -30,6 +64,8 @@ export default function MapTooltip({
 
   const { feature, x, y } = hoverInfo;
   const data = getCommunityDataFromFeature(feature, communityMap);
+  const titleText = data?.nom || feature.properties?.name || '-';
+  const formattedTitle = titleText !== '-' ? toTitleCase(titleText) : titleText;
   const minWidth = 300;
   const tooltipBoundingRect = tooltipRef.current?.getBoundingClientRect();
   const isOutsideMapX = mapLimit && tooltipBoundingRect && x > mapLimit.x - minWidth;
@@ -60,70 +96,34 @@ export default function MapTooltip({
         {/* Close button for mobile */}
         {isMobile && onClose && (
           <button
+            type='button'
             onClick={onClose}
             className='absolute right-2 top-2 rounded-full p-1 hover:bg-gray-100'
           >
             <X className='h-4 w-4 text-gray-500' />
           </button>
         )}
-        <h4 className='mb-2'>{data?.nom || feature.properties?.name || '-'}</h4>
+        <h4 className='mb-4 text-xl font-semibold'>{formattedTitle}</h4>
         <div className='flex flex-col gap-2'>
           <div className='grid w-2/3 grid-cols-2 gap-x-2'>
-            <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
+            <p className='leading-2xl font-kanit-bold text-base font-light text-primary'>
               Population
             </p>
-            <p className='text-right font-kanit-bold text-[16px] font-bold leading-[24px] text-primary'>
+            <p className='leading-2xl text-right font-kanit-bold text-base font-bold text-primary'>
               {data?.population?.toLocaleString() ?? '-'}
             </p>
-            <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-              Siren
-            </p>
-            <p className='text-right font-kanit-bold text-[16px] font-bold leading-[24px] text-primary'>
+            <p className='leading-2xl font-kanit-bold text-base font-light text-primary'>Siren</p>
+            <p className='leading-2xl text-right font-kanit-bold text-base font-bold text-primary'>
               {data?.siren ?? '-'}
             </p>
-            <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-              Code
-            </p>
-            <p className='text-right font-kanit-bold text-[16px] font-bold leading-[24px] text-primary'>
+            <p className='leading-2xl font-kanit-bold text-base font-light text-primary'>Code</p>
+            <p className='leading-2xl text-right font-kanit-bold text-base font-bold text-primary'>
               {data?.code_insee ?? '-'}
             </p>
           </div>
           <div className='grid grid-cols-2 gap-x-4'>
-            <div className='flex flex-col'>
-              <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-                Subventions :
-              </p>
-              <div className='flex flex-row items-center'>
-                <div
-                  className={`flex size-[38px] items-center justify-center rounded-tl-br ${SCORE_TRANSPARENCY_COLOR[data?.subventions_score || 'UNKNOWN']}`}
-                >
-                  <span className='font-kanit-bold text-[28px] font-bold leading-[24px]'>
-                    {data?.subventions_score || '?'}
-                  </span>
-                </div>
-                <p className='ml-2 font-kanit-bold text-[16px] font-bold leading-[24px]'>
-                  {SCORE_TO_ADJECTIF[data?.subventions_score || 'UNKNOWN']}
-                </p>
-              </div>
-            </div>
-
-            <div className='flex flex-col'>
-              <p className='font-kanit-bold text-[16px] font-light leading-[24px] text-primary'>
-                Marchés publics :
-              </p>
-              <div className='flex flex-row items-center'>
-                <div
-                  className={`flex size-[38px] items-center justify-center rounded-tl-br ${SCORE_TRANSPARENCY_COLOR[data?.mp_score || 'UNKNOWN']}`}
-                >
-                  <span className='font-kanit-bold text-[28px] font-bold leading-[24px]'>
-                    {data?.mp_score || '?'}
-                  </span>
-                </div>
-                <p className='ml-2 font-kanit-bold text-[16px] font-bold leading-[24px]'>
-                  {SCORE_TO_ADJECTIF[data?.mp_score || 'UNKNOWN']}
-                </p>
-              </div>
-            </div>
+            <ScoreDisplay label='Marchés publics' score={data?.mp_score} />
+            <ScoreDisplay label='Subventions' score={data?.subventions_score} />
           </div>
           {/* Mobile: Add link to community page */}
           {isMobile && data?.siren && (
