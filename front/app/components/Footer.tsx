@@ -197,7 +197,7 @@ const Footer: FC = () => (
               <div className='flex flex-1 flex-col space-y-2'>
                 <h3 className='mb-2 text-sm font-bold text-secondary-dark'>Vous êtes un élu ?</h3>
                 <Link
-                  href='https://www.eclaireurpublic.fr/aide-aux-elus'
+                  href='/aide-aux-elus'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='font-semibold text-primary underline transition-colors hover:text-primary'
@@ -216,7 +216,7 @@ const Footer: FC = () => (
                   Data.gouv.fr
                 </Link>
                 <Link
-                  href='https://publieretalab.studio/fr'
+                  href='https://publier.etalab.studio/fr'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='font-semibold text-primary underline transition-colors hover:text-primary'

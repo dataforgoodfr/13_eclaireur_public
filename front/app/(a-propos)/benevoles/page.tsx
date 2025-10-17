@@ -15,7 +15,7 @@ export default function Remerciement() {
       <SectionHeader sectionTitle='Remerciements' />
       <div className='section-format'>
         <h2 className='mb-8'>
-          Un immense à notre dream team{' '}
+          Un immense merci à notre dream team{' '}
           <Sparkles className='align-text-center ml-1 inline text-secondary-400 md:align-text-top' />
         </h2>
         <p>Éclaireur Public, c’est avant tout une aventure humaine 💜</p>
