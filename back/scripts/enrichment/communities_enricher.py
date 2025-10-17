@@ -29,6 +29,9 @@ class CommunitiesEnricher(BaseEnricher):
     def _clean_and_enrich(cls, inputs: list[pl.DataFrame]) -> pl.DataFrame:
         communities, bareme, subventions, marches_publics = inputs
 
+        # Conserve une ligne par marche public et ses attributs
+        marches_publics = cls.get_uniques_marches_publics(marches_publics)
+
         # Uniformise les noms des collectivités selon leur type
         communities = cls.uniformiser_noms(communities)
 
@@ -258,3 +261,17 @@ class CommunitiesEnricher(BaseEnricher):
         )
 
         return communities
+
+    @classmethod
+    def get_uniques_marches_publics(cls, marches_publics: pl.DataFrame) -> pl.DataFrame:
+        """
+        Ne conserve qu'une ligne par marche public avec son montant et d'autres colonnes
+        """
+
+        return (
+            marches_publics.select(
+                ["id_mp", "montant_du_marche_public", "acheteur_id", "annee_notification"]
+            )
+            .unique(["id_mp"])
+            .rename({"montant_du_marche_public": "montant"})
+        )
