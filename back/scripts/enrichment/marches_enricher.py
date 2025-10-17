@@ -67,12 +67,16 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(normalize_date, "dateNotification")
             .pipe(normalize_identifiant, "acheteur_id", IdentifierFormat.SIREN)
             .pipe(cls._add_metadata)
-            .assign(montant=lambda df: df["montant"] / df["countTitulaires"].fillna(1))
+            .rename(columns={"montant": "montant_du_marche_public"})
+            .assign(
+                montant_du_marche_public_par_titulaire=lambda df: df["montant_du_marche_public"]
+                / df["countTitulaires"].fillna(1)
+            )
         )
 
         return (
             pl.from_pandas(marches_pd)
-            .pipe(cls.generate_new_id)
+            .pipe(cls.generate_id_mp_index)
             .pipe(cls.forme_prix_enrich)
             .pipe(cls.type_identifiant_titulaire_enrich)
             .pipe(
@@ -169,7 +173,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             else:
                 return [x]  # wrap dans une liste
         if isinstance(x, list):
-            if len(x) > 0:
+            if (len(x) > 0) and (isinstance(x[0], list)):
                 return MarchesPublicsEnricher.ensure_list_of_dicts(x[0])  # déjà une liste
             else:
                 return x
@@ -586,7 +590,7 @@ class MarchesPublicsEnricher(BaseEnricher):
         )
 
     @staticmethod
-    def generate_new_id(marches: pl.DataFrame) -> pl.DataFrame:
+    def generate_id_mp_index(marches: pl.DataFrame) -> pl.DataFrame:
         """
         Génère un nouvel id unique, entier, pour chaque MP
         Car le hash de id_mp est trop lourd pour la BDD
@@ -595,15 +599,13 @@ class MarchesPublicsEnricher(BaseEnricher):
         id_mapping = (
             marches.select("id_mp")
             .unique()
-            .with_row_index(name="id")  # génère l'entier par valeur unique
+            .with_row_index(name="id_mp_integer")  # génère l'entier par valeur unique
         )
 
-        # Pour le moment la colonne id est remplacée par la colonne id_mp qui est l'id unique par marché public (créé par nous), car le front attend un id.
-        # Il faudra éventuellement changer cette fonction et garder les id, uid, et uuid d'origine car ils permettent de retrouver les marchés publics sur les plateformes en ligne.
         return (
-            marches.drop(["id"])
-            .join(id_mapping, on="id_mp", how="left")
-            .drop(["id_mp", "uid", "uuid"])
+            marches.join(id_mapping, on="id_mp", how="left")
+            .drop("id_mp")
+            .rename({"id_mp_integer": "id_mp"})
         )
 
     @staticmethod
@@ -612,5 +614,6 @@ class MarchesPublicsEnricher(BaseEnricher):
         Supprime les lignes où 'date_publication_donnees' ou 'montant' sont nulles.
         """
         return marches.filter(
-            pl.col("date_publication_donnees").is_not_null() & pl.col("montant").is_not_null()
+            pl.col("date_publication_donnees").is_not_null()
+            & pl.col("montant_du_marche_public").is_not_null()
         )
