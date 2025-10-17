@@ -47,7 +47,8 @@ const FOOTER_DATA = {
       links: [
         { href: '/contact', label: 'Contact' },
         { href: '/faq', label: 'FAQ' },
-        { href: '/cookies', label: 'Gérer mes cookies' },
+        // Pas d'analytics et de cookies pour l'instant
+        // { href: '/cookies', label: 'Gérer mes cookies' },
       ],
     },
   ],
