@@ -13,28 +13,33 @@ function createSQLQueryParams(
   comparisonType: ComparisonType,
 ): [string, (string | number)[]] {
   const values = [siren, year];
-  let tableName, sirenProperty, yearProperty, labelProperty: string;
+  let tableName, sirenProperty, yearProperty, labelProperty, montantProperty: string;
+  let distinctClause = '';
   switch (comparisonType) {
     case ComparisonType.Marches_Publics:
       tableName = MARCHES_PUBLICS_TABLE_NAME;
       sirenProperty = 'acheteur_id';
       yearProperty = 'annee_notification';
       labelProperty = 'cpv_2_label';
+      montantProperty = 'montant_du_marche_public';
+      distinctClause = 'DISTINCT ON (id_mp)';
       break;
     case ComparisonType.Subventions:
       tableName = SUBVENTIONS_TABLE_NAME;
       sirenProperty = 'id_attribuant';
       yearProperty = 'annee';
       labelProperty = 'objet';
+      montantProperty = 'montant';
       break;
   }
 
   const querySQL = `
 WITH filtered_data AS (
     SELECT
+        ${distinctClause}
         ${sirenProperty} as siren,
         ${yearProperty} as year,
-        montant as amount, 
+        ${montantProperty} as amount, 
         ${labelProperty} as label
     FROM
         ${tableName}

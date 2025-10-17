@@ -6,7 +6,7 @@ function getAPIRoute(communitySiren: string) {
   return `/api/communities/${communitySiren}/marches_publics/paginated`;
 }
 
-const DEFAULT_BY: keyof MarchePublic = 'montant';
+const DEFAULT_BY: keyof MarchePublic = 'montant_du_marche_public';
 
 /**
  * Fetch the top marches publics by amount with pagination

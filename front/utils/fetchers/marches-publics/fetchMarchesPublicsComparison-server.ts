@@ -32,11 +32,11 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
     community_data AS (
       SELECT 
         mp.annee_notification as year,
-        SUM(mp.montant) as community_amount
+        SUM(mp.montant_du_marche_public_par_titulaire) as community_amount
       FROM ${TABLE_NAME} mp
       WHERE mp.acheteur_id = $1
       AND mp.annee_notification IS NOT NULL
-      AND mp.montant IS NOT NULL
+      AND mp.montant_du_marche_public_par_titulaire IS NOT NULL
       AND mp.annee_notification >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
       GROUP BY mp.annee_notification
     ),
@@ -48,11 +48,11 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
         SELECT 
           mp.annee_notification as year,
           mp.acheteur_id,
-          SUM(mp.montant) as total_amount
+          SUM(mp.montant_du_marche_public_par_titulaire) as total_amount
         FROM ${TABLE_NAME} mp
         INNER JOIN ${COMMUNITIES_TABLE} c ON mp.acheteur_id = c.siren
         WHERE mp.annee_notification IS NOT NULL
-        AND mp.montant IS NOT NULL  
+        AND mp.montant_du_marche_public_par_titulaire IS NOT NULL  
         AND mp.annee_notification >= EXTRACT(YEAR FROM CURRENT_DATE) - 7
         AND c.type = (SELECT type FROM ${COMMUNITIES_TABLE} WHERE siren = $2)
         ${scopeCondition ? `AND c.${scopeCondition} = (SELECT ${scopeCondition} FROM ${COMMUNITIES_TABLE} WHERE siren = $3)` : ''}

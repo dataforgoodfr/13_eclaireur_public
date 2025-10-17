@@ -22,8 +22,8 @@ export function createSQLQueryParams(
       cpv_2, 
       cpv_2_label,
       objet,
-      SUM(montant) AS montant,
-      SUM(SUM(montant)) OVER () AS grand_total,
+      SUM(montant_du_marche_public_par_titulaire) AS montant,
+      SUM(SUM(montant_du_marche_public_par_titulaire)) OVER () AS grand_total,
       count(*) OVER()::integer AS total_row_count
     FROM ${TABLE_NAME}
     WHERE acheteur_id = $1`;
@@ -34,7 +34,7 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY cpv_2, cpv_2_label, objet';
-  if (maxAmount !== undefined) query += ` HAVING SUM(montant) <= ${maxAmount}`;
+  if (maxAmount !== undefined) query += ` HAVING SUM(montant_du_marche_public_par_titulaire) <= ${maxAmount}`;
 
   query += ' ORDER BY montant DESC';
 
