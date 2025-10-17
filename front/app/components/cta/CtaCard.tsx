@@ -29,7 +29,7 @@ export default function CtaCard({
       href={href}
       className={`box-border flex h-full w-full flex-col justify-between gap-4 rounded-br-xl rounded-tl-xl shadow-md ${colorClassName} transition-all duration-300 hover:translate-y-[-10px]`}
     >
-      <div className='p-5'>
+      <div className='flex h-full flex-col justify-between p-3'>
         <div className='flex flex-col'>
           {/* Mobile */}
           <Image src={picto} alt={title} className='pb-2 md:hidden' width={40} height={40} />
@@ -39,7 +39,7 @@ export default function CtaCard({
           <p className={isCardBig ? 'mb-4 font-bold' : ''}>{caption}</p>
           {children}
         </div>
-        <div className='flex'>
+        <div className='my-5 flex justify-center tracking-tighter'>
           <span className='font-bold'>{buttonText}</span>
           <ChevronRight className='ms-2 transition-transform duration-300 group-hover:translate-x-1' />
         </div>
