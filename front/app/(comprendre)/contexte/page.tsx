@@ -156,8 +156,8 @@ export default function Page() {
               contribue aussi à instaurer un climat de confiance et de dialogue. En expliquant
               clairement leurs priorités budgétaires, les collectivités valorisent leurs actions et
               donnent aux habitant·es les moyens de mieux comprendre et d'interpeller, si
-              nécessaire, leurs représentants. Cette ouverture participe ainsi à une gouvernance
-              plus responsable, où les citoyen·nes deviennent acteurs de la vie publique.
+              nécessaire, leurs représentant·es. Cette ouverture participe ainsi à une gouvernance
+              plus responsable, où les citoyen·nes deviennent acteur·rices de la vie publique.
             </p>
           </Card>
 
@@ -178,7 +178,7 @@ export default function Page() {
               <br />
               Cette obligation vise à rendre l'action publique plus accessible, à renforcer le
               contrôle citoyen et à encourager la réutilisation de ces données par la société
-              civile, les chercheurs ou encore les journalistes.
+              civile, les chercheurs·ses ou encore les journalistes.
             </p>
             <p>
               Toutes les collectivités ne sont cependant pas soumises aux mêmes exigences. Les
