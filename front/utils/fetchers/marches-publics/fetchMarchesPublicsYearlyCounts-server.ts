@@ -11,7 +11,7 @@ function createSQLQueryParams(siren: string): [string, (string | number)[]] {
   const querySQL = `
     SELECT 
       DISTINCT annee_notification::integer AS year,
-      COUNT(*)::integer as count
+      COUNT(DISTINCT id_mp)::integer AS count
     FROM ${TABLE_NAME}
     WHERE acheteur_id = $1
     GROUP by year

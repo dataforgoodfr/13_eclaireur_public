@@ -12,12 +12,12 @@ export function createSQLQueryParams(year: number): [string, (string | number)[]
   const values = [year, MAX_MP_MONTANT];
   const query = `
     WITH mp_siren AS (
-      SELECT 
+      SELECT
           acheteur_id,
-          montant
+          montant_du_marche_public_par_titulaire as montant
       FROM ${MP_TABLE} mp
       WHERE annee_notification = $1
-      AND montant * count_titulaires < $2
+      AND montant_du_marche_public_par_titulaire * count_titulaires < $2
     )
     SELECT SUM(mps.montant)
     FROM mp_siren AS mps

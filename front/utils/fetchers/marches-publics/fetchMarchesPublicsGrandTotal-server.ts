@@ -6,7 +6,7 @@ const TABLE_NAME = DataTable.MarchesPublics;
 
 function createSQLQueryParams(): [string, (string | number)[]] {
   const querySQL = `
-    SELECT SUM(montant) AS grand_total
+    SELECT SUM(montant_du_marche_public_par_titulaire) AS grand_total
     FROM ${TABLE_NAME} 
 `;
 

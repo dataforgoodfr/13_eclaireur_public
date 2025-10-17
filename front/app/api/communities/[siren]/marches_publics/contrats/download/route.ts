@@ -28,9 +28,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
     }
 
     const stream = await getStream({
-      selectors: ['titulaire_denomination_sociale', 'objet', 'montant', 'annee_notification'],
+      selectors: ['titulaire_denomination_sociale', 'objet', 'montant_du_marche_public', 'annee_notification'],
       filters: { acheteur_id: siren, annee_notification: year },
-      orderBy: { direction: 'desc', column: 'montant' },
+      orderBy: { direction: 'desc', column: 'montant_du_marche_public' },
     });
 
     const headers = new Headers({

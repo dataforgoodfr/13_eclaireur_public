@@ -8,7 +8,7 @@ const JOINED_TABLE_NAME = DataTable.Communities;
 export function createSQLQueryParams(year: number): [string, (string | number)[]] {
   const values = [year];
   const querySQL = `
-    SELECT SUM(mp.montant) 
+    SELECT SUM(mp.montant_du_marche_public_par_titulaire) 
     FROM ${TABLE_NAME} AS mp
     INNER JOIN ${JOINED_TABLE_NAME} AS community ON community.siren = mp.acheteur_id
     WHERE mp.annee_notification = $1

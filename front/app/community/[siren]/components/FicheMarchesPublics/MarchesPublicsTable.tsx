@@ -78,11 +78,11 @@ export default function MarchesPublicsTable({ siren, year }: MarchesPublicsTable
       );
     }
 
-    const rows: Row[] = data.map(({ id, titulaire_names, objet, montant, annee_notification }) => ({
-      id,
+    const rows: Row[] = data.map(({ id_mp, titulaire_names, objet, montant_du_marche_public, annee_notification }) => ({
+      id: id_mp,
       names: titulaire_names,
       object: objet,
-      amount: montant,
+      amount: montant_du_marche_public,
       year: annee_notification,
     }));
 

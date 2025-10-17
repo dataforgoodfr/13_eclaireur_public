@@ -4,12 +4,13 @@ import type { Paginated } from './pagination';
 
 // TODO - add all keys
 export type MarchePublic = {
-  id: number;
+  id_mp: number;
   /** Siren acheteur (collectivite) */
   acheteur_id: string;
   objet: string;
   titulaire_denomination_sociale: string;
-  montant: number;
+  montant_du_marche_public: number;
+  montant_du_marche_public_par_titulaire: number;
   codecpv: string;
   cpv_8: string;
   cpv_8_label: string;
@@ -64,7 +65,7 @@ export type MarchePublicSector = Paginated<
 >;
 
 export type PaginatedMarchePublic = Paginated<
-  Pick<MarchePublic, 'id' | 'objet' | 'montant' | 'annee_notification'>
+  Pick<MarchePublic, 'id_mp' | 'objet' | 'montant_du_marche_public' | 'montant_du_marche_public_par_titulaire' | 'annee_notification'>
 > & {
   titulaire_names: string[];
 };
