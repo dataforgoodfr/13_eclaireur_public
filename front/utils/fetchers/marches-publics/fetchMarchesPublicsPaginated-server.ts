@@ -16,9 +16,9 @@ function createSQLQueryParams(
 
   let query = `
     SELECT 
-      id, 
+      id_mp as id, 
       objet, 
-      montant, 
+      montant_du_marche_public as montant, 
       annee_notification,
       ARRAY_AGG(titulaire_denomination_sociale) AS titulaire_names,
       count(*) OVER()::integer AS total_row_count
@@ -32,9 +32,9 @@ function createSQLQueryParams(
 
   query += `
     GROUP BY 
-      id, 
+      id_mp, 
       objet, 
-      montant,
+      montant_du_marche_public,
       annee_notification
     ORDER BY ${by} DESC
     `;
@@ -47,11 +47,11 @@ function createSQLQueryParams(
   return [query, values];
 }
 
-const DEFAULT_BY: keyof MarchePublic = 'montant';
+const DEFAULT_BY: keyof MarchePublic = 'montant_du_marche_public';
 
 /**
  * Fetch the marches publics paginated (SSR) with pagination
- * Default by montant
+ * Default by montant_du_marche_public
  */
 export async function fetchMarchesPublicsPaginated(
   siren: string,

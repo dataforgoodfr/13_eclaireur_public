@@ -10,8 +10,8 @@ function createSQLQueryParams(siren: string): [string, (string | number)[]] {
 
   const querySQL = `
     SELECT 
-      DISTINCT annee_notification::integer AS year,
-      SUM(montant) as amount
+      annee_notification::integer AS year,
+      SUM(montant_du_marche_public_par_titulaire) as amount
     FROM ${TABLE_NAME}
     WHERE acheteur_id = $1
     GROUP by year

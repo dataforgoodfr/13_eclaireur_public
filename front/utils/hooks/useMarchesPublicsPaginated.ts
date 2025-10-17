@@ -9,7 +9,7 @@ const DEFAULT_PAGINATION: Pagination = {
   limit: 10,
 };
 
-const DEFAULT_BY: keyof MarchePublic = 'montant';
+const DEFAULT_BY: keyof MarchePublic = 'montant_du_marche_public';
 
 export function useMarchesPublicsPaginated(
   siren: string,

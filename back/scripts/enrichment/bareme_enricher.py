@@ -303,13 +303,37 @@ class BaremeEnricher(BaseEnricher):
         # Préparation des données marchés publics
         # Filtrage : uniquement acheteurs identifiés + période 2016+
         # Ajout indicateur booléen pour obligation de publication
-        marches = marches_publics.filter(
-            pl.col("acheteur_id").is_not_null() & (pl.col("annee_notification") >= 2016)
-        ).with_columns(
-            pl.when(pl.col("obligation_publication") == "Obligatoire")
-            .then(1)  # Marché soumis à obligation
-            .otherwise(0)  # Marché publié volontairement
-            .alias("obligation_publication_bool")
+        # Group by des données par marché public
+        marches = (
+            marches_publics.filter(
+                pl.col("acheteur_id").is_not_null() & (pl.col("annee_notification") >= 2016)
+            )
+            .with_columns(
+                pl.when(pl.col("obligation_publication") == "Obligatoire")
+                .then(1)  # Marché soumis à obligation
+                .otherwise(0)  # Marché publié volontairement
+                .alias("obligation_publication_bool")
+            )
+            .group_by(
+                [
+                    "acheteur_id",
+                    "annee_notification",
+                    "obligation_publication",
+                    "id_mp",
+                    "montant_du_marche_public",
+                    "delai_publication_jours",
+                    "date_notification",
+                    "cpv_8",
+                    "lieu_execution_nom",
+                    "forme_prix",
+                    "objet",
+                    "nature",
+                    "duree_mois",
+                    "procedure",
+                    "obligation_publication_bool",
+                ]
+            )
+            .agg(pl.col("titulaire_id").unique().alias("titulaire_id_liste"))
         )
 
         # Construction table de référence (comme pour subventions)
@@ -331,9 +355,9 @@ class BaremeEnricher(BaseEnricher):
         # Comptage et vérification de complétude des champs obligatoires
         bareme_information = merged_marches.group_by(["siren", "annee"]).agg(
             [
-                pl.count("id").alias("nombre_de_marches"),  # Nombre total
+                pl.count("id_mp").alias("nombre_de_marches"),  # Nombre total
                 pl.sum("obligation_publication_bool"),  # Marchés obligatoires
-                pl.sum("montant"),  # Montant total
+                pl.sum("montant_du_marche_public"),  # Montant total du marche public
                 pl.median("delai_publication_jours"),  # Délai médian publication
                 # Comptage champs renseignés (pour évaluer complétude)
                 *[
@@ -347,7 +371,7 @@ class BaremeEnricher(BaseEnricher):
                         "nature",  # Nature du marché
                         "duree_mois",  # Durée
                         "procedure",  # Procédure utilisée
-                        "titulaire_id",  # Titulaire
+                        "titulaire_id_liste",  # Liste des titulaires par marché public
                     ]
                 ],
             ]
@@ -367,7 +391,7 @@ class BaremeEnricher(BaseEnricher):
                 # Critère B : Complétude des données essentielles
                 # Tous les champs critiques doivent être renseignés
                 (
-                    (pl.col("montant") > 0)
+                    (pl.col("montant_du_marche_public") > 0)
                     & (pl.col("date_notification").is_not_null())
                     & (pl.col("cpv_8").is_not_null())
                     & (pl.col("lieu_execution_nom").is_not_null())
@@ -376,7 +400,7 @@ class BaremeEnricher(BaseEnricher):
                     & (pl.col("nature").is_not_null())
                     & (pl.col("duree_mois").is_not_null())
                     & (pl.col("procedure").is_not_null())
-                    & (pl.col("titulaire_id").is_not_null())
+                    & (pl.col("titulaire_id_liste").is_not_null())
                 )
                 .cast(pl.Int8)
                 .alias("B"),
