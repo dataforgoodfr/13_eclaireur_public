@@ -69,7 +69,7 @@ export default function MessageToContacts({
           www.eclaireurpublic.fr
         </Link>
       </p>
-      <p>
+      <div>
         <span className='font-bold'>Vous disposez bien entendu d’un droit de réponse. </span>
         &nbsp;Pour toute remarque, précision ou correction, vous pouvez contacter Anticor à :
         contact@anticor.com (adresse de contact dédiée).Pour améliorer le score de transparence de
@@ -90,7 +90,7 @@ export default function MessageToContacts({
             .
           </li>
         </ul>
-      </p>
+      </div>
       <p className='mb-4'>
         Pour plus d'informations, une page est dédiée sur le site :&nbsp;
         <Link className='underline' href='https://www.eclaireurpublic.fr/aide-aux-elus'>

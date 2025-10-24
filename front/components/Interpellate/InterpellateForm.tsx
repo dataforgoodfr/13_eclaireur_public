@@ -13,6 +13,7 @@ import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contex
 import { CommunityContact } from '#app/models/communityContact';
 import { Button } from '#components/ui/button';
 import { Checkbox } from '#components/ui/checkbox';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '#components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -22,9 +23,11 @@ import {
   FormMessage,
 } from '#components/ui/form';
 import { Input } from '#components/ui/input';
+import { Separator } from '#components/ui/separator';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
+import { eventNames } from 'process';
 
 import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
@@ -51,12 +54,15 @@ export default function InterpellateForm({
 }: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [email, setemail] = useState('');
   const router = useRouter();
   const {
     formState: { isSubmitting },
     setError,
   } = useForm();
   const { selectedContacts } = useSelectedContactsContext();
+  const [isConfirmSendModalOpen, setConfirmSendModalOpen] = useState(false);
+
   const recipientName = getRecipientName(selectedContacts);
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +70,9 @@ export default function InterpellateForm({
   };
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLastName(e.target.value);
+  };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setemail(e.target.value);
   };
 
   const fullName = `${firstName} ${lastName}`;
@@ -175,7 +184,11 @@ export default function InterpellateForm({
               <FormItem>
                 <FormLabel className='text-lg font-bold'>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Entrez votre adresse e-mail' {...field} />
+                  <Input
+                    placeholder='Entrez votre adresse e-mail'
+                    {...field}
+                    onInput={handleEmailChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -282,14 +295,53 @@ export default function InterpellateForm({
             )}
           />
 
-          <Button
-            size='lg'
-            type='submit'
-            disabled={isSubmitting}
-            className='mt-4 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
-          >
-            Envoyer le message <ChevronRight />
-          </Button>
+          <Dialog open={isConfirmSendModalOpen} onOpenChange={setConfirmSendModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size='lg'
+                className='mt-4 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
+              >
+                Envoyer le message <ChevronRight />
+              </Button>
+            </DialogTrigger>
+            <DialogContent
+              onCloseAutoFocus={(event) => event.preventDefault()} // Permits redirecting to errors after closing the modal
+              className='rounded-3xl sm:max-w-md md:max-w-3xl [&>button]:left-4 [&>button]:right-auto [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-bl-none [&>button]:rounded-br-lg [&>button]:rounded-tl-lg [&>button]:rounded-tr-none [&>button]:border [&>button]:border-primary [&>button]:bg-white [&>button]:text-primary [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground'
+            >
+              <DialogTitle className='sr-only'>Confirmer votre adresse e-mail</DialogTitle>
+              <div className='flex flex-col text-center'>
+                <h3 className='mt-7'>Confirmer votre adresse e-mail</h3>
+                <p className='mx-auto mt-2 w-96'>
+                   Pour que votre interpellation soit prise en compte, vous allez recevoir un lien
+                  dans votre boîte mail, confirmez-vous l’adresse mail{' '}
+                  <span className='font-bold'>{email}</span>
+                </p>
+                <Button
+                  size='lg'
+                  onClick={() => {
+                    setConfirmSendModalOpen(false);
+                    form.handleSubmit(onSubmit)(); // Call the `onSubmit` function if the form is validated
+                  }}
+                  disabled={isSubmitting}
+                  className='mx-auto mt-4 rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
+                >
+                  Je confirme cet email
+                </Button>
+                <Separator className='mt-5' />
+                <p className='mt-3 font-bold'>Vous vous êtes trompé d’adresse e-mail ?</p>
+                <p>
+                  <Button
+                    variant='link'
+                    className='p-0 text-base font-semibold underline'
+                    onClick={() => setConfirmSendModalOpen(false)}
+                  >
+                    Retour à l’étape précédente
+                  </Button>{' '}
+                  pour la corriger
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </form>
     </Form>
