@@ -3,10 +3,9 @@
 import { NextResponse } from 'next/server';
 
 import { InterpellateFormSchema } from '#components/Interpellate/types';
-import fs from 'fs';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import path from 'path';
+import { renderEmailTemplate } from '#utils/emails/emailRendering-server.js';
 
 export async function POST(request: Request) {
   const body: unknown = await request.json();
@@ -82,15 +81,4 @@ export async function POST(request: Request) {
   }
 }
 
-export function renderEmailTemplate(templateName: string, variables: Record<string, string>) {
-  const filePath = path.join(process.cwd(), 'emails', `${templateName}.html`);
-  let html = fs.readFileSync(filePath, 'utf8');
 
-  // Replace {{variable}} with the provided values
-  for (const [key, value] of Object.entries(variables)) {
-    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-    html = html.replace(regex, value);
-  }
-
-  return html;
-}

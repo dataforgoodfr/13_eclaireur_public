@@ -1,6 +1,7 @@
 import CommunityBasics from '#components/Communities/CommunityBasics';
 import InterpellateForm from '#components/Interpellate/InterpellateForm';
 import Stepper from '#components/Interpellate/Stepper';
+import { getEmailTemplate } from '#utils/emails/emailRendering-server';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
@@ -18,6 +19,7 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
   const { siren } = await params;
   const community = await getCommunity(siren);
   const { type, nom } = community;
+  const interpellateCommunityTemplateHtml = getEmailTemplate('interpellate-community');
 
   return (
     <>
@@ -34,8 +36,7 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
           </div>
 
           <InterpellateForm
-            missingData=''
-            communityParam={siren}
+            htmlTemplate={interpellateCommunityTemplateHtml}
             communityType={type}
             communityName={nom}
             siren={siren}

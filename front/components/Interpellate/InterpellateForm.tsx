@@ -3,11 +3,8 @@
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
-
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '#app/models/communityContact';
@@ -25,16 +22,15 @@ import {
 import { Input } from '#components/ui/input';
 import { Separator } from '#components/ui/separator';
 import { useToast } from '#hooks/use-toast';
+import { getCommunityTitle, getFullName, replaceTemplateValues } from '#utils/emails/emailRendering';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
-import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
 
 export type InterpellateFormProps = {
-  missingData: unknown;
-  communityParam: string;
+  htmlTemplate: string;
   communityType: string;
   communityName: string;
   siren: string;
@@ -48,8 +44,7 @@ function getRecipientName(contacts: CommunityContact[]) {
 }
 
 export default function InterpellateForm({
-  missingData,
-  communityParam,
+  htmlTemplate,
   communityType,
   communityName,
   siren,
@@ -57,7 +52,6 @@ export default function InterpellateForm({
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setemail] = useState('');
-  const router = useRouter();
   const { toast } = useToast();
   const {
     formState: { isSubmitting },
@@ -78,16 +72,7 @@ export default function InterpellateForm({
     setemail(e.target.value);
   };
 
-  const fullName = `${firstName} ${lastName}`;
   // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
-  const formMessage = renderToString(
-    <MessageToContacts
-      from={fullName}
-      to={recipientName}
-      communityType={communityType}
-      communityName={communityName}
-    />,
-  );
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -98,7 +83,6 @@ export default function InterpellateForm({
       // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
       emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
       object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
-      message: formMessage,
       isCC: true,
       siren: siren,
     },
@@ -140,7 +124,6 @@ export default function InterpellateForm({
       description:
         'Un lien de confirmation a été envoyé à votre adresse e-mail. Veuillez le valider pour que votre interpellation soit prise en compte.',
     });
-    // router.push(`/interpeller/${communityParam}/step4`);
   };
 
   return (
@@ -275,11 +258,14 @@ export default function InterpellateForm({
               id='simulatedTextAreaContent'
               className='cursor-not-allowed text-sm text-primary md:text-lg'
             >
-              <MessageToContacts
-                from={fullName}
-                to={recipientName}
-                communityName={communityName}
-                communityType={communityType}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: replaceTemplateValues(htmlTemplate, {
+                    communityTitle: getCommunityTitle(communityType),
+                    communityName: communityName,
+                    fullName: getFullName(firstName, lastName)
+                  }),
+                }}
               />
             </div>
           </div>
