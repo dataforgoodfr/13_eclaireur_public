@@ -7,9 +7,9 @@ import Link from 'next/link';
 
 const FOOTER_DATA = {
   social: [
-    { href: '#', label: 'Instagram', src: '/logos/rs/Instagram.png', alt: 'Instagram' },
-    { href: '#', label: 'LinkedIn', src: '/logos/rs/Linkedin.png', alt: 'LinkedIn' },
-    { href: '#', label: 'Facebook', src: '/logos/rs/Facebook.png', alt: 'Facebook' },
+    { href: 'https://www.instagram.com/anticorofficiel/', label: 'Instagram', src: '/logos/rs/Instagram.png', alt: 'Instagram' },
+    { href: 'https://www.linkedin.com/company/anticor/', label: 'LinkedIn', src: '/logos/rs/Linkedin.png', alt: 'LinkedIn' },
+    { href: 'https://www.facebook.com/Anticor.officiel/', label: 'Facebook', src: '/logos/rs/Facebook.png', alt: 'Facebook' },
   ],
   partners: [
     {
@@ -47,7 +47,8 @@ const FOOTER_DATA = {
       links: [
         { href: '/contact', label: 'Contact' },
         { href: '/faq', label: 'FAQ' },
-        { href: '/cookies', label: 'Gérer mes cookies' },
+        // Pas d'analytics et de cookies pour l'instant
+        // { href: '/cookies', label: 'Gérer mes cookies' },
       ],
     },
   ],
@@ -197,7 +198,7 @@ const Footer: FC = () => (
               <div className='flex flex-1 flex-col space-y-2'>
                 <h3 className='mb-2 text-sm font-bold text-secondary-dark'>Vous êtes un élu ?</h3>
                 <Link
-                  href='https://www.eclaireurpublic.fr/aide-aux-elus'
+                  href='/aide-aux-elus'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='font-semibold text-primary underline transition-colors hover:text-primary'
@@ -216,7 +217,7 @@ const Footer: FC = () => (
                   Data.gouv.fr
                 </Link>
                 <Link
-                  href='https://publieretalab.studio/fr'
+                  href='https://publier.etalab.studio/fr'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='font-semibold text-primary underline transition-colors hover:text-primary'

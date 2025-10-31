@@ -62,7 +62,7 @@ export default function Page() {
                   https://github.com/m4xim1nus/LocalOuvert
                 </Link>
                 <Link
-                  href={'https://github.com/m4xim1nus/LocalOuvert'}
+                  href={'https://github.com/m4xim1nus'}
                   className='block font-medium hover:underline md:hidden'
                   target='_blank'
                   rel='noopener noreferrer'

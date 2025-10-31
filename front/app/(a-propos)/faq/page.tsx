@@ -123,7 +123,7 @@ const faqItems: FaqItem[] = [
         La loi pour une République numérique de 2016 qui vise à rendre plus transparentes les
         politiques publiques est LA référence légale. Certaines dispositions ont évolué et sont
         décrites dans notre page{' '}
-        <Link href='/cadre-reglrmentaire' className='border-b-2 border-black'>
+        <Link href='/cadre-reglementaire' className='border-b-2 border-black'>
           Cadre réglementaire
         </Link>
         .
@@ -140,7 +140,7 @@ const faqItems: FaqItem[] = [
         données sur les subventions et sur les marchés publics.
         <br />
         La démarche est décrite de manière transparente sur la page{' '}
-        <Link href='/cadre-reglrmentaire' className='border-b-2 border-black'>
+        <Link href='/cadre-reglementaire' className='border-b-2 border-black'>
           Méthodologie
         </Link>
         .
