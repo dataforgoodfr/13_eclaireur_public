@@ -223,3 +223,8 @@ export function getAllYearsFrom2018ToCurrent(): number[] {
   }
   return years;
 }
+
+export function getNextTranche(currentTranche: number): number {
+  const trancheValues = [0, 1, 3, 6, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+  return trancheValues[trancheValues.indexOf(currentTranche) + 1];
+}
