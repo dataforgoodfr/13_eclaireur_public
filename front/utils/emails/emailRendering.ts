@@ -1,5 +1,8 @@
 import sanitizeHtml from 'sanitize-html';
 
+export const ConfirmInterpellateSubject: string =
+  'EclaireurPublic – Interpellation pour la transparence des données publiques';
+
 export function replaceTemplateValues(templatehtml: string, variables: Record<string, string>) {
   let html = templatehtml;
   for (const [key, value] of Object.entries(variables)) {

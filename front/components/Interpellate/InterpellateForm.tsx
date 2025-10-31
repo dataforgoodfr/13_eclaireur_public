@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
 import Image from 'next/image';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
@@ -22,7 +23,12 @@ import {
 import { Input } from '#components/ui/input';
 import { Separator } from '#components/ui/separator';
 import { useToast } from '#hooks/use-toast';
-import { getCommunityTitle, getFullName, replaceTemplateValues } from '#utils/emails/emailRendering';
+import {
+  ConfirmInterpellateSubject,
+  getCommunityTitle,
+  getFullName,
+  replaceTemplateValues,
+} from '#utils/emails/emailRendering';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
@@ -81,10 +87,12 @@ export default function InterpellateForm({
       lastname: '',
       email: '',
       // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
-      emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
-      object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
+      emails: 'antoine.quesnel@gmx.fr', // TODO : effacer à la mise en production
+      object: ConfirmInterpellateSubject,
       isCC: true,
       siren: siren,
+      communityName: communityName,
+      communityType: communityType,
     },
   });
 
@@ -134,6 +142,8 @@ export default function InterpellateForm({
       >
         {/* Hidden inputs */}
         <input type='hidden' {...form.register('siren')} />
+        <input type='hidden' {...form.register('communityName')} />
+        <input type='hidden' {...form.register('communityType')} />
 
         {/* Visible inputs */}
         <fieldset className='gap-4 md:flex'>
@@ -232,25 +242,12 @@ export default function InterpellateForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='object'
-            render={({ field }) => (
-              <FormItem className='mb-4 block flex-row items-center gap-4 md:flex'>
-                <FormLabel className='text-sm font-bold uppercase text-muted md:text-lg'>
-                  Objet
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    disabled
-                    className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='mb-4 block flex-row items-center gap-4 md:flex'>
+            <div className='text-sm font-bold uppercase text-muted md:text-lg'>Objet</div>
+            <div className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'>
+              {ConfirmInterpellateSubject}
+            </div>
+          </div>
 
           <div className='simulatedTextArea'>
             <div className='hidden'>Votre message</div>
@@ -263,7 +260,7 @@ export default function InterpellateForm({
                   __html: replaceTemplateValues(htmlTemplate, {
                     communityTitle: getCommunityTitle(communityType),
                     communityName: communityName,
-                    fullName: getFullName(firstName, lastName)
+                    fullName: getFullName(firstName, lastName),
                   }),
                 }}
               />

@@ -14,6 +14,8 @@ export const InterpellateFormSchema = z.object({
   object: z.string(),
   message: z.any(),
   siren: z.string(),
+  communityName: z.string(),
+  communityType: z.string(),
   isCC: z.boolean().optional(),
 });
 
