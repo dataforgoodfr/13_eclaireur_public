@@ -31,7 +31,7 @@ export async function trySendMail(mailOptions: Mail.Options) {
 async function sendMailPromise(mailOptions: Mail.Options) {
   const transport = nodemailer.createTransport({
     // host: 'mail.gmx.com', // TODO effacer lors de mise en prod
-    host: 'mail.gmx.com', // // config mail infomaniak
+    host: 'mail.infomaniak.com', // // config mail infomaniak
     port: 465,
     secure: true,
     auth: {

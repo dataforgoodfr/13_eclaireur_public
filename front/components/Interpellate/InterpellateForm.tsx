@@ -87,7 +87,7 @@ export default function InterpellateForm({
       lastname: '',
       email: '',
       // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
-      emails: 'antoine.quesnel@gmx.fr', // TODO : effacer à la mise en production
+      emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
       object: ConfirmInterpellateSubject,
       isCC: true,
       siren: siren,
