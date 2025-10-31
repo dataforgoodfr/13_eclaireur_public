@@ -38,6 +38,7 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
             communityParam={siren}
             communityType={type}
             communityName={nom}
+            siren={siren}
           />
         </article>
       </section>

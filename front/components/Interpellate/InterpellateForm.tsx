@@ -24,10 +24,10 @@ import {
 } from '#components/ui/form';
 import { Input } from '#components/ui/input';
 import { Separator } from '#components/ui/separator';
+import { useToast } from '#hooks/use-toast';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
-import { eventNames } from 'process';
 
 import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
@@ -37,6 +37,7 @@ export type InterpellateFormProps = {
   communityParam: string;
   communityType: string;
   communityName: string;
+  siren: string;
 };
 function getRecipientName(contacts: CommunityContact[]) {
   if (contacts.length === 0) {
@@ -51,11 +52,13 @@ export default function InterpellateForm({
   communityParam,
   communityType,
   communityName,
+  siren,
 }: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setemail] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
   const {
     formState: { isSubmitting },
     setError,
@@ -97,6 +100,7 @@ export default function InterpellateForm({
       object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
       message: formMessage,
       isCC: true,
+      siren: siren,
     },
   });
 
@@ -132,7 +136,11 @@ export default function InterpellateForm({
       }
     }
     form.reset();
-    router.push(`/interpeller/${communityParam}/step4`);
+    toast({
+      description:
+        'Un lien de confirmation a été envoyé à votre adresse e-mail. Veuillez le valider pour que votre interpellation soit prise en compte.',
+    });
+    // router.push(`/interpeller/${communityParam}/step4`);
   };
 
   return (
@@ -141,6 +149,10 @@ export default function InterpellateForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className='flex flex-col gap-4 px-4 py-6 md:px-8'
       >
+        {/* Hidden inputs */}
+        <input type='hidden' {...form.register('siren')} />
+
+        {/* Visible inputs */}
         <fieldset className='gap-4 md:flex'>
           <legend className='mb-4 flex-none text-[28px] font-bold md:text-3xl'>
             Vos coordonnées
