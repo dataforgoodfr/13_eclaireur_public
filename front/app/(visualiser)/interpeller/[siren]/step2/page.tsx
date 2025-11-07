@@ -87,8 +87,8 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
               )}
             </>
           )}
-          {/* CAS : pas de contact mail mais présence de l'url de la collectivité ou de son formulaire de contact */}
-          {!emailContactsLen && formContactLen > 0 && (
+          {/* CAS : pas de contact mail */}
+          {!emailContactsLen && (
             <>
               <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
                 <Image
@@ -116,58 +116,16 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                   </span>
                 </h3>
 
-                <ul className='flex flex-wrap justify-between gap-4 px-8 pb-8'>
+                <ul className='grid grid-cols-3 gap-4 px-8 pb-8'>
                   <li className='group relative basis-[100%] md:basis-[32%]'>
                     <ContactCard cardTitleText='Visiter le site de la collectivité'>
-                      <Link href={formContact[0].contact} className='mt-4 flex' target='_blank'>
-                        Voir le site de la collectivité
-                        <ChevronRight size={14} className='ml-2 self-center' />
-                      </Link>
-                    </ContactCard>
-                  </li>
-                </ul>
-                <InterpellateOtherLink />
-              </div>
-            </>
-          )}
-          {/* CAS : ni contact mail générique, ni url de la collectivité */}
-          {emailContactsLen < 1 && formContactLen < 1 && (
-            <>
-              <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
-                <Image
-                  src='/eclaireur/error_icon.png'
-                  alt='Interpeller'
-                  width={24}
-                  height={24}
-                  className='mr-2 inline-block'
-                />
-                Nous n’avons pas de contact direct avec les élus pour {communityName}
-              </p>
-              <div className='rounded-b-3xl bg-white py-16'>
-                <Image
-                  src='/eclaireur/mascotte_call.svg'
-                  alt='Interpeller'
-                  width={150}
-                  height={129}
-                  className='mx-auto block'
-                />
-                <h3 className='mb-12 mt-6 px-8 text-center'>
-                  Vous pouvez toujours agir
-                  <br />
-                  <span className='text-lg font-normal'>
-                    pour faire valoir la transparence des données publiques !
-                  </span>
-                </h3>
-
-                <ul className='flex flex-wrap justify-between gap-4 px-8 pb-8'>
-                  <li className='group relative basis-[100%] md:basis-[32%]'>
-                    <ContactCard cardTitleText='Envoyer un mail à la collectivité'>
-                      Information non disponible
-                    </ContactCard>
-                  </li>
-                  <li className='group relative basis-[100%] md:basis-[32%]'>
-                    <ContactCard cardTitleText='Visiter le site de la collectivité'>
-                      Information non disponible
+                      {formContactLen > 0 && (
+                        <Link href={formContact[0].contact} className='mt-4 flex' target='_blank'>
+                          Voir le site de la collectivité
+                          <ChevronRight size={14} className='ml-2 self-center' />
+                        </Link>
+                      )}
+                      {formContactLen === 0 && 'Information non disponible'}
                     </ContactCard>
                   </li>
                   <li className='group relative basis-[100%] md:basis-[32%]'>
@@ -178,6 +136,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                       </Link>
                     </ContactCard>
                   </li>
+                 
                 </ul>
                 <InterpellateOtherLink />
               </div>
