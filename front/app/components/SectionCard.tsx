@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { ArrowRight } from 'lucide-react';
-
 export default function Card({
   title,
   subtitle,
@@ -27,7 +25,7 @@ export default function Card({
 
 export function BulletList({ items }: { items: string[] }) {
   return (
-    <ul className='list-disc space-y-1 pl-5'>
+    <ul className='list-disc pl-5'>
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}
@@ -42,7 +40,6 @@ export function KnowMore({ href }: { href: string }) {
       className='my-4 flex w-40 items-center justify-center rounded-br-xl rounded-tl-xl border border-primary-light bg-white p-2'
     >
       <span className='me-2 font-bold'>En savoir plus</span>
-      <ArrowRight />
     </Link>
   );
 }

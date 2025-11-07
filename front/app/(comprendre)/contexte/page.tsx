@@ -20,14 +20,17 @@ export default function Page() {
         id='contexte'
       >
         {/* Main div */}
-        <div className='flex-col items-center justify-center p-6 md:max-w-screen-lg' id='main-div'>
+        <div
+          className='flex-col items-center justify-center p-6 text-base md:max-w-screen-lg md:text-lg'
+          id='main-div'
+        >
           {/* Contexte du projet */}
-          <Card
-            title='Le contexte du projet'
-            subtitle="D'aucuns s'accordent pour louer les bienfaits d'une meilleure transparence des dépenses
-            publiques. La défiance toujours plus grandissante des citoyens envers l'impôt démontre
-            l'incompréhension de la dépense publique à tous les échelons."
-          >
+          <Card title='Le contexte du projet'>
+            <p className='font-bold'>
+              D'aucuns s'accordent pour louer les bienfaits d'une meilleure transparence des
+              dépenses publiques. La défiance toujours plus grandissante des citoyens envers l'impôt
+              démontre l’incompréhension de la dépense publique à tous les échelons.
+            </p>
             <p>
               Les services publics comme l'éducation, la santé, ainsi que ceux au niveau local tels
               que le ramassage des ordures, l'entretien de la voirie, les services municipaux etc...
@@ -43,8 +46,8 @@ export default function Page() {
           {/* Échelons */}
           <Card title='Les échelons des collectivités territoriales'>
             <p>
-              En France, l'État a réparti ses responsabilités entre différents niveaux de
-              collectivités territoriales, c'est ce qu'on appelle la décentralisation. L'idée est de
+              En France, l’État a réparti ses responsabilités entre différents niveaux de
+              collectivités territoriales. C’est ce qu’on appelle la décentralisation. L’idée est de
               gérer chaque domaine public au niveau le plus adapté. Ainsi, les communes, les
               départements et les régions ont chacun des rôles bien définis.
             </p>
@@ -60,11 +63,11 @@ export default function Page() {
               >
                 <BulletList
                   items={[
-                    "La gestion de l'état civil",
-                    "L'urbanisme local",
-                    "L'entretien des écoles primaires",
-                    'La gestion des équipements culturels et sportifs locaux',
-                    "L'action sociale de proximité",
+                    "Gestion de l'état civil",
+                    "Urbanisme local",
+                    "Entretien des écoles primaires",
+                    'Gestion des équipements culturels et sportifs locaux',
+                    "Action sociale de proximité",
                   ]}
                 />
               </CtaCard>
@@ -76,14 +79,14 @@ export default function Page() {
                 picto='/contexte/departement.svg'
                 buttonText='Les compétences du département'
                 href='https://www.vie-publique.fr/infographie/270019-infographie-quelles-sont-les-competences-du-departement'
-                colorClassName='bg-brand-2'
+                colorClassName='bg-brand-3'
               >
                 <BulletList
                   items={[
-                    "L'action sociale (aide à l'enfance, aux personnes âgées et handicapées)",
-                    'La gestion des collèges',
-                    "L'entretien des routes départementales",
-                    'Le soutien aux communes rurales',
+                    "Action sociale (aide à l'enfance, aux personnes âgées et handicapées)",
+                    'Gestion des collèges',
+                    "Entretien des routes départementales",
+                    'Soutien aux communes rurales',
                   ]}
                 />
               </CtaCard>
@@ -95,15 +98,15 @@ export default function Page() {
                 picto='/contexte/region.svg'
                 buttonText='Le rôle de la région'
                 href='https://www.vie-publique.fr/infographie/280077-infographie-quelles-sont-les-competences-de-la-region'
-                colorClassName='bg-brand-3'
+                colorClassName='bg-primary-light'
               >
                 <BulletList
                   items={[
-                    "Le développement économique et l'aide aux entreprises",
-                    "L'aménagement du territoire et les transports",
-                    'La gestion des lycées',
-                    "La formation professionnelle et l'apprentissage",
-                    "La protection de l'environnement",
+                    "Développement économique et l'aide aux entreprises",
+                    "Aménagement du territoire et les transports",
+                    'Gestion des lycées',
+                    "Formation professionnelle et l'apprentissage",
+                    "Protection de l'environnement",
                   ]}
                 />
               </CtaCard>

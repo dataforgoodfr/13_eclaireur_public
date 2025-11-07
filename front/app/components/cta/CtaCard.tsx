@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { ChevronRight } from 'lucide-react';
+import { cn } from '#utils/utils';
 
 interface CtaCardProps {
   title: string;
@@ -36,11 +37,11 @@ export default function CtaCard({
           {/* Desktop */}
           <Image src={picto} alt={title} className='pb-2 max-md:hidden' width={48} height={48} />
           <h3 className={`${isCardBig ? 'mb-4' : ''}`}>{title}</h3>
-          <p className={isCardBig ? 'mb-4 font-bold' : ''}>{caption}</p>
+          <p className={cn('leading-[1.3]',isCardBig ? 'mb-4 font-bold' : '')}>{caption}</p>
           {children}
         </div>
-        <div className='my-5 flex justify-center tracking-tighter'>
-          <span className='font-bold'>{buttonText}</span>
+        <div className='my-5 flex justify-center tracking-tighter items-center'>
+          <span className='text-center font-semibold'>{buttonText}</span>
           <ChevronRight className='ms-2 transition-transform duration-300 group-hover:translate-x-1' />
         </div>
       </div>

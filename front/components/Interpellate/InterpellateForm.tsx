@@ -3,16 +3,15 @@
 // TODO: Review and remove unused variables. This file ignores unused vars for now.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import { renderToString } from 'react-dom/server';
 import { useForm } from 'react-hook-form';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import { useSelectedContactsContext } from '#app/(visualiser)/interpeller/Contexts/SelectedContactsContext';
 import { CommunityContact } from '#app/models/communityContact';
 import { Button } from '#components/ui/button';
 import { Checkbox } from '#components/ui/checkbox';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '#components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -22,18 +21,25 @@ import {
   FormMessage,
 } from '#components/ui/form';
 import { Input } from '#components/ui/input';
+import { Separator } from '#components/ui/separator';
+import { useToast } from '#hooks/use-toast';
+import {
+  ConfirmInterpellateSubject,
+  getCommunityTitle,
+  getFullName,
+  replaceTemplateValues,
+} from '#utils/emails/emailRendering';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronRight } from 'lucide-react';
 
-import MessageToContacts from './MessageToContacts';
 import { type FormSchema, InterpellateFormSchema } from './types';
 
 export type InterpellateFormProps = {
-  missingData: unknown;
-  communityParam: string;
+  htmlTemplate: string;
   communityType: string;
   communityName: string;
+  siren: string;
 };
 function getRecipientName(contacts: CommunityContact[]) {
   if (contacts.length === 0) {
@@ -44,19 +50,22 @@ function getRecipientName(contacts: CommunityContact[]) {
 }
 
 export default function InterpellateForm({
-  missingData,
-  communityParam,
+  htmlTemplate,
   communityType,
   communityName,
+  siren,
 }: InterpellateFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const router = useRouter();
+  const [email, setemail] = useState('');
+  const { toast } = useToast();
   const {
     formState: { isSubmitting },
     setError,
   } = useForm();
   const { selectedContacts } = useSelectedContactsContext();
+  const [isConfirmSendModalOpen, setConfirmSendModalOpen] = useState(false);
+
   const recipientName = getRecipientName(selectedContacts);
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,17 +74,11 @@ export default function InterpellateForm({
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLastName(e.target.value);
   };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setemail(e.target.value);
+  };
 
-  const fullName = `${firstName} ${lastName}`;
   // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
-  const formMessage = renderToString(
-    <MessageToContacts
-      from={fullName}
-      to={recipientName}
-      communityType={communityType}
-      communityName={communityName}
-    />,
-  );
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -85,9 +88,11 @@ export default function InterpellateForm({
       email: '',
       // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
       emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
-      object: 'EclaireurPublic – Interpellation pour la transparence des données publiques',
-      message: formMessage,
+      object: ConfirmInterpellateSubject,
       isCC: true,
+      siren: siren,
+      communityName: communityName,
+      communityType: communityType,
     },
   });
 
@@ -123,7 +128,10 @@ export default function InterpellateForm({
       }
     }
     form.reset();
-    router.push(`/interpeller/${communityParam}/step4`);
+    toast({
+      description:
+        'Un lien de confirmation a été envoyé à votre adresse e-mail. Veuillez le valider pour que votre interpellation soit prise en compte.',
+    });
   };
 
   return (
@@ -132,6 +140,12 @@ export default function InterpellateForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className='flex flex-col gap-4 px-4 py-6 md:px-8'
       >
+        {/* Hidden inputs */}
+        <input type='hidden' {...form.register('siren')} />
+        <input type='hidden' {...form.register('communityName')} />
+        <input type='hidden' {...form.register('communityType')} />
+
+        {/* Visible inputs */}
         <fieldset className='gap-4 md:flex'>
           <legend className='mb-4 flex-none text-[28px] font-bold md:text-3xl'>
             Vos coordonnées
@@ -175,7 +189,11 @@ export default function InterpellateForm({
               <FormItem>
                 <FormLabel className='text-lg font-bold'>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Entrez votre adresse e-mail' {...field} />
+                  <Input
+                    placeholder='Entrez votre adresse e-mail'
+                    {...field}
+                    onInput={handleEmailChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -224,25 +242,12 @@ export default function InterpellateForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='object'
-            render={({ field }) => (
-              <FormItem className='mb-4 block flex-row items-center gap-4 md:flex'>
-                <FormLabel className='text-sm font-bold uppercase text-muted md:text-lg'>
-                  Objet
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    disabled
-                    className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='mb-4 block flex-row items-center gap-4 md:flex'>
+            <div className='text-sm font-bold uppercase text-muted md:text-lg'>Objet</div>
+            <div className='!m-0 border-none bg-transparent p-0 text-sm !text-primary !opacity-100 md:text-lg'>
+              {ConfirmInterpellateSubject}
+            </div>
+          </div>
 
           <div className='simulatedTextArea'>
             <div className='hidden'>Votre message</div>
@@ -250,11 +255,14 @@ export default function InterpellateForm({
               id='simulatedTextAreaContent'
               className='cursor-not-allowed text-sm text-primary md:text-lg'
             >
-              <MessageToContacts
-                from={fullName}
-                to={recipientName}
-                communityName={communityName}
-                communityType={communityType}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: replaceTemplateValues(htmlTemplate, {
+                    communityTitle: getCommunityTitle(communityType),
+                    communityName: communityName,
+                    fullName: getFullName(firstName, lastName),
+                  }),
+                }}
               />
             </div>
           </div>
@@ -282,14 +290,53 @@ export default function InterpellateForm({
             )}
           />
 
-          <Button
-            size='lg'
-            type='submit'
-            disabled={isSubmitting}
-            className='mt-4 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
-          >
-            Envoyer le message <ChevronRight />
-          </Button>
+          <Dialog open={isConfirmSendModalOpen} onOpenChange={setConfirmSendModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size='lg'
+                className='mt-4 flex flex-row rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
+              >
+                Envoyer le message <ChevronRight />
+              </Button>
+            </DialogTrigger>
+            <DialogContent
+              onCloseAutoFocus={(event) => event.preventDefault()} // Permits redirecting to errors after closing the modal
+              className='rounded-3xl sm:max-w-md md:max-w-3xl [&>button]:left-4 [&>button]:right-auto [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-bl-none [&>button]:rounded-br-lg [&>button]:rounded-tl-lg [&>button]:rounded-tr-none [&>button]:border [&>button]:border-primary [&>button]:bg-white [&>button]:text-primary [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground'
+            >
+              <DialogTitle className='sr-only'>Confirmer votre adresse e-mail</DialogTitle>
+              <div className='flex flex-col text-center'>
+                <h3 className='mt-7'>Confirmer votre adresse e-mail</h3>
+                <p className='mx-auto mt-2 w-96'>
+                   Pour que votre interpellation soit prise en compte, vous allez recevoir un lien
+                  dans votre boîte mail, confirmez-vous l’adresse mail{' '}
+                  <span className='font-bold'>{email}</span>
+                </p>
+                <Button
+                  size='lg'
+                  onClick={() => {
+                    setConfirmSendModalOpen(false);
+                    form.handleSubmit(onSubmit)(); // Call the `onSubmit` function if the form is validated
+                  }}
+                  disabled={isSubmitting}
+                  className='mx-auto mt-4 rounded-none rounded-br-lg rounded-tl-lg bg-primary text-lg hover:bg-primary/90'
+                >
+                  Je confirme cet email
+                </Button>
+                <Separator className='mt-5' />
+                <p className='mt-3 font-bold'>Vous vous êtes trompé d’adresse e-mail ?</p>
+                <p>
+                  <Button
+                    variant='link'
+                    className='p-0 text-base font-semibold underline'
+                    onClick={() => setConfirmSendModalOpen(false)}
+                  >
+                    Retour à l’étape précédente
+                  </Button>{' '}
+                  pour la corriger
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </form>
     </Form>

@@ -3,7 +3,8 @@
 import { NextResponse } from 'next/server';
 
 import { InterpellateFormSchema } from '#components/Interpellate/types';
-import nodemailer from 'nodemailer';
+import { renderEmailTemplate } from '#utils/emails/emailRendering-server';
+import { trySendMail } from '#utils/emails/send-email';
 import Mail from 'nodemailer/lib/mailer';
 
 export async function POST(request: Request) {
@@ -11,9 +12,25 @@ export async function POST(request: Request) {
 
   const result = InterpellateFormSchema.safeParse(body);
   const { success, data } = result;
-  let firstname, lastname, email, emails, object, message, isCC;
+  let firstname,
+    lastname,
+    communityName,
+    communityType,
+    email,
+    emails,
+    isCC,
+    siren;
   if (success && data) {
-    ({ firstname, lastname, email, emails, object, message, isCC } = data);
+    ({
+      firstname,
+      lastname,
+      communityName,
+      communityType,
+      email,
+      emails,
+      isCC,
+      siren,
+    } = data);
   }
 
   // check out Zod's .flatten() method for an easier way to process errors
@@ -28,40 +45,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: zodErrors });
   }
 
-  const transport = nodemailer.createTransport({
-    // host: 'mail.gmx.com', // TODO effacer lors de mise en prod
-    host: 'mail.infomaniak.com', // // config mail infomaniak
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.MY_EMAIL,
-      pass: process.env.MY_PASSWORD,
-    },
+  const confirmUrl = new URL('api/interpellate/confirm', process.env.NEXT_PUBLIC_BASE_URL);
+  const params = new URLSearchParams();
+  params.append('siren', siren ?? '');
+  params.append('isCC', isCC !== undefined ? isCC.toString() : 'false');
+  params.append('firstname', firstname ?? '');
+  params.append('lastname', lastname ?? '');
+  params.append('email', email ?? '');
+  params.append('emails', emails ?? '');
+  params.append('communityType', communityType ?? '');
+  params.append('communityName', communityName ?? '');
+  confirmUrl.search = params.toString();
+  const confirmInterpellateHtml = renderEmailTemplate('confirm-interpellate', {
+    firstname: firstname ?? '',
+    link: confirmUrl.toString(),
   });
+
+  const confirmInterpellateHtmlObject = `${firstname}, Confirmez votre interpellation citoyenne - Éclaireur Public`;
 
   const mailOptions: Mail.Options = {
     from: process.env.MY_EMAIL,
-    to: process.env.MY_EMAIL,
-    cc: isCC ? email : '',
-    subject: object,
-    html: message,
+    to: email,
+    subject: confirmInterpellateHtmlObject,
+    html: confirmInterpellateHtml,
   };
 
-  const sendMailPromise = () =>
-    new Promise<string>((resolve, reject) => {
-      transport.sendMail(mailOptions, function (err) {
-        if (!err) {
-          resolve('Email sent');
-        } else {
-          reject(err.message);
-        }
-      });
-    });
-
-  try {
-    await sendMailPromise();
-    return NextResponse.json({ message: 'Email sent' });
-  } catch (err) {
-    return NextResponse.json({ error: err }, { status: 500 });
-  }
+  return trySendMail(mailOptions);
 }
