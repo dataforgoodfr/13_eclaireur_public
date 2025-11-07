@@ -1,6 +1,6 @@
 import type { Community } from '#app/models/community';
 import { SlidingNumber } from '#components/animate-ui/text/sliding-number';
-import { formatNumberInteger } from '#utils/utils';
+import { formatNumberInteger, getNextTranche } from '#utils/utils';
 
 type CommunityDetailsProps = {
   community: Community;
@@ -29,10 +29,11 @@ export function CommunityDetails({ community, compare, left, budgetTotal }: Comm
           bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-lime-100'}
         />
         <InfoBlock
-          label="Nombre d'agents administratifs"
+          label="Taille de l'administration"
           value={formatNumberInteger(community.tranche_effectif)}
           unit='agents'
           bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-indigo-100'}
+          isTailleAdministration={true}
         />
       </div>
     </>
@@ -45,6 +46,7 @@ type InfoBlockProps = {
   unit?: string;
   bgColor?: string;
   showRealValue?: boolean;
+  isTailleAdministration?: boolean;
 };
 
 function InfoBlock({
@@ -53,6 +55,7 @@ function InfoBlock({
   unit,
   bgColor = 'bg-gray-100',
   showRealValue = true,
+  isTailleAdministration = false,
 }: InfoBlockProps) {
   // Extract the numeric value from the formatted string
   const numericValue = Number.parseInt(value.replace(/\s/g, ''), 10) || 0;
@@ -70,7 +73,10 @@ function InfoBlock({
             label
           )}
         </p>
-        <h4 className='text-lg font-bold'>
+        <h4 className='flex items-center text-lg font-bold'>
+          {isTailleAdministration && numericValue >= 5000 && (
+            <span className='ml-1 mr-1 text-base font-normal sm:inline'>Plus de </span>
+          )}
           <SlidingNumber
             number={showRealValue ? numericValue : 0}
             inView={showRealValue}
@@ -83,6 +89,23 @@ function InfoBlock({
               mass: 0.4,
             }}
           />
+          {isTailleAdministration && numericValue > 0 && numericValue < 5000 && (
+            <>
+              <span className='ml-1 mr-1 text-base font-normal sm:inline'>à </span>
+              <SlidingNumber
+                number={getNextTranche(numericValue)}
+                inView={showRealValue}
+                inViewOnce={true}
+                inViewMargin='-50px'
+                className='tabular-nums'
+                transition={{
+                  stiffness: 150,
+                  damping: 20,
+                  mass: 0.4,
+                }}
+              />
+            </>
+          )}
           {unit && <span className='ml-1 hidden text-base font-normal sm:inline'>{unit}</span>}
         </h4>
       </div>

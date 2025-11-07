@@ -3,7 +3,7 @@
 import type { Community } from '#app/models/community';
 import { Card } from '#components/ui/card';
 import SectionSeparator from '#components/utils/SectionSeparator';
-import { formatNumberInteger } from '#utils/utils';
+import { formatNumberInteger, getNextTranche } from '#utils/utils';
 
 import { CommunityDetails } from '../../../components/CommunityDetails';
 import { useComparisonYear } from './hooks/useComparisonYear';
@@ -75,16 +75,21 @@ function MobileHeaderCard({
     value2: string,
     bgColor1: string,
     bgColor2: string,
+    isTailleAdministration: boolean = false,
   ) => (
     <>
       <h4 className='mb-3 text-sm font-semibold text-primary-900'>{label}</h4>
       <div className='flex gap-2'>
-        <div className={`flex-1 rounded-none rounded-br-2xl rounded-tl-2xl p-3 ${bgColor1}`}>
-          <span className='text-lg font-bold text-primary-900'>{value1}</span>
-        </div>
-        <div className={`flex-1 rounded-none rounded-br-2xl rounded-tl-2xl p-3 ${bgColor2}`}>
-          <span className='text-lg font-bold text-primary-900'>{value2}</span>
-        </div>
+        <MobileInfoBlock
+          value={value1}
+          bgColor={bgColor1}
+          isTailleAdministration={isTailleAdministration}
+        />
+        <MobileInfoBlock
+          value={value2}
+          bgColor={bgColor2}
+          isTailleAdministration={isTailleAdministration}
+        />
       </div>
     </>
   );
@@ -122,13 +127,42 @@ function MobileHeaderCard({
       {/* Section Nombre d'agents */}
       <div>
         {renderInfoBlock(
-          "Nombre d'agents",
+          "Taille de l'administration (agents)",
           formatNumberInteger(community1.tranche_effectif),
           formatNumberInteger(community2.tranche_effectif),
           'bg-brand-3',
           'bg-primary-light',
+          true,
         )}
       </div>
     </Card>
+  );
+}
+
+type MobileInfoBlockProps = {
+  isTailleAdministration?: boolean;
+  value: string;
+  bgColor: string;
+};
+
+function MobileInfoBlock({ value, bgColor, isTailleAdministration = false }: MobileInfoBlockProps) {
+  // Extract the numeric value from the formatted string
+  const numericValue = Number.parseInt(value.replace(/\s/g, ''), 10) || 0;
+
+  return (
+    <div className={`flex-1 rounded-none rounded-br-2xl rounded-tl-2xl p-3 ${bgColor}`}>
+      {isTailleAdministration && numericValue >= 5000 && (
+        <span className='text-base font-normal sm:inline'>Plus de </span>
+      )}
+      <span className='text-lg font-bold text-primary-900'>{value}</span>
+      {isTailleAdministration && numericValue > 0 && numericValue < 5000 && (
+        <>
+          <span className='text-base font-normal sm:inline'> à </span>
+          <span className='text-lg font-bold text-primary-900'>
+            {formatNumberInteger(getNextTranche(numericValue))}
+          </span>
+        </>
+      )}
+    </div>
   );
 }
