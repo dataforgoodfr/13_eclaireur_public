@@ -130,13 +130,20 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
                   </li>
                   <li className='group relative basis-[100%] md:basis-[32%]'>
                     <ContactCard cardTitleText='Envoyer un courrier à la collectivité'>
-                      <Link href='#' download className='mt-4 flex' target='_blank'>
+                      <Link
+                        href={{
+                          pathname: '/api/interpellate/courrier-interpellation',
+                          query: { communityName: communityName, communityType: community.type },
+                        }}
+                        download
+                        className='mt-4 flex'
+                        target='_blank'
+                      >
                         Télécharger un courrier type
                         <ChevronRight size={14} className='ml-2 self-center' />
                       </Link>
                     </ContactCard>
                   </li>
-                 
                 </ul>
                 <InterpellateOtherLink />
               </div>
