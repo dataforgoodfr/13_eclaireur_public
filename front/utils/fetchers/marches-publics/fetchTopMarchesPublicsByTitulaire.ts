@@ -15,11 +15,10 @@ const ROWS_PER_PAGE = 10;
 export function createSQLQueryParams(limit: number): [string, (string | number)[]] {
   const values = [limit];
 
-  // TODO - add nom titulaire when in db
   const querySQL = `
-    SELECT titulaire_id, SUM(montant) AS total_montant
+    SELECT titulaire_id, titulaire_denomination_sociale, SUM(montant_du_marche_public_par_titulaire) AS total_montant
     FROM ${TABLE_NAME} 
-    GROUP BY titulaire_id
+    GROUP BY titulaire_id, titulaire_denomination_sociale
     ORDER BY total_montant DESC
     LIMIT $1
 `;
