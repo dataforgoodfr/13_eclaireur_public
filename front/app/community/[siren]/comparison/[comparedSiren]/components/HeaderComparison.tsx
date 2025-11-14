@@ -116,7 +116,7 @@ function MobileHeaderCard({
       {/* Section Budget Total */}
       <div className='mb-4 border-b pb-4'>
         {renderInfoBlock(
-          'Budget total (M€)',
+          'Budget total (en millions d’€)',
           budgetTotal1 ? formatNumberInteger(Math.round(budgetTotal1 / 1_000_000)) : '—',
           budgetTotal2 ? formatNumberInteger(Math.round(budgetTotal2 / 1_000_000)) : '—',
           'bg-brand-3',

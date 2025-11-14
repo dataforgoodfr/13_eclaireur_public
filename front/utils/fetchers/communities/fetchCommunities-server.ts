@@ -1,7 +1,7 @@
 import type { Community } from '#app/models/community';
 import { getQueryFromPool } from '#utils/db';
 import { formatCommunityType, formatDepartmentName, formatLocationName } from '#utils/format';
-import { CommunityType } from '#utils/types.js';
+import { CommunityType } from '#utils/types';
 
 import type { Pagination } from '../types';
 import { type CommunitiesOptions, createSQLQueryParams } from './createSQLQueryParams';
@@ -23,7 +23,7 @@ export async function fetchCommunities(
   return communities.map((community) => ({
     ...community,
     nom: formatLocationName(community.nom),
-    type: formatCommunityType(community.type as CommunityType),
+    formattedType: formatCommunityType(community.type as CommunityType),
     nom_departement: community.nom_departement
       ? formatDepartmentName(community.nom_departement)
       : null,
