@@ -1,6 +1,4 @@
-import { CommunityType } from '#utils/types';
-
-export type Scope = 'Départemental' | 'Régional' | 'National';
+import { CommunityType, ScopeType } from '#utils/types';
 
 /**
  * Détermine le scope de comparaison par défaut selon le type de collectivité
@@ -11,21 +9,21 @@ export type Scope = 'Départemental' | 'Régional' | 'National';
  * - Commune/Métropole/EPCI : Départemental (compare avec autres du département)
  * - CTU : National (collectivités spéciales)
  */
-export function getDefaultComparisonScope(communityType: CommunityType): Scope {
+export function getDefaultComparisonScope(communityType: CommunityType): ScopeType {
   switch (communityType) {
     case CommunityType.Region:
-      return 'National';
+      return ScopeType.Nation;
     case CommunityType.Departement:
-      return 'Régional';
+      return ScopeType.Region;
     case CommunityType.Commune:
     case CommunityType.Metropole:
     case CommunityType.CA:
     case CommunityType.CC:
     case CommunityType.EPT:
-      return 'Départemental';
+      return ScopeType.Departement;
     case CommunityType.CTU:
-      return 'National';
+      return ScopeType.Nation;
     default:
-      return 'Départemental'; // Fallback par défaut
+      return ScopeType.Departement; // Fallback par défaut
   }
 }

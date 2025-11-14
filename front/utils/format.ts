@@ -1,4 +1,4 @@
-import { CommunityType } from './types';
+import { CommunityType, ScopeType } from './types';
 
 export function formatDate(
   date: Date | string | number | undefined,
@@ -28,6 +28,16 @@ export function formatCommunityType(type: CommunityType): string {
     [CommunityType.CA]: "Communauté d'agglomération",
     [CommunityType.CC]: 'Communauté de communes',
     [CommunityType.EPT]: 'Établissement public territorial',
+  };
+
+  return typeLabels[type] || type;
+}
+
+export function formatScopeType(type: ScopeType): string {
+  const typeLabels: Record<ScopeType, string> = {
+    [ScopeType.Departement]: 'Départemental',
+    [ScopeType.Region]: 'Régional',
+    [ScopeType.Nation]: 'National',
   };
 
   return typeLabels[type] || type;
