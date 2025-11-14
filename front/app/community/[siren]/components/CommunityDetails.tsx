@@ -25,7 +25,7 @@ export function CommunityDetails({ community, compare, left, budgetTotal }: Comm
         <InfoBlock
           label='Budget total'
           value={budgetEnMillions !== null ? formatNumberInteger(budgetEnMillions) : '—'}
-          unit='M€'
+          unit='millions d’€'
           bgColor={compare ? (left ? 'bg-brand-3' : 'bg-primary-light') : 'bg-lime-100'}
         />
         <InfoBlock
@@ -64,9 +64,9 @@ function InfoBlock({
     <div className={`rounded-none rounded-br-2xl rounded-tl-2xl p-3 text-primary ${bgColor}`}>
       <div className='flex flex-row items-center justify-between gap-2 sm:flex-col sm:items-start sm:justify-start sm:gap-1'>
         <p className='text-base font-medium'>
-          {label === 'Budget total' && unit === 'M€' ? (
+          {label === 'Budget total' ? (
             <>
-              <span className='sm:hidden'>Budget total (M€)</span>
+              <span className='sm:hidden'>Budget total (en millions d’€)</span>
               <span className='hidden sm:inline'>{label}</span>
             </>
           ) : (
