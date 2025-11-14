@@ -13,3 +13,15 @@ export enum CommunityType {
   /** Etablissement public territorial */
   EPT = 'EPT',
 }
+
+export enum OrderMagnitudeMonetaryUnit {
+  Thousands = "en milliers d'€",
+  Millions = "en millions d'€",
+  Billions = "en milliards d'€",
+}
+
+export enum ScopeType {
+  Departement = "departemental",
+  Region = "regional",
+  Nation = "national",
+}

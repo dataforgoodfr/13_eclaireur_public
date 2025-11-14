@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { GRAPH_START_YEAR } from './constants';
 import type { Direction } from './fetchers/types';
-import { CommunityType } from './types';
+import { CommunityType, OrderMagnitudeMonetaryUnit } from './types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -104,21 +104,34 @@ export function formatCompactPriceInteger(
 /**
  * Determine the appropriate unit (M€ or k€) based on max value
  */
-export function getMonetaryUnit(maxValue: number): 'M€' | 'k€' {
-  return maxValue >= 1000000 ? 'M€' : 'k€';
+export function getMonetaryUnit(maxValue: number): OrderMagnitudeMonetaryUnit {
+  if(maxValue < 1_000_000){
+    return OrderMagnitudeMonetaryUnit.Thousands;
+  }else if(maxValue >= 1_000_000 && maxValue < 1_000_000_000){
+    return OrderMagnitudeMonetaryUnit.Millions;
+  }else{
+    return OrderMagnitudeMonetaryUnit.Billions;
+  }
 }
 
 /**
  * Get the divisor for the unit (1000000 for M€, 1000 for k€)
  */
-export function getMonetaryDivisor(unit: 'M€' | 'k€'): number {
-  return unit === 'M€' ? 1000000 : 1000;
+export function getMonetaryDivisor(unit: OrderMagnitudeMonetaryUnit): number {
+  switch (unit) {
+    case OrderMagnitudeMonetaryUnit.Billions:
+      return 1_000_000_000;
+    case OrderMagnitudeMonetaryUnit.Millions:
+      return 1_000_000;
+    case OrderMagnitudeMonetaryUnit.Thousands:
+      return 1_000;
+  }
 }
 
 /**
  * Format a value with the appropriate unit, max 1 decimal place
  */
-export function formatMonetaryValue(value: number, unit: 'M€' | 'k€'): string {
+export function formatMonetaryValue(value: number, unit: OrderMagnitudeMonetaryUnit): string {
   const divisor = getMonetaryDivisor(unit);
   const normalizedValue = value / divisor;
   return new Intl.NumberFormat('fr-FR', {
@@ -159,6 +172,12 @@ export function formatFirstLetterToUppercase(str: string): string {
   if (!str?.trim()) return '';
   if (str.length === 1) return str.toUpperCase();
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+export function formatFirstLetterToLowercase(str: string): string {
+  if (!str?.trim()) return '';
+  if (str.length === 1) return str.toLowerCase();
+  return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
 export function formatSentenceCase(str: string): string {

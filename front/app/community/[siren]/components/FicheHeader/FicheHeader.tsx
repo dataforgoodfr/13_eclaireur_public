@@ -18,7 +18,7 @@ const descriptionText =
 
 export function FicheHeader({ community, similarCommunityList }: FicheHeaderProps) {
   const communityTitle = community.nom;
-  const communityType = community.type;
+  const communityType = community.formattedType;
   const location = community.code_postal ? `${community.code_postal}` : '';
   const departementName = community.nom_departement;
 

@@ -18,7 +18,7 @@ async function getCommunity(siren: string) {
 export default async function InterpellateStep3({ params }: CommunityPageProps) {
   const { siren } = await params;
   const community = await getCommunity(siren);
-  const { type, nom } = community;
+  const { formattedType, nom } = community;
   const interpellateCommunityTemplateHtml = getEmailTemplate('interpellate-community');
 
   return (
@@ -37,7 +37,7 @@ export default async function InterpellateStep3({ params }: CommunityPageProps) 
 
           <InterpellateForm
             htmlTemplate={interpellateCommunityTemplateHtml}
-            communityType={type}
+            communityType={formattedType}
             communityName={nom}
             siren={siren}
           />
