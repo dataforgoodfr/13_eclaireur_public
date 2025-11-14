@@ -393,9 +393,12 @@ function Treemap({
             className='pointer-events-none'
           >
             <div
-              className='pointer-events-none truncate text-sm font-medium leading-tight'
+              className='pointer-events-none w-full h-full overflow-hidden text-sm font-medium leading-tight'
               style={{
                 color: getTextColor(colorMap[leaf.data.name], colorPalette),
+                maxHeight: `${leaf.y1 - leaf.y0 - 46}px`,
+                WebkitMaskImage: "linear-gradient(180deg, black 60%, transparent)",
+                maskImage: "linear-gradient(180deg, black 60%, transparent)",
               }}
             >
               {formatFirstLetterToUppercase(leaf.data.name)}
