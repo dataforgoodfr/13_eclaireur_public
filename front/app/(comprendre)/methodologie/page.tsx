@@ -136,7 +136,7 @@ export default function Page() {
             <li>l'indice de transparence des marchés publics</li>
             <li>l'indice de transparence agrégé des 2 indices précédents</li>
           </ul>
-          <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence des subventions</h3>
+          <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence des marchés publics</h3>
           <p className='font-bold'>
             L'indice de transparence des marchés publics est établi selon la conjonction de 3
             facteurs principaux&nbsp;:

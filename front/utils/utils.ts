@@ -102,7 +102,7 @@ export function formatCompactPriceInteger(
 }
 
 /**
- * Determine the appropriate unit (M€ or k€) based on max value
+ * Determine the appropriate unit based on max value
  */
 export function getMonetaryUnit(maxValue: number): OrderMagnitudeMonetaryUnit {
   if(maxValue < 1_000_000){
@@ -115,7 +115,7 @@ export function getMonetaryUnit(maxValue: number): OrderMagnitudeMonetaryUnit {
 }
 
 /**
- * Get the divisor for the unit (1000000 for M€, 1000 for k€)
+ * Get the divisor for the unit
  */
 export function getMonetaryDivisor(unit: OrderMagnitudeMonetaryUnit): number {
   switch (unit) {
