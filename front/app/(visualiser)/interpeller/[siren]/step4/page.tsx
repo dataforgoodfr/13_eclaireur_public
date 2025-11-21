@@ -21,7 +21,7 @@ export default async function InterpellateStep4() {
           </div>
 
           <Image
-            src='/eclaireur/mascotte_reward.png'
+            src='/eclaireur/mascotte_reward.svg'
             alt='Interpeller'
             width={150}
             height={129}

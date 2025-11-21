@@ -39,17 +39,17 @@ export default function OurMethodologyExtended() {
             </div>
             <div className='mt-6 flex flex-col gap-4'>
               <MethodologyCard
-                picto='/eclaireur/one.png'
+                picto='/icons/one.svg'
                 title='Publication de données sur les marchés inférieurs à 40 000 €'
                 colorClassName='bg-brand-1'
               />
               <MethodologyCard
-                picto='/eclaireur/two.png'
+                picto='/icons/two.svg'
                 title='Publication de données sur les marchés supérieurs à 40 000 €'
                 colorClassName='bg-brand-2'
               />
               <MethodologyCard
-                picto='/eclaireur/three.png'
+                picto='/icons/three.svg'
                 title='Publication de données sur les 10 critères suivants :'
                 colorClassName='bg-brand-3'
                 criteria={CRITERIA}

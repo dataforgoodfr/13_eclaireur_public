@@ -91,9 +91,7 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
           {!emailContactsLen && formContactLen > 0 && (
             <>
               <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
-                <Image
-                  src='/eclaireur/error_icon.png'
-                  alt='Interpeller'
+                <CircleAlert
                   width={24}
                   height={24}
                   className='mr-2 inline-block'
@@ -134,12 +132,10 @@ export default async function InterpellateStep2({ params }: InterpellateStep2Pro
           {emailContactsLen < 1 && formContactLen < 1 && (
             <>
               <p className='rounded-t-3xl bg-secondary p-4 text-lg font-bold'>
-                <Image
-                  src='/eclaireur/error_icon.png'
-                  alt='Interpeller'
+                <CircleAlert
                   width={24}
                   height={24}
-                  className='mr-2 inline-block'
+                  className='mr-2 mb-1 inline-block'
                 />
                 Nous n’avons pas de contact direct avec les élus pour {communityName}
               </p>

@@ -57,7 +57,7 @@ export function MobileMenu({ visualiserMenus, comprendreMenus, aProposMenus }: M
               onClick={handleMenuClick}
             >
               <Link href='/interpeller' className='flex items-center gap-2'>
-                <Image src='/eclaireur/interpeller.png' alt='Interpeller' width={20} height={20} />
+                <Image src='/icons/speaker-white.svg' alt='Interpeller' width={20} height={20} />
                 Interpeller
               </Link>
             </Button>
