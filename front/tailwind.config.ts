@@ -51,7 +51,6 @@ export default {
         ],
       },
       backgroundImage: {
-        // 'homepage-header': 'url("/transparency.png")',
         'gradient-fade':
           'linear-gradient(to right, transparent 0%, #FAF79E 10%, #FAF79E 90%, transparent 100%)',
       },

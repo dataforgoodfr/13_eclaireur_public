@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { ActionButton } from '#components/ui/action-button';
-import { Megaphone } from 'lucide-react';
+import { CircleAlert, Megaphone } from 'lucide-react';
 
 export interface EmptyStateProps {
   title?: string;
@@ -34,9 +34,7 @@ const EmptyState: FC<EmptyStateProps> = ({
     >
       {/* Bandeau d'alerte */}
       <div className='flex w-full flex-shrink-0 items-center gap-3 rounded-t-2xl bg-secondary p-3 text-primary md:p-4'>
-        <Image
-          src='/eclaireur/error_icon.png'
-          alt='Erreur'
+        <CircleAlert
           width={28}
           height={28}
           className='h-6 w-6 flex-shrink-0 md:h-7 md:w-7'
@@ -63,7 +61,7 @@ const EmptyState: FC<EmptyStateProps> = ({
           {/* Mascotte par-dessus */}
           <div className='relative z-10'>
             <Image
-              src='/eclaireur/Mascotte-appel.png'
+              src='/eclaireur/mascotte_call.svg'
               alt='Mascotte Éclaireur Public'
               width={150}
               height={130}

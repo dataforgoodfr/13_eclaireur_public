@@ -26,7 +26,7 @@ export function FicheHeader({ community, similarCommunityList }: FicheHeaderProp
     <div className='relative w-full p-6 lg:px-40 lg:pb-12 lg:pt-4'>
       {/* Background image with high priority */}
       <Image
-        src='/collectivite-header.jpg'
+        src='/collectivite-header.webp'
         alt='En-tête collectivité'
         fill
         className='-z-10 object-cover'

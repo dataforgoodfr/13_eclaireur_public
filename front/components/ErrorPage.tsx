@@ -18,7 +18,7 @@ export default function ErrorPage({ title, description, errorType }: ErrorPagePr
           <h1 className='text-center text-3xl text-white md:text-5xl'>{title}</h1>
         </div>
         <Image
-          src={`${errorType === '404' ? '/eclaireur/404.png' : '/eclaireur/500.png'}`}
+          src={`${errorType === '404' ? '/eclaireur/404.svg' : '/eclaireur/500.svg'}`}
           width={430}
           height={100}
           alt="Image d'erreur"

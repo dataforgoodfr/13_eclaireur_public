@@ -7,9 +7,9 @@ import Link from 'next/link';
 
 const FOOTER_DATA = {
   social: [
-    { href: 'https://www.instagram.com/anticorofficiel/', label: 'Instagram', src: '/logos/rs/Instagram.png', alt: 'Instagram' },
-    { href: 'https://www.linkedin.com/company/anticor/', label: 'LinkedIn', src: '/logos/rs/Linkedin.png', alt: 'LinkedIn' },
-    { href: 'https://www.facebook.com/Anticor.officiel/', label: 'Facebook', src: '/logos/rs/Facebook.png', alt: 'Facebook' },
+    { href: 'https://www.instagram.com/anticorofficiel/', label: 'Instagram', src: '/logos/rs/Instagram.svg', alt: 'Instagram' },
+    { href: 'https://www.linkedin.com/company/anticor/', label: 'LinkedIn', src: '/logos/rs/Linkedin.svg', alt: 'LinkedIn' },
+    { href: 'https://www.facebook.com/Anticor.officiel/', label: 'Facebook', src: '/logos/rs/Facebook.svg', alt: 'Facebook' },
   ],
   partners: [
     {
@@ -104,7 +104,7 @@ const Footer: FC = () => (
           </div>
 
           <Image
-            src='/eclaireur/Mascotte-appel.png'
+            src='/eclaireur/Mascotte-appel.svg'
             alt='Mascotte Éclaireur Public'
             width={160}
             height={140}
@@ -178,7 +178,7 @@ const Footer: FC = () => (
 
               <div className='mt-4 flex justify-center md:hidden'>
                 <Image
-                  src='/eclaireur/Mascotte-appel.png'
+                  src='/eclaireur/Mascotte-appel.svg'
                   alt='Mascotte Éclaireur Public'
                   width={114}
                   height={94}

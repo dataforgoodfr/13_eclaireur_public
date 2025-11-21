@@ -31,7 +31,7 @@ import {
 } from '#utils/emails/emailRendering';
 import { postInterpellate } from '#utils/fetchers/interpellate/postInterpellate';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CircleAlert } from 'lucide-react';
 
 import { type FormSchema, InterpellateFormSchema } from './types';
 
@@ -207,9 +207,7 @@ export default function InterpellateForm({
 
         <div className='flex flex-row justify-between rounded-tl-3xl border border-secondary-dark font-bold'>
           <div className='flex w-36 flex-col justify-center rounded-tl-3xl bg-secondary-dark py-2 md:w-14'>
-            <Image
-              src='/eclaireur/error_icon.png'
-              alt='Interpeller'
+            <CircleAlert
               width={24}
               height={24}
               className='self-center'

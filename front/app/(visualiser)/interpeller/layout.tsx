@@ -22,11 +22,11 @@ export default function InterpellateLayout({ children }: PropsWithChildren) {
         </GoToPreviousPage>
         <h1 className='md:global-margin flex flex-row-reverse items-center md:flex-row'>
           <Image
-            src='/eclaireur/call_icon.png'
-            width={48}
-            height={39}
+            src='/icons/speaker.svg'
+            width={40}
+            height={40}
             alt=''
-            className='ml-4 mr-4 md:ml-0 md:mt-[-10]'
+            className='me-4'
           />
           Interpeller
         </h1>
