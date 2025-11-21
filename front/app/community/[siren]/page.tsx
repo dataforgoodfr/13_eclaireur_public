@@ -6,7 +6,6 @@ import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
 import { fetchSimilarCommunityList } from '#utils/fetchers/communities/fetchSimilarCommunityList-server';
 import { fetchMostRecentTransparencyScore } from '#utils/fetchers/communities/fetchTransparencyScore-server';
-import type { CommunityType } from '#utils/types';
 import { TransparencyScore } from '@/components/TransparencyScore/constants';
 
 import { FicheHeader } from './components/FicheHeader/FicheHeader';
