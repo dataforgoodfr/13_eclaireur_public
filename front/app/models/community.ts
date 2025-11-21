@@ -7,7 +7,8 @@ export type Community = {
   /** Primary key [char9] */
   siren: string;
   /** Primary key */
-  type: CommunityType | string;
+  type: CommunityType;
+  formattedType: string;
   nom: string;
   code_insee: string;
   code_insee_departement: string;
