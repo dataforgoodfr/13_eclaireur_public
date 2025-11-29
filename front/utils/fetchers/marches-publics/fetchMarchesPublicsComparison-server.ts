@@ -1,20 +1,22 @@
 import type { MarchesPublicsComparisonData } from '#app/models/comparison';
 import { getQueryFromPool } from '#utils/db';
+import { formatScopeType } from '#utils/format';
+import { ScopeType } from '#utils/types';
+import { formatFirstLetterToLowercase } from '#utils/utils';
 
 import { DataTable } from '../constants';
 
 const TABLE_NAME = DataTable.MarchesPublics;
 const COMMUNITIES_TABLE = DataTable.Communities;
 
-function createSQLQueryParams(siren: string, scope: string): [string, (string | number)[]] {
+function createSQLQueryParams(siren: string, scopeType: ScopeType): [string, (string | number)[]] {
   const values = [siren, siren, siren]; // We need siren multiple times
 
   // Build scope condition dynamically - handle both French and English scope names
   let scopeCondition: string | null = '';
-  const normalizedScope = scope.toLowerCase();
-  if (normalizedScope === 'régional' || normalizedScope === 'regional') {
+  if (scopeType === ScopeType.Region) {
     scopeCondition = 'code_insee_region';
-  } else if (normalizedScope === 'départemental' || normalizedScope === 'departmental') {
+  } else if (scopeType === ScopeType.Departement) {
     scopeCondition = 'code_insee_dept';
   } else {
     // For national, we don't filter by region/department
@@ -87,10 +89,10 @@ function createSQLQueryParams(siren: string, scope: string): [string, (string | 
  */
 export async function fetchMarchesPublicsComparison(
   siren: string,
-  scope = 'régional',
+  scopeType: ScopeType = ScopeType.Region,
 ): Promise<MarchesPublicsComparisonData[]> {
   try {
-    const params = createSQLQueryParams(siren, scope);
+    const params = createSQLQueryParams(siren, scopeType);
     const rows = (await getQueryFromPool(...params)) as Array<{
       year: string;
       community: number;
@@ -102,22 +104,8 @@ export async function fetchMarchesPublicsComparison(
     if (!rows || rows.length === 0) return [];
 
     const communityName = rows[0].community_name;
-    const communityType = rows[0].community_type;
-
     const communityLabel = `Budget de ${communityName}`;
-
-    // Generate proper French labels
-    const normalizedScope = scope.toLowerCase();
-    let scopeLabel = '';
-    if (normalizedScope === 'régional' || normalizedScope === 'regional') {
-      scopeLabel = 'régionale';
-    } else if (normalizedScope === 'départemental' || normalizedScope === 'departmental') {
-      scopeLabel = 'départementale';
-    } else {
-      scopeLabel = 'nationale';
-    }
-
-    const regionalLabel = `Moyenne ${scopeLabel} des collectivités ${communityType.toLowerCase()}s`;
+    const regionalLabel = `Moyenne des budgets des collectivités ${formatFirstLetterToLowercase(formatScopeType(scopeType))}es`;
 
     return rows.map((row) => ({
       year: row.year,

@@ -29,8 +29,8 @@ type EvolutionContainerProps = {
 
 // Title mapping
 const TITLES = {
-  'marches-publics': 'Évolution des marchés publics au cours du temps',
-  subventions: 'Évolution des subventions au cours du temps',
+  'marches-publics': 'Évolution des marchés publics',
+  subventions: 'Évolution des subventions',
 };
 
 // Switch labels mapping

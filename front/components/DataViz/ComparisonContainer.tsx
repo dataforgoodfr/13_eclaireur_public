@@ -11,11 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '#components/ui/dropdown-menu';
-import { type Scope, useComparisonScope } from '#hooks/useTabState';
 import { downloadSVGChart } from '#utils/downloader/downloadSVGChart';
 import { getDefaultComparisonScope } from '#utils/helpers/getDefaultComparisonScope';
 import { hasRealComparisonData } from '#utils/placeholderDataGenerators';
-import type { CommunityType } from '#utils/types';
+import { CommunityType, ScopeType } from '#utils/types';
 import { getMonetaryUnit } from '#utils/utils';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown } from 'lucide-react';
@@ -24,16 +23,15 @@ import { TabHeader } from '../../app/community/[siren]/components/TabHeader';
 import LoadingOverlay from '../ui/LoadingOverlay';
 import ComparisonChart, { type ComparisonData, type ComparisonTheme } from './ComparisonChart';
 import MobileComparisonChart from './MobileComparisonChart';
+import { formatScopeType } from '#utils/format';
 
 type ComparisonContainerProps = {
   siren: string;
-  communityType?: CommunityType;
+  communityType: CommunityType;
   apiEndpoint: string;
   theme: ComparisonTheme;
   dataType: 'marches-publics' | 'subventions';
 };
-
-const SCOPES = ['Départemental', 'Régional', 'National'] as const;
 
 // Generic fetch function
 const fetchComparisonData = async (endpoint: string, scope: string): Promise<ComparisonData[]> => {
@@ -46,14 +44,26 @@ const fetchComparisonData = async (endpoint: string, scope: string): Promise<Com
   return response.json();
 };
 
+const getAvailableScopes = (communtyType: CommunityType): ScopeType[] => {
+  if(communtyType === CommunityType.Region) {
+    return [ScopeType.Nation];
+  }else if(communtyType === CommunityType.Departement) {
+    return [ScopeType.Nation, ScopeType.Region];
+  }else{
+    return [ScopeType.Nation, ScopeType.Region, ScopeType.Departement];
+  }
+};
+
 // Extracted components for better composition
 const ScopeDropdown = ({
   selectedScope,
   onScopeChange,
-  disabled,
+  communityType,
+  disabled
 }: {
-  selectedScope: Scope;
-  onScopeChange: (scope: Scope) => void;
+  selectedScope: ScopeType;
+  onScopeChange: (scope: ScopeType) => void;
+  communityType: CommunityType;
   disabled?: boolean;
 }) => (
   <DropdownMenu>
@@ -63,14 +73,14 @@ const ScopeDropdown = ({
         className='h-12 gap-2 rounded-bl-none rounded-br-lg rounded-tl-lg rounded-tr-none border-gray-300 bg-white px-4 hover:bg-gray-50'
         disabled={disabled}
       >
-        {selectedScope}
+        {formatScopeType(selectedScope)}
         <ChevronDown className='h-4 w-4' />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
-      {SCOPES.map((scope) => (
+      {getAvailableScopes(communityType).map((scope) => (
         <DropdownMenuItem key={scope} onClick={() => onScopeChange(scope)}>
-          {scope}
+          {formatScopeType(scope)}
         </DropdownMenuItem>
       ))}
     </DropdownMenuContent>
@@ -221,7 +231,7 @@ const ChartWithLegend = ({
               <span className='text-sm'>{data[0]?.regionalLabel || 'Moyenne régionale'}</span>
             </div>
           </div>
-          <div className='text-xs font-medium text-primary'>Montants exprimés en {unit}</div>
+          <div className='text-xs font-medium text-primary'>Montants exprimés {unit}</div>
         </div>
       </div>
     </div>
@@ -235,8 +245,8 @@ export default function ComparisonContainer({
   theme,
   dataType,
 }: ComparisonContainerProps) {
-  const defaultScope = communityType ? getDefaultComparisonScope(communityType) : 'Départemental';
-  const [selectedScope, setSelectedScope] = useComparisonScope(defaultScope);
+  const defaultScope = communityType ? getDefaultComparisonScope(communityType) : ScopeType.Departement;
+  const [selectedScope, setSelectedScope] = useState(defaultScope);
   const [isMobile, setIsMobile] = useState(false);
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
@@ -338,7 +348,7 @@ export default function ComparisonContainer({
     );
   };
 
-  const handleScopeChange = (scope: Scope) => {
+  const handleScopeChange = (scope: ScopeType) => {
     if (scope !== selectedScope) {
       setSelectedScope(scope);
     }
@@ -359,6 +369,7 @@ export default function ComparisonContainer({
             <ScopeDropdown
               selectedScope={selectedScope}
               onScopeChange={handleScopeChange}
+              communityType={communityType}
               disabled={isFetching}
             />
             <DownloadSelector

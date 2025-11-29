@@ -6,7 +6,7 @@ import type { CommunityType } from '#utils/types';
 
 type ComparisonProps = {
   siren: string;
-  communityType?: CommunityType;
+  communityType: CommunityType;
 };
 
 export default function Comparison({ siren, communityType }: ComparisonProps) {
