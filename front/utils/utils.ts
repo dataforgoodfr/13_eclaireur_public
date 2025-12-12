@@ -186,14 +186,10 @@ export function formatNomsPropres(str: string): string {
 }
 
 export function stringifyCommunityType(type: CommunityType): string {
-  if (type === CommunityType.CA) return `Communauté d'agglomération`;
-  if (type === CommunityType.CC) return 'Communauté de communes';
-  if (type === CommunityType.CTU) return 'Collectivité territoriale unique';
   if (type === CommunityType.Commune) return 'Commune';
   if (type === CommunityType.Departement) return 'Département';
-  if (type === CommunityType.EPT) return 'Établissement public territorial';
-  if (type === CommunityType.Metropole) return 'Groupement';
   if (type === CommunityType.Region) return 'Région';
+  if (type === CommunityType.GRP) return 'Groupement';
 
   throw new Error(`Type ${type} not supported`);
 }

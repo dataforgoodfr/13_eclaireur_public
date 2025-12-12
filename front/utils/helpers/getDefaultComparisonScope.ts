@@ -18,13 +18,8 @@ export function getDefaultComparisonScope(communityType: CommunityType): Scope {
     case CommunityType.Departement:
       return 'Régional';
     case CommunityType.Commune:
-    case CommunityType.Metropole:
-    case CommunityType.CA:
-    case CommunityType.CC:
-    case CommunityType.EPT:
+    case CommunityType.GRP:
       return 'Départemental';
-    case CommunityType.CTU:
-      return 'National';
     default:
       return 'Départemental'; // Fallback par défaut
   }

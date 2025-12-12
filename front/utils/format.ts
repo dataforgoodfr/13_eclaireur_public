@@ -23,11 +23,7 @@ export function formatCommunityType(type: CommunityType): string {
     [CommunityType.Region]: 'Région',
     [CommunityType.Departement]: 'Département',
     [CommunityType.Commune]: 'Commune',
-    [CommunityType.Metropole]: 'Métropole',
-    [CommunityType.CTU]: 'Collectivité territoriale unique',
-    [CommunityType.CA]: "Communauté d'agglomération",
-    [CommunityType.CC]: 'Communauté de communes',
-    [CommunityType.EPT]: 'Établissement public territorial',
+    [CommunityType.GRP]: 'Groupement',
   };
 
   return typeLabels[type] || type;
