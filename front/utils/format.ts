@@ -28,6 +28,7 @@ export function formatCommunityType(type: CommunityType): string {
     [CommunityType.CA]: "Communauté d'agglomération",
     [CommunityType.CC]: 'Communauté de communes',
     [CommunityType.EPT]: 'Établissement public territorial',
+    [CommunityType.GRP]: 'Groupement',
   };
 
   return typeLabels[type] || type;
