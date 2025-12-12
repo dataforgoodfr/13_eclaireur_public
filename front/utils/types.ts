@@ -12,4 +12,6 @@ export enum CommunityType {
   CC = 'CC',
   /** Etablissement public territorial */
   EPT = 'EPT',
+  /** Groupement */
+  GRP = 'GRP',
 }

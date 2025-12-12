@@ -194,6 +194,7 @@ export function stringifyCommunityType(type: CommunityType): string {
   if (type === CommunityType.EPT) return 'Établissement public territorial';
   if (type === CommunityType.Metropole) return 'Groupement';
   if (type === CommunityType.Region) return 'Région';
+  if (type === CommunityType.GRP) return 'Groupement';
 
   throw new Error(`Type ${type} not supported`);
 }
