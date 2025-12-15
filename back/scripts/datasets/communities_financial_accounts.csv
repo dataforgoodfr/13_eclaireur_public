@@ -1,5 +1,10 @@
 type;url;format
-regions;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-regions-fichier-global/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
-departements;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-departements-et-des-collectivites-territoriales-uniques0/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
-groupements_fiscalite_propre;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-groupements-a-fiscalite-propre-fichier-global-a-compter-/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
-communes;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-communes-fichier-global-a-compter-de-2000/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+regions;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-regions-fichier-global-2021-2024/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+departements;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-departements-et-des-collectivites-territoriales-uniques-fichier-global-2021-2022/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+departements;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-departements-et-des-collectivites-territoriales-uniques-fichier-global-2023-2024/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+groupements_fiscalite_propre;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-groupements-a-fiscalite-propre-fichier-global-2023-2024/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+groupements_fiscalite_propre;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-groupements-a-fiscalite-propre-fichier-global-2022/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+groupements_fiscalite_propre;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-groupements-a-fiscalite-propre-fichier-global-2021/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+communes;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-communes-fichier-global-2023-2024/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+communes;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-communes-fichier-global-2022/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
+communes;https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/comptes-individuels-des-communes-fichier-global-2021/exports/parquet?lang=fr&timezone=Europe%2FBerlin;parquet
