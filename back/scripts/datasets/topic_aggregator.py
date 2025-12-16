@@ -125,8 +125,7 @@ class TopicAggregator(DatasetAggregator):
         """
         Identify in the dataset columns that are neither in the official schema
         nor in the list of columns to ignore.
-        If such columns exists, the normalization process must fail for this file
-        and those columns are logged to allow further analysis.
+        Extra columns are logged for analysis but do not cause the file to fail.
         """
         regex_ignore = [
             c for c in df.columns if any([pat.match(c) for pat in TOPIC_IGNORE_EXTRA_REGEX])
@@ -140,8 +139,7 @@ class TopicAggregator(DatasetAggregator):
             return
 
         self.extra_columns.update(extra_columns)
-        LOGGER.warning(f"File {file_metadata.url} has extra columns: {extra_columns}")
-        raise RuntimeError("File has extra columns")
+        LOGGER.info(f"File {file_metadata.url} has extra columns (ignored): {extra_columns}")
 
     def _normalize_frame(self, df: pd.DataFrame, file_metadata: PandasRow) -> pd.DataFrame:
         """
