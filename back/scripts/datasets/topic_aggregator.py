@@ -153,8 +153,9 @@ class TopicAggregator(DatasetAggregator):
                 columns=self.official_topic_schema.set_index("lower_name")["name"].to_dict()
             )
             .pipe(self._flag_columns_by_keyword)
+            # Merge again after renames in case different columns mapped to the same name
+            .pipe(merge_duplicate_columns)
         )
-        self._flag_duplicate_columns(df, file_metadata)
         df = (
             df.pipe(normalize_identifiant, "idBeneficiaire")
             .pipe(normalize_identifiant, "idAttribuant")
