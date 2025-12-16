@@ -117,3 +117,26 @@ nombeneficiaire_0;nomBeneficiaire
 section_nature;categoryUsage
 date_de_la_convention_de_subvention;dateConvention
 nature_de_la_subvention;nature
+numero de referencement au repertoire des entreprises;idBeneficiaire
+date de convention*;dateConvention
+aide notifiee a l'europe;notificationUE
+aide notifiee a  l'europe;notificationUE
+pourcentage du montant de la subvention attribue au beneficiaire*;pourcentageSubvention
+la_date_conv;dateConvention
+la_somme_e_mtdel;montant
+subvention;montant
+subvention allouee;montant
+total_des_mandats_emis;montant
+total_des_subventions;montant
+total des subventions;montant
+subventions_versees;montant
+somme des subventions versees en 2013;montant
+subvention totale;montant
+libelle_complet_tiers;nomBeneficiaire
+libelle_beneficiaire;nomBeneficiaire
+nom_des_beneficaires;nomBeneficiaire
+tiers_beneficiaire;nomBeneficiaire
+nom;nomBeneficiaire
+siret_1;idBeneficiaire
+siret.1;idBeneficiaire
+siret 1;idBeneficiaire
