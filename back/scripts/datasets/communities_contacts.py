@@ -89,7 +89,8 @@ class CommunitiesContact(BaseDataset):
             .pipe(
                 lambda df: df.loc[
                     (df["dataset_id"] == self.DATASET_ID)
-                    & (df["title"] == "Base de données locales de Service-public"),
+                    & (df["title"].str.startswith("Base de données locales de Service-public"))
+                    & (df["format"] == "json"),
                     "id",
                 ]
             )
