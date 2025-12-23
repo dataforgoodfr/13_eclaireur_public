@@ -33,17 +33,23 @@ export default function SearchBar({
     setTimeout(() => setIsFocused(false), 200);
   }
 
-  function resetSearchBar() {
-    setQuery('');
-    setIsFocused(false);
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-  }
+  // Commenting cos never used
+  // function resetSearchBar() {
+  //   setQuery('');
+  //   setIsFocused(false);
+  //   if (inputRef.current) {
+  //     inputRef.current.value = '';
+  //   }
+  // }
 
   function handleSelect(picked: Pick<Community, 'nom' | 'siren' | 'type' | 'code_postal'>) {
+    setQuery(picked.nom);
+    if (inputRef.current) {
+      inputRef.current.value = picked.nom;
+    }
+    setIsFocused(false);
+
     onSelect(picked);
-    resetSearchBar();
   }
 
   // Détection de clic extérieur
@@ -69,7 +75,7 @@ export default function SearchBar({
   return (
     <div className={className}>
       <div className='relative' ref={searchBarRef}>
-        <div className='flex items-center'>
+        <div className='flex items-center overflow-visible'>
           <Input
             ref={inputRef}
             type='search'
@@ -81,7 +87,10 @@ export default function SearchBar({
               if (e.relatedTarget === null) handleOnBlur();
             }}
           />
-          <Search className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary' />
+          <div className='pointer-events-none absolute right-14 top-1 h-12 w-10 bg-gradient-to-l from-white to-transparent' />
+          <div className='ratio-square absolute right-0 top-0 flex h-14 w-14 items-center justify-center rounded-br-xl bg-primary'>
+            <Search className='absolute h-4 w-4 text-white' />
+          </div>
         </div>
         {showSuggestions && <Suggestions query={query} onSelect={handleSelect} />}
       </div>
