@@ -15,10 +15,10 @@ function createSQLQueryParams(
   const values: (string | number)[] = [siren];
 
   let query = `
-    SELECT 
-      id_mp as id, 
-      objet, 
-      montant_du_marche_public as montant, 
+    SELECT
+      id_mp,
+      objet,
+      montant_du_marche_public,
       annee_notification,
       ARRAY_AGG(titulaire_denomination_sociale) AS titulaire_names,
       count(*) OVER()::integer AS total_row_count
