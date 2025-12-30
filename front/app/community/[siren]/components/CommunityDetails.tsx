@@ -74,7 +74,7 @@ function InfoBlock({
           )}
         </p>
         <h4 className='flex items-center text-lg font-bold'>
-          {isTailleAdministration && numericValue >= 5000 && (
+          {isTailleAdministration && numericValue >= 10000 && (
             <span className='ml-1 mr-1 text-base font-normal sm:inline'>Plus de </span>
           )}
           <SlidingNumber
@@ -89,7 +89,7 @@ function InfoBlock({
               mass: 0.4,
             }}
           />
-          {isTailleAdministration && numericValue > 0 && numericValue < 5000 && (
+          {isTailleAdministration && numericValue > 0 && numericValue < 10000 && (
             <>
               <span className='ml-1 mr-1 text-base font-normal sm:inline'>à </span>
               <SlidingNumber
