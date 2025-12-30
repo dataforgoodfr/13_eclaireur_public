@@ -26,6 +26,7 @@ EFFECTIF_CODE_TO_EMPLOYEES = {
     "42": 1000,
     "51": 2000,
     "52": 5000,
+    "53": 10000,
 }
 
 # Rate limiting configuration
