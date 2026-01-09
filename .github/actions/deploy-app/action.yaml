@@ -1,0 +1,36 @@
+name: 'Deploy App'
+description: 'Deploy application to Clever Cloud'
+
+inputs:
+  clever_token:
+    description: 'Clever Cloud API token'
+    required: true
+  clever_secret:
+    description: 'Clever Cloud API secret'
+    required: true
+  clever_app_id:
+    description: 'Clever Cloud application ID'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Clever Cloud CLI
+      shell: bash
+      run: npm install -g clever-tools
+
+    - name: Link to Clever Cloud app
+      shell: bash
+      working-directory: front
+      run: clever link ${{ inputs.clever_app_id }}
+      env:
+        CLEVER_TOKEN: ${{ inputs.clever_token }}
+        CLEVER_SECRET: ${{ inputs.clever_secret }}
+
+    - name: Deploy to Clever Cloud
+      shell: bash
+      working-directory: front
+      run: clever deploy --force
+      env:
+        CLEVER_TOKEN: ${{ inputs.clever_token }}
+        CLEVER_SECRET: ${{ inputs.clever_secret }}
