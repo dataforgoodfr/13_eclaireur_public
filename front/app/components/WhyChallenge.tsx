@@ -8,7 +8,7 @@ export default async function WhyChallenge() {
       <div className='flex flex-col gap-10 rounded-xl border border-primary-light p-6'>
         <div className='flex flex-col gap-10 rounded-xl bg-muted-border p-6 md:flex-row'>
           <div className='flex flex-col gap-5 md:w-2/3'>
-            <h2 className='text-h2'>Pourquoi interpeller mes élu.e.s ?</h2>
+            <h2 className='text-h2'>Pourquoi interpeller vos élus ?</h2>
             <div className='grid gap-4'>
               <div>
                 <div className='grid gap-4'>
@@ -17,10 +17,9 @@ export default async function WhyChallenge() {
                     les encourager à mieux rendre compte de l'utilisation des fonds publics.
                   </p>
                   <p className='text-lg'>
-                    Les collectivités sont légalement tenues de publier leurs données
-                    administratives en open data selon la loi pour une République Numérique de 2016,
-                    comme décrit en détail sur notre page consacrée au cadre règlementaire. Seules
-                    10% d'entre elles respectent cette obligation.
+                    Les collectivités sont légalement tenues de publier leurs données d'intérêt
+                    général en open data, selon la loi pour une République Numérique de 2016. Seules
+                    10% d'entre elles respectent pleinement cette obligation.
                   </p>
                 </div>
                 <KnowMore href='/le-projet'></KnowMore>
