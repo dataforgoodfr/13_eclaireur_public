@@ -97,30 +97,27 @@ export default function Page() {
         <div>
           <p className='mb-2'>Eclaireur Public a élaboré trois barèmes de transparence :</p>
           <ul className='mb-4 list-disc pl-5'>
-            <li>un barème sur la transparence des subventions</li>
-            <li>un deuxième barème sur la transparence des marchés publics</li>
-            <li>
-              un troisième barème de transparence global qui est une moyenne des deux barèmes
-              ci-dessus
-            </li>
+            <li>Un premier sur la transparence des subventions</li>
+            <li>Un deuxième sur la transparence des marchés publics</li>
+            <li>Un troisième, global, qui agrège les deux barèmes ci-dessus.</li>
           </ul>
           <p>
-            Ces barèmes mesurent la transparence des données publiques (subventions et marchés
-            publics) suivant, pour résumer, le taux de publication de l'ensemble des données
-            attendue sur les subventions et sur les marchés publics.
+            Ces barèmes mesurent la qualité de la publication de ces deux types de données
+            publiques, en comparant l'état de publication par rapport aux éléments obligatoires
+            (figurant dans des décrets organisant la publication en open data).
           </p>
           <p>
-            Le détail précis de la notation adopté pour ces barèmes de transparence est consultable
-            sur la page "Comprendre - Méthodologie" dans la section calcul de l'indice de
-            transparence.
+            Le détail précis de la notation adoptée pour ces barèmes de transparence est consultable
+            sur la page &quot;Comprendre - Méthodologie&quot; dans la section &quot;Calcul de
+            l'indice de transparence&quot;.
           </p>
         </div>
         <h2>Que dit la loi ?</h2>
         <div>
           <p>
-            C'est la loi pour une République Numérique de 2016 qui vise à rendre accessible à tous
-            les citoyens les informations essentielles concernant l'action des pouvoirs
-            publics.{' '}
+            La loi rend obligatoire la publication en ligne, dans un format ouvert (open data), des
+            principaux documents et données des collectivités territoriales. Sont concernées les
+            données d'intérêt économique, social, sanitaire et environnemental.
           </p>
           <p>Sont concernées les collectivités suivantes :</p>
           <ul className='mb-4 list-disc pl-5'>
@@ -131,7 +128,7 @@ export default function Page() {
         <h2>Comment concrètement ouvrir ses données ?</h2>
         <div>
           <p>
-            Les données doivent être publiées sur la plateforme gouvernementale prévue à cet effet{' '}
+            Les données sont publiées sur la plateforme gouvernementale prévue à cet effet{' '}
             <Link
               href='https://data.gouv.fr'
               target='_blank'
