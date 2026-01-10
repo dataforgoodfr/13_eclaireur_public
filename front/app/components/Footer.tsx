@@ -72,13 +72,13 @@ const Footer: FC = () => (
           <div className='flex flex-col items-start gap-2'>
             <Image
               src='/eclaireur/eclaireur-footeur.svg'
-              alt='Éclaireur Public – Pour une transparence des dépenses'
+              alt='Éclaireur Public – Pour une transparence des dépenses publiques'
               width={300}
               height={70}
               priority
               className='h-9 w-auto'
             />
-            <p className='text-lg'>Pour une transparence des dépenses</p>
+            <p className='text-lg'>Pour une transparence des dépenses publiques</p>
             <span className='hidden text-sm font-bold text-secondary-dark md:mt-2 md:block'>
               Suivez‑nous
             </span>
