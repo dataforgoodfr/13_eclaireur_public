@@ -1,9 +1,8 @@
-// TODO: Review and remove unused variables. This file ignores unused vars for now.
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server';
 
 import { InterpellateFormSchema } from '#components/Interpellate/types';
 import { renderEmailTemplate } from '#utils/emails/emailRendering-server';
+import { createInterpellateToken } from '#utils/emails/interpellateToken';
 import { trySendMail } from '#utils/emails/send-email';
 import Mail from 'nodemailer/lib/mailer';
 
@@ -45,20 +44,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: zodErrors });
   }
 
-  const confirmUrl = new URL('api/interpellate/confirm', process.env.NEXT_PUBLIC_BASE_URL);
-  const params = new URLSearchParams();
-  params.append('siren', siren ?? '');
-  params.append('isCC', isCC !== undefined ? isCC.toString() : 'false');
-  params.append('firstname', firstname ?? '');
-  params.append('lastname', lastname ?? '');
-  params.append('email', email ?? '');
-  params.append('emails', emails ?? '');
-  params.append('communityType', communityType ?? '');
-  params.append('communityName', communityName ?? '');
-  confirmUrl.search = params.toString();
+  const token = createInterpellateToken({
+    siren: siren ?? '',
+    firstname: firstname ?? '',
+    lastname: lastname ?? '',
+    email: email ?? '',
+    emails: emails ?? '',
+    isCC: isCC ?? false,
+    communityType: communityType ?? '',
+    communityName: communityName ?? '',
+  });
+  const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/interpellate/confirm?token=${token}`;
   const confirmInterpellateHtml = renderEmailTemplate('confirm-interpellate', {
     firstname: firstname ?? '',
-    link: confirmUrl.toString(),
+    link: confirmUrl,
   });
 
   const confirmInterpellateHtmlObject = `${firstname}, Confirmez votre interpellation citoyenne - Éclaireur Public`;
