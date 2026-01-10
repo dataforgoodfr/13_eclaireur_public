@@ -24,7 +24,7 @@ export default async function ProjectDescription() {
           <div>
             <div className='mb-3 text-lg'>
               <p className='my-6 text-lg'>
-                Depuis 2016, les collectivités doivent publier leurs données d'intérêt général.
+                Depuis 2016, les collectivités de plus de 3500 habitants doivent publier leurs données d'intérêt général.
                 Pourtant, seules 10% le font. Transparency International France et Anticor estiment
                 que la confiance citoyenne repose sur l'exemplarité des institutions.
               </p>
