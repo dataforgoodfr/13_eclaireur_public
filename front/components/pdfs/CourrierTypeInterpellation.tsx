@@ -63,9 +63,9 @@ export const CourrierTypeInterpellation = ({
 
         <Text style={styles.section}>
           En tant que citoyen·ne soucieux·se de la transparence et de la bonne gestion des fonds
-          publics, je souhaite attirer votre attention sur l’obligation légale de publication des
-          données d’investissements et de marchés publics pour les collectivités de plus de 3 500
-          habitants et comptant au moins 50 agents à temps plein.
+          publics, je souhaite attirer votre attention sur l'obligation légale de publication des
+          données relatives aux marchés publics et aux subventions octroyées pour les collectivités
+          de plus de 3 500 habitants et comptant au moins 50 agents à temps plein.
         </Text>
 
         <Text style={styles.section}>
