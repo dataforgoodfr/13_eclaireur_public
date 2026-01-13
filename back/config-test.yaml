@@ -10,7 +10,7 @@ ofgl:
 communities:
   data_folder: back/tests/data/communities
   combined_filename: back/tests/data/communities/communities.parquet
-  epci_url: https://www.collectivites-locales.gouv.fr/files/Accueil/DESL/2025/epcicom2025-2.xlsx
+  epci_url: https://www.collectivites-locales.gouv.fr/files/files/Etudes-et-statistiques/Liste%20et%20composition%20des%20EPCI%20%C3%A0%20fiscalit%C3%A9%20propre/2025/epcicom2025-2.xlsx
   odf_url: file:./back/scripts/datasets/odf.csv
 
   geolocator:
