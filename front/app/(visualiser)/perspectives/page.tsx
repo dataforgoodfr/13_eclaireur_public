@@ -25,7 +25,7 @@ export default function Page() {
       </p>
       <p className='my-6 text-lg'>
         Attention spoiling : la transparence des données publiques des différentes collectivités
-        françaises est mauvaise.
+        françaises est hétérogène malgré un cadre juridique ambitieux.
       </p>
       <h2 className='my-12 text-2xl font-bold'>
         La France championne d'Europe et vice championne du monde de l'open data
@@ -51,31 +51,33 @@ export default function Page() {
       </p>
       <p className='my-6 text-lg'>
         Beaucoup de chemin a été parcouru en matière d’ouverture des données publiques. La
-        déclaration des droits de l’homme et du citoyen de 1789 érigeait déjà, dans sont article 15,
-        la transparence comme un grand principe : « La société a le droit de demander compte à tout
-        agent public de son administration ». Il a fallu attendre les lois de 1978 et 1979, à la
-        naissance de la CNIL, pour que soit formalisé dans la loi l’accès des citoyens aux archives
+        Déclaration des droits de l'homme et du citoyen de 1789 érigeait déjà, dans son article 15,
+        la transparence comme un principe républicain fondamental : « La société a le droit de demander compte à tout
+        agent public de son administration ». Il a fallu attendre les lois de
+        1978 et 1979 et la naissance de la CNIL, pour que soit formalisé dans la loi l’accès des citoyens aux archives
         et documents administratifs.
       </p>
       <p className='my-6 text-lg'>
-        L’avènement des outils informatiques et de l’internet en particulier a logiquement abouti à
-        la loi pour une République numérique de 2016 qui, en théorie, impose à tous les
-        établissements publics la publication des données d’intérêt public.{' '}
+        L'avènement des outils informatiques - et de l'Internet en particulier - ont permis
+        d'élargir le champ des possibles. Une vision plus ambitieuse de la transparence a été
+        entérinée par l'adoption de la loi pour une République numérique de 2016 : celle-ci impose
+        en effet à toutes les administrations et la majorité des collectivités territoriales la
+        publication en open data de leurs données d'intérêt public.
       </p>
       <p className='my-6 text-lg'>
         <Link href='https://data.gouv.fr' className='border-b-2 border-black'>
           Data.gouv.fr
         </Link>{' '}
         est le navire amiral de la donnée publique. Lancée fin 2011, cette plateforme
-        gouvernementale recense et met à disposition toutes les données publiques publiées, en
-        théorie. Tous les établissements publiccs sont supposés publier leur données sur cette
-        plateforme.
+        gouvernementale a vocation à recenser et mettre à disposition toutes les données publiques
+        publiées. Pour construire une véritable politique publique de l'open data, tous les
+        établissements publics sont censés publier leurs données sur cette plateforme.
       </p>
       <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
       <p className='my-6 text-lg'>
-        En pratique, malgré des rapports très flatteurs sur la transparence des données publiques en
-        France, Eclaireur Public met en lumière ce que d'aucuns pressentaient au doigt mouillé, à
-        savoir que la transparence sur les dépenses publiques locales reste très limitée.
+        En pratique, malgré une forte ambition initiale et quelques rares bons élèves, Eclaireur
+        Public met en lumière la transparence encore trop limitée sur les dépenses publiques
+        locales.
       </p>
       <p className='my-6 text-lg'>
         Malgré les obligations légales et les initiatives en faveur de l'open data, la majorité des
@@ -103,51 +105,6 @@ export default function Page() {
           98% des communes ont un score de transparence égal à E
         </li>
       </ul>
-      <p className='my-6 text-lg'>
-        Suggestions :<br />
-        - cartographie de la transparence des données publiques en Europe, dans le monde
-        <br />
-        - citation d'une personnalité sur la transparence des données
-        <br />
-        - Rappel sur les vertus de la transparence et sur les dérives de l'opacité
-        <br />
-      </p>
-
-      <h2 className='my-12 text-2xl font-bold'>Perspectives</h2>
-      <p className='my-6 text-lg'>
-        Le diagnostic réalisé grâce à notre initiative citoyenne nous conduit à tirer un ensemble
-        d'enseignements et de préconisations dont nous dressons une liste ici :
-      </p>
-      <ul>
-        <li className='list-inside list-disc'>
-          D'abord les points positifs :
-          <ul className='ml-4'>
-            <li className='list-inside list-disc'>
-              Au niveau national, il convient de concéder qu'énormément d'efforts ont été réalisés
-              dans le bon sens de la transparence des données publiques. Le portail data.gouv.fr,
-              créé en 2009, compte aujourd'hui (15 sept 2025) 2,1 millions de jeux de données.
-            </li>
-            <li className='list-inside list-disc'>Avantage 2</li>
-            <li className='list-inside list-disc'>Avantage 3</li>
-          </ul>
-        </li>
-        <li className='mt-4 list-inside list-disc'>
-          Puis les points négatifs :
-          <ul className='ml-4'>
-            <li className='list-inside list-disc'>Désavantage 1</li>
-            <li className='list-inside list-disc'>Désavantage 2</li>
-            <li className='list-inside list-disc'>Désavantage 3</li>
-          </ul>
-        </li>
-        <li className='mt-4 list-inside list-disc'>
-          Les préconisations :
-          <ul className='ml-4'>
-            <li className='list-inside list-disc'>préconisation 1</li>
-            <li className='list-inside list-disc'>préconisation 2</li>
-            <li className='list-inside list-disc'>préconisation 3</li>
-          </ul>
-        </li>
-      </ul>
-    </main>
+          </main>
   );
 }
