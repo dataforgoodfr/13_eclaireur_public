@@ -266,29 +266,27 @@ export default function Page() {
               <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
                 B
               </div>
-              <div className='text-center'>De 75% à 95%</div>
+              <div className='text-center'>De 50% à 95%</div>
             </div>
             <div className='flex items-center md:block'>
               <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
                 C
               </div>
-              <div className='text-center'>De 50% à 75%</div>
+              <div className='text-center'>De 25% à 50%</div>
             </div>
             <div className='flex items-center md:block'>
               <div className='float-left mr-2 rounded-md bg-scoreIndice-D px-4 py-2 text-center font-semibold md:hidden'>
                 D
               </div>
-              <div className='text-center'>De 25% à 50%</div>
+              <div className='text-center'>De 0% à 25%</div>
             </div>
             <div className='flex items-center md:block'>
               <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
                 E
               </div>
               <div className='flex flex-col pr-4 text-left md:space-y-2 md:text-center'>
-                <span>Moins de 25% ou données inexploitables</span>
-                <span className='font-normal'>
-                  Si plus de 105% → <span className='font-bold'>E</span>
-                </span>
+                <span>0% - Aucune donnée</span>
+                <span className='font-normal'>ou plus de 105%</span>
               </div>
             </div>
           </div>

@@ -114,9 +114,8 @@ export default function OurMethodologyExtended() {
                 publication.
               </div>
               <div className='mt-6'>
-                La valeur A étant la note maximale avec un taux de publication de 100 %, et la
-                valeur E la note la plus basse avec un taux de publication inférieur à 40 % de
-                publications ou pour le cas où les données sont inexploitables.
+                La valeur A étant la note maximale avec un taux de publication de 100 % (+/- 5%), et
+                la valeur E correspondant à 0% de publications (aucune donnée exploitable).
               </div>
             </div>
             <div className='mt-6 flex flex-col gap-2 md:mt-0 md:min-w-[468px]'>
