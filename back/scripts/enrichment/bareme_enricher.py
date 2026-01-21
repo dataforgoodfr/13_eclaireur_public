@@ -1,3 +1,4 @@
+import math
 import typing
 from datetime import datetime
 from pathlib import Path
@@ -244,7 +245,8 @@ class BaremeEnricher(BaseEnricher):
         Règles métier pour l'évaluation de la transparence :
         - Un taux supérieur à 95% et jusqu'à 105% est considéré comme excellent (score A)
         - Un taux > 105% est suspect (possible double comptage ou erreur) → score E
-        - Les taux très faibles indiquent une sous-déclaration importante
+        - Un taux de 0% indique aucune donnée exploitable → score E
+        - Les taux très faibles (>0% à 25%) indiquent un effort minimal mais insuffisant
 
         Args:
             tp (float): Taux de publication en pourcentage
@@ -252,29 +254,28 @@ class BaremeEnricher(BaseEnricher):
 
         Returns:
             str: Score de A (excellent) à E (insuffisant)
-                - E : ≤ 25% - Transparence insuffisante (sous-déclaration majeure)
-                - D : ]25%, 50%] - Transparence faible (sous-déclaration importante)
-                - C : ]50%, 75%] - Transparence moyenne (déclaration partielle)
-                - B : ]75%, 95%] - Bonne transparence (bonne déclaration)
+                - E : 0%, invalide ou >105% - Aucune donnée exploitable ou sur-déclaration
+                - D : ]0%, 25%] - Effort minimal mais très insuffisant
+                - C : ]25%, 50%] - Transparence faible (sous-déclaration importante)
+                - B : ]50%, 95%] - Transparence correcte (déclaration partielle à bonne)
                 - A : ]95%, 105%] - Très bonne transparence (déclaration optimale)
-                - E : > 105% - Transparence suspecte (sur-déclaration anormale)
 
         Note:
             Les valeurs invalides (NaN, inf, négatives) retournent automatiquement E
             pour signaler un problème dans les données source.
         """
-        if tp <= 25:
-            return "E"  # Sous-déclaration majeure
+        if math.isnan(tp) or tp <= 0:
+            return "E"  # Données invalides ou inexploitables
+        elif tp <= 25:
+            return "D"  # Effort minimal mais très insuffisant
         elif tp <= 50:
-            return "D"  # Sous-déclaration importante
-        elif tp <= 75:
-            return "C"  # Déclaration partielle
+            return "C"  # Sous-déclaration importante
         elif tp <= 95:
-            return "B"  # Bonne déclaration
+            return "B"  # Déclaration partielle à bonne
         elif tp <= 105:
             return "A"  # Déclaration optimale
         else:
-            return "E"  # Sur-déclaration suspecte
+            return "E"  # Sur-déclaration suspecte (>105%)
 
     @classmethod
     def bareme_marchespublics(
