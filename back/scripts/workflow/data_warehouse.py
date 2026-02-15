@@ -12,6 +12,8 @@ from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsE
 from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
+from back.scripts.audit.audit_diff import append_comparison_to_html, compare_with_previous
+from back.scripts.audit.audit_report import generate_audit_report
 from back.scripts.utils.psql_connector import PSQLConnector
 
 LOGGER = logging.getLogger(__name__)
@@ -46,6 +48,18 @@ class DataWarehouseWorkflow:
         CommunitiesEnricher.enrich(self.config)
         self._send_to_postgres()
         self._create_indexes()
+        self._generate_audit_report()
+
+    def _generate_audit_report(self) -> None:
+        """Generate an audit report and compare with the previous run."""
+        LOGGER.info("Generating audit report...")
+        json_path = generate_audit_report(self.config)
+
+        comparison = compare_with_previous(json_path)
+        if comparison is not None:
+            html_path = json_path.with_suffix(".html")
+            append_comparison_to_html(html_path, comparison)
+            LOGGER.info("Audit report with comparison generated successfully")
 
     @staticmethod
     def _write_dataframe_in_chunks(
