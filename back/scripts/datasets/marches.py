@@ -30,6 +30,9 @@ COLUMNS_RENAMER = {
     "acheteur.id": "acheteur_id",
 }
 
+# Fields that only exist in DECP v2.0.3 and not in v1.5.0.
+V2_ONLY_FIELDS = {"ccag", "marcheInnovant", "attributionAvance", "sousTraitanceDeclaree"}
+
 
 class MarchesPublicsWorkflow(DatasetAggregator):
     @classmethod
@@ -72,7 +75,9 @@ class MarchesPublicsWorkflow(DatasetAggregator):
 
     def __init__(self, files: pd.DataFrame, config: dict):
         super().__init__(files, config)
-        self._load_schema(config[self.get_config_key()]["schema"])
+        mp_config = config[self.get_config_key()]
+        self._load_schema(mp_config["schema"])
+        self._load_schema_v2(mp_config.get("schema_v2"))
 
     def _load_schema(self, url):
         schema_filename = self.data_folder / "official_schema.parquet"
@@ -84,6 +89,24 @@ class MarchesPublicsWorkflow(DatasetAggregator):
             {"type": "string"}
         )
         self.official_schema.to_parquet(schema_filename)
+
+    def _load_schema_v2(self, url: str | None):
+        """Load v2.0.3 schema if a URL is provided."""
+        if not url:
+            self.official_schema_v2 = None
+            return
+        schema_filename = self.data_folder / "official_schema_v2.parquet"
+        if schema_filename.exists():
+            self.official_schema_v2 = pd.read_parquet(schema_filename)
+            return
+        try:
+            self.official_schema_v2 = MarchesPublicsSchemaLoader.load(url, "marche").fillna(
+                {"type": "string"}
+            )
+            self.official_schema_v2.to_parquet(schema_filename)
+        except Exception as exc:
+            LOGGER.warning("Failed to load v2 schema from %s: %s", url, exc)
+            self.official_schema_v2 = None
 
     def _read_parse_file(
         self, file_metadata: PandasRow, raw_filename: Path
@@ -159,40 +182,83 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         return "unknown"
 
     @staticmethod
+    def detect_schema_version(declaration: dict) -> str:
+        """Detect whether a single row uses v1.5.0 or v2.0.3 schema.
+
+        Heuristic: v2.0.3 introduces fields like ``ccag``, ``marcheInnovant``,
+        ``attributionAvance``, and ``sousTraitanceDeclaree`` that do not exist
+        in v1.5.0.
+        """
+        if V2_ONLY_FIELDS.intersection(declaration.keys()):
+            return "v2"
+        return "v1"
+
+    @staticmethod
+    def _normalize_acheteur_id(raw_id: str) -> str:
+        """In v2.0.3 acheteur.id is a 14-digit SIRET. Truncate to 9-digit
+        SIREN to stay compatible with the rest of the pipeline."""
+        raw_id = str(raw_id).strip()
+        if raw_id.isdigit() and len(raw_id) == 14:
+            return raw_id[:9]
+        return raw_id
+
+    @staticmethod
+    def _ensure_lieu_execution_v2(declaration: dict) -> dict:
+        """v2.0.3 lieuExecution has ``code`` and ``typeCode`` but no ``nom``.
+
+        We reconstruct a ``nom`` placeholder from typeCode + code so the
+        downstream enricher receives a value instead of null.
+        """
+        lieu = declaration.get("lieuExecution")
+        if not lieu or not isinstance(lieu, dict):
+            return declaration
+
+        if "nom" not in lieu or lieu.get("nom") is None:
+            code = lieu.get("code", "")
+            type_code = lieu.get("typeCode", "")
+            if code:
+                lieu["nom"] = f"{type_code} {code}".strip()
+            declaration["lieuExecution"] = lieu
+
+        return declaration
+
+    @staticmethod
     def clean_row(declaration: dict):
         """
-        Nettoie le dataset brut de marché public
+        Nettoie le dataset brut de marché public (v1.5.0 et v2.0.3).
         """
         local_decla = copy.copy(declaration)
 
+        schema_version = MarchesPublicsWorkflow.detect_schema_version(local_decla)
+
+        if schema_version == "v2":
+            local_decla = MarchesPublicsWorkflow._ensure_lieu_execution_v2(local_decla)
+
         cleaned_row = {}
         for k, v in local_decla.items():
-            # acheteur is sometimes just a dictionnary with a single "id" key
             if k == "acheteur":
                 try:
-                    cleaned_row["acheteur.id"] = str(v["id"])
+                    raw_id = str(v["id"])
+                    cleaned_row["acheteur.id"] = (
+                        MarchesPublicsWorkflow._normalize_acheteur_id(raw_id)
+                        if schema_version == "v2"
+                        else raw_id
+                    )
                 except TypeError:
                     cleaned_row["acheteur.id"] = ""
             elif k == "montant":
                 cleaned_row["montant"] = v
             elif k == "titulaires":
-                # formats exemples
-                # "titulaires": [ {"titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" }, "titulaire": {"typeIdentifiant": "SIRET","id": "39081281600010" } } ]
-                # "titulaires": [  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  },  { "typeIdentifiant": "SIRET", "id": "35330449600063", "denominationSociale": "AQUA MANIA"  }  ]
-
                 minimal_titulaire = [{"id": None}]
                 titulaires = v or minimal_titulaire
                 if isinstance(titulaires, dict):
                     titulaires = [titulaires]
 
-                # Remove None
                 titulaires = [t for t in titulaires if t]
 
-                # titulaire is sometimes nested
-                if "titulaire" in titulaires[0].keys():
+                if titulaires and "titulaire" in titulaires[0].keys():
                     titulaires = [titu["titulaire"] for titu in titulaires]
 
-                # titulaires id is sometimes an integer, we cast it to str
                 titulaires = [
                     {
                         **titu,
@@ -203,8 +269,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                     for titu in titulaires
                 ]
 
-                # Tri des titulaires par id (utilisé dans l'enricher des MP)
-                titulaires = sorted(titulaires, key=lambda x: x["id"])
+                titulaires = sorted(titulaires, key=lambda x: x["id"] or "")
 
                 cleaned_row["titulaires"] = titulaires
                 cleaned_row["countTitulaires"] = len(titulaires)
@@ -214,6 +279,8 @@ class MarchesPublicsWorkflow(DatasetAggregator):
                 elif isinstance(v, decimal.Decimal):
                     v = float(v)
                 cleaned_row[k] = v
+
+        cleaned_row["_schema_version"] = schema_version
         return cleaned_row
 
 
