@@ -92,6 +92,7 @@ class MarchesPublicsEnricher(BaseEnricher):
             .pipe(CPVUtils.add_cpv_labels, cpv_labels=cpv_labels)
             .rename(to_snake_case)
             .pipe(cls.drop_rows_with_null_dates_or_amounts)
+            .pipe(cls.handle_outlier_amounts)
             .pipe(cls.assoc_with_sirene, sirene)
         )
 
@@ -606,6 +607,32 @@ class MarchesPublicsEnricher(BaseEnricher):
             marches.join(id_mapping, on="id_mp", how="left")
             .drop("id_mp")
             .rename({"id_mp_integer": "id_mp"})
+        )
+
+    @staticmethod
+    def handle_outlier_amounts(marches: pl.DataFrame) -> pl.DataFrame:
+        """Flag and filter aberrant montant values in marches publics.
+
+        - Above 1 billion EUR: the amount is set to null and
+          ``montant_aberrant`` is set to True (almost certainly a data
+          entry error such as amounts entered in centimes).
+        - Between 100 million and 1 billion EUR: the amount is kept but
+          ``montant_aberrant`` is set to True (borderline -- may be real
+          for large infrastructure contracts but warrants review).
+        - Below 100 million EUR: ``montant_aberrant`` is set to False.
+        """
+        EXTREME_THRESHOLD = 1_000_000_000  # 1 billion
+        BORDERLINE_THRESHOLD = 100_000_000  # 100 million
+
+        return marches.with_columns(
+            pl.when(pl.col("montant_du_marche_public") > EXTREME_THRESHOLD)
+            .then(pl.lit(None).cast(pl.Float64))
+            .otherwise(pl.col("montant_du_marche_public"))
+            .alias("montant_du_marche_public"),
+            pl.when(pl.col("montant_du_marche_public") > BORDERLINE_THRESHOLD)
+            .then(pl.lit(True))
+            .otherwise(pl.lit(False))
+            .alias("montant_aberrant"),
         )
 
     @staticmethod
