@@ -393,14 +393,16 @@ class MarchesPublicsEnricher(BaseEnricher):
                 pl.when(
                     pl.col("lieu_execution_code_departement").is_null()
                     & (
-                        pl.col("lieu_execution_code_postal").is_not_null()
-                        if "lieu_execution_code_postal" in result.columns
-                        else pl.lit(False)
-                    )
-                    | (
-                        pl.col("lieu_execution_code_commune").is_not_null()
-                        if "lieu_execution_code_commune" in result.columns
-                        else pl.lit(False)
+                        (
+                            pl.col("lieu_execution_code_postal").is_not_null()
+                            if "lieu_execution_code_postal" in result.columns
+                            else pl.lit(False)
+                        )
+                        | (
+                            pl.col("lieu_execution_code_commune").is_not_null()
+                            if "lieu_execution_code_commune" in result.columns
+                            else pl.lit(False)
+                        )
                     )
                 )
                 .then(

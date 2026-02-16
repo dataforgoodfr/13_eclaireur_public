@@ -227,7 +227,7 @@ class MarchesPublicsWorkflow(DatasetAggregator):
         """
         Nettoie le dataset brut de marché public (v1.5.0 et v2.0.3).
         """
-        local_decla = copy.copy(declaration)
+        local_decla = copy.deepcopy(declaration)
 
         schema_version = MarchesPublicsWorkflow.detect_schema_version(local_decla)
 
