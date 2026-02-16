@@ -4,6 +4,8 @@ from pathlib import Path
 import polars as pl
 from sqlalchemy import text
 
+from back.scripts.audit.audit_diff import append_comparison_to_html, compare_with_previous
+from back.scripts.audit.audit_report import generate_audit_report
 from back.scripts.datasets.communities_contacts import CommunitiesContact
 from back.scripts.datasets.declaration_interet import DeclaInteretWorkflow
 from back.scripts.enrichment.bareme_enricher import BaremeEnricher
@@ -12,8 +14,6 @@ from back.scripts.enrichment.elected_officials_enricher import ElectedOfficialsE
 from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
-from back.scripts.audit.audit_diff import append_comparison_to_html, compare_with_previous
-from back.scripts.audit.audit_report import generate_audit_report
 from back.scripts.utils.psql_connector import PSQLConnector
 
 LOGGER = logging.getLogger(__name__)
@@ -89,7 +89,11 @@ class DataWarehouseWorkflow:
             written += len(chunk)
             LOGGER.info(
                 "  %s chunk %d/%d: wrote %d rows (total: %d)",
-                table_name, i + 1, n_chunks, len(chunk), written,
+                table_name,
+                i + 1,
+                n_chunks,
+                len(chunk),
+                written,
             )
 
         return written
@@ -115,21 +119,21 @@ class DataWarehouseWorkflow:
                         conn.execute(text(f"TRUNCATE {table_name}"))
                         conn.commit()
 
-                written = self._write_dataframe_in_chunks(
-                    df, table_name, conn, if_table_exists
-                )
+                written = self._write_dataframe_in_chunks(df, table_name, conn, if_table_exists)
 
-                final_count = conn.execute(
-                    text(f"SELECT count(*) FROM {table_name}")
-                ).scalar()
+                final_count = conn.execute(text(f"SELECT count(*) FROM {table_name}")).scalar()
                 LOGGER.info(
                     "  %s: wrote %d rows, verified %d in DB",
-                    table_name, written, final_count,
+                    table_name,
+                    written,
+                    final_count,
                 )
                 if final_count != len(df):
                     LOGGER.warning(
                         "  %s: ROW COUNT MISMATCH – expected %d, got %d",
-                        table_name, len(df), final_count,
+                        table_name,
+                        len(df),
+                        final_count,
                     )
 
     def _create_indexes(self):

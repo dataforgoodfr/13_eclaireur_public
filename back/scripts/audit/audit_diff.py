@@ -74,7 +74,11 @@ def compare_with_previous(audit_json_path: Path) -> dict | None:
             if yearly_delta:
                 table_diff["yearly_changes"] = yearly_delta
 
-        for score_key in ["mp_score_distribution", "subventions_score_distribution", "global_score_distribution"]:
+        for score_key in [
+            "mp_score_distribution",
+            "subventions_score_distribution",
+            "global_score_distribution",
+        ]:
             if score_key in cur_t or score_key in prev_t:
                 cur_sd = cur_t.get(score_key, {})
                 prev_sd = prev_t.get(score_key, {})
@@ -156,7 +160,11 @@ def _render_comparison_html(comparison: dict) -> str:
                     f"{rows}</table>"
                 )
 
-        for score_key in ["mp_score_distribution_changes", "subventions_score_distribution_changes", "global_score_distribution_changes"]:
+        for score_key in [
+            "mp_score_distribution_changes",
+            "subventions_score_distribution_changes",
+            "global_score_distribution_changes",
+        ]:
             if score_key in diff:
                 label = score_key.replace("_changes", "").replace("_", " ").title()
                 rows = ""
@@ -178,7 +186,9 @@ def _render_comparison_html(comparison: dict) -> str:
                     )
 
         if parts:
-            details_html += f'<div class="table-detail"><h3>{table_name}</h3>{"".join(parts)}</div>'
+            details_html += (
+                f'<div class="table-detail"><h3>{table_name}</h3>{"".join(parts)}</div>'
+            )
 
     return f"""<div class="comparison">
 <h2>Comparison with previous run ({prev_ts})</h2>

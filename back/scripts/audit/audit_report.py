@@ -55,9 +55,7 @@ def generate_audit_report(config: dict) -> Path:
         df = pl.read_parquet(parquet_path)
         table_report = _collect_table_metrics(df, table_name, opts)
         report["tables"][table_name] = table_report
-        LOGGER.info(
-            "  %s: %d rows collected", table_name, table_report["row_count"]
-        )
+        LOGGER.info("  %s: %d rows collected", table_name, table_report["row_count"])
 
     json_path = audit_folder / f"audit_{timestamp}.json"
     json_path.write_text(json.dumps(report, indent=2, default=str))
@@ -72,9 +70,7 @@ def generate_audit_report(config: dict) -> Path:
     return json_path
 
 
-def _collect_table_metrics(
-    df: pl.DataFrame, table_name: str, opts: dict
-) -> dict:
+def _collect_table_metrics(df: pl.DataFrame, table_name: str, opts: dict) -> dict:
     """Collect metrics for a single table."""
     metrics: dict = {
         "row_count": len(df),
@@ -90,14 +86,9 @@ def _collect_table_metrics(
 
     year_col = opts.get("year_col")
     if year_col and year_col in df.columns:
-        yearly = (
-            df.group_by(year_col)
-            .agg(pl.len().alias("count"))
-            .sort(year_col)
-        )
+        yearly = df.group_by(year_col).agg(pl.len().alias("count")).sort(year_col)
         metrics["yearly_breakdown"] = {
-            str(row[year_col]): row["count"]
-            for row in yearly.iter_rows(named=True)
+            str(row[year_col]): row["count"] for row in yearly.iter_rows(named=True)
         }
 
     amount_col = opts.get("amount_col")
@@ -116,14 +107,9 @@ def _collect_table_metrics(
     if table_name == "bareme":
         for score_col in ["mp_score", "subventions_score", "global_score"]:
             if score_col in df.columns:
-                dist = (
-                    df.group_by(score_col)
-                    .agg(pl.len().alias("count"))
-                    .sort(score_col)
-                )
+                dist = df.group_by(score_col).agg(pl.len().alias("count")).sort(score_col)
                 metrics[f"{score_col}_distribution"] = {
-                    str(row[score_col]): row["count"]
-                    for row in dist.iter_rows(named=True)
+                    str(row[score_col]): row["count"] for row in dist.iter_rows(named=True)
                 }
 
     return metrics
@@ -142,9 +128,7 @@ def _render_html(report: dict) -> str:
 
         row_count = metrics["row_count"]
         col_count = metrics["column_count"]
-        high_null_cols = sum(
-            1 for v in metrics.get("null_rates_pct", {}).values() if v > 50
-        )
+        high_null_cols = sum(1 for v in metrics.get("null_rates_pct", {}).values() if v > 50)
         rows_html += (
             f"<tr><td>{table_name}</td>"
             f"<td>{row_count:,}</td>"
@@ -167,7 +151,11 @@ def _render_html(report: dict) -> str:
                 detail += f"<tr><td>{k}</td><td>{v:,.2f}</td></tr>"
             detail += "</table>"
 
-        for score_col in ["mp_score_distribution", "subventions_score_distribution", "global_score_distribution"]:
+        for score_col in [
+            "mp_score_distribution",
+            "subventions_score_distribution",
+            "global_score_distribution",
+        ]:
             if score_col in metrics:
                 detail += f"<h4>{score_col.replace('_', ' ').title()}</h4><table><tr><th>Score</th><th>Count</th></tr>"
                 for score, count in metrics[score_col].items():
@@ -175,11 +163,7 @@ def _render_html(report: dict) -> str:
                 detail += "</table>"
 
         if "null_rates_pct" in metrics:
-            high_nulls = {
-                k: v
-                for k, v in metrics["null_rates_pct"].items()
-                if v > 10
-            }
+            high_nulls = {k: v for k, v in metrics["null_rates_pct"].items() if v > 10}
             if high_nulls:
                 detail += "<h4>Columns with >10% null rate</h4><table><tr><th>Column</th><th>Null %</th></tr>"
                 for col, pct in sorted(high_nulls.items(), key=lambda x: -x[1]):
@@ -228,9 +212,7 @@ def _render_html(report: dict) -> str:
 </html>"""
 
 
-def _update_latest_symlink(
-    audit_folder: Path, json_path: Path, html_path: Path
-) -> None:
+def _update_latest_symlink(audit_folder: Path, json_path: Path, html_path: Path) -> None:
     """Maintain 'latest' symlinks for easy access."""
     for suffix, path in [("json", json_path), ("html", html_path)]:
         link = audit_folder / f"audit_latest.{suffix}"
