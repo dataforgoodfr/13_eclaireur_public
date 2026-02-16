@@ -60,7 +60,7 @@ const aProposMenus = [
   {
     title: 'Qui sommes-nous ?',
     href: '/qui-sommes-nous',
-    description: 'Transparency International France, ANTICOR, Data for Good',
+    description: 'ANTICOR, Data for Good',
   },
   {
     title: 'Le projet',

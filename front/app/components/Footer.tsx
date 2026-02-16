@@ -26,12 +26,6 @@ const FOOTER_DATA = {
       imgAlt: 'Anticor',
       name: 'Anticor',
     },
-    {
-      href: 'https://transparency-france.org/',
-      imgSrc: '/logos/assos/Transparency international.svg',
-      imgAlt: 'Transparency International',
-      name: 'Transparency International',
-    },
   ],
   navigation: [
     {

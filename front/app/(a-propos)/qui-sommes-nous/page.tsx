@@ -7,7 +7,7 @@ import { Card } from '#components/ui/card';
 export const metadata: Metadata = {
   title: 'Qui sommes-nous ?',
   description:
-    "Eclaireur Public c'est Anticor, Transparency International France, Data for Good et une cinquantaine de bénévoles",
+    "Eclaireur Public c'est Anticor, Data for Good et une cinquantaine de bénévoles",
 };
 
 export default function Page() {
@@ -18,39 +18,9 @@ export default function Page() {
       </div>
       <div className='m-4 rounded-3xl border border-primary-light p-8 md:m-16 xl:mx-auto xl:max-w-[1128px]'>
         <p className='hidden text-3xl font-extrabold md:block md:text-4xl'>
-          Eclaireur Public est le fruit de la collaboration entre Transparency International France,
-          ANTICOR et Data for Good.
+          Eclaireur Public est le fruit de la collaboration entre ANTICOR et Data for Good.
         </p>
-        <div className='my-10 grid gap-10 md:grid-cols-3'>
-          <div className='flex h-full w-full flex-col'>
-            <div className='relative mb-4 h-[90px]'>
-              <Image
-                src='/transparency-international-france.png'
-                fill
-                objectFit='contain'
-                alt='Logo de Transparency International France'
-              />
-            </div>
-            <WhoWeAreCard colorClassName='bg-brand-1 flex-1'>
-              <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>
-                Transparency International France
-              </h2>
-              <p className='my-3 text-lg'>
-                Transparency International France est une association qui vise à promouvoir la
-                transparence afin qu’Etats, entreprises, sociétés civiles et individus ne soient
-                plus confrontés à la corruption.
-              </p>
-              <p className='my-3 text-lg'>
-                Son action porte sur 3 axes - le plaidoyer, le contentieux et l’accompagnement.
-              </p>
-              <p className='my-3 text-lg'>
-                Pour en savoir plus :{' '}
-                <Link href='https://transparency-france.org/' className='border-b-2 border-black'>
-                  visiter le site de Transparency International France
-                </Link>
-              </p>
-            </WhoWeAreCard>
-          </div>
+        <div className='my-10 grid gap-10 md:grid-cols-2'>
           <div className='flex h-full w-full flex-col'>
             <div className='relative mb-4 h-[90px]'>
               <Image src='/anticor.png' fill objectFit='contain' alt="Logo d'ANTICOR" />
@@ -60,16 +30,16 @@ export default function Page() {
               <p className='my-3 text-lg'>
                 ANTICOR est une association transpartisane qui vise à lutter contre la corruption
                 afin de réhabiliter le rapport de confiance qui doit exister entre les citoyens et
-                leurs représentants – autant politiques qu’administratifs.
+                leurs représentants – autant politiques qu'administratifs.
               </p>
               <p className='my-3 text-lg'>
-                Son action porte sur l’invitation d’engagement des candidats sur l’éthique ainsi que
-                l’accompagnement des lanceurs d’alerte pour les affaires judiciaires.
+                Son action porte sur l'invitation d'engagement des candidats sur l'éthique ainsi que
+                l'accompagnement des lanceurs d'alerte pour les affaires judiciaires.
               </p>
               <p className='my-3 text-lg'>
                 Pour en savoir plus :{' '}
                 <Link href='https://anticor.org/' className='border-b-2 border-black'>
-                  visiter le site d’ANTICOR
+                  visiter le site d'ANTICOR
                 </Link>
               </p>
             </WhoWeAreCard>
@@ -82,12 +52,12 @@ export default function Page() {
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>Data for Good</h2>
               <p className='my-3 text-lg'>
                 Data for Good est un collectif réunissant des professionnels et des porteurs de
-                projets à impact positif afin d’accompagner ces derniers à la mise en place concrète
+                projets à impact positif afin d'accompagner ces derniers à la mise en place concrète
                 de ces projets.
               </p>
               <p className='my-3 text-lg'>
-                Son action s’articule via la mobilisation des compétences, la formation des citoyens
-                et des bénévoles ainsi que la réflexion sur l’intelligence artificielle.
+                Son action s'articule via la mobilisation des compétences, la formation des citoyens
+                et des bénévoles ainsi que la réflexion sur l'intelligence artificielle.
               </p>
               <p className='my-3 text-lg'>
                 Pour en savoir plus :{' '}
@@ -108,8 +78,8 @@ export default function Page() {
           />
           <h3 className='my-5 text-4xl font-extrabold'>Les bénévoles</h3>
           <p className='my-3 text-lg md:text-xl'>
-            Transparency International France, Anticor et Data for Good remercient chaleureusement
-            tous les bénévoles qui se sont impliqués.
+            Anticor et Data for Good remercient chaleureusement tous les bénévoles qui se sont
+            impliqués.
           </p>
         </div>
       </div>

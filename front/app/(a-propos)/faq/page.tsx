@@ -22,7 +22,7 @@ const faqItems: FaqItem[] = [
     id: 'item-2',
     question: 'Puis-je avoir confiance en Éclaireur Public\u00A0?',
     answer:
-      'Éclaireur Public est porté par deux associations reconnues pour leur engagement en faveur de la transparence et contre la corruption. Anticor et Transparency International.',
+      'Éclaireur Public est porté par Anticor, association reconnue pour son engagement en faveur de la transparence et contre la corruption, et accompagné par Data for Good.',
   },
   {
     id: 'item-3',
@@ -73,7 +73,7 @@ const faqItems: FaqItem[] = [
     id: 'item-8',
     question: "J'ai déjà alerté un ou des élus, rien ne se passe, quels sont mes recours\u00A0?",
     answer:
-      "Si après avoir interpellé les élus de votre collectivité aucune réponse n'est apportée dans un délai de 2 mois vous pouvez saisir la Commission d'Accès aux Documents Administratifs (CADA) via le site MaDada.fr. La CADA pourra enjoindre la collectivité à publier les informations demandées. Vous pouvez également contacter Anticor ou Transparency International pour être accompagné dans vos démarches.",
+      "Si après avoir interpellé les élus de votre collectivité aucune réponse n'est apportée dans un délai de 2 mois vous pouvez saisir la Commission d'Accès aux Documents Administratifs (CADA) via le site MaDada.fr. La CADA pourra enjoindre la collectivité à publier les informations demandées. Vous pouvez également contacter Anticor pour être accompagné dans vos démarches.",
   },
   {
     id: 'item-9',
@@ -169,7 +169,7 @@ const faqItems: FaqItem[] = [
     id: 'item-17',
     question: 'Qui puis-je contacter pour des informations\u00A0?',
     answer:
-      'Pour toute question, vous pouvez contacter Anticor ou Transparency International. Un formulaire de contact sera également disponible sur la page',
+      'Pour toute question, vous pouvez contacter Anticor. Un formulaire de contact sera également disponible sur la page',
   },
   {
     id: 'item-18',
