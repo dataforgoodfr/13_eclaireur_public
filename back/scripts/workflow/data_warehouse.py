@@ -84,7 +84,8 @@ class DataWarehouseWorkflow:
         for i in range(n_chunks):
             start = i * WRITE_CHUNK_SIZE
             chunk = df.slice(start, min(WRITE_CHUNK_SIZE, total_rows - start))
-            chunk.write_database(table_name, conn, if_table_exists="append")
+            mode = if_table_exists if i == 0 else "append"
+            chunk.write_database(table_name, conn, if_table_exists=mode)
             written += len(chunk)
             LOGGER.info(
                 "  %s chunk %d/%d: wrote %d rows (total: %d)",
