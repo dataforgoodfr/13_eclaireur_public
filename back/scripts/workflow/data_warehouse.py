@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import polars as pl
@@ -12,6 +13,10 @@ from back.scripts.enrichment.financial_account_enricher import FinancialEnricher
 from back.scripts.enrichment.marches_enricher import MarchesPublicsEnricher
 from back.scripts.enrichment.subventions_enricher import SubventionsEnricher
 from back.scripts.utils.psql_connector import PSQLConnector
+
+LOGGER = logging.getLogger(__name__)
+
+INDEX_SQL_PATH = Path(__file__).resolve().parent.parent / "migrations" / "add_indexes.sql"
 
 
 class DataWarehouseWorkflow:
@@ -39,6 +44,7 @@ class DataWarehouseWorkflow:
         BaremeEnricher.enrich(self.config)
         CommunitiesEnricher.enrich(self.config)
         self._send_to_postgres()
+        self._create_indexes()
 
     def _send_to_postgres(self):
         if not self.config["workflow"]["save_to_db"]:
@@ -63,3 +69,27 @@ class DataWarehouseWorkflow:
                         conn.execute(text(f"TRUNCATE {table_name}"))
 
                 df.write_database(table_name, conn, if_table_exists=if_table_exists)
+
+    def _create_indexes(self):
+        """Create performance indexes after data has been loaded."""
+        if not self.config["workflow"]["save_to_db"]:
+            return
+        if not INDEX_SQL_PATH.exists():
+            LOGGER.warning("Index SQL file not found at %s", INDEX_SQL_PATH)
+            return
+
+        LOGGER.info("Creating database indexes from %s ...", INDEX_SQL_PATH.name)
+        connector = PSQLConnector()
+        sql = INDEX_SQL_PATH.read_text()
+
+        with connector.engine.connect() as conn:
+            for statement in sql.split(";"):
+                stmt = statement.strip()
+                if not stmt or stmt.startswith("--"):
+                    continue
+                try:
+                    conn.execute(text(stmt))
+                except Exception as exc:
+                    LOGGER.warning("Index creation skipped: %s – %s", stmt[:80], exc)
+            conn.commit()
+        LOGGER.info("Database indexes created successfully")
