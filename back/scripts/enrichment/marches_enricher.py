@@ -304,15 +304,13 @@ class MarchesPublicsEnricher(BaseEnricher):
 
     @staticmethod
     def lieu_execution_enrich(marches: pl.DataFrame) -> pl.DataFrame:
-        """
-        1 - Parse lieuExecution en 3 champs code, type code et nom
-        2 - Extrait le tout en code commune, code postal, code departement etc
+        """Parse lieuExecution into code, typeCode and nom columns.
+
+        Handles both DECP v1.5.0 (has ``nom``) and v2.0.3 (no ``nom`` --
+        reconstructed during parsing from ``typeCode + code``).
         """
 
-        # TODO : Il y a beaucoup de nettoyage à faire dans les différents champs
-
-        # Cas spécifiques où lieu_execution_type_code est soit bourgogne, soit franche-comte
-        mapping = {
+        type_code_mapping = {
             "bourgogne": "code departement",
             "franche-comte": "code departement",
         }
@@ -357,43 +355,72 @@ class MarchesPublicsEnricher(BaseEnricher):
             .with_columns(
                 pl.when(pl.col("lieu_execution_type_code").is_not_null()).then(
                     pl.col("lieu_execution_type_code")
-                    .replace_strict(mapping, default=pl.col("lieu_execution_type_code"))
+                    .replace_strict(type_code_mapping, default=pl.col("lieu_execution_type_code"))
                     .alias("lieu_execution_type_code")
                 )
             )
             .drop("lieu_execution_parsed")
         )
 
+        # For v2 rows where nom was synthesised from "typeCode code", try to
+        # provide a more meaningful value: use the code directly as nom when
+        # the current value is just a typeCode prefix + code.
+        if "_schema_version" in df.columns:
+            df = df.with_columns(
+                pl.when(
+                    (pl.col("_schema_version") == "v2")
+                    & pl.col("lieu_execution_nom").is_null()
+                    & pl.col("lieu_execution_code").is_not_null()
+                )
+                .then(pl.col("lieu_execution_code"))
+                .otherwise(pl.col("lieu_execution_nom"))
+                .alias("lieu_execution_nom")
+            )
+
         types = df["lieu_execution_type_code"].drop_nulls().unique().to_list()
 
-        return (
-            df.with_columns(
-                [
-                    pl.when(pl.col("lieu_execution_type_code") == type_code)
-                    .then(pl.col("lieu_execution_code"))
-                    .otherwise(None)
-                    .alias("lieu_execution_" + type_code.replace(" ", "_"))
-                    for type_code in types
-                ]
-            )
-            .with_columns(
+        result = df.with_columns(
+            [
+                pl.when(pl.col("lieu_execution_type_code") == type_code)
+                .then(pl.col("lieu_execution_code"))
+                .otherwise(None)
+                .alias("lieu_execution_" + type_code.replace(" ", "_"))
+                for type_code in types
+            ]
+        )
+
+        if "lieu_execution_code_departement" in result.columns:
+            result = result.with_columns(
                 pl.when(
                     pl.col("lieu_execution_code_departement").is_null()
                     & (
-                        pl.col("lieu_execution_code_postal").is_not_null()
-                        | pl.col("lieu_execution_code_commune").is_not_null()
+                        (
+                            pl.col("lieu_execution_code_postal").is_not_null()
+                            if "lieu_execution_code_postal" in result.columns
+                            else pl.lit(False)
+                        )
+                        | (
+                            pl.col("lieu_execution_code_commune").is_not_null()
+                            if "lieu_execution_code_commune" in result.columns
+                            else pl.lit(False)
+                        )
                     )
                 )
                 .then(
                     pl.coalesce(
-                        "lieu_execution_code_postal", "lieu_execution_code_commune"
+                        [c for c in ["lieu_execution_code_postal", "lieu_execution_code_commune"]
+                         if c in result.columns]
                     ).str.slice(0, 2)
                 )
                 .otherwise(pl.col("lieu_execution_code_departement"))
                 .alias("lieu_execution_code_departement")
             )
-            .drop(["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"])
-        )
+
+        cols_to_drop = [
+            c for c in ["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"]
+            if c in result.columns
+        ]
+        return result.drop(cols_to_drop)
 
     @classmethod
     def _add_metadata(cls, df: pd.DataFrame) -> pd.DataFrame:
