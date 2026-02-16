@@ -35,7 +35,7 @@ def test_marches_public_dataframes():
         file_metadata=None, raw_filename=FIXTURES_DIRECTORY / "marche_direct.json"
     )
 
-    assert direct_df.shape == (2, 5)
+    assert direct_df.shape == (2, 6)
     assert "acheteur_id" in direct_df.columns
     assert "a_02" in direct_df["acheteur_id"].tolist()
     assert "titulaires" in direct_df.columns
@@ -51,7 +51,7 @@ def test_marches_public_dataframes():
     nested_df = mp._read_parse_file(
         file_metadata=None, raw_filename=FIXTURES_DIRECTORY / "marche_nested.json"
     )
-    assert nested_df.shape == (2, 5)
+    assert nested_df.shape == (2, 6)
     assert "acheteur_id" in nested_df.columns
     assert "a_02" in nested_df["acheteur_id"].tolist()
     assert "titulaires" in nested_df.columns

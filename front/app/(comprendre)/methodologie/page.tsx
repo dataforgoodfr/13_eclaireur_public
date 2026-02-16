@@ -266,7 +266,10 @@ export default function Page() {
               <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
                 B
               </div>
-              <div className='text-center'>De 50% à 95%</div>
+              <div className='flex flex-col pr-4 text-left md:space-y-2 md:text-center'>
+                <span>De 50% à 95%</span>
+                <span className='font-normal'>ou plus de 105% (sur-déclaration)</span>
+              </div>
             </div>
             <div className='flex items-center md:block'>
               <div className='float-left mr-2 rounded-md bg-scoreIndice-C px-4 py-2 text-center font-semibold md:hidden'>
@@ -284,10 +287,7 @@ export default function Page() {
               <div className='float-left mr-2 rounded-md bg-scoreIndice-E px-4 py-2 text-center font-semibold md:hidden'>
                 E
               </div>
-              <div className='flex flex-col pr-4 text-left md:space-y-2 md:text-center'>
-                <span>0% - Aucune donnée</span>
-                <span className='font-normal'>ou plus de 105%</span>
-              </div>
+              <div className='text-center'>0% - Aucune donnée</div>
             </div>
           </div>
 

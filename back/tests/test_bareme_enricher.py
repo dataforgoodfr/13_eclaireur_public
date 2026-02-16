@@ -45,12 +45,12 @@ class TestGetScoreFromTp:
         assert BaremeEnricher.get_score_from_tp(104.99) == "A"
         assert BaremeEnricher.get_score_from_tp(105) == "A"
 
-    def test_score_e_for_over_declaration(self):
-        """Score E pour >105% (sur-déclaration suspecte)."""
-        assert BaremeEnricher.get_score_from_tp(105.01) == "E"
-        assert BaremeEnricher.get_score_from_tp(110) == "E"
-        assert BaremeEnricher.get_score_from_tp(150) == "E"
-        assert BaremeEnricher.get_score_from_tp(200) == "E"
+    def test_score_b_for_over_declaration(self):
+        """Score B pour >105% (sur-déclaration : effort de transparence réel)."""
+        assert BaremeEnricher.get_score_from_tp(105.01) == "B"
+        assert BaremeEnricher.get_score_from_tp(110) == "B"
+        assert BaremeEnricher.get_score_from_tp(150) == "B"
+        assert BaremeEnricher.get_score_from_tp(200) == "B"
 
     def test_negative_values_return_e(self):
         """Les valeurs négatives retournent E (données invalides)."""
@@ -74,5 +74,5 @@ class TestGetScoreFromTp:
         assert BaremeEnricher.get_score_from_tp(95) == "B"
         # 105 -> A (limite incluse)
         assert BaremeEnricher.get_score_from_tp(105) == "A"
-        # 105.01 -> E (sur-déclaration)
-        assert BaremeEnricher.get_score_from_tp(105.01) == "E"
+        # 105.01 -> B (sur-déclaration : effort de transparence réel)
+        assert BaremeEnricher.get_score_from_tp(105.01) == "B"

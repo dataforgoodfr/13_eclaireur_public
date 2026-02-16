@@ -355,7 +355,9 @@ class MarchesPublicsEnricher(BaseEnricher):
             .with_columns(
                 pl.when(pl.col("lieu_execution_type_code").is_not_null()).then(
                     pl.col("lieu_execution_type_code")
-                    .replace_strict(type_code_mapping, default=pl.col("lieu_execution_type_code"))
+                    .replace_strict(
+                        type_code_mapping, default=pl.col("lieu_execution_type_code")
+                    )
                     .alias("lieu_execution_type_code")
                 )
             )
@@ -408,8 +410,14 @@ class MarchesPublicsEnricher(BaseEnricher):
                 )
                 .then(
                     pl.coalesce(
-                        [c for c in ["lieu_execution_code_postal", "lieu_execution_code_commune"]
-                         if c in result.columns]
+                        [
+                            c
+                            for c in [
+                                "lieu_execution_code_postal",
+                                "lieu_execution_code_commune",
+                            ]
+                            if c in result.columns
+                        ]
                     ).str.slice(0, 2)
                 )
                 .otherwise(pl.col("lieu_execution_code_departement"))
@@ -417,7 +425,8 @@ class MarchesPublicsEnricher(BaseEnricher):
             )
 
         cols_to_drop = [
-            c for c in ["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"]
+            c
+            for c in ["lieu_execution_type_code", "lieu_execution_code", "lieuExecution"]
             if c in result.columns
         ]
         return result.drop(cols_to_drop)

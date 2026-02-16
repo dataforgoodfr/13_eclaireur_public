@@ -165,10 +165,10 @@ class BaremeEnricher(BaseEnricher):
         Logique du scoring :
         - Taux = (subventions déclarées / subventions budgétées) × 100
         - Score A : ]95%, 105%] (très bon)
-        - Score B : ]75%, 95%] (bon)
-        - Score C : ]50%, 75%] (moyen)
-        - Score D : ]25%, 50%] (faible)
-        - Score E : ≤25% ou >105% (insuffisant/suspect)
+        - Score B : ]50%, 95%] ou >105% (bon / sur-déclaration)
+        - Score C : ]25%, 50%] (moyen)
+        - Score D : ]0%, 25%] (faible)
+        - Score E : 0% ou invalide (aucune donnée)
 
         Args:
             subventions (pl.DataFrame): Données des subventions déclarées
@@ -244,7 +244,8 @@ class BaremeEnricher(BaseEnricher):
 
         Règles métier pour l'évaluation de la transparence :
         - Un taux supérieur à 95% et jusqu'à 105% est considéré comme excellent (score A)
-        - Un taux > 105% est suspect (possible double comptage ou erreur) → score E
+        - Un taux > 105% indique une sur-déclaration (le montant déclaré dépasse le
+          budget prévu). Cela reste un effort de transparence réel et est noté B.
         - Un taux de 0% indique aucune donnée exploitable → score E
         - Les taux très faibles (>0% à 25%) indiquent un effort minimal mais insuffisant
 
@@ -254,10 +255,11 @@ class BaremeEnricher(BaseEnricher):
 
         Returns:
             str: Score de A (excellent) à E (insuffisant)
-                - E : 0%, invalide ou >105% - Aucune donnée exploitable ou sur-déclaration
+                - E : 0% ou invalide - Aucune donnée exploitable
                 - D : ]0%, 25%] - Effort minimal mais très insuffisant
                 - C : ]25%, 50%] - Transparence faible (sous-déclaration importante)
-                - B : ]50%, 95%] - Transparence correcte (déclaration partielle à bonne)
+                - B : ]50%, 95%] ou >105% - Transparence correcte (déclaration
+                  partielle à bonne, ou sur-déclaration)
                 - A : ]95%, 105%] - Très bonne transparence (déclaration optimale)
 
         Note:
@@ -275,7 +277,7 @@ class BaremeEnricher(BaseEnricher):
         elif tp <= 105:
             return "A"  # Déclaration optimale
         else:
-            return "E"  # Sur-déclaration suspecte (>105%)
+            return "B"  # Sur-déclaration (>105%) : effort de transparence réel
 
     @classmethod
     def bareme_marchespublics(
