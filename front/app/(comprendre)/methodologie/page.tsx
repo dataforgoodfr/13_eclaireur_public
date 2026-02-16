@@ -35,8 +35,8 @@ export default function Page() {
           <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
             <div className='space-y-6'>
               <p className='text-lg'>
-                Pour parvenir à ces fins, Transparency International France et Anticor ont rédigé de
-                concert un document préparatoire intitulé «&nbsp;Eclaireur Public - Analyse de la
+                Pour parvenir à ces fins, Anticor a rédigé un document préparatoire
+                intitulé «&nbsp;Eclaireur Public - Analyse de la
                 transparence des collectivités locales&nbsp;» définissant les objectifs généraux et
                 un cadre qui donne corps à l'objet «&nbsp;Eclaireur Public&nbsp;», site internet
                 «&nbsp;permettant aux visiteurs de consulter des données à jour sur sa collectivité
