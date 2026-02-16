@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Button } from '#components/ui/button';
 import { NavigationMenu, NavigationMenuList } from '#components/ui/navigation-menu';
 import SearchCommunity from '@/components/SearchBar/SearchCommunity';
-import { Wrench } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenuGroup } from './NavigationMenuGroup';
@@ -89,11 +89,14 @@ const aProposMenus = [
   },
 ];
 
-const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
+const BandeauInfo = ({ onClose }: { onClose: () => void }) => (
   <div className='fixed top-12 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm lg:top-20'>
-    <Wrench className='inline scale-x-[-1]' size={16} />
-    <strong>Version bêta - ce site est en cours de déploiement.</strong> Certaines fonctionnalités
-    peuvent ne pas fonctionner correctement. Merci pour votre compréhension.
+    <Info className='inline' size={16} />
+    {' '}Les données présentées proviennent exclusivement de{' '}
+    <a href='https://www.data.gouv.fr' target='_blank' rel='noopener noreferrer' className='underline font-semibold'>
+      data.gouv.fr
+    </a>{' '}
+    et ne sont pas exhaustives.
     <button
       onClick={onClose}
       className='absolute right-2 top-1/2 -translate-y-1/2 transform rounded p-1 hover:bg-white/20'
@@ -105,16 +108,15 @@ const BandeauBeta = ({ onClose }: { onClose: () => void }) => (
 );
 
 export default function Navbar() {
-  const [showBetaBanner, setShowBetaBanner] = useState(true);
-  const isBeta = true;
+  const [showInfoBanner, setShowInfoBanner] = useState(true);
 
-  const handleCloseBetaBanner = () => {
-    setShowBetaBanner(false);
+  const handleCloseInfoBanner = () => {
+    setShowInfoBanner(false);
   };
 
   return (
     <>
-      {isBeta && showBetaBanner && <BandeauBeta onClose={handleCloseBetaBanner} />}
+      {showInfoBanner && <BandeauInfo onClose={handleCloseInfoBanner} />}
 
       <div className='fixed top-0 z-50 flex w-full items-center justify-between border-b bg-white px-4 xl:px-10'>
         {/* Mobile Navbar */}
