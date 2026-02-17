@@ -39,7 +39,7 @@ function buildByTypeData(distribution: ScoreDistribution[], year: number) {
   const typeMap = new Map<string, Record<string, number>>();
 
   for (const row of distribution) {
-    if (row.annee !== year) continue;
+    if (Number(row.annee) !== year) continue;
     const existing = typeMap.get(row.type) || { A: 0, B: 0, C: 0, D: 0, E: 0 };
     existing[row.score] = (existing[row.score] || 0) + row.count;
     typeMap.set(row.type, existing);
