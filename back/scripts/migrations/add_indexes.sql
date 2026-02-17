@@ -61,3 +61,12 @@ CREATE INDEX IF NOT EXISTS idx_subventions_id_attribuant
 
 CREATE INDEX IF NOT EXISTS idx_subventions_attribuant_annee
     ON subventions (id_attribuant, annee);
+
+-- ============================================================
+-- comptes_collectivites table
+-- Advanced search LEFT JOIN LATERAL fetches the most recent budget
+-- by siren, ordered by annee DESC. Without this index the lateral
+-- join does a full sequential scan (~45 ms/row).
+-- ============================================================
+CREATE INDEX IF NOT EXISTS idx_comptes_siren_annee
+    ON comptes_collectivites (siren, annee DESC);
