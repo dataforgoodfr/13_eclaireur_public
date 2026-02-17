@@ -3,7 +3,7 @@ import { ExtendedColumnSort } from '#types/data-table';
 import { Order } from '#utils/fetchers/types';
 
 export type AdvancedSearchOrder = Order<
-  'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score' | 'subventions_budget'
+  'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score' | 'budget_total'
 >;
 
 export const DEFAULT_ORDER: AdvancedSearchOrder = {
@@ -15,7 +15,7 @@ export const COLUMN_IDS: string[] = [
   'nom',
   'type',
   'population',
-  'subventions_budget',
+  'budget_total',
   'mp_score',
   'subventions_score',
 ];
@@ -29,7 +29,7 @@ export function getOrderFromSortingState(
       | 'nom'
       | 'type'
       | 'population'
-      | 'subventions_budget'
+      | 'budget_total'
       | 'mp_score'
       | 'subventions_score',
     direction: (sortingColumn?.desc ? 'DESC' : 'ASC') as 'ASC' | 'DESC',

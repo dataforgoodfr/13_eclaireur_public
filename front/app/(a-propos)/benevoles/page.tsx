@@ -52,15 +52,13 @@ export default function Remerciement() {
                 <p>Thomas Pedot</p>
                 <p>Tony Chho</p>
               </div>
-              <h3>Côté Anticor & Transparency Fr</h3>
+              <h3>Côté Anticor</h3>
               <div>
                 <p>Cyrille Brun</p>
                 <p>Emma Taillefer</p>
-                <p>Kévin Gernier</p>
                 <p>Marc Adrai</p>
                 <p>Max Lévy</p>
                 <p>Ronan Sy</p>
-                <p>Samuel Boissaye</p>
               </div>
             </div>
             <div className='space-y-8'>

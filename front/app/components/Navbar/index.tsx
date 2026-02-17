@@ -90,10 +90,14 @@ const aProposMenus = [
 ];
 
 const BandeauInfo = ({ onClose }: { onClose: () => void }) => (
-  <div className='fixed top-12 z-40 w-full bg-card-secondary-foreground-1 py-1 pl-1 pr-8 text-center text-sm lg:top-20'>
-    <Info className='inline' size={16} />
-    {' '}Les données présentées proviennent exclusivement de{' '}
-    <a href='https://www.data.gouv.fr' target='_blank' rel='noopener noreferrer' className='underline font-semibold'>
+  <div className='fixed top-16 z-40 w-full bg-card-secondary-foreground-1 py-2 pl-2 pr-8 text-center text-sm lg:top-20 lg:py-1 lg:pl-1'>
+    <Info className='inline' size={16} /> Les données présentées proviennent exclusivement de{' '}
+    <a
+      href='https://www.data.gouv.fr'
+      target='_blank'
+      rel='noopener noreferrer'
+      className='font-semibold underline'
+    >
       data.gouv.fr
     </a>{' '}
     et ne sont pas exhaustives.
