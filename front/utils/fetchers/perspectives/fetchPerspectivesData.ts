@@ -5,6 +5,12 @@ import { DataTable } from '../constants';
 const POPULATION_THRESHOLD = 3500;
 const CURRENT_YEAR = new Date().getFullYear();
 
+// Pinned to the latest year with reasonably complete data for both marchés
+// publics AND subventions.  The bareme table contains rows up to 2026 but
+// 2025/2026 data is far too sparse (especially subventions) to be meaningful.
+// Bump this value once a full year of data has been ingested for the next year.
+const REFERENCE_SCORE_YEAR = 2024;
+
 // Outlier thresholds — amounts above these values are excluded from totals.
 // For marchés publics we rely on the `montant_aberrant` flag set by the ETL.
 // For subventions there is no such flag yet (TODO: switch to montant_aberrant
@@ -12,7 +18,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const SUBVENTIONS_OUTLIER_THRESHOLD = 1_000_000_000; // 1 Md€
 
 export type PerspectivesKPIs = {
-  latestScoreYear: number;
+  referenceYear: number;
   totalCollectivites: number;
   totalCommunes: number;
   communesSoumises: number;
@@ -60,12 +66,7 @@ const SUB_CLEAN_AMOUNT = `(montant <= ${SUBVENTIONS_OUTLIER_THRESHOLD})`;
 
 export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
   const kpisQuery = `
-    WITH latest_year AS (
-      SELECT MAX(annee)::integer AS year
-      FROM ${DataTable.Bareme}
-      WHERE annee <= ${CURRENT_YEAR}
-    ),
-    collectivite_counts AS (
+    WITH collectivite_counts AS (
       SELECT
         COUNT(*)::integer AS total,
         COUNT(*) FILTER (WHERE c.type = 'COM')::integer AS communes,
@@ -107,11 +108,11 @@ export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
         COUNT(*)::integer AS total
       FROM ${DataTable.Bareme} b
       JOIN ${DataTable.Communities} c ON c.siren = b.siren
-      WHERE b.annee = (SELECT year FROM latest_year)
+      WHERE b.annee = ${REFERENCE_SCORE_YEAR}
         AND ${SOUMISES_CONDITION}
     )
     SELECT
-      (SELECT year FROM latest_year) AS "latestScoreYear",
+      ${REFERENCE_SCORE_YEAR} AS "referenceYear",
       c.total AS "totalCollectivites",
       c.communes AS "totalCommunes",
       c.communes_soumises AS "communesSoumises",
@@ -138,7 +139,7 @@ export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
   const rows = await getQueryFromPool(kpisQuery);
   if (!rows || rows.length === 0) {
     return {
-      latestScoreYear: CURRENT_YEAR,
+      referenceYear: REFERENCE_SCORE_YEAR,
       totalCollectivites: 0,
       totalCommunes: 0,
       communesSoumises: 0,

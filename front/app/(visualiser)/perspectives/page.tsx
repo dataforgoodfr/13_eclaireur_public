@@ -30,7 +30,7 @@ export default async function Page() {
     fetchYearlyVolumes(),
   ]);
 
-  const latestYear = kpis.latestScoreYear;
+  const referenceYear = kpis.referenceYear;
 
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-xl space-y-12 p-6'>
@@ -93,7 +93,7 @@ export default async function Page() {
         <ScoreByTypeChart
           mpDistribution={mpDistribution}
           subDistribution={subDistribution}
-          year={latestYear}
+          year={referenceYear}
         />
       </section>
 
