@@ -17,10 +17,9 @@ export default async function WhyChallenge() {
                     les encourager à mieux rendre compte de l'utilisation des fonds publics.
                   </p>
                   <p className='text-lg'>
-                    Les collectivités sont légalement tenues de publier leurs données de dépenses en
-                    open data, selon la loi pour une République numérique de 2016. Pourtant, la
-                    grande majorité ne respecte pas cette obligation, en particulier sur les
-                    subventions.
+                    Les collectivités sont légalement tenues de publier leurs données d'intérêt
+                    général en open data, selon la loi pour une République Numérique de 2016. Seules
+                    10% d'entre elles respectent pleinement cette obligation.
                   </p>
                 </div>
                 <KnowMore href='/le-projet'></KnowMore>

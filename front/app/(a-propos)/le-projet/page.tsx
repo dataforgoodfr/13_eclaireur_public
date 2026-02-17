@@ -19,10 +19,9 @@ export default function LeProjet() {
             accessibilité des données publiques via leur mise à disposition numérique.
           </p>
           <p>
-            Force est de constater que l'ouverture et la publication de ces données ne sont que très
-            partielles. Nos analyses montrent que la grande majorité des collectivités ne publient
-            pas ou peu de données exploitables sur leurs dépenses, et la situation est
-            particulièrement critique sur les subventions.
+            En 2025, force est de constater que l'ouverture et la publication de ces données ne sont
+            que très partielles. Pour exemple, Anticor a évalué sur un échantillon que moins de 10%
+            des subventions étaient rendues publiques par les différentes collectivités.
           </p>
         </div>
         <div>
