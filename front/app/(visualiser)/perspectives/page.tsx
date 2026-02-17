@@ -1,110 +1,188 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
+import {
+  fetchMpScoreDistribution,
+  fetchPerspectivesKPIs,
+  fetchSubScoreDistribution,
+  fetchYearlyVolumes,
+} from '#utils/fetchers/perspectives/fetchPerspectivesData';
+
+import PerspectivesKPICards from './components/PerspectivesKPIs';
+import ScoreByTypeChart from './components/ScoreByTypeChart';
+import ScoreDistributionChart from './components/ScoreDistributionChart';
+import VolumeChart from './components/VolumeChart';
+
 export const metadata: Metadata = {
-  title: 'Quelle transparence sur les dépenses des collectivités ? Perspectives',
+  title: 'Perspectives — Transparence des collectivités locales',
   description:
-    'La transparence des données publiques aux différents échelons locaux, état des lieux et perspectives',
+    'État des lieux et perspectives sur la transparence des dépenses publiques locales en France. Données dynamiques sur les marchés publics et subventions.',
 };
 
-export default function Page() {
+// Revalidate every hour — avoids hammering the DB on every page load
+export const revalidate = 3600;
+
+export default async function Page() {
+  const [kpis, mpDistribution, subDistribution, volumes] = await Promise.all([
+    fetchPerspectivesKPIs(),
+    fetchMpScoreDistribution(),
+    fetchSubScoreDistribution(),
+    fetchYearlyVolumes(),
+  ]);
+
+  const referenceYear = kpis.referenceYear;
+
   return (
-    <main className='mx-auto mb-12 w-full max-w-screen-lg p-6' id='interpeller'>
-      <h1 className='text-3xl font-bold'>Etats des lieux et Perspectives</h1>
-      <p className='my-6 text-lg'>
-        La France est-elle un élève modèle en termes d'ouvertures de ses données publiques aux
-        différents échelons locaux ?
-      </p>
-      <p className='my-6 text-lg'>
-        Depuis la loi pour une République numérique de 2016, peut-on constater une amélioration de
-        la transparence sur ces données ?
-      </p>
-      <p className='my-6 text-lg'>
-        Quels enseignements tirer de la faible performance de nos collectivités en matière de
-        transparence ?
-      </p>
-      <p className='my-6 text-lg'>
-        Attention spoiling : la transparence des données publiques des différentes collectivités
-        françaises est hétérogène malgré un cadre juridique ambitieux.
-      </p>
-      <h2 className='my-12 text-2xl font-bold'>
-        La France championne d'Europe et vice championne du monde de l'open data
-      </h2>
-      <p className='my-6 text-lg'>
-        Pour la quatrième année consécutive, la France se classe au premier rang de l'open data en
-        Europe selon le {' '}
-        <Link
-          href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf?q=sites/default/files/odm2024_full_report_0.pdf'
-          className='border-b-2 border-black'
-        >
-          rapport 2024 sur la maturité des données ouvertes
-        </Link>{' '}
-        commandé par la commission européenne. Et elle obtient la seconde place au niveau mondial
-        dans le dernier{' '}
-        <Link
-          href='https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/12/2023-oecd-open-useful-and-re-usable-data-ourdata-index_cc9e8a9e/a37f51c3-en.pdf'
-          className='border-b-2 border-black'
-        >
-          OurData Index
-        </Link>{' '}
-        publié par l’OCDE en 2023.
-      </p>
-      <p className='my-6 text-lg'>
-        Beaucoup de chemin a été parcouru en matière d’ouverture des données publiques. La
-        Déclaration des droits de l'homme et du citoyen de 1789 érigeait déjà, dans son article 15,
-        la transparence comme un principe républicain fondamental : « La société a le droit de demander compte à tout
-        agent public de son administration ». Il a fallu attendre les lois de
-        1978 et 1979 et la naissance de la CNIL, pour que soit formalisé dans la loi l’accès des citoyens aux archives
-        et documents administratifs.
-      </p>
-      <p className='my-6 text-lg'>
-        L'avènement des outils informatiques - et de l'Internet en particulier - ont permis
-        d'élargir le champ des possibles. Une vision plus ambitieuse de la transparence a été
-        entérinée par l'adoption de la loi pour une République numérique de 2016 : celle-ci impose
-        en effet à toutes les administrations et la majorité des collectivités territoriales la
-        publication en open data de leurs données d'intérêt public.
-      </p>
-      <p className='my-6 text-lg'>
-        <Link href='https://data.gouv.fr' className='border-b-2 border-black'>
-          Data.gouv.fr
-        </Link>{' '}
-        est le navire amiral de la donnée publique. Lancée fin 2011, cette plateforme
-        gouvernementale a vocation à recenser et mettre à disposition toutes les données publiques
-        publiées. Pour construire une véritable politique publique de l'open data, tous les
-        établissements publics sont censés publier leurs données sur cette plateforme.
-      </p>
-      <h2 className='my-12 text-2xl font-bold'>Etat des lieux</h2>
-      <p className='my-6 text-lg'>
-        En pratique, malgré une forte ambition initiale et quelques rares bons élèves, Eclaireur
-        Public met en lumière la transparence encore trop limitée sur les dépenses publiques
-        locales.
-      </p>
-      <p className='my-6 text-lg'>
-        Malgré les obligations légales et les initiatives en faveur de l'open data, la majorité des
-        collectivités ne publient pas ou peu de données exploitables concernant leurs finances. Les
-        données disponibles sont souvent incomplètes, difficiles à trouver ou à réutiliser, et ne
-        permettent pas une réelle comparaison entre territoires.
-      </p>
-      <p className='my-6 text-lg'>
-        Ce constat met en évidence un important retard dans la mise en œuvre de la transparence,
-        tant sur le plan technique que culturel.
-      </p>
-      <p className='my-6 text-lg'>
-        Sur l'ensemble des collectivités, tous échelons confondus, le score de transparence moyen
-        est E, soit une note qui se situe entre 0 et 4 sur 20.
-      </p>
-      <p>Le verdict est sans appel :</p>
-      <ul>
-        <li className='list-inside list-disc'>
-          90% des régions ont un score de transparence égal à E
-        </li>
-        <li className='list-inside list-disc'>
-          95% des départements ont un score de transparence égal à E
-        </li>
-        <li className='list-inside list-disc'>
-          98% des communes ont un score de transparence égal à E
-        </li>
-      </ul>
-          </main>
+    <main className='mx-auto mb-12 w-full max-w-screen-xl space-y-12 p-6'>
+      {/* Header : France championne intégrée à l'intro */}
+      <div className='space-y-4'>
+        <h1 className='text-3xl font-bold md:text-4xl'>
+          Championne d&apos;Europe de l&apos;open data, mais dans les faits ?
+        </h1>
+        <div className='max-w-3xl space-y-3 text-lg text-muted-foreground'>
+          <p>
+            La France se classe{' '}
+            <Link
+              href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf'
+              className='underline hover:text-foreground'
+              target='_blank'
+            >
+              au premier rang européen
+            </Link>{' '}
+            de l&apos;open data pour la quatrième année consécutive, et deuxième au niveau mondial
+            dans le{' '}
+            <Link
+              href='https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/12/2023-oecd-open-useful-and-re-usable-data-ourdata-index_cc9e8a9e/a37f51c3-en.pdf'
+              className='underline hover:text-foreground'
+              target='_blank'
+            >
+              OurData Index
+            </Link>{' '}
+            de l&apos;OCDE. Pourtant, ce classement reflète surtout l&apos;ambition de l&apos;État
+            central.
+          </p>
+          <p>
+            Au niveau local, la réalité est bien différente. Depuis la loi pour une République
+            numérique de 2016, les collectivités territoriales doivent publier leurs données de
+            dépenses en open data. Mais la majorité ne le fait pas ou peu. Les chiffres ci-dessous,
+            calculés en temps réel, le montrent.
+          </p>
+        </div>
+      </div>
+
+      {/* Section 1: KPIs */}
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-bold'>
+          Peu de collectivités publient, encore moins sur les subventions
+        </h2>
+        <PerspectivesKPICards kpis={kpis} />
+      </section>
+
+      {/* Section 2: Comparaison par type de collectivité */}
+      <section className='space-y-4'>
+        <div className='space-y-2'>
+          <h2 className='text-2xl font-bold'>
+            Départements et régions en tête, communes à la traîne
+          </h2>
+          <p className='max-w-3xl text-muted-foreground'>
+            Le niveau de transparence varie fortement selon le type de collectivité. Les
+            départements et régions publient davantage, tandis que les communes — qui représentent
+            la grande majorité des collectivités — restent très en retard.
+          </p>
+        </div>
+        <ScoreByTypeChart
+          mpDistribution={mpDistribution}
+          subDistribution={subDistribution}
+          year={referenceYear}
+        />
+      </section>
+
+      {/* Section 3: Score distribution */}
+      <section className='space-y-4'>
+        <div className='space-y-2'>
+          <h2 className='text-2xl font-bold'>
+            Les marchés publics progressent, les subventions restent un angle mort
+          </h2>
+          <p className='max-w-3xl text-muted-foreground'>
+            La transparence sur les marchés publics s&apos;améliore d&apos;année en année, avec de
+            plus en plus de collectivités obtenant des scores C ou mieux. En revanche, la
+            quasi-totalité des collectivités obtiennent un score E sur les subventions, signe
+            d&apos;une publication quasi inexistante.
+          </p>
+        </div>
+        <ScoreDistributionChart mpDistribution={mpDistribution} subDistribution={subDistribution} />
+      </section>
+
+      {/* Section 4: Volume evolution */}
+      <section className='space-y-4'>
+        <div className='space-y-2'>
+          <h2 className='text-2xl font-bold'>
+            De plus en plus de données déclarées, de plus en plus de collectivités qui publient
+          </h2>
+          <p className='max-w-3xl text-muted-foreground'>
+            Le nombre de marchés publics déclarés a été multiplié par plus de 10 en quelques années.
+            Le nombre de collectivités qui publient leurs données augmente aussi régulièrement,
+            signe d&apos;une dynamique positive malgré les lacunes persistantes.
+          </p>
+        </div>
+        <VolumeChart volumes={volumes} />
+      </section>
+
+      {/* Section 4: Call to action */}
+      <section className='rounded-xl border bg-muted/30 p-6 md:p-8'>
+        <h2 className='mb-4 text-2xl font-bold'>Agir pour la transparence</h2>
+        <p className='mb-6 max-w-3xl text-muted-foreground'>
+          Les communes, qui représentent 96% des collectivités, sont les plus en retard sur la
+          publication de leurs données. Les départements et régions font mieux, mais il reste encore
+          beaucoup de chemin à parcourir, notamment sur les subventions.
+        </p>
+        <div className='flex flex-wrap gap-3'>
+          <Link
+            href='/map'
+            className='rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90'
+          >
+            Explorer la carte
+          </Link>
+          <Link
+            href='/advanced-search'
+            className='rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90'
+          >
+            Recherche avancée
+          </Link>
+          <Link
+            href='/interpeller'
+            className='rounded-lg border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted'
+          >
+            Interpeller ma collectivité
+          </Link>
+        </div>
+      </section>
+
+      {/* Legal context */}
+      <section className='space-y-2 text-sm text-muted-foreground'>
+        <p>
+          Les données présentées sont issues de{' '}
+          <Link href='https://data.gouv.fr' className='underline hover:text-foreground'>
+            data.gouv.fr
+          </Link>{' '}
+          et du{' '}
+          <Link
+            href='https://www.data.gouv.fr/fr/datasets/donnees-essentielles-de-la-commande-publique-fichiers-consolides/'
+            className='underline hover:text-foreground'
+          >
+            fichier consolidé des DECP
+          </Link>
+          . Le cadre légal est défini par la{' '}
+          <Link href='/cadre-reglementaire' className='underline hover:text-foreground'>
+            loi pour une République numérique de 2016
+          </Link>
+          . Pour en savoir plus sur notre méthodologie de notation, consultez la page{' '}
+          <Link href='/methodologie' className='underline hover:text-foreground'>
+            Méthodologie
+          </Link>
+          .
+        </p>
+      </section>
+    </main>
   );
 }

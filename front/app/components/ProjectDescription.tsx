@@ -24,9 +24,9 @@ export default async function ProjectDescription() {
           <div>
             <div className='mb-3 text-lg'>
               <p className='my-6 text-lg'>
-                Depuis 2016, les collectivités de plus de 3500 habitants doivent publier leurs données d'intérêt général.
-                Pourtant, seules 10% le font. Anticor estime que la confiance citoyenne repose sur
-                l'exemplarité des institutions.
+                Depuis 2016, les collectivités de plus de 3500 habitants doivent publier leurs
+                données d'intérêt général. Pourtant, la grande majorité ne le fait pas, en
+                particulier sur les subventions où la publication est quasi inexistante.
               </p>
               <p className='mt-6 text-lg'>Le projet Éclaireur Public vise à :</p>
               <ul className='ml-5 list-disc'>

@@ -18,8 +18,8 @@ export default async function WhyChallenge() {
                   </p>
                   <p className='text-lg'>
                     Les collectivités sont légalement tenues de publier leurs données d'intérêt
-                    général en open data, selon la loi pour une République Numérique de 2016. Seules
-                    10% d'entre elles respectent pleinement cette obligation.
+                    général en open data, selon la loi pour une République Numérique de 2016.
+                    Pourtant, la grande majorité ne respecte pas pleinement cette obligation.
                   </p>
                 </div>
                 <KnowMore href='/le-projet'></KnowMore>
