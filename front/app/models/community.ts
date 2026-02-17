@@ -35,6 +35,6 @@ export type Community = {
 
 export type AdvancedSearchCommunity = Paginated<
   Pick<Community, 'siren' | 'nom' | 'type' | 'population' | 'mp_score' | 'subventions_score'> & {
-    subventions_budget: number;
+    budget_total: number | null;
   }
 >;
