@@ -21,7 +21,7 @@ const HEADERS = [
   'Collectivite',
   'Type',
   'Population',
-  'Budget Subventions (€)',
+  'Budget Total (€)',
   'Score Marchés Publics',
   'Score Subventions',
 ];
@@ -34,7 +34,7 @@ const searchParamsCache = createSearchParamsCache({
     'population',
     'mp_score',
     'subventions_score',
-    'subventions_budget',
+    'budget_total',
   ] as const).withDefault(DEFAULT_ORDER.by),
   direction: parseAsStringEnum(['ASC', 'DESC'] as const).withDefault(DEFAULT_ORDER.direction),
   type: parseAsString,
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
         formatNomsPropres(row.nom),
         stringifyCommunityType(row.type as CommunityType),
         row.population?.toString() ?? '',
-        row.subventions_budget?.toString() ?? '',
+        row.budget_total?.toString() ?? '',
         row.mp_score?.toString() ?? '',
         row.subventions_score?.toString() ?? '',
       ];

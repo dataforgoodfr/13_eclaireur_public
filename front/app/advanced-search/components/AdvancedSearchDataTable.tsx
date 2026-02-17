@@ -133,16 +133,14 @@ export function AdvancedSearchDataTable({
         enableSorting: true,
       },
       {
-        id: 'subventions_budget',
-        accessorKey: 'subventions_budget',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Budget Subventions (€)' />
-        ),
+        id: 'budget_total',
+        accessorKey: 'budget_total',
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Budget Total (€)' />,
         cell: ({ row }) => {
           if (isLoading) {
             return <Skeleton className='h-4 w-full' />;
           }
-          const budget = row.getValue('subventions_budget') as number;
+          const budget = row.getValue('budget_total') as number;
           return (
             <div className='flex items-center justify-end gap-1'>
               <span className='font-medium'>{formatCompact(budget)}</span>
@@ -207,7 +205,7 @@ export function AdvancedSearchDataTable({
           nom: `skeleton-${index}`,
           type: CommunityType.Commune,
           population: 0,
-          subventions_budget: 0,
+          budget_total: 0,
           mp_score: null,
           subventions_score: null,
           total_row_count: 0,
@@ -222,7 +220,7 @@ export function AdvancedSearchDataTable({
     initialState: {
       sorting: [{ id: 'nom', desc: false }],
       columnVisibility: {
-        subventions_budget: true,
+        budget_total: true,
         mp_score: true,
         subventions_score: true,
       },
@@ -252,7 +250,7 @@ export function AdvancedSearchDataTable({
       {/* Mobile Cards */}
       <div className='block space-y-3 px-5 md:hidden'>
         {communities.map(
-          ({ siren, type, nom, population, subventions_budget, mp_score, subventions_score }) => (
+          ({ siren, type, nom, population, budget_total, mp_score, subventions_score }) => (
             <div key={getItemId(siren, type)}>
               <div className='w-full space-y-3 rounded-lg bg-muted-border p-4'>
                 {/* Nom de la collectivité */}
@@ -275,11 +273,11 @@ export function AdvancedSearchDataTable({
 
                 <Separator className='bg-muted' />
 
-                {/* Budget subventions */}
+                {/* Budget total */}
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm font-medium text-muted'>Budget subventions</span>
+                  <span className='text-sm font-medium text-muted'>Budget total</span>
                   <div className='flex text-base font-bold text-primary'>
-                    {formatCompact(subventions_budget)}
+                    {budget_total != null ? formatCompact(budget_total) : '-'}
                     <Euro className='my-auto ms-1 h-4 w-4' strokeWidth={3} />
                   </div>
                 </div>

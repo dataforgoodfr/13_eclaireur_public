@@ -23,7 +23,7 @@ const searchParamsCache = createSearchParamsCache({
     'population',
     'mp_score',
     'subventions_score',
-    'subventions_budget',
+    'budget_total',
   ] as const).withDefault(DEFAULT_ORDER.by),
   direction: parseAsStringEnum(['ASC', 'DESC'] as const).withDefault(DEFAULT_ORDER.direction),
   type: parseAsString,

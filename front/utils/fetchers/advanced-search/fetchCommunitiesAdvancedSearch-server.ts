@@ -24,6 +24,7 @@ export async function fetchCommunitiesAdvancedSearch(
 
 const COMMUNITIES = DataTable.Communities;
 const BAREME = DataTable.Bareme;
+const COMPTES = DataTable.CommunitiesAccount;
 
 const SELECTORS = [
   'siren',
@@ -87,11 +88,14 @@ export function createSQLQueryParams(
     SELECT ${selectorsStringified},
       b.mp_score,
       b.subventions_score,
-      b.annee, 
-      NULL as subventions_budget,
+      b.annee,
+      cc.total_produits as budget_total,
       (SELECT COUNT(*) FROM ${COMMUNITIES} c ${whereCondition}) AS total_row_count
     FROM ${COMMUNITIES} c
     LEFT JOIN ${BAREME} b ON c.siren = b.siren AND b.annee = $1
+    LEFT JOIN LATERAL (
+      SELECT total_produits FROM ${COMPTES} WHERE siren = c.siren ORDER BY annee DESC LIMIT 1
+    ) cc ON true
     ${whereCondition}
     `;
 
@@ -102,7 +106,7 @@ export function createSQLQueryParams(
     population: 'c.population',
     mp_score: 'b.mp_score',
     subventions_score: 'b.subventions_score',
-    subventions_budget: 'c.population', // Fallback to population since subventions_budget is NULL
+    budget_total: 'cc.total_produits',
     annee: 'b.annee',
   };
 
