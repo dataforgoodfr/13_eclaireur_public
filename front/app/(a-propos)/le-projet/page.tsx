@@ -20,8 +20,8 @@ export default function LeProjet() {
           </p>
           <p>
             En 2025, force est de constater que l'ouverture et la publication de ces données ne sont
-            que très partielles. Pour exemple, Anticor a évalué sur un échantillon que moins de 10%
-            des subventions étaient rendues publiques par les différentes collectivités.
+            que très partielles. Nos analyses montrent que la grande majorité des collectivités ne
+            publient pas leurs subventions.
           </p>
         </div>
         <div>
