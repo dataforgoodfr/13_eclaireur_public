@@ -29,27 +29,56 @@ export default async function Page() {
 
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-xl space-y-12 p-6'>
-      {/* Header */}
+      {/* Header : France championne intégrée à l'intro */}
       <div className='space-y-4'>
-        <h1 className='text-3xl font-bold md:text-4xl'>État des lieux et Perspectives</h1>
-        <p className='max-w-3xl text-lg text-muted-foreground'>
-          Depuis la loi pour une République numérique de 2016, les collectivités territoriales
-          doivent publier leurs données de dépenses publiques en open data. Où en est-on
-          concrètement ? Les chiffres ci-dessous sont calculés en temps réel à partir de notre base
-          de données.
-        </p>
+        <h1 className='text-3xl font-bold md:text-4xl'>
+          Championne d&apos;Europe de l&apos;open data, mais dans les faits ?
+        </h1>
+        <div className='max-w-3xl space-y-3 text-lg text-muted-foreground'>
+          <p>
+            La France se classe{' '}
+            <Link
+              href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf'
+              className='underline hover:text-foreground'
+              target='_blank'
+            >
+              au premier rang européen
+            </Link>{' '}
+            de l&apos;open data pour la quatrième année consécutive, et deuxième au niveau mondial
+            dans le{' '}
+            <Link
+              href='https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/12/2023-oecd-open-useful-and-re-usable-data-ourdata-index_cc9e8a9e/a37f51c3-en.pdf'
+              className='underline hover:text-foreground'
+              target='_blank'
+            >
+              OurData Index
+            </Link>{' '}
+            de l&apos;OCDE. Pourtant, ce classement reflète surtout l&apos;ambition de l&apos;État
+            central.
+          </p>
+          <p>
+            Au niveau local, la réalité est bien différente. Depuis la loi pour une République
+            numérique de 2016, les collectivités territoriales doivent publier leurs données de
+            dépenses en open data. Mais la majorité ne le fait pas ou peu. Les chiffres ci-dessous,
+            calculés en temps réel, le montrent.
+          </p>
+        </div>
       </div>
 
       {/* Section 1: KPIs */}
       <section className='space-y-4'>
-        <h2 className='text-2xl font-bold'>Le constat en un coup d&apos;œil</h2>
+        <h2 className='text-2xl font-bold'>
+          Peu de collectivités publient, encore moins sur les subventions
+        </h2>
         <PerspectivesKPICards kpis={kpis} />
       </section>
 
       {/* Section 2: Comparaison par type de collectivité */}
       <section className='space-y-4'>
         <div className='space-y-2'>
-          <h2 className='text-2xl font-bold'>Qui sont les bons et les mauvais élèves ?</h2>
+          <h2 className='text-2xl font-bold'>
+            Départements et régions en tête, communes à la traîne
+          </h2>
           <p className='max-w-3xl text-muted-foreground'>
             Le niveau de transparence varie fortement selon le type de collectivité. Les
             départements et régions publient davantage, tandis que les communes — qui représentent
@@ -63,56 +92,28 @@ export default async function Page() {
         />
       </section>
 
-      {/* Encart : La France bien classée */}
-      <section className='rounded-xl border border-blue-200 bg-blue-50/50 p-6 md:p-8'>
-        <h2 className='mb-3 text-xl font-bold'>
-          La France, championne d&apos;Europe de l&apos;open data
-        </h2>
-        <p className='mb-3 text-muted-foreground'>
-          Pour la quatrième année consécutive, la France se classe au premier rang de l&apos;open
-          data en Europe selon le{' '}
-          <Link
-            href='https://data.europa.eu/sites/default/files/odm2024_full_report.pdf'
-            className='underline hover:text-foreground'
-            target='_blank'
-          >
-            rapport 2024 sur la maturité des données ouvertes
-          </Link>{' '}
-          de la Commission européenne, et obtient la seconde place au niveau mondial dans le{' '}
-          <Link
-            href='https://www.oecd.org/content/dam/oecd/en/publications/reports/2023/12/2023-oecd-open-useful-and-re-usable-data-ourdata-index_cc9e8a9e/a37f51c3-en.pdf'
-            className='underline hover:text-foreground'
-            target='_blank'
-          >
-            OurData Index
-          </Link>{' '}
-          de l&apos;OCDE.
-        </p>
-        <p className='text-sm text-muted-foreground'>
-          Pourtant, ce classement reflète surtout l&apos;ambition de l&apos;État central. Au niveau
-          local, la réalité est bien différente : la majorité des collectivités ne publient pas ou
-          peu de données exploitables sur leurs dépenses.
-        </p>
-      </section>
-
-      {/* Section 2: Score distribution */}
+      {/* Section 3: Score distribution */}
       <section className='space-y-4'>
         <div className='space-y-2'>
-          <h2 className='text-2xl font-bold'>Marchés publics vs Subventions : deux vitesses</h2>
+          <h2 className='text-2xl font-bold'>
+            Les marchés publics progressent, les subventions restent un angle mort
+          </h2>
           <p className='max-w-3xl text-muted-foreground'>
-            La transparence sur les marchés publics progresse, avec de plus en plus de collectivités
-            obtenant des scores C ou mieux. En revanche, les subventions restent un angle mort : la
-            quasi-totalité des collectivités obtiennent un score E, signe d&apos;une publication
-            quasi inexistante.
+            La transparence sur les marchés publics s&apos;améliore d&apos;année en année, avec de
+            plus en plus de collectivités obtenant des scores C ou mieux. En revanche, la
+            quasi-totalité des collectivités obtiennent un score E sur les subventions, signe
+            d&apos;une publication quasi inexistante.
           </p>
         </div>
         <ScoreDistributionChart mpDistribution={mpDistribution} subDistribution={subDistribution} />
       </section>
 
-      {/* Section 3: Volume evolution */}
+      {/* Section 4: Volume evolution */}
       <section className='space-y-4'>
         <div className='space-y-2'>
-          <h2 className='text-2xl font-bold'>Le volume de données déclarées explose</h2>
+          <h2 className='text-2xl font-bold'>
+            De plus en plus de données déclarées, de plus en plus de collectivités qui publient
+          </h2>
           <p className='max-w-3xl text-muted-foreground'>
             Le nombre de marchés publics déclarés a été multiplié par plus de 10 en quelques années.
             Le nombre de collectivités qui publient leurs données augmente aussi régulièrement,
