@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     'État des lieux et perspectives sur la transparence des dépenses publiques locales en France. Données dynamiques sur les marchés publics et subventions.',
 };
 
+// Revalidate every hour — avoids hammering the DB on every page load
+export const revalidate = 3600;
+
 export default async function Page() {
   const [kpis, mpDistribution, subDistribution, volumes] = await Promise.all([
     fetchPerspectivesKPIs(),
@@ -26,6 +29,8 @@ export default async function Page() {
     fetchSubScoreDistribution(),
     fetchYearlyVolumes(),
   ]);
+
+  const latestYear = kpis.latestScoreYear;
 
   return (
     <main className='mx-auto mb-12 w-full max-w-screen-xl space-y-12 p-6'>
@@ -88,7 +93,7 @@ export default async function Page() {
         <ScoreByTypeChart
           mpDistribution={mpDistribution}
           subDistribution={subDistribution}
-          year={2024}
+          year={latestYear}
         />
       </section>
 

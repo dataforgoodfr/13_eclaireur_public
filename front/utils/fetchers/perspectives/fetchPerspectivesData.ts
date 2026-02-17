@@ -4,9 +4,15 @@ import { DataTable } from '../constants';
 
 const POPULATION_THRESHOLD = 3500;
 const CURRENT_YEAR = new Date().getFullYear();
-const LATEST_SCORE_YEAR = 2024;
+
+// Outlier thresholds — amounts above these values are excluded from totals.
+// For marchés publics we rely on the `montant_aberrant` flag set by the ETL.
+// For subventions there is no such flag yet (TODO: switch to montant_aberrant
+// once the column is added to the subventions table by the ETL pipeline).
+const SUBVENTIONS_OUTLIER_THRESHOLD = 1_000_000_000; // 1 Md€
 
 export type PerspectivesKPIs = {
+  latestScoreYear: number;
   totalCollectivites: number;
   totalCommunes: number;
   communesSoumises: number;
@@ -45,9 +51,21 @@ export type YearlyVolume = {
 // Communes >= 3500 habitants + tous les départements, régions, intercommunalités
 const SOUMISES_CONDITION = `(c.type != 'COM' OR c.population >= ${POPULATION_THRESHOLD})`;
 
+// Condition SQL pour exclure les montants aberrants des marchés publics
+const MP_CLEAN_AMOUNT = `(montant_aberrant IS NULL OR montant_aberrant = false)`;
+
+// Condition SQL pour exclure les montants aberrants des subventions
+// TODO: replace with montant_aberrant flag once added to the subventions table
+const SUB_CLEAN_AMOUNT = `(montant <= ${SUBVENTIONS_OUTLIER_THRESHOLD})`;
+
 export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
   const kpisQuery = `
-    WITH collectivite_counts AS (
+    WITH latest_year AS (
+      SELECT MAX(annee)::integer AS year
+      FROM ${DataTable.Bareme}
+      WHERE annee <= ${CURRENT_YEAR}
+    ),
+    collectivite_counts AS (
       SELECT
         COUNT(*)::integer AS total,
         COUNT(*) FILTER (WHERE c.type = 'COM')::integer AS communes,
@@ -61,13 +79,13 @@ export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
     mp_stats AS (
       SELECT
         COUNT(*)::integer AS total,
-        COALESCE(SUM(montant_du_marche_public_par_titulaire), 0)::bigint AS montant_total
+        COALESCE(SUM(CASE WHEN ${MP_CLEAN_AMOUNT} THEN montant_du_marche_public_par_titulaire ELSE 0 END), 0)::bigint AS montant_total
       FROM ${DataTable.MarchesPublics}
     ),
     sub_stats AS (
       SELECT
         COUNT(*)::integer AS total,
-        COALESCE(SUM(montant), 0)::bigint AS montant_total
+        COALESCE(SUM(CASE WHEN ${SUB_CLEAN_AMOUNT} THEN montant ELSE 0 END), 0)::bigint AS montant_total
       FROM ${DataTable.Subventions}
     ),
     mp_coverage AS (
@@ -89,10 +107,11 @@ export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
         COUNT(*)::integer AS total
       FROM ${DataTable.Bareme} b
       JOIN ${DataTable.Communities} c ON c.siren = b.siren
-      WHERE b.annee = ${LATEST_SCORE_YEAR}
+      WHERE b.annee = (SELECT year FROM latest_year)
         AND ${SOUMISES_CONDITION}
     )
     SELECT
+      (SELECT year FROM latest_year) AS "latestScoreYear",
       c.total AS "totalCollectivites",
       c.communes AS "totalCommunes",
       c.communes_soumises AS "communesSoumises",
@@ -119,6 +138,7 @@ export async function fetchPerspectivesKPIs(): Promise<PerspectivesKPIs> {
   const rows = await getQueryFromPool(kpisQuery);
   if (!rows || rows.length === 0) {
     return {
+      latestScoreYear: CURRENT_YEAR,
       totalCollectivites: 0,
       totalCommunes: 0,
       communesSoumises: 0,
@@ -185,7 +205,7 @@ export async function fetchYearlyVolumes(): Promise<YearlyVolume[]> {
       SELECT
         annee_notification::integer AS year,
         COUNT(*)::integer AS count,
-        SUM(montant_du_marche_public_par_titulaire)::bigint AS total,
+        SUM(CASE WHEN ${MP_CLEAN_AMOUNT} THEN montant_du_marche_public_par_titulaire ELSE 0 END)::bigint AS total,
         COUNT(DISTINCT acheteur_id)::integer AS buyers
       FROM ${DataTable.MarchesPublics}
       WHERE annee_notification IS NOT NULL
@@ -197,7 +217,7 @@ export async function fetchYearlyVolumes(): Promise<YearlyVolume[]> {
       SELECT
         annee::integer AS year,
         COUNT(*)::integer AS count,
-        SUM(montant)::bigint AS total,
+        SUM(CASE WHEN ${SUB_CLEAN_AMOUNT} THEN montant ELSE 0 END)::bigint AS total,
         COUNT(DISTINCT id_attribuant)::integer AS grantors
       FROM ${DataTable.Subventions}
       WHERE annee IS NOT NULL

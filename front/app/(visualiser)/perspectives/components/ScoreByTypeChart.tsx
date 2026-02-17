@@ -12,22 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 
-const SCORE_COLORS: Record<string, string> = {
-  A: '#00C882',
-  B: '#7FF083',
-  C: '#F4D93E',
-  D: '#FFB020',
-  E: '#FB735F',
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  COM: 'Communes',
-  DEP: 'Départements',
-  REG: 'Régions',
-  GRP: 'Interco.',
-};
-
-const TYPE_ORDER = ['COM', 'GRP', 'DEP', 'REG'];
+import { SCORE_COLORS, SCORE_ORDER, TYPE_LABELS, TYPE_ORDER } from '../constants';
 
 type Props = {
   mpDistribution: ScoreDistribution[];
@@ -73,7 +58,7 @@ function TypeChart({ data, title }: { data: ReturnType<typeof buildByTypeData>; 
             contentStyle={{ borderRadius: 8, fontSize: 13 }}
           />
           <Legend />
-          {(['A', 'B', 'C', 'D', 'E'] as const).map((score) => (
+          {SCORE_ORDER.map((score) => (
             <Bar
               key={score}
               dataKey={score}
