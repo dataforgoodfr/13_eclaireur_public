@@ -86,6 +86,33 @@ class SubventionsEnricher:
             )
             .drop("raison_sociale_beneficiaire")
             .unique(subset=pl.all().exclude("url"), keep="any")
+            .pipe(cls.handle_outlier_amounts)
         )
 
         return subventions
+
+    @staticmethod
+    def handle_outlier_amounts(subventions: pl.LazyFrame) -> pl.LazyFrame:
+        """Flag and filter aberrant montant values in subventions.
+
+        - Above 1 billion EUR: the amount is set to null and
+          ``montant_aberrant`` is set to True (almost certainly a data
+          entry error).
+        - Between 100 million and 1 billion EUR: the amount is kept but
+          ``montant_aberrant`` is set to True (borderline -- may be real
+          for large grants like DGCL/SNCF but warrants review).
+        - Below 100 million EUR: ``montant_aberrant`` is set to False.
+        """
+        EXTREME_THRESHOLD = 1_000_000_000  # 1 billion
+        BORDERLINE_THRESHOLD = 100_000_000  # 100 million
+
+        return subventions.with_columns(
+            pl.when(pl.col("montant") > EXTREME_THRESHOLD)
+            .then(pl.lit(None).cast(pl.Float64))
+            .otherwise(pl.col("montant"))
+            .alias("montant"),
+            pl.when(pl.col("montant") > BORDERLINE_THRESHOLD)
+            .then(pl.lit(True))
+            .otherwise(pl.lit(False))
+            .alias("montant_aberrant"),
+        )

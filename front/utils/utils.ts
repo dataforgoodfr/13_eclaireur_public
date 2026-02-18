@@ -85,6 +85,17 @@ export function formatCompactPrice(value: number, options?: Intl.NumberFormatOpt
   return formatFrench(value, defaultOptions).replace(/\s?€/, '€');
 }
 
+/**
+ * Formate un montant en milliards d'euros avec notation explicite "Md€".
+ * Plus robuste que Intl compact qui peut sortir "Bn€" selon la version ICU.
+ * Ex : 1_100_000_000 → "1,1 Md€"
+ */
+export function formatMilliardsPrice(value: number): string {
+  const md = value / 1_000_000_000;
+  const formatted = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(md);
+  return `${formatted} Md€`;
+}
+
 export function formatCompactPriceInteger(
   value: number,
   options?: Intl.NumberFormatOptions,
