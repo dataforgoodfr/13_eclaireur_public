@@ -13,7 +13,7 @@ export const DEFAULT_MAP_YEAR = CURRENT_DATA_YEAR;
 export const DEFAULT_API_YEAR = 2023;
 
 /** Year used for KPIs calculation */
-export const KPI_REFERENCE_YEAR = 2023;
+export const KPI_REFERENCE_YEAR = 2024;
 
 /** Available years for selection in map and charts */
 export const AVAILABLE_YEARS = [2020, 2021, 2022, 2023, 2024] as const;
