@@ -20,14 +20,18 @@ export async function sendEmail(data: FormData) {
 }
 
 function getSmtpTransport() {
-  const user = process.env.MY_EMAIL;
-  const pass = process.env.MY_PASSWORD;
+  const user = process.env.MY_EMAIL?.trim();
+  const pass = process.env.MY_PASSWORD?.trim();
 
   if (!user || !pass) {
     throw new Error(
       `SMTP credentials missing: MY_EMAIL=${user ? 'set' : 'MISSING'}, MY_PASSWORD=${pass ? 'set' : 'MISSING'}`,
     );
   }
+
+  console.info(
+    `[send-email] SMTP auth: user="${user}" (len=${user.length}), pass=***${pass.slice(-2)} (len=${pass.length})`,
+  );
 
   return nodemailer.createTransport({
     host: 'mail.infomaniak.com',
