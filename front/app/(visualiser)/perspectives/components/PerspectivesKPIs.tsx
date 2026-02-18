@@ -52,15 +52,15 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
           value={formatNumberInteger(kpis.totalCollectivites)}
           label='Collectivités en France'
           sublabel={`${formatNumberInteger(kpis.totalCommunes)} communes, ${kpis.totalDepartements} départements, ${kpis.totalRegions} régions, ${formatNumberInteger(kpis.totalIntercommunalites)} intercommunalités`}
-          icon={<Building2 className='h-5 w-5 text-blue-600' />}
-          color='bg-blue-50'
+          icon={<Building2 className='h-5 w-5 text-primary' />}
+          color='bg-primary-50'
         />
         <KPICard
           value={formatNumberInteger(kpis.collectivitesSoumises)}
           label='Soumises à la loi'
           sublabel={`Communes de plus de 3 500 habitants (${formatNumberInteger(kpis.communesSoumises)}) + départements, régions, intercommunalités`}
-          icon={<Scale className='h-5 w-5 text-indigo-600' />}
-          color='bg-indigo-50'
+          icon={<Scale className='h-5 w-5 text-primary' />}
+          color='bg-primary-50'
         />
       </div>
 
@@ -68,8 +68,8 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <div className='rounded-xl border bg-card p-5 shadow-sm'>
           <div className='mb-3 flex items-center gap-2'>
-            <div className='rounded-lg bg-blue-50 p-2'>
-              <FileText className='h-5 w-5 text-blue-600' />
+            <div className='rounded-lg bg-primary-light/30 p-2'>
+              <FileText className='h-5 w-5 text-primary' />
             </div>
             <h3 className='font-semibold'>Marchés publics</h3>
           </div>
@@ -93,9 +93,9 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
             </div>
             <div>
               <div className='flex items-center gap-2'>
-                <Award className='h-4 w-4 text-emerald-600' />
+                <Award className='h-4 w-4 text-score-A' />
                 <span className='text-sm'>
-                  <span className='text-2xl font-bold text-emerald-600'>{kpis.pctScoreABMp} %</span>{' '}
+                  <span className='text-2xl font-bold text-score-A'>{kpis.pctScoreABMp} %</span>{' '}
                   score A ou B
                 </span>
               </div>
@@ -105,8 +105,8 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
 
         <div className='rounded-xl border bg-card p-5 shadow-sm'>
           <div className='mb-3 flex items-center gap-2'>
-            <div className='rounded-lg bg-amber-50 p-2'>
-              <HandCoins className='h-5 w-5 text-amber-600' />
+            <div className='rounded-lg bg-brand-2/30 p-2'>
+              <HandCoins className='h-5 w-5 text-primary' />
             </div>
             <h3 className='font-semibold'>Subventions</h3>
           </div>
@@ -130,9 +130,9 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
             </div>
             <div>
               <div className='flex items-center gap-2'>
-                <Award className='h-4 w-4 text-red-500' />
+                <Award className='h-4 w-4 text-score-E' />
                 <span className='text-sm'>
-                  <span className='text-2xl font-bold text-red-500'>{kpis.pctScoreABSub} %</span>{' '}
+                  <span className='text-2xl font-bold text-score-E'>{kpis.pctScoreABSub} %</span>{' '}
                   score A ou B
                 </span>
               </div>
@@ -142,9 +142,9 @@ export default function PerspectivesKPICards({ kpis }: { kpis: PerspectivesKPIs 
       </div>
 
       {/* Insight mis en avant */}
-      <div className='flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4'>
-        <TrendingUp className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
-        <p className='text-sm text-amber-900'>
+      <div className='flex items-start gap-3 rounded-xl border border-secondary bg-secondary/10 p-4'>
+        <TrendingUp className='mt-0.5 h-5 w-5 flex-shrink-0 text-secondary-dark' />
+        <p className='text-sm text-foreground'>
           <span className='font-semibold'>Le contraste est frappant :</span> {pctMpCoverage} % des
           collectivités soumises à la loi publient leurs marchés publics, mais seulement{' '}
           {pctSubCoverage} % publient leurs subventions.
