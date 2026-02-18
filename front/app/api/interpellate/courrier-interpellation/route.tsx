@@ -10,7 +10,11 @@ export async function GET(request: NextRequest) {
   const communityType = searchParams.get('communityType') ?? '';
 
   const stream = await renderToStream(
-    <CourrierTypeInterpellation communityName={communityName} communityType={communityType} />,
+    <CourrierTypeInterpellation
+      communityName={communityName}
+      communityType={communityType}
+      contactEmail={process.env.MY_EMAIL ?? 'contact@eclaireurpublic.fr'}
+    />,
   );
   const chunks: Uint8Array[] = [];
   for await (const chunk of stream) {

@@ -3,11 +3,13 @@ import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/
 type CourrierTypeInterpellationProps = {
   communityName: string;
   communityType: string;
+  contactEmail: string;
 };
 
 export const CourrierTypeInterpellation = ({
   communityName,
   communityType,
+  contactEmail,
 }: CourrierTypeInterpellationProps) => {
   // Register font
   Font.register({
@@ -89,10 +91,10 @@ export const CourrierTypeInterpellation = ({
         <Text style={styles.section}>Pour en savoir plus : www.eclaireurpublic.fr</Text>
 
         <Text style={styles.section}>
-          Vous disposez bien entendu d’un droit de réponse. Pour toute remarque, précision ou
-          correction, vous pouvez contacter Anticor à : contact@anticor.com (adresse de contact
-          dédiée). Pour améliorer le score de transparence de votre collectivité, vous pouvez
-          transmettre les données manquantes :
+          Vous disposez bien entendu d'un droit de réponse. Pour toute remarque, précision ou
+          correction, vous pouvez nous contacter à : {contactEmail} (adresse de contact dédiée).
+          Pour améliorer le score de transparence de votre collectivité, vous pouvez transmettre
+          les données manquantes :
         </Text>
         <View style={[styles.ul, styles.section]}>
           <View style={styles.li}>
