@@ -117,12 +117,14 @@ export default async function Page() {
       <section className='space-y-4'>
         <div className='space-y-2'>
           <h2 className='text-2xl font-bold'>
-            De plus en plus de données déclarées, de plus en plus de collectivités qui publient
+            La déclaration des marchés publics décolle&nbsp;; les subventions restent à l&apos;arrêt
           </h2>
           <p className='max-w-3xl text-muted-foreground'>
-            Le nombre de marchés publics déclarés a été multiplié par plus de 10 en quelques années.
-            Le nombre de collectivités qui publient leurs données augmente aussi régulièrement,
-            signe d&apos;une dynamique positive malgré les lacunes persistantes.
+            Depuis 2016, le volume de marchés publics déclarés a été multiplié par plus de dix, et
+            le nombre d&apos;acheteurs actifs suit la même tendance &mdash; un signal encourageant.
+            Sur les subventions, la dynamique est toute autre&nbsp;: moins de 1&nbsp;% des
+            collectivités publient des données exploitables, et les volumes stagnent d&apos;une
+            année à l&apos;autre.
           </p>
         </div>
         <VolumeChart volumes={volumes} />
