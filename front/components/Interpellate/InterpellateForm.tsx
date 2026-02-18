@@ -78,7 +78,7 @@ export default function InterpellateForm({
     setemail(e.target.value);
   };
 
-  // const contactsList = selectedContacts.map((elt) => elt.contact).join('; '); // TODO : décommenter cette ligne à la mise en production !!!
+  const contactsList = selectedContacts.map((elt) => elt.contact).join('; ');
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(InterpellateFormSchema),
@@ -86,8 +86,7 @@ export default function InterpellateForm({
       firstname: '',
       lastname: '',
       email: '',
-      // emails: contactsList, // TODO : décommenter cette ligne à la mise en production !!! ATTENTION ce sont ces emails qui seront interpelés
-      emails: 'olivier.pretre@gmx.fr', // TODO : effacer à la mise en production
+      emails: contactsList,
       object: ConfirmInterpellateSubject,
       isCC: true,
       siren: siren,
