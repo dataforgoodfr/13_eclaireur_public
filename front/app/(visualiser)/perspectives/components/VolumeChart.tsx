@@ -13,6 +13,8 @@ import {
   YAxis,
 } from 'recharts';
 
+import { MP_THEME, SUB_THEME } from '../constants';
+
 type Props = {
   volumes: YearlyVolume[];
 };
@@ -77,8 +79,8 @@ export default function VolumeChart({ volumes }: Props) {
                 <Area
                   type='monotone'
                   dataKey='count'
-                  stroke='#2563eb'
-                  fill='#2563eb20'
+                  stroke={MP_THEME.stroke}
+                  fill={MP_THEME.fillTranslucent}
                   strokeWidth={2}
                   name='Marchés publics'
                 />
@@ -102,7 +104,7 @@ export default function VolumeChart({ volumes }: Props) {
                   formatter={(value: number) => [`${formatCompactAmount(value)}\u20AC`, 'Montant']}
                   contentStyle={{ borderRadius: 8, fontSize: 13 }}
                 />
-                <Bar dataKey='montant' fill='#2563eb' name='Marchés publics' />
+                <Bar dataKey='montant' fill={MP_THEME.fill} stroke={MP_THEME.stroke} name='Marchés publics' />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -123,8 +125,8 @@ export default function VolumeChart({ volumes }: Props) {
                 <Area
                   type='monotone'
                   dataKey='count'
-                  stroke='#2563eb'
-                  fill='#2563eb20'
+                  stroke={MP_THEME.stroke}
+                  fill={MP_THEME.fillTranslucent}
                   strokeWidth={2}
                   name='Acheteurs'
                 />
@@ -154,8 +156,8 @@ export default function VolumeChart({ volumes }: Props) {
                 <Area
                   type='monotone'
                   dataKey='count'
-                  stroke='#10b981'
-                  fill='#10b98120'
+                  stroke={SUB_THEME.stroke}
+                  fill={SUB_THEME.fillTranslucent}
                   strokeWidth={2}
                   name='Subventions'
                 />
@@ -179,7 +181,7 @@ export default function VolumeChart({ volumes }: Props) {
                   formatter={(value: number) => [`${formatCompactAmount(value)}\u20AC`, 'Montant']}
                   contentStyle={{ borderRadius: 8, fontSize: 13 }}
                 />
-                <Bar dataKey='montant' fill='#10b981' name='Subventions' />
+                <Bar dataKey='montant' fill={SUB_THEME.fill} stroke={SUB_THEME.stroke} name='Subventions' />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -200,8 +202,8 @@ export default function VolumeChart({ volumes }: Props) {
                 <Area
                   type='monotone'
                   dataKey='count'
-                  stroke='#10b981'
-                  fill='#10b98120'
+                  stroke={SUB_THEME.stroke}
+                  fill={SUB_THEME.fillTranslucent}
                   strokeWidth={2}
                   name='Attribuants'
                 />
