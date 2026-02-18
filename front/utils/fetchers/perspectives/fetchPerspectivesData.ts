@@ -170,6 +170,7 @@ export async function fetchMpScoreDistribution(): Promise<ScoreDistribution[]> {
     FROM ${DataTable.Bareme} b
     JOIN ${DataTable.Communities} c ON c.siren = b.siren
     WHERE b.annee >= 2019
+      AND b.annee <= ${CURRENT_YEAR - 1}
       AND b.mp_score IS NOT NULL
       AND ${SOUMISES_CONDITION}
     GROUP BY c.type, b.annee, b.mp_score
@@ -190,6 +191,7 @@ export async function fetchSubScoreDistribution(): Promise<ScoreDistribution[]> 
     FROM ${DataTable.Bareme} b
     JOIN ${DataTable.Communities} c ON c.siren = b.siren
     WHERE b.annee >= 2019
+      AND b.annee <= ${CURRENT_YEAR - 1}
       AND b.subventions_score IS NOT NULL
       AND ${SOUMISES_CONDITION}
     GROUP BY c.type, b.annee, b.subventions_score
@@ -211,7 +213,7 @@ export async function fetchYearlyVolumes(): Promise<YearlyVolume[]> {
       FROM ${DataTable.MarchesPublics}
       WHERE annee_notification IS NOT NULL
         AND annee_notification >= 2016
-        AND annee_notification <= ${CURRENT_YEAR}
+        AND annee_notification <= ${CURRENT_YEAR - 1}
       GROUP BY annee_notification
     ),
     sub_yearly AS (
@@ -223,7 +225,7 @@ export async function fetchYearlyVolumes(): Promise<YearlyVolume[]> {
       FROM ${DataTable.Subventions}
       WHERE annee IS NOT NULL
         AND annee >= 2016
-        AND annee <= ${CURRENT_YEAR}
+        AND annee <= ${CURRENT_YEAR - 1}
       GROUP BY annee
     )
     SELECT
