@@ -23,6 +23,7 @@ export async function GET(request: Request) {
     communityTitle: getCommunityTitle(communityType),
     communityName: communityName,
     fullName: getFullName(firstname, lastname),
+    contactEmail: process.env.MY_EMAIL ?? 'contact@eclaireurpublic.fr',
   });
 
   const mailOptions: Mail.Options = {
