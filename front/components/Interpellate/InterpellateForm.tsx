@@ -260,6 +260,7 @@ export default function InterpellateForm({
                     communityTitle: getCommunityTitle(communityType),
                     communityName: communityName,
                     fullName: getFullName(firstName, lastName),
+                    contactEmail: 'contact@eclaireurpublic.fr',
                   }),
                 }}
               />
