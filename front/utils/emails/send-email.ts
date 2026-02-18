@@ -21,9 +21,10 @@ export async function sendEmail(data: FormData) {
 
 export async function trySendMail(mailOptions: Mail.Options) {
   try {
-    sendMailPromise(mailOptions);
+    await sendMailPromise(mailOptions);
     return NextResponse.json({ message: 'Email sent' });
   } catch (err) {
+    console.error('[send-email] SMTP error:', err);
     return NextResponse.json({ error: err }, { status: 500 });
   }
 }
