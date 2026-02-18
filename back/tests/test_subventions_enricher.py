@@ -30,9 +30,7 @@ class TestHandleOutlierAmounts:
         assert result["montant_aberrant"][0] is True
 
     def test_null_amount_stays_null(self):
-        result = SubventionsEnricher.handle_outlier_amounts(
-            self._make_frame([None])
-        ).collect()
+        result = SubventionsEnricher.handle_outlier_amounts(self._make_frame([None])).collect()
         assert result["montant"][0] is None
         assert result["montant_aberrant"][0] is False
 
