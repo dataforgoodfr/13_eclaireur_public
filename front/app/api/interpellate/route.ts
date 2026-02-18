@@ -45,7 +45,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: zodErrors });
   }
 
-  const confirmUrl = new URL('api/interpellate/confirm', process.env.NEXT_PUBLIC_BASE_URL);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!baseUrl) {
+    console.error('[interpellate] NEXT_PUBLIC_BASE_URL is not set');
+    return NextResponse.json(
+      { error: 'Server misconfiguration: NEXT_PUBLIC_BASE_URL is not set' },
+      { status: 500 },
+    );
+  }
+
+  const confirmUrl = new URL('api/interpellate/confirm', baseUrl);
   const params = new URLSearchParams();
   params.append('siren', siren ?? '');
   params.append('isCC', isCC !== undefined ? isCC.toString() : 'false');
@@ -56,6 +65,7 @@ export async function POST(request: Request) {
   params.append('communityType', communityType ?? '');
   params.append('communityName', communityName ?? '');
   confirmUrl.search = params.toString();
+
   const confirmInterpellateHtml = renderEmailTemplate('confirm-interpellate', {
     firstname: firstname ?? '',
     link: confirmUrl.toString(),

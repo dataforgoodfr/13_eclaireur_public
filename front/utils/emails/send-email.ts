@@ -19,35 +19,32 @@ export async function sendEmail(data: FormData) {
     });
 }
 
-export async function trySendMail(mailOptions: Mail.Options) {
-  try {
-    await sendMailPromise(mailOptions);
-    return NextResponse.json({ message: 'Email sent' });
-  } catch (err) {
-    console.error('[send-email] SMTP error:', err);
-    return NextResponse.json({ error: err }, { status: 500 });
-  }
-}
+function getSmtpTransport() {
+  const user = process.env.MY_EMAIL;
+  const pass = process.env.MY_PASSWORD;
 
-async function sendMailPromise(mailOptions: Mail.Options) {
-  const transport = nodemailer.createTransport({
-    // host: 'mail.gmx.com', // TODO effacer lors de mise en prod
-    host: 'mail.infomaniak.com', // // config mail infomaniak
+  if (!user || !pass) {
+    throw new Error(
+      `SMTP credentials missing: MY_EMAIL=${user ? 'set' : 'MISSING'}, MY_PASSWORD=${pass ? 'set' : 'MISSING'}`,
+    );
+  }
+
+  return nodemailer.createTransport({
+    host: 'mail.infomaniak.com',
     port: 465,
     secure: true,
-    auth: {
-      user: process.env.MY_EMAIL,
-      pass: process.env.MY_PASSWORD,
-    },
+    auth: { user, pass },
   });
+}
 
-  return new Promise<string>((resolve, reject) => {
-    transport.sendMail(mailOptions, function (err) {
-      if (!err) {
-        resolve('Email sent');
-      } else {
-        reject(err.message);
-      }
-    });
-  });
+export async function trySendMail(mailOptions: Mail.Options) {
+  try {
+    const transport = getSmtpTransport();
+    await transport.sendMail(mailOptions);
+    return NextResponse.json({ message: 'Email sent' });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[send-email] SMTP error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
