@@ -13,9 +13,7 @@ export async function GET(request: Request) {
   const communityName = searchParams.get('communityName') ?? '';
   const firstname = searchParams.get('firstname') ?? '';
   const lastname = searchParams.get('lastname') ?? '';
-  // mail en CC 
   const email = searchParams.get('email') ?? '';
-  // Mails à interpeller
   const emails = searchParams.get('emails') ?? '';
   const isCC = searchParams.get('isCC') === 'true';
 
@@ -34,7 +32,13 @@ export async function GET(request: Request) {
     html: confirmInterpellateHtml,
   };
 
-  await trySendMail(mailOptions);
+  const result = await trySendMail(mailOptions);
+
+  if (result.status !== 200) {
+    const body = await result.json().catch(() => ({ error: 'unknown' }));
+    console.error('[interpellate/confirm] Failed to send interpellation email:', body.error);
+    redirect(`/interpeller/${siren}/step3?error=send_failed`);
+  }
 
   redirect(`/interpeller/${siren}/step4`);
 }

@@ -98,7 +98,10 @@ export default function InterpellateForm({
   const onSubmit = async (data: FormSchema) => {
     const response = await postInterpellate(data);
     if (!response.ok) {
-      alert('Submitting form failed!');
+      const body = await response.json().catch(() => null);
+      const detail = body?.error ?? `HTTP ${response.status}`;
+      console.error('[InterpellateForm] submission failed:', detail);
+      alert(`Échec de l'envoi : ${detail}`);
       return;
     }
 
