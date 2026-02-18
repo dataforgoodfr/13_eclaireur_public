@@ -1,32 +1,28 @@
 import type { HTMLAttributes } from 'react';
 
-import { KPI_REFERENCE_YEAR } from '#utils/constants/years';
 import { fetchKPIs } from '#utils/fetchers/kpis/fetchKPIs';
-import { cn, formatCompactPrice, formatNumberInteger } from '#utils/utils';
-
-const KPIS_YEAR = KPI_REFERENCE_YEAR;
+import { cn, formatMilliardsPrice, formatNumberInteger } from '#utils/utils';
 
 export default async function KPIs() {
-  const kpis = await fetchKPIs(KPIS_YEAR);
+  const kpis = await fetchKPIs();
 
   return (
     <div className='flex flex-col gap-10'>
       <ChiffreCle
-        className=''
-        value={`${kpis.publishedSubventionsPercentage} %`}
-        description='des subventions en montant sont publiées.'
+        value={formatNumberInteger(kpis.collectivitesSoumises)}
+        description="collectivités soumises à l'obligation de publication."
       />
       <ChiffreCle
-        value={formatNumberInteger(kpis.communitiesTotalCount)}
-        description='collectivités recensées sur le site.'
+        value={formatMilliardsPrice(kpis.montantTotal)}
+        description='de marchés publics et subventions analysés depuis 2016.'
       />
       <ChiffreCle
-        value={formatCompactPrice(kpis.subventionsTotalBudget)}
-        description='de budget total de subventions dans les collectivités.'
+        value={`${kpis.pctScoreABMp} %`}
+        description='des collectivités ont un score A ou B sur les marchés publics (2024).'
       />
       <ChiffreCle
-        value={`${kpis.communitiesGoodScoresPercentage} %`}
-        description='des collectivités ont un score A ou B.'
+        value={`${kpis.pctSubPubliees} %`}
+        description='des subventions en montant sont publiées (2024).'
       />
     </div>
   );

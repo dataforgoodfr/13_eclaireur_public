@@ -47,9 +47,9 @@ export const SCORE_NON_DISPONIBLE = 'Non disponible';
 
 export const SCORE_TO_RANGE = {
   [TransparencyScore.A]: '100% (+/- 5%)',
-  [TransparencyScore.B]: 'De 50% à 95%',
+  [TransparencyScore.B]: 'De 50% à 95% ou > 105%',
   [TransparencyScore.C]: 'De 25% à 50%',
   [TransparencyScore.D]: 'De 0% à 25%',
-  [TransparencyScore.E]: '0% ou plus de 105%',
+  [TransparencyScore.E]: '0% - Aucune donnée',
   [TransparencyScore.UNKNOWN]: 'Non disponible',
 };
