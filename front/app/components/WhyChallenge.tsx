@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { KnowMore } from './SectionCard';
 
-export default async function WhyChallenge() {
+export default function WhyChallenge() {
   return (
     <article className='global-margin w-full px-4 py-6 md:py-20'>
       <div className='flex flex-col gap-10 rounded-xl border border-primary-light p-6'>
