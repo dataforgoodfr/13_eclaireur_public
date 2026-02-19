@@ -1,101 +1,271 @@
+name: Review App
+
 on:
-    pull_request_target:
-      types: [opened, closed, synchronize, reopened]
-      branches: [ main ]
-      paths:
-      - 'front/**'
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, closed, reopened]
+    branches: [main]
 
-jobs: 
-    deploy:
-        name: Deploy/redeploy review app
-        runs-on: ubuntu-latest
-        permissions:
-            issues: write
-            pull-requests: write
-            contents: read
-        steps:
-          # Vérifier si la branche existe avant le checkout
-          - name: Check if branch exists
-            if: ${{ github.event.action != 'closed' }}
-            id: check-branch
-            run: |
-              REPO="${{ github.event.pull_request.head.repo.full_name }}"
-              BRANCH="${{ github.event.pull_request.head.ref }}"
-              
-              # Tester si la branche existe via l'API GitHub
-              if gh api repos/$REPO/branches/$BRANCH --silent 2>/dev/null; then
-                echo "branch-exists=true" >> $GITHUB_OUTPUT
-                echo "✅ Branch $BRANCH exists"
-              else
-                echo "branch-exists=false" >> $GITHUB_OUTPUT  
-                echo "❌ Branch $BRANCH not found"
-              fi
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              
-          # Checkout seulement si la branche existe
-          - name: Checkout repository
-            if: ${{ steps.check-branch.outputs.branch-exists == 'true' }}
-            uses: actions/checkout@v4
-            with:
-              repository: ${{ github.event.pull_request.head.repo.full_name }}
-              ref: ${{ github.event.pull_request.head.ref }}
-              token: ${{ secrets.GITHUB_TOKEN }}
-              fetch-depth: 0
+jobs:
+  deploy:
+    name: Deploy review app
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.action != 'closed' &&
+      github.event.action != 'unlabeled' &&
+      (
+        (github.event.action == 'labeled' && github.event.label.name == 'deploy-review') ||
+        (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'deploy-review'))
+      )
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Check if branch exists
+        id: check-branch
+        run: |
+          REPO="${{ github.event.pull_request.head.repo.full_name }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          if gh api repos/$REPO/branches/$BRANCH --silent 2>/dev/null; then
+            echo "branch-exists=true" >> $GITHUB_OUTPUT
+            echo "Branch $BRANCH exists"
+          else
+            echo "branch-exists=false" >> $GITHUB_OUTPUT
+            echo "Branch $BRANCH not found"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          # Generate clean app name without underscores
-          - name: Generate clean app name
-            if: ${{ steps.check-branch.outputs.branch-exists == 'true' }}
-            id: app-name
-            run: |
-              REPO_NAME="${{ github.event.pull_request.base.repo.name }}"
-              CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
-              APP_NAME="${CLEAN_NAME}-PR-${{ github.event.number }}"
-              echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
-              echo "Generated app name: $APP_NAME"
-    
-          - name: Create review app
-            if: ${{ github.event.action != 'closed' && steps.check-branch.outputs.branch-exists == 'true' }}
-            uses: CleverCloud/clever-cloud-review-app@v2.0.2
-            env:
-                CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-                CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-                ORGA_ID: ${{ secrets.ORGA_ID }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                GH_APP_FOLDER: ${{ secrets.APP_FOLDER }}
-                GH_CC_CACHE_DEPENDENCIES: ${{secrets.CC_CACHE_DEPENDENCIES}}
-                GH_CC_CGI_IMPLEMENTATION: ${{secrets.CC_CGI_IMPLEMENTATION}}
-                GH_CC_NODE_DEV_DEPENDENCIES: ${{secrets.CC_NODE_DEV_DEPENDENCIES}}
-                GH_CC_WEBROOT: ${{secrets.CC_WEBROOT}}
-                GH_HOST: ${{secrets.HOST}}
-                GH_NODE_ENV : ${{secrets.NODE_ENV}}
-                GH_PORT: ${{secrets.PORT}}
-                GH_NEXT_PUBLIC_BASE_URL: https://${{ steps.app-name.outputs.app-name }}.cleverapps.io
-                GH_APP_NAME: ${{ steps.app-name.outputs.app-name }}
-                GH_POSTGRESQL_ADDON_HOST: ${{secrets.POSTGRESQL_ADDON_HOST}}
-                GH_POSTGRESQL_ADDON_DB:  ${{secrets.POSTGRESQL_ADDON_DB}}
-                GH_POSTGRESQL_ADDON_USER:  ${{secrets.POSTGRESQL_ADDON_USER}}
-                GH_POSTGRESQL_ADDON_PORT:  ${{secrets.POSTGRESQL_ADDON_PORT}}
-                GH_POSTGRESQL_ADDON_PASSWORD: ${{secrets.POSTGRESQL_ADDON_PASSWORD}}
-                GH_POSTGRESQL_ADDON_URI: ${{secrets.POSTGRESQL_ADDON_URI}}
-                # # Optimisations pour éviter SIGKILL sur machine XS avec Yarn
-                # GH_CC_NODE_BUILD_TOOL: "yarn"
-                # GH_NODE_OPTIONS: "--max-old-space-size=1024"
-                # GH_CC_PRE_BUILD_HOOK: "yarn cache clean"
+      - name: Checkout repository
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-            with:
-                type: node
-                set-env: true
-                flavor: XS
-                build-flavor: S
+      - name: Generate clean app name
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        id: app-name
+        run: |
+          REPO_NAME="${{ github.event.pull_request.base.repo.name }}"
+          CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
+          APP_NAME="${CLEAN_NAME}-PR-${{ github.event.number }}"
+          echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
+          echo "Generated app name: $APP_NAME"
 
-          - name: Clean up review app on PR close
-            if: ${{ github.event.action == 'closed' }}
-            uses: CleverCloud/clever-cloud-review-app@v2.0.2
-            env:
-                CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-                CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-                ORGA_ID: ${{ secrets.ORGA_ID }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            with:
-                type: node
+      - name: Install clever-tools
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        run: npm install -g clever-tools
+
+      - name: Check if app already exists
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        id: app-exists
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          if clever link -o "${{ secrets.ORGA_ID }}" "$APP_NAME" 2>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "App $APP_NAME already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "App $APP_NAME does not exist yet"
+          fi
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Create app on Clever Cloud
+        if: >-
+          steps.check-branch.outputs.branch-exists == 'true' &&
+          steps.app-exists.outputs.exists != 'true'
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          clever create --type node "$APP_NAME" --alias "$APP_NAME" --region par --org "${{ secrets.ORGA_ID }}"
+          clever scale --alias "$APP_NAME" --flavor XS
+          clever scale --alias "$APP_NAME" --build-flavor S
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Set environment variables
+        if: >-
+          steps.check-branch.outputs.branch-exists == 'true' &&
+          steps.app-exists.outputs.exists != 'true'
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          clever env set --alias "$APP_NAME" APP_FOLDER "${{ secrets.APP_FOLDER }}"
+          clever env set --alias "$APP_NAME" CC_CACHE_DEPENDENCIES "${{ secrets.CC_CACHE_DEPENDENCIES }}"
+          clever env set --alias "$APP_NAME" CC_CGI_IMPLEMENTATION "${{ secrets.CC_CGI_IMPLEMENTATION }}"
+          clever env set --alias "$APP_NAME" CC_NODE_DEV_DEPENDENCIES "${{ secrets.CC_NODE_DEV_DEPENDENCIES }}"
+          clever env set --alias "$APP_NAME" CC_WEBROOT "${{ secrets.CC_WEBROOT }}"
+          clever env set --alias "$APP_NAME" HOST "${{ secrets.HOST }}"
+          clever env set --alias "$APP_NAME" NODE_ENV "${{ secrets.NODE_ENV }}"
+          clever env set --alias "$APP_NAME" PORT "${{ secrets.PORT }}"
+          clever env set --alias "$APP_NAME" NEXT_PUBLIC_BASE_URL "https://${{ steps.app-name.outputs.app-name }}.cleverapps.io"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_HOST "${{ secrets.POSTGRESQL_ADDON_HOST }}"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_DB "${{ secrets.POSTGRESQL_ADDON_DB }}"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_USER "${{ secrets.POSTGRESQL_ADDON_USER }}"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_PORT "${{ secrets.POSTGRESQL_ADDON_PORT }}"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_PASSWORD "${{ secrets.POSTGRESQL_ADDON_PASSWORD }}"
+          clever env set --alias "$APP_NAME" POSTGRESQL_ADDON_URI "${{ secrets.POSTGRESQL_ADDON_URI }}"
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Link to existing app
+        if: >-
+          steps.check-branch.outputs.branch-exists == 'true' &&
+          steps.app-exists.outputs.exists == 'true'
+        run: clever link -o "${{ secrets.ORGA_ID }}" "${{ steps.app-name.outputs.app-name }}"
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Deploy
+        if: steps.check-branch.outputs.branch-exists == 'true'
+        id: deploy
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          if [ "${{ steps.app-exists.outputs.exists }}" == "true" ]; then
+            clever deploy --alias "$APP_NAME" --force
+          else
+            clever deploy --alias "$APP_NAME"
+          fi
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Generate deployment timestamp
+        if: steps.deploy.outcome == 'success'
+        id: timestamp
+        run: echo "ts=$(date -u +%s)" >> $GITHUB_OUTPUT
+
+      - name: Find existing deployment comment
+        if: steps.deploy.outcome == 'success'
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: "<!-- clever-cloud-review-app -->"
+
+      - name: Post deployment comment
+        if: steps.deploy.outcome == 'success'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.number }}
+          body: |
+            <!-- clever-cloud-review-app -->
+            <!-- deploy-timestamp:${{ steps.timestamp.outputs.ts }} -->
+            ### Review app deployed
+
+            | Info | Details |
+            | ---- | ------- |
+            | Commit | `${{ github.event.pull_request.head.sha }}` |
+            | Preview | https://${{ steps.app-name.outputs.app-name }}.cleverapps.io |
+            | Auto-expires | ~3 hours after deployment |
+
+            _The app will be automatically deleted after 3 hours. Remove and re-add the `deploy-review` label to deploy again._
+          edit-mode: replace
+
+  cleanup-unlabeled:
+    name: Delete review app (label removed)
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.action == 'unlabeled' &&
+      github.event.label.name == 'deploy-review'
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Generate clean app name
+        id: app-name
+        run: |
+          REPO_NAME="${{ github.event.pull_request.base.repo.name }}"
+          CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
+          APP_NAME="${CLEAN_NAME}-PR-${{ github.event.number }}"
+          echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Install clever-tools
+        run: npm install -g clever-tools
+
+      - name: Delete review app
+        continue-on-error: true
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          clever link -o "${{ secrets.ORGA_ID }}" "$APP_NAME"
+          clever delete --alias "$APP_NAME" --yes
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Find existing deployment comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: "<!-- clever-cloud-review-app -->"
+
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.number }}
+          body: |
+            <!-- clever-cloud-review-app -->
+            ### Review app deleted
+
+            The `deploy-review` label was removed. The review app has been deleted.
+            _Add the `deploy-review` label again to redeploy._
+          edit-mode: replace
+
+  cleanup-closed:
+    name: Delete review app (PR closed)
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Generate clean app name
+        id: app-name
+        run: |
+          REPO_NAME="${{ github.event.pull_request.base.repo.name }}"
+          CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
+          APP_NAME="${CLEAN_NAME}-PR-${{ github.event.number }}"
+          echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Install clever-tools
+        run: npm install -g clever-tools
+
+      - name: Delete review app
+        continue-on-error: true
+        run: |
+          APP_NAME="${{ steps.app-name.outputs.app-name }}"
+          clever link -o "${{ secrets.ORGA_ID }}" "$APP_NAME"
+          clever delete --alias "$APP_NAME" --yes
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+
+      - name: Find existing deployment comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: "<!-- clever-cloud-review-app -->"
+
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.number }}
+          body: |
+            <!-- clever-cloud-review-app -->
+            ### Review app deleted
+
+            The PR was closed. The review app has been deleted.
+          edit-mode: replace
