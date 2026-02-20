@@ -22,9 +22,16 @@ export async function generateMetadata({ params }: CommunityPageProps): Promise<
   const siren = (await params).siren;
   const community = await getCommunity(siren);
 
+  const location = community.nom_departement ? ` (${community.nom_departement})` : '';
+  const description = `Marchés publics, subventions et score de transparence de ${community.nom}${location}. Données publiques issues de data.gouv.fr.`;
+
   return {
     title: community.nom,
-    description: `Visualiser les dernières données de dépenses publiques de la collectivite : ${community.nom}`,
+    description,
+    openGraph: {
+      title: `${community.nom} | Éclaireur Public`,
+      description,
+    },
   };
 }
 
