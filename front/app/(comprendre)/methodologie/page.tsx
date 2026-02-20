@@ -35,12 +35,11 @@ export default function Page() {
           <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
             <div className='space-y-6'>
               <p className='text-lg'>
-                Pour parvenir à ces fins, Anticor a rédigé un document préparatoire
-                intitulé «&nbsp;Eclaireur Public - Analyse de la
-                transparence des collectivités locales&nbsp;» définissant les objectifs généraux et
-                un cadre qui donne corps à l'objet «&nbsp;Eclaireur Public&nbsp;», site internet
-                «&nbsp;permettant aux visiteurs de consulter des données à jour sur sa collectivité
-                locale&nbsp;».
+                Pour parvenir à ces fins, Anticor a rédigé un document préparatoire intitulé
+                «&nbsp;Eclaireur Public - Analyse de la transparence des collectivités
+                locales&nbsp;» définissant les objectifs généraux et un cadre qui donne corps à
+                l'objet «&nbsp;Eclaireur Public&nbsp;», site internet «&nbsp;permettant aux
+                visiteurs de consulter des données à jour sur sa collectivité locale&nbsp;».
               </p>
               <p className='text-lg'>
                 Avec comme objectif sous-jacent, l'accompagnement des acteurs de ces collectivités
@@ -136,7 +135,7 @@ export default function Page() {
             <li>l'indice de transparence des marchés publics</li>
             <li>l'indice de transparence agrégé des 2 indices précédents</li>
           </ul>
-          <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence des subventions</h3>
+          <h3 className='mb-4 mt-10'>Calcul de l'indice de transparence des marchés publics</h3>
           <p className='font-bold'>
             L'indice de transparence des marchés publics est établi selon la conjonction de 3
             facteurs principaux&nbsp;:
