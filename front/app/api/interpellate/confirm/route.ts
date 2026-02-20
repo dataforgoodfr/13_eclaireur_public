@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { ConfirmInterpellateSubject, getCommunityTitle, getFullName } from '#utils/emails/emailRendering';
 import { renderEmailTemplate } from '#utils/emails/emailRendering-server';
+import { logInterpellation } from '#utils/emails/interpellation-log';
 import { trySendMail } from '#utils/emails/send-email';
 import Mail from 'nodemailer/lib/mailer';
 
@@ -24,10 +25,12 @@ export async function GET(request: Request) {
     contactEmail: process.env.MY_EMAIL ?? 'contact@eclaireurpublic.fr',
   });
 
+  const nbContacts = emails.split(';').filter((e) => e.trim()).length;
+
   const mailOptions: Mail.Options = {
     from: process.env.MY_EMAIL,
     to: emails,
-    cc: isCC ? email : '',
+    bcc: isCC ? email : undefined,
     subject: ConfirmInterpellateSubject,
     html: confirmInterpellateHtml,
   };
@@ -39,6 +42,14 @@ export async function GET(request: Request) {
     console.error('[interpellate/confirm] Failed to send interpellation email:', body.error);
     redirect(`/interpeller/${siren}/step3?error=send_failed`);
   }
+
+  await logInterpellation({
+    siren: siren ?? '',
+    communityName,
+    communityType,
+    nbContacts,
+    hasCopy: isCC,
+  });
 
   redirect(`/interpeller/${siren}/step4`);
 }
