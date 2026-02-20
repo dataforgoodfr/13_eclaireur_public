@@ -7,7 +7,7 @@ import WhyChallenge from '#app/components/WhyChallenge';
 import CtaGroup from '#app/components/cta/CtaGroup';
 
 export const metadata: Metadata = {
-  title: 'Éclaireur Public — Transparence des finances locales',
+  title: 'Transparence des finances locales',
   description:
     'Consultez les dépenses publiques de votre collectivité locale : marchés publics, subventions et score de transparence. Une initiative Anticor & Data for Good.',
   openGraph: {

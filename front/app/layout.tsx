@@ -65,7 +65,7 @@ export const metadata: Metadata = {
       'Éclaireur Public est une initiative portée par Anticor et accompagnée par Data for Good. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
     images: [
       {
-        url: '/eclaireur/partager_EP.png',
+        url: '/partager_EP.png',
         width: 1200,
         height: 630,
         alt: 'Éclaireur Public — Transparence des finances locales',
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     title: 'Éclaireur Public',
     description:
       'Éclaireur Public est une initiative portée par Anticor et accompagnée par Data for Good. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
-    images: ['/eclaireur/partager_EP.png'],
+    images: ['/partager_EP.png'],
   },
   icons: {
     icon: '/favicon.ico',
