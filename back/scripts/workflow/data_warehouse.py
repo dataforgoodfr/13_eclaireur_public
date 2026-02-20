@@ -120,6 +120,7 @@ class DataWarehouseWorkflow:
                         conn.commit()
 
                 written = self._write_dataframe_in_chunks(df, table_name, conn, if_table_exists)
+                conn.commit()
 
                 final_count = conn.execute(text(f"SELECT count(*) FROM {table_name}")).scalar()
                 LOGGER.info(

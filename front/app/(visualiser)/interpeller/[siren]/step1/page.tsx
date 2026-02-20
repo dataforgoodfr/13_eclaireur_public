@@ -1,5 +1,6 @@
-// import Link from 'next/link';
 import { Suspense } from 'react';
+
+import Link from 'next/link';
 
 import { FicheIdentite } from '#app/community/[siren]/components/FicheIdentite/FicheIdentite';
 import { FicheIdentiteSkeleton } from '#app/community/[siren]/components/Skeletons/FicheIdentiteSkeleton';
@@ -61,9 +62,19 @@ export default async function InterpellateStep1({ params }: CommunityPageProps) 
             <TransparencyScoreWithTrend
               score={score}
               trend={trend}
-              className='border-b-1 rounded-b-3xl border-0 shadow-none'
+              className='border-b-1 border-0 shadow-none'
             />
           </Suspense>
+
+          <div className='flex justify-center rounded-b-3xl border-t border-primary-light px-4 py-4'>
+            <Link
+              href={`/community/${siren}`}
+              target='_blank'
+              className='text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground'
+            >
+              Voir la fiche complète de {community.nom}
+            </Link>
+          </div>
         </article>
       </section>
     </>
