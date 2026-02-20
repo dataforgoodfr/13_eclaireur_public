@@ -70,3 +70,24 @@ CREATE INDEX IF NOT EXISTS idx_subventions_attribuant_annee
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_comptes_siren_annee
     ON comptes_collectivites (siren, annee DESC);
+
+-- ============================================================
+-- interpellation_logs table
+-- Tracks interpellation emails sent (no personal data).
+-- Created here so the ETL does not drop it during table reloads.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS interpellation_logs (
+    id SERIAL PRIMARY KEY,
+    siren VARCHAR(9) NOT NULL,
+    community_name TEXT NOT NULL,
+    community_type TEXT NOT NULL,
+    nb_contacts INTEGER NOT NULL,
+    has_copy BOOLEAN NOT NULL DEFAULT false,
+    sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_interpellation_logs_siren
+    ON interpellation_logs (siren);
+
+CREATE INDEX IF NOT EXISTS idx_interpellation_logs_sent_at
+    ON interpellation_logs (sent_at DESC);
