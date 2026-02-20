@@ -14,6 +14,10 @@ const description =
 export const metadata: Metadata = {
   title: title,
   description: description,
+  openGraph: {
+    title: `${title} | Éclaireur Public`,
+    description: description,
+  },
 };
 
 export default function Page() {

@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: 'Perspectives — Transparence des collectivités locales',
   description:
     'État des lieux et perspectives sur la transparence des dépenses publiques locales en France. Données dynamiques sur les marchés publics et subventions.',
+  openGraph: {
+    title: 'Perspectives — Transparence des collectivités locales | Éclaireur Public',
+    description:
+      'État des lieux et perspectives sur la transparence des dépenses publiques locales en France. Données dynamiques sur les marchés publics et subventions.',
+  },
 };
 
 // Revalidate every hour — avoids hammering the DB on every page load

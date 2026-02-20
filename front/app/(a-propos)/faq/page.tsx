@@ -6,9 +6,14 @@ import type { FaqItem } from '#components/FaqWithSchema';
 import { FaqWithSchema } from '#components/FaqWithSchema';
 
 export const metadata: Metadata = {
-  title: 'FAQ - les réponses à toutes vos question',
+  title: 'FAQ — les réponses à toutes vos questions',
   description:
-    'Un doute&nbsp;? une interrogation&nbsp;? Éclaireur Public répond à toutes les questions que vous vous posez (fréquemment)',
+    'Un doute ? Une interrogation ? Éclaireur Public répond à toutes les questions que vous vous posez fréquemment.',
+  openGraph: {
+    title: 'FAQ | Éclaireur Public',
+    description:
+      'Un doute ? Une interrogation ? Éclaireur Public répond à toutes les questions que vous vous posez fréquemment.',
+  },
 };
 
 const faqItems: FaqItem[] = [
