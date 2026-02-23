@@ -168,6 +168,7 @@ class TopicAggregator(DatasetAggregator):
             df.pipe(self._select_official_columns)
             .pipe(self._add_metadata, file_metadata)
             .pipe(self._clean_missing_values, file_metadata)
+            .pipe(self._coerce_object_columns_to_str)
             .rename(columns=to_snake_case)
         )
 
@@ -222,6 +223,18 @@ class TopicAggregator(DatasetAggregator):
                 }
             )
         return df[~mask]
+
+    @staticmethod
+    def _coerce_object_columns_to_str(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Excel files can produce mixed-type object columns (e.g. strings + datetime)
+        which crash parquet serialization.  Cast non-numeric, non-datetime object
+        columns to str so they serialize cleanly.
+        """
+        for col in df.columns:
+            if df[col].dtype == "object" and df[col].dropna().apply(type).nunique() > 1:
+                df[col] = df[col].astype(str).where(df[col].notnull())
+        return df
 
     @staticmethod
     def _flag_duplicate_columns(df: pd.DataFrame, file_metadata: PandasRow) -> None:
