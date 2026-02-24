@@ -69,7 +69,8 @@ def normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=_normalise_column_name)
 
 
-def _normalise_column_name(name: str) -> str:
+def _normalise_column_name(name) -> str:
+    name = str(name)
     name = re.sub(r"[_\n.-]+", "_", name.lower())
     name = re.sub("^(fields|properties)_", "", name)
     name = re.sub("_?@value$", "", name)
