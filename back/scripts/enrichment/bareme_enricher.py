@@ -163,12 +163,14 @@ class BaremeEnricher(BaseEnricher):
         - Les subventions budgétées (données financières officielles)
 
         Logique du scoring :
+        - Budget subventions explicitement 0 dans les comptes → Score A
+          (la collectivité n'a pas de budget subventions, rien à déclarer)
         - Taux = (subventions déclarées / subventions budgétées) × 100
         - Score A : ]95%, 105%] (très bon)
         - Score B : ]50%, 95%] ou >105% (bon / sur-déclaration)
         - Score C : ]25%, 50%] (moyen)
         - Score D : ]0%, 25%] (faible)
-        - Score E : 0% ou invalide (aucune donnée)
+        - Score E : 0% ou données financières absentes
 
         Args:
             subventions (pl.DataFrame): Données des subventions déclarées
@@ -247,12 +249,8 @@ class BaremeEnricher(BaseEnricher):
         """
         Convertit un taux de publication en score de qualité.
 
-        Règles métier pour l'évaluation de la transparence :
-        - Un taux supérieur à 95% et jusqu'à 105% est considéré comme excellent (score A)
-        - Un taux > 105% indique une sur-déclaration (le montant déclaré dépasse le
-          budget prévu). Cela reste un effort de transparence réel et est noté B.
-        - Un taux de 0% indique aucune donnée exploitable → score E
-        - Les taux très faibles (>0% à 25%) indiquent un effort minimal mais insuffisant
+        Note : le cas "budget subventions = 0" (score A) est traité en
+        amont dans ``bareme_subventions`` et ne passe pas par cette fonction.
 
         Args:
             tp (float): Taux de publication en pourcentage
@@ -260,16 +258,11 @@ class BaremeEnricher(BaseEnricher):
 
         Returns:
             str: Score de A (excellent) à E (insuffisant)
-                - E : 0% ou invalide - Aucune donnée exploitable
-                - D : ]0%, 25%] - Effort minimal mais très insuffisant
-                - C : ]25%, 50%] - Transparence faible (sous-déclaration importante)
-                - B : ]50%, 95%] ou >105% - Transparence correcte (déclaration
-                  partielle à bonne, ou sur-déclaration)
-                - A : ]95%, 105%] - Très bonne transparence (déclaration optimale)
-
-        Note:
-            Les valeurs invalides (NaN, inf, négatives) retournent automatiquement E
-            pour signaler un problème dans les données source.
+                - E : 0%, NaN ou données absentes
+                - D : ]0%, 25%]
+                - C : ]25%, 50%]
+                - B : ]50%, 95%] ou >105%
+                - A : ]95%, 105%]
         """
         if math.isnan(tp) or tp <= 0:
             return "E"  # Données invalides ou inexploitables

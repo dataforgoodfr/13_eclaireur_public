@@ -259,7 +259,10 @@ export default function Page() {
               <div className='float-left mr-2 rounded-md bg-scoreIndice-A px-4 py-2 text-center font-semibold md:hidden'>
                 A
               </div>
-              <div className='text-center'>100% (+/- 5%)</div>
+              <div className='flex flex-col pr-4 text-left md:space-y-2 md:text-center'>
+                <span>100% (+/- 5%)</span>
+                <span className='font-normal'>ou budget subventions à 0&nbsp;€</span>
+              </div>
             </div>
             <div className='flex items-center md:block'>
               <div className='float-left mr-2 rounded-md bg-scoreIndice-B px-4 py-2 text-center font-semibold md:hidden'>
