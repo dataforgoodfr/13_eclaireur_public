@@ -205,8 +205,9 @@ class BaremeEnricher(BaseEnricher):
         bareme_clean = bareme_join.with_columns(
             [
                 pl.col("total_subventions_declarees").fill_null(0.0),
-                pl.col("subventions").fill_null(0.0),
-                (pl.col("subventions")).alias("subventions_budget"),  # Alias pour clarté
+                # Distinguish explicit 0 (budget exists and is 0) from missing financial data.
+                pl.col("subventions").is_not_null().alias("has_subventions_budget"),
+                pl.col("subventions").fill_null(0.0).alias("subventions_budget"),
             ]
         )
 
@@ -227,9 +228,13 @@ class BaremeEnricher(BaseEnricher):
         # Application de la grille de scoring sur le taux calculé
         bareme_score = bareme_taux.with_columns(
             [
-                pl.col("taux_subventions")
-                .map_elements(cls.get_score_from_tp)  # Application fonction de scoring
-                .cast(pl.Utf8)  # Score en format texte
+                pl.when(pl.col("has_subventions_budget") & (pl.col("subventions_budget") == 0))
+                .then(pl.lit("A"))
+                .otherwise(
+                    pl.col("taux_subventions")
+                    .map_elements(cls.get_score_from_tp)  # Application fonction de scoring
+                    .cast(pl.Utf8)  # Score en format texte
+                )
                 .alias("subventions_score")
             ]
         )
