@@ -25,9 +25,6 @@ export const metadata: Metadata = {
     default: 'Éclaireur Public',
   },
   metadataBase: baseURL != null ? new URL(baseURL) : new URL('https://eclaireurpublic.fr'),
-  alternates: {
-    canonical: './',
-  },
   description:
     'Éclaireur Public est une initiative portée par Anticor et accompagnée par Data for Good. Le projet vise à pallier le manque de transparence dans la gestion des dépenses publiques des collectivités locales en France.',
   robots: {
