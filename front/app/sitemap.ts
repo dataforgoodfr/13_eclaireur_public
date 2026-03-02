@@ -1,11 +1,9 @@
 import type { MetadataRoute } from 'next';
 
 import { getQueryFromPool } from '#utils/db';
+import { getBaseUrl } from '#utils/url';
 
-const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? 'https://eclaireurpublic.fr').replace(
-  /\/$/,
-  '',
-);
+const baseUrl = getBaseUrl();
 
 const now = new Date();
 

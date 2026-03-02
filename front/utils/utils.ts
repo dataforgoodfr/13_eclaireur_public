@@ -4,18 +4,14 @@ import { twMerge } from 'tailwind-merge';
 import { GRAPH_START_YEAR } from './constants';
 import type { Direction } from './fetchers/types';
 import { CommunityType } from './types';
+import { getBaseUrl } from './url';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Create a url with the base url as a prefix
- * @param url
- * @returns
- */
 export function withBaseURL(url: string) {
-  return process.env.NEXT_PUBLIC_BASE_URL + url;
+  return getBaseUrl() + url;
 }
 
 export function debounce<A = unknown, R = void>(
