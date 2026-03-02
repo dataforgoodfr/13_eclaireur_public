@@ -4,9 +4,12 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host') ?? '';
 
   if (host.startsWith('www.')) {
-    const url = request.nextUrl.clone();
-    url.host = host.slice(4);
-    return NextResponse.redirect(url, { status: 301 });
+    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? 'https://eclaireurpublic.fr').replace(
+      /\/$/,
+      '',
+    );
+    const redirectUrl = `${baseUrl}${request.nextUrl.pathname}${request.nextUrl.search}`;
+    return NextResponse.redirect(redirectUrl, { status: 301 });
   }
 
   return NextResponse.next();
