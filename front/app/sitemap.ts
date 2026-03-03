@@ -1,21 +1,37 @@
 import type { MetadataRoute } from 'next';
 
 import { getQueryFromPool } from '#utils/db';
+import { getBaseUrl } from '#utils/url';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://eclaireurpublic.fr';
+const baseUrl = getBaseUrl();
 
 const now = new Date();
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${baseUrl}/`, priority: 1.0, changeFrequency: 'weekly', lastModified: now },
-  { url: `${baseUrl}/advanced-search`, priority: 0.9, changeFrequency: 'weekly', lastModified: now },
+  {
+    url: `${baseUrl}/advanced-search`,
+    priority: 0.9,
+    changeFrequency: 'weekly',
+    lastModified: now,
+  },
   { url: `${baseUrl}/map`, priority: 0.8, changeFrequency: 'weekly', lastModified: now },
   { url: `${baseUrl}/perspectives`, priority: 0.8, changeFrequency: 'monthly', lastModified: now },
   { url: `${baseUrl}/le-projet`, priority: 0.7, changeFrequency: 'monthly', lastModified: now },
-  { url: `${baseUrl}/qui-sommes-nous`, priority: 0.7, changeFrequency: 'monthly', lastModified: now },
+  {
+    url: `${baseUrl}/qui-sommes-nous`,
+    priority: 0.7,
+    changeFrequency: 'monthly',
+    lastModified: now,
+  },
   { url: `${baseUrl}/methodologie`, priority: 0.7, changeFrequency: 'monthly', lastModified: now },
   { url: `${baseUrl}/contexte`, priority: 0.7, changeFrequency: 'monthly', lastModified: now },
-  { url: `${baseUrl}/cadre-reglementaire`, priority: 0.6, changeFrequency: 'monthly', lastModified: now },
+  {
+    url: `${baseUrl}/cadre-reglementaire`,
+    priority: 0.6,
+    changeFrequency: 'monthly',
+    lastModified: now,
+  },
   { url: `${baseUrl}/faq`, priority: 0.6, changeFrequency: 'monthly', lastModified: now },
   { url: `${baseUrl}/aide-aux-elus`, priority: 0.6, changeFrequency: 'monthly', lastModified: now },
   { url: `${baseUrl}/benevoles`, priority: 0.5, changeFrequency: 'monthly', lastModified: now },
