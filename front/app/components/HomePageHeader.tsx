@@ -13,8 +13,8 @@ export default function HomePageHeader() {
   }
 
   return (
-    <main className='global-border'>
-      <div className='minh-[460px] relative bg-none object-cover'>
+    <main className='relative z-20'>
+      <div className='relative bg-none object-cover'>
         <Image
           src='/eclaireur/eyes_left.svg'
           alt='Yeux'
@@ -39,7 +39,7 @@ export default function HomePageHeader() {
           width={42}
           height={28}
         />
-        <div className='global-margin flex h-full items-center justify-center'>
+        <div className='global-margin flex h-full items-center justify-center overflow-visible'>
           <div className='w-520 flex flex-col items-center justify-center'>
             <Image
               src='/eclaireur/mascotte_search.svg'
@@ -58,7 +58,7 @@ export default function HomePageHeader() {
             <h2 className='mb-6 w-3/4 text-center text-lg font-normal'>
               Accédez aux données de dépenses publiques de votre commune, département ou région.
             </h2>
-            <div className='mx-auto flex min-w-[400] justify-center'>
+            <div className='mx-auto flex w-full justify-center sm:min-w-[400px]'>
               <SearchBar
                 className='relative w-3/4 md:w-96 lg:w-[32rem]'
                 onSelect={({ siren }) => navigateToCommunityPage(siren)}
