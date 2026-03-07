@@ -1,0 +1,172 @@
+name: Cleanup review apps
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" # Every 30 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  cleanup-expired:
+    name: Delete expired review apps (>3h)
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Install clever-tools
+        run: npm install -g clever-tools
+
+      - name: Find and cleanup expired apps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          ORGA_ID: ${{ secrets.ORGA_ID }}
+        run: |
+          REPO="${{ github.repository }}"
+          REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+          CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
+          NOW=$(date -u +%s)
+          TTL=10800 # 3 hours in seconds
+
+          echo "=== Checking for expired review apps ==="
+          echo "Repository: $REPO"
+          echo "Current time: $NOW"
+
+          # List all open PRs with the deploy-review label
+          PR_NUMBERS=$(gh pr list --repo "$REPO" --label "deploy-review" --state open --json number --jq '.[].number' 2>/dev/null || echo "")
+
+          if [ -z "$PR_NUMBERS" ]; then
+            echo "No open PRs with deploy-review label found."
+            exit 0
+          fi
+
+          for PR_NUM in $PR_NUMBERS; do
+            echo ""
+            echo "--- Checking PR #$PR_NUM ---"
+
+            # Find the deployment comment with the timestamp marker
+            COMMENT_DATA=$(gh api "repos/$REPO/issues/$PR_NUM/comments" \
+              --jq '[.[] | select(.body | contains("<!-- clever-cloud-review-app -->"))] | last | {id: .id, body: .body}' 2>/dev/null || echo "")
+
+            if [ -z "$COMMENT_DATA" ] || [ "$COMMENT_DATA" == "null" ]; then
+              echo "  No deployment comment found, skipping."
+              continue
+            fi
+
+            COMMENT_ID=$(echo "$COMMENT_DATA" | jq -r '.id')
+            COMMENT_BODY=$(echo "$COMMENT_DATA" | jq -r '.body')
+
+            # Extract timestamp from hidden HTML comment
+            DEPLOY_TS=$(echo "$COMMENT_BODY" | grep -oP '(?<=<!-- deploy-timestamp:)\d+' || echo "")
+
+            if [ -z "$DEPLOY_TS" ]; then
+              echo "  No deploy timestamp found in comment, skipping."
+              continue
+            fi
+
+            AGE=$((NOW - DEPLOY_TS))
+            echo "  Deployed ${AGE}s ago (TTL: ${TTL}s)"
+
+            if [ "$AGE" -gt "$TTL" ]; then
+              echo "  EXPIRED. Deleting review app..."
+              APP_NAME="${CLEAN_NAME}-PR-${PR_NUM}"
+
+              # Delete the Clever Cloud app
+              if clever link -o "$ORGA_ID" "$APP_NAME" 2>/dev/null; then
+                clever delete --alias "$APP_NAME" --yes 2>/dev/null || true
+                echo "  App $APP_NAME deleted from Clever Cloud."
+              else
+                echo "  App $APP_NAME not found on Clever Cloud (already deleted?)."
+              fi
+
+              # Update the PR comment
+              gh api "repos/$REPO/issues/comments/$COMMENT_ID" \
+                --method PATCH \
+                --field body="<!-- clever-cloud-review-app -->
+          ### Review app expired
+
+          The review app was automatically deleted after 3 hours.
+          _Add the \`deploy-review\` label again to redeploy._" || true
+
+              # Remove the deploy-review label
+              gh pr edit "$PR_NUM" --repo "$REPO" --remove-label "deploy-review" 2>/dev/null || true
+
+              echo "  Cleanup complete for PR #$PR_NUM."
+            else
+              REMAINING=$(( (TTL - AGE) / 60 ))
+              echo "  Still active. ~${REMAINING} minutes remaining."
+            fi
+          done
+
+          echo ""
+          echo "=== Expired app cleanup sweep complete ==="
+
+  cleanup-orphans:
+    name: Delete orphaned review apps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install clever-tools
+        run: npm install -g clever-tools
+
+      - name: Find and delete orphaned apps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          ORGA_ID: ${{ secrets.ORGA_ID }}
+        run: |
+          REPO="${{ github.repository }}"
+          REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+          CLEAN_NAME=$(echo "$REPO_NAME" | tr '_' '-')
+          # Pattern to match review apps: {clean-repo-name}-PR-{number}
+          REVIEW_APP_PREFIX="${CLEAN_NAME}-PR-"
+
+          echo "=== Checking for orphaned review apps ==="
+          echo "Looking for apps matching prefix: ${REVIEW_APP_PREFIX}"
+
+          # List all apps in the org via Clever Cloud API
+          APPS_JSON=$(clever curl -X GET "/v2/organisations/$ORGA_ID/applications" 2>/dev/null || echo "[]")
+
+          # Extract app names and IDs matching the review app pattern
+          REVIEW_APPS=$(echo "$APPS_JSON" | jq -r --arg prefix "$REVIEW_APP_PREFIX" \
+            '.[] | select(.name | startswith($prefix)) | "\(.name) \(.id)"' 2>/dev/null || echo "")
+
+          if [ -z "$REVIEW_APPS" ]; then
+            echo "No review apps found on Clever Cloud."
+            exit 0
+          fi
+
+          echo "$REVIEW_APPS" | while IFS=' ' read -r APP_NAME APP_ID; do
+            [ -z "$APP_NAME" ] && continue
+
+            echo ""
+            echo "--- Checking app: $APP_NAME (ID: $APP_ID) ---"
+
+            # Extract PR number from app name
+            PR_NUM=$(echo "$APP_NAME" | grep -oP '(?<=-PR-)\d+$' || echo "")
+
+            if [ -z "$PR_NUM" ]; then
+              echo "  Could not extract PR number, skipping."
+              continue
+            fi
+
+            # Check if the PR is still open
+            PR_STATE=$(gh pr view "$PR_NUM" --repo "$REPO" --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
+
+            echo "  PR #$PR_NUM state: $PR_STATE"
+
+            if [ "$PR_STATE" != "OPEN" ]; then
+              echo "  ORPHANED (PR is $PR_STATE). Deleting app..."
+
+              # Delete via Clever Cloud API (more reliable without git context)
+              clever curl -X DELETE "/v2/organisations/$ORGA_ID/applications/$APP_ID" 2>/dev/null || true
+
+              echo "  App $APP_NAME deleted."
+            else
+              echo "  PR is open, keeping app."
+            fi
+          done
+
+          echo ""
+          echo "=== Orphan cleanup sweep complete ==="
