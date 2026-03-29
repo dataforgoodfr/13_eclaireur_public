@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: 'Aide aux élus',
   description:
     'Ma collectivité a une mauvaise note de transparence, pas de panique ! Éclaireur Public vous aide à améliorer la transparence des collectivités',
+  alternates: {
+    canonical: '/aide-aux-elus',
+  },
 };
 
 const faqItems: FaqItem[] = [

@@ -6,6 +6,9 @@ import { SectionHeader } from '#app/components/SectionHeader';
 export const metadata: Metadata = {
   title: 'Le cadre règlementaire',
   description: 'La loi pour une République Numérique, décryptage par Éclaireur Public',
+  alternates: {
+    canonical: '/cadre-reglementaire',
+  },
 };
 
 export default function Page() {

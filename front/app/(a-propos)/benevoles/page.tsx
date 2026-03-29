@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Remerciements',
   description:
     'Éclaireur Public a été construit par toute une équipe de bénévoles. Un grand merci à celles et ceux qui ont rendu cette application possible.',
+  alternates: {
+    canonical: '/benevoles',
+  },
 };
 
 export default function Remerciement() {

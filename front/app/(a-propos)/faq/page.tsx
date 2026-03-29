@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'FAQ — les réponses à toutes vos questions',
   description:
     'Un doute ? Une interrogation ? Éclaireur Public répond à toutes les questions que vous vous posez fréquemment.',
+  alternates: {
+    canonical: '/faq',
+  },
   openGraph: {
     title: 'FAQ | Éclaireur Public',
     description:

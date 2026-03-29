@@ -6,8 +6,10 @@ import { Card } from '#components/ui/card';
 
 export const metadata: Metadata = {
   title: 'Qui sommes-nous ?',
-  description:
-    "Eclaireur Public c'est Anticor, Data for Good et une cinquantaine de bénévoles",
+  description: "Eclaireur Public c'est Anticor, Data for Good et une cinquantaine de bénévoles",
+  alternates: {
+    canonical: '/qui-sommes-nous',
+  },
 };
 
 export default function Page() {

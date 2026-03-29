@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'Le contexte',
   description:
     'À chaque échelon territorial son ensemble de compétences particulières, revue de détails et enjeux de la transparence',
+  alternates: {
+    canonical: '/contexte',
+  },
 };
 
 export default function Page() {
@@ -64,10 +67,10 @@ export default function Page() {
                 <BulletList
                   items={[
                     "Gestion de l'état civil",
-                    "Urbanisme local",
-                    "Entretien des écoles primaires",
+                    'Urbanisme local',
+                    'Entretien des écoles primaires',
                     'Gestion des équipements culturels et sportifs locaux',
-                    "Action sociale de proximité",
+                    'Action sociale de proximité',
                   ]}
                 />
               </CtaCard>
@@ -85,7 +88,7 @@ export default function Page() {
                   items={[
                     "Action sociale (aide à l'enfance, aux personnes âgées et handicapées)",
                     'Gestion des collèges',
-                    "Entretien des routes départementales",
+                    'Entretien des routes départementales',
                     'Soutien aux communes rurales',
                   ]}
                 />
@@ -103,7 +106,7 @@ export default function Page() {
                 <BulletList
                   items={[
                     "Développement économique et l'aide aux entreprises",
-                    "Aménagement du territoire et les transports",
+                    'Aménagement du territoire et les transports',
                     'Gestion des lycées',
                     "Formation professionnelle et l'apprentissage",
                     "Protection de l'environnement",
