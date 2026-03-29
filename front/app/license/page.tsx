@@ -3,8 +3,11 @@ import type { Metadata } from 'next';
 import { SectionHeader } from '#app/components/SectionHeader';
 
 export const metadata: Metadata = {
-  title: 'Licence d’utilisation',
-  description: 'License d’utilisation',
+  title: "Licence d'utilisation",
+  description: "Licence d'utilisation",
+  alternates: {
+    canonical: '/license',
+  },
 };
 
 export default function Page() {
@@ -42,7 +45,7 @@ export default function Page() {
               Réutiliser ces données à des fins personnelles, professionnelles ou de recherche, dans
               le respect de la législation applicable et des droits des tiers,
             </li>
-            <li>Partager les contenus du site, à condition d’en mentionner la source.</li>
+            <li>Partager les contenus du site, à condition d'en mentionner la source.</li>
           </ul>
         </div>
         <div className='mb-8 space-y-4'>
@@ -51,12 +54,12 @@ export default function Page() {
           <ul className='list-disc pl-5'>
             <li>
               Utiliser les données ou contenus à des fins illicites, discriminatoires ou contraires
-              à l’intérêt général,
+              à l'intérêt général,
             </li>
             <li>Détourner ou modifier les informations publiées de manière à induire en erreur,</li>
             <li>
-              Exploiter commercialement les contenus du site sans l’accord préalable de
-              l’association Anticor, porteuse du projet.
+              Exploiter commercialement les contenus du site sans l'accord préalable de
+              l'association Anticor, porteuse du projet.
             </li>
           </ul>
         </div>
@@ -73,15 +76,15 @@ export default function Page() {
           <h2>5. Responsabilité</h2>
           <p>
             Les informations mises en ligne sont issues de sources fiables, mais Éclaireur Public ne
-            peut garantir l’exhaustivité ni l’absence totale d’erreurs. L’association Anticor ne
-            saurait être tenue responsable de l’usage qui pourrait être fait des données par des
+            peut garantir l'exhaustivité ni l'absence totale d'erreurs. L'association Anticor ne
+            saurait être tenue responsable de l'usage qui pourrait être fait des données par des
             tiers.
           </p>
         </div>
         <div className='mb-8 space-y-4'>
           <h2>6. Modifications</h2>
           <p>
-            L’association Anticor se réserve le droit de modifier à tout moment les termes de la
+            L'association Anticor se réserve le droit de modifier à tout moment les termes de la
             présente licence afin de les adapter aux évolutions légales, techniques ou
             organisationnelles du projet. La date de mise à jour sera indiquée en haut de cette
             page.
@@ -90,8 +93,8 @@ export default function Page() {
         <div className='mb-8 space-y-4'>
           <h2>7. Contact</h2>
           <p>
-            Pour toute question relative à la présente licence ou aux conditions d’utilisation des
-            contenus, vous pouvez contacter l’équipe du projet Éclaireur Public à l’adresse suivante
+            Pour toute question relative à la présente licence ou aux conditions d'utilisation des
+            contenus, vous pouvez contacter l'équipe du projet Éclaireur Public à l'adresse suivante
             : [adresse e-mail à compléter par Anticor].
           </p>
         </div>

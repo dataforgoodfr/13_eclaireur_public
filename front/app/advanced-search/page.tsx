@@ -14,6 +14,9 @@ const description =
 export const metadata: Metadata = {
   title: title,
   description: description,
+  alternates: {
+    canonical: '/advanced-search',
+  },
   openGraph: {
     title: `${title} | Éclaireur Public`,
     description: description,

@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: 'Transparence des finances locales',
   description:
     'Consultez les dépenses publiques de votre collectivité locale : marchés publics, subventions et score de transparence. Une initiative Anticor & Data for Good.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Éclaireur Public — Transparence des finances locales',
     description:

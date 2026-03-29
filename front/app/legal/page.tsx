@@ -5,6 +5,9 @@ import { SectionHeader } from '#app/components/SectionHeader';
 export const metadata: Metadata = {
   title: 'Mentions légales',
   description: 'Mentions légales',
+  alternates: {
+    canonical: '/legal',
+  },
 };
 
 export default function MentionsLegales() {
@@ -78,8 +81,8 @@ export default function MentionsLegales() {
             mises en ligne et décline toute responsabilité en cas d'erreur ou d'omission.
           </p>
           <p>
-            L'association Anticor ne pourra être tenue responsable de tout dommage direct ou indirect
-            résultant de l'utilisation du site.
+            L'association Anticor ne pourra être tenue responsable de tout dommage direct ou
+            indirect résultant de l'utilisation du site.
           </p>
         </div>
         <div>

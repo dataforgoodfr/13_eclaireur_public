@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "La méthodologie ou les dessous de l'outil Éclaireur Public",
   description:
     'Comment réunir savoir-faire, technologies dernier cri et bonnes volontés pour la transparence des données publiques, revue de détails',
+  alternates: {
+    canonical: '/methodologie',
+  },
 };
 
 export default function Page() {

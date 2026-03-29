@@ -28,6 +28,9 @@ export async function generateMetadata({ params }: CommunityPageProps): Promise<
   return {
     title: community.nom,
     description,
+    alternates: {
+      canonical: `/community/${siren}`,
+    },
     openGraph: {
       title: `${community.nom} | Éclaireur Public`,
       description,

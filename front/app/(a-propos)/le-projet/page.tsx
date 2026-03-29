@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: 'Le Projet',
   description:
     'Éclaireur Public a deux objectifs principaux : ouvrir les données des collectivités locales, éclairer et informer les citoyens sur les enjeux locaux',
+  alternates: {
+    canonical: '/le-projet',
+  },
 };
 export default function LeProjet() {
   return (
