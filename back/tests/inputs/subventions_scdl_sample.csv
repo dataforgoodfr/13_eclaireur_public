@@ -1,0 +1,6 @@
+nomAttribuant;idAttribuant;dateConvention;referenceDecision;nomBeneficiaire;idBeneficiaire;rnaBeneficiaire;objet;montant;nature;conditionsVersement;datesPeriodeVersement;idRAE;notificationUE;pourcentageSubvention;dispositifAide
+Région Auvergne-Rhône-Alpes;20005376700014;2023-02-15;CP-2023-02-001;Association Exemple Culture;12345678900011;W691000001;Soutien à un festival de musique;15000.00;aide en numéraire;unique;2023-03-01/2023-12-31;;non;0.30;
+Région Auvergne-Rhône-Alpes;20005376700014;2023-03-20;CP-2023-03-014;Club Sportif Exemple;23456789100012;W691000002;Achat de matériel sportif;4200.50;aide en numéraire;unique;2023-04-01/2023-06-30;;non;0.50;
+Région Auvergne-Rhône-Alpes;20005376700014;2023-05-10;CP-2023-05-007;Association Exemple Environnement;34567891200013;W691000003;Programme de sensibilisation au tri des déchets;28750.00;aide en numéraire;échelonné;2023-06-01/2024-05-31;;non;0.40;
+Région Auvergne-Rhône-Alpes;20005376700014;2023-09-05;CP-2023-09-022;Association Exemple Solidarité;45678912300014;W691000004;Aide alimentaire d'urgence;9800.00;aide en numéraire;unique;2023-09-15/2023-12-31;;non;1;
+Région Auvergne-Rhône-Alpes;20005376700014;2024-01-18;CP-2024-01-003;Association Exemple Patrimoine;56789123400015;W691000005;Restauration d'un lavoir communal;62000.00;aide en numéraire;échelonné;2024-02-01/2025-01-31;;non;0.25;
