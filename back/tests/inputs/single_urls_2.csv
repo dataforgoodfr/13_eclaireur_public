@@ -1,3 +1,2 @@
 siren;url;format
-200053767;https://www.auvergnerhonealpes.fr/media/5979/download?inline;xlsx
-200053767;https://www.auvergnerhonealpes.fr/media/1470/download?inline;xlsx
+200053767;file:./back/tests/inputs/subventions_scdl_sample.csv;csv
