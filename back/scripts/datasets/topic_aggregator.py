@@ -180,7 +180,7 @@ class TopicAggregator(DatasetAggregator):
         if "idAttribuant" not in df.columns:
             optional_features["idAttribuant"] = str(file_metadata.siren).zfill(9) + "0" * 5
 
-        if "dateConvention" not in df.columns:
+        if "dateConvention" not in df.columns or df["dateConvention"].isna().all():
             df = self._add_date_from_metadata(df, file_metadata)
 
         if "dateConvention" in df.columns:
