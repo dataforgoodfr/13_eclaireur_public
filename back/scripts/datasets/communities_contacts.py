@@ -103,10 +103,14 @@ class CommunitiesContact(BaseDataset):
         return (
             df.explode("pivot")
             .with_columns(
-                pl.col("pivot").struct[1].replace_strict(matching, default=None).alias("type")
+                pl.col("pivot")
+                .struct.field("type_service_local")
+                .replace_strict(matching, default=None)
+                .alias("type")
             )
             .with_columns(
-                pl.col("pivot").struct[0].alias("code_insee"),
+                # Access struct fields by name: their order depends on the source JSON.
+                pl.col("pivot").struct.field("code_insee_commune").alias("code_insee"),
             )
             .with_columns(
                 pl.when(col("code_insee").list.len() > 0).then(
