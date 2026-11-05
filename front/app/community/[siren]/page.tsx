@@ -1,6 +1,7 @@
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/fetchCommunityBudgetTotal';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
@@ -17,6 +18,8 @@ import { FicheIdentiteSkeleton } from './components/Skeletons/FicheIdentiteSkele
 import { TransparencyScoreWithTrend } from './components/TransparencyScore/TransparencyScore';
 
 type CommunityPageProps = { params: Promise<{ siren: string }> };
+
+const SIREN_REGEX = /^\d{9}$/;
 
 export async function generateMetadata({ params }: CommunityPageProps): Promise<Metadata> {
   const siren = (await params).siren;
@@ -38,28 +41,32 @@ export async function generateMetadata({ params }: CommunityPageProps): Promise<
   };
 }
 
-async function getCommunity(siren: string) {
-  const communitiesResults = await fetchCommunities({ filters: { siren } });
+// Wrapped in React cache() so generateMetadata and the page share one DB round-trip per request.
+const getCommunity = cache(async (siren: string) => {
+  if (!SIREN_REGEX.test(siren)) notFound();
 
-  if (communitiesResults.length === 0) {
-    throw new Error(`Community doesnt exist with siren ${siren}`);
-  }
+  const [communitiesResults, { bareme, evolutionGlobalScore }] = await Promise.all([
+    fetchCommunities({ filters: { siren } }),
+    fetchMostRecentTransparencyScore(siren),
+  ]);
 
-  const { bareme, evolutionGlobalScore } = await fetchMostRecentTransparencyScore(siren);
+  if (communitiesResults.length === 0) notFound();
 
   return {
     ...communitiesResults[0],
     transparencyScore: bareme?.global_score || null,
     evolutionGlobalScore,
   };
-}
+});
 
 export default async function CommunityPage({ params }: CommunityPageProps) {
   const siren = (await params).siren;
 
-  const community = await getCommunity(siren);
-  const budgetTotal = await fetchCommunityBudgetTotal(siren);
-  const similarCommunityList = await fetchSimilarCommunityList(siren);
+  const [community, budgetTotal, similarCommunityList] = await Promise.all([
+    getCommunity(siren),
+    fetchCommunityBudgetTotal(siren),
+    fetchSimilarCommunityList(siren),
+  ]);
 
   // TODO - get and add the last update date
   // const lastUpdateText = `Derniere mise a jour`;

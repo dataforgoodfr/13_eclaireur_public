@@ -21,7 +21,9 @@ export async function getQueryFromPool(
     const { rows } = await client.query(queryTextOrConfig, values);
     return rows;
   } catch (error) {
-    console.log(error);
+    // console.error (not console.log): next.config strips console.log in production builds,
+    // which made every DB error invisible in prod logs.
+    console.error('[db] query failed', error);
   } finally {
     client.release();
   }
