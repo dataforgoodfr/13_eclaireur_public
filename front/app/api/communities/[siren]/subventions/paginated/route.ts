@@ -6,6 +6,7 @@ import { parseNumber } from '#utils/utils';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
+const MAX_LIMIT = 100;
 
 export async function GET(request: Request, { params }: { params: Promise<{ siren: string }> }) {
   try {
@@ -17,9 +18,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ sire
     }
 
     const year = parseNumber(searchParams.get('year'));
-    const by = searchParams.get('by') as keyof Subvention;
-    const page = parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE;
-    const limit = parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT;
+    // Validated against an allow-list in the fetcher; undefined falls back to the default.
+    const by = (searchParams.get('by') ?? undefined) as keyof Subvention | undefined;
+    const page = Math.max(1, Math.trunc(parseNumber(searchParams.get('page')) ?? DEFAULT_PAGE));
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Math.trunc(parseNumber(searchParams.get('limit')) ?? DEFAULT_LIMIT)),
+    );
 
     const pagination = {
       page,

@@ -6,6 +6,21 @@ import { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.MarchesPublics;
 
+// `by` is interpolated into ORDER BY (identifiers can't be bound as $n params),
+// so only allow-listed columns may reach the SQL string.
+const SORTABLE_COLUMNS: ReadonlyArray<keyof MarchePublic> = [
+  'montant_du_marche_public',
+  'annee_notification',
+  'objet',
+  'id_mp',
+];
+
+function safeOrderBy(by: unknown): keyof MarchePublic {
+  return SORTABLE_COLUMNS.includes(by as keyof MarchePublic)
+    ? (by as keyof MarchePublic)
+    : DEFAULT_BY;
+}
+
 function createSQLQueryParams(
   siren: string,
   year: number | null,
@@ -36,7 +51,7 @@ function createSQLQueryParams(
       objet, 
       montant_du_marche_public,
       annee_notification
-    ORDER BY ${by} DESC
+    ORDER BY ${safeOrderBy(by)} DESC
     `;
 
   const { limit, page } = pagination;

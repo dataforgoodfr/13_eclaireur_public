@@ -34,7 +34,10 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY cpv_2, cpv_2_label, objet';
-  if (maxAmount !== undefined) query += ` HAVING SUM(montant_du_marche_public_par_titulaire) <= ${maxAmount}`;
+  if (maxAmount !== undefined) {
+    query += ` HAVING SUM(montant_du_marche_public_par_titulaire) <= $${values.length + 1}`;
+    values.push(maxAmount);
+  }
 
   query += ' ORDER BY montant DESC';
 

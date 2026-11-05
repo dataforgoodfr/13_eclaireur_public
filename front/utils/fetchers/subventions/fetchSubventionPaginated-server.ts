@@ -6,6 +6,19 @@ import { Pagination } from '../types';
 
 const TABLE_NAME = DataTable.Subventions;
 
+// `by` is interpolated into ORDER BY (identifiers can't be bound as $n params),
+// so only allow-listed columns may reach the SQL string.
+const SORTABLE_COLUMNS: ReadonlyArray<keyof Subvention> = [
+  'montant',
+  'annee',
+  'objet',
+  'id_beneficiaire',
+];
+
+function safeOrderBy(by: unknown): keyof Subvention {
+  return SORTABLE_COLUMNS.includes(by as keyof Subvention) ? (by as keyof Subvention) : DEFAULT_BY;
+}
+
 function createSQLQueryParams(
   siren: string,
   year: number | null,
@@ -35,7 +48,7 @@ function createSQLQueryParams(
       id_beneficiaire, 
       objet, 
       annee
-    ORDER BY ${by} DESC
+    ORDER BY ${safeOrderBy(by)} DESC
   `;
 
   const { limit, page } = pagination;

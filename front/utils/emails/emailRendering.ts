@@ -1,5 +1,3 @@
-import sanitizeHtml from 'sanitize-html';
-
 export const ConfirmInterpellateSubject: string =
   'EclaireurPublic – Interpellation pour la transparence des données publiques';
 
@@ -7,7 +5,8 @@ export function replaceTemplateValues(templatehtml: string, variables: Record<st
   let html = templatehtml;
   for (const [key, value] of Object.entries(variables)) {
     const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-    html = html.replace(regex, sanitize(value));
+    // Function replacement so `$&`-style patterns in user input aren't interpreted.
+    html = html.replace(regex, () => escapeHtml(value));
   }
   return html;
 }
@@ -20,11 +19,13 @@ export function getFullName(firstName: string, lastName: string) {
   return `${firstName} ${lastName}`;
 }
 
-function sanitize(html: string) {
-  return sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['p', 'i', 'em', 'strong', 'a']),
-    allowedAttributes: {
-      a: ['href'],
-    },
-  });
+// Template values are plain text (names, emails, URLs): escape them rather than allowing a
+// subset of HTML, so user input can never inject markup or links into outgoing emails.
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
