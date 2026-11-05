@@ -9,8 +9,8 @@ import { SelectedContactsProvider } from './Contexts/SelectedContactsContext';
 
 export const metadata: Metadata = {
   title: 'Interpeller',
-  description: '',
-  // TODO - compléter description (facultatif)
+  description:
+    'Interpellez les élu·e·s de votre collectivité pour leur demander de publier leurs données de marchés publics et de subventions, comme le prévoit la loi République Numérique.',
 };
 
 export default function InterpellateLayout({ children }: PropsWithChildren) {

@@ -27,7 +27,7 @@ export function FicheHeader({ community, similarCommunityList }: FicheHeaderProp
       {/* Background image with high priority */}
       <Image
         src='/collectivite-header.jpg'
-        alt='En-tête collectivité'
+        alt=''
         fill
         className='-z-10 object-cover'
         priority

@@ -14,7 +14,7 @@ export default function FrequentlyAskedQuestions() {
     <div className='mx-auto mb-20 w-full max-w-screen-lg p-6'>
       <div className='hidden grid-cols-2 md:grid'>
         <div className='mt-2.5 space-y-4'>
-          <h1 className='text-3xl font-bold'>Questions fréquentes</h1>
+          <h2 className='text-3xl font-bold'>Questions fréquentes</h2>
           <div className='w-[500px] text-xl font-semibold md:block'>
             Consultez les réponses aux questions les plus courantes sur l'utilisation d'Éclaireur
             Public
@@ -81,7 +81,7 @@ export default function FrequentlyAskedQuestions() {
       </div>
 
       <div className='md:hidden'>
-        <h1 className='mb-4 text-3xl font-bold'>Questions fréquentes</h1>
+        <h2 className='mb-4 text-3xl font-bold'>Questions fréquentes</h2>
         <Accordion type='single' collapsible>
           <AccordionItem value='item-1'>
             <AccordionTrigger>
