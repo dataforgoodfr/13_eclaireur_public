@@ -1,23 +1,17 @@
-import fs from 'fs'; 
-import path from "path";
 import { replaceTemplateValues } from '#utils/emails/emailRendering';
+import fs from 'fs';
+import path from 'path';
 
 // fs can only be called from server-side code so this file must be used by server-side components only
 
 export function renderEmailTemplate(templateName: string, variables: Record<string, string>) {
-  let html = getEmailTemplate(templateName);
-
-  // Replace {{variable}} with the provided values
-  for (const [key, value] of Object.entries(variables)) {
-    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-    html = html.replace(regex, value);
-  }
-
-  return replaceTemplateValues(html,variables);
+  // replaceTemplateValues escapes every value. Values must not be substituted before this
+  // call, otherwise raw user input lands in the HTML and nothing is left to escape.
+  return replaceTemplateValues(getEmailTemplate(templateName), variables);
 }
 
 export function getEmailTemplate(templateName: string) {
   const filePath = path.join(process.cwd(), 'email-templates', `${templateName}.html`);
-  let htmlTemplate = fs.readFileSync(filePath, 'utf8');
+  const htmlTemplate = fs.readFileSync(filePath, 'utf8');
   return htmlTemplate;
 }

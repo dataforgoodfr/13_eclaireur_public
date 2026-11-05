@@ -8,13 +8,27 @@ async function getStreamedQueryCopyFromPool(
   values: (string | number | undefined)[],
 ) {
   const client = await db.connect();
-  const formattedQuery = as.format(query, values);
 
   try {
+    const formattedQuery = as.format(query, values);
     const stream = client.query(to(formattedQuery));
+
+    // Release the client only once the COPY stream is finished; releasing it right away
+    // (as before) handed a busy connection back to the pool mid-stream.
+    let released = false;
+    const release = (err?: Error) => {
+      if (released) return;
+      released = true;
+      client.release(err);
+    };
+    stream.on('end', () => release());
+    stream.on('error', (err) => release(err));
+    stream.on('close', () => release());
+
     return stream;
-  } finally {
+  } catch (error) {
     client.release();
+    throw error;
   }
 }
 

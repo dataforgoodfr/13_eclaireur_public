@@ -44,7 +44,10 @@ export function createSQLQueryParams(
   }
 
   query += ' GROUP BY naf2, label, objet';
-  if (maxAmount !== undefined) query += ` HAVING SUM(montant) <= ${maxAmount}`;
+  if (maxAmount !== undefined) {
+    query += ` HAVING SUM(montant) <= $${values.length + 1}`;
+    values.push(maxAmount);
+  }
 
   query += ' ORDER BY montant DESC';
 
