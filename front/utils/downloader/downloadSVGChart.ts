@@ -1,5 +1,3 @@
-import html2canvas from 'html2canvas';
-
 import { downloadURL } from './downloadURL';
 import type { Extension } from './types';
 
@@ -106,6 +104,9 @@ async function createChartCanvas(svgToDownload: SVGSVGElement) {
   const svgContainer = document.createElement('div');
   svgContainer.setAttribute('width', `${svgToDownload.getAttribute('width')}px`);
   svgContainer.setAttribute('height', `${svgToDownload.getAttribute('height')}px`);
+
+  // html2canvas (~45 KB gzipped) is only needed for PNG export: load it on click.
+  const { default: html2canvas } = await import('html2canvas');
 
   svgContainer.appendChild(svgToDownload);
   document.body.appendChild(svgContainer);

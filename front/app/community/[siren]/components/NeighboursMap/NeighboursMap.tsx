@@ -1,8 +1,8 @@
-import MapWithCityMarkers, {
-  City,
-} from '#app/community/[siren]/components/NeighboursMap/MapWithCityMarkers';
+import type { City } from '#app/community/[siren]/components/NeighboursMap/MapWithCityMarkers';
 import { Community } from '#app/models/community';
 import { fetchCommunitiesByRadius } from '#utils/fetchers/communities/fetchCommunitiesByRadius-server';
+
+import LazyMapWithCityMarkers from './LazyMapWithCityMarkers';
 
 type CommunityPageProps = { community: Community };
 
@@ -17,5 +17,5 @@ export default async function NeighboursMap({ community }: CommunityPageProps) {
 
   const validNeighbours = neighbours.filter(isValid);
 
-  return <MapWithCityMarkers center={center} cities={validNeighbours} />;
+  return <LazyMapWithCityMarkers center={center} cities={validNeighbours} />;
 }
