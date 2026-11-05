@@ -23,7 +23,7 @@ jobs:
             if: ${{ github.event.action != 'closed' }}
             id: check-branch
             run: |
-              # REPO and BRANCH come from env (not inline ${{ }}) so a crafted branch name
+              # REPO and BRANCH come from env (not inline expressions) so a crafted branch name
               # cannot inject shell commands.
               
               # Tester si la branche existe via l'API GitHub
