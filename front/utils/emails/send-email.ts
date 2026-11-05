@@ -29,10 +29,6 @@ function getSmtpTransport() {
     );
   }
 
-  console.info(
-    `[send-email] SMTP auth: user="${user}" (len=${user.length}), pass=***${pass.slice(-2)} (len=${pass.length})`,
-  );
-
   return nodemailer.createTransport({
     host: 'mail.infomaniak.com',
     port: 465,

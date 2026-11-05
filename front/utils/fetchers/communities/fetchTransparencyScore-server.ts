@@ -12,7 +12,7 @@ function createSQLQueryParams(siren: string, year: number): [string, (string | n
   const querySQL = `
       SELECT 
         c.siren,
-        '$2' as annee, 
+        $2 as annee,
         b.subventions_score,
         b.mp_score
       FROM ${COMMUNITIES_TABLE_NAME} c

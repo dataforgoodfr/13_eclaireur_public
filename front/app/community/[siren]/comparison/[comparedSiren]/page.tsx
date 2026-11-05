@@ -1,4 +1,7 @@
+import { cache } from 'react';
+
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { fetchCommunityBudgetTotal } from '#utils/fetchers/communities-accounts/fetchCommunityBudgetTotal';
 import { fetchCommunities } from '#utils/fetchers/communities/fetchCommunities-server';
@@ -18,8 +21,7 @@ type PageProps = { params: Promise<{ siren: string; comparedSiren: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const siren = (await params).siren;
   const siren2 = (await params).comparedSiren;
-  const community = await getCommunity(siren);
-  const community2 = await getCommunity(siren2);
+  const [community, community2] = await Promise.all([getCommunity(siren), getCommunity(siren2)]);
 
   return {
     title: 'Comparaison de collectivités',
@@ -27,15 +29,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-async function getCommunity(siren: string) {
+const SIREN_REGEX = /^\d{9}$/;
+
+// Wrapped in React cache() so generateMetadata and the page share one DB round-trip per request.
+const getCommunity = cache(async (siren: string) => {
+  if (!SIREN_REGEX.test(siren)) notFound();
+
   const communitiesResults = await fetchCommunities({ filters: { siren } });
 
-  if (communitiesResults.length === 0) {
-    throw new Error(`Community doesnt exist with siren ${siren}`);
-  }
+  if (communitiesResults.length === 0) notFound();
 
   return communitiesResults[0];
-}
+});
 
 export default async function Page({ params }: PageProps) {
   const siren = (await params).siren;
