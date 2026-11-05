@@ -25,7 +25,7 @@ export default function Page() {
         <div className='my-10 grid gap-10 md:grid-cols-2'>
           <div className='flex h-full w-full flex-col'>
             <div className='relative mb-4 h-[90px]'>
-              <Image src='/anticor.png' fill objectFit='contain' alt="Logo d'ANTICOR" />
+              <Image src='/anticor.png' fill className='object-contain' alt="Logo d'ANTICOR" />
             </div>
             <WhoWeAreCard colorClassName='bg-indigo-100 flex-1'>
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>ANTICOR</h2>
@@ -48,7 +48,12 @@ export default function Page() {
           </div>
           <div className='flex h-full w-full flex-col'>
             <div className='relative mb-4 h-[90px]'>
-              <Image src='/dataforgood.webp' fill objectFit='contain' alt='Logo de Data for Good' />
+              <Image
+                src='/dataforgood.webp'
+                fill
+                className='object-contain'
+                alt='Logo de Data for Good'
+              />
             </div>
             <WhoWeAreCard colorClassName='bg-brand-3 flex-1'>
               <h2 className='my-5 text-2xl font-extrabold md:text-3xl'>Data for Good</h2>
