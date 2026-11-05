@@ -8,6 +8,10 @@ on:
 jobs: 
     deploy:
         name: Deploy/redeploy review app
+        # pull_request_target runs with repository secrets. Only build PRs whose head lives in
+        # this repository (contributors with write access); fork PRs must never get the
+        # Clever Cloud / Postgres secrets.
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         runs-on: ubuntu-latest
         permissions:
             issues: write
@@ -19,11 +23,11 @@ jobs:
             if: ${{ github.event.action != 'closed' }}
             id: check-branch
             run: |
-              REPO="${{ github.event.pull_request.head.repo.full_name }}"
-              BRANCH="${{ github.event.pull_request.head.ref }}"
+              # REPO and BRANCH come from env (not inline ${{ }}) so a crafted branch name
+              # cannot inject shell commands.
               
               # Tester si la branche existe via l'API GitHub
-              if gh api repos/$REPO/branches/$BRANCH --silent 2>/dev/null; then
+              if gh api "repos/$REPO/branches/$BRANCH" --silent 2>/dev/null; then
                 echo "branch-exists=true" >> $GITHUB_OUTPUT
                 echo "✅ Branch $BRANCH exists"
               else
@@ -32,7 +36,9 @@ jobs:
               fi
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              
+              REPO: ${{ github.event.pull_request.head.repo.full_name }}
+              BRANCH: ${{ github.event.pull_request.head.ref }}
+
           # Checkout seulement si la branche existe
           - name: Checkout repository
             if: ${{ steps.check-branch.outputs.branch-exists == 'true' }}
